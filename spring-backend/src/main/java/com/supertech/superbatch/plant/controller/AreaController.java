@@ -1,0 +1,66 @@
+package com.supertech.superbatch.plant.controller;
+
+import java.util.List;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.supertech.superbatch.common.dto.ApiResponse;
+import com.supertech.superbatch.plant.dto.Area.CreateAreaRequest;
+import com.supertech.superbatch.plant.dto.Area.UpdateAreaRequest;
+import com.supertech.superbatch.plant.entity.Area;
+import com.supertech.superbatch.plant.service.AreaService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequestMapping("/api/areas")
+@RequiredArgsConstructor
+@CrossOrigin("*")
+public class AreaController {
+    private final AreaService areaService;
+
+    @PostMapping
+    public ApiResponse<Area> create(@Valid @RequestBody CreateAreaRequest request) {
+        Area area = areaService.create(request);
+        return new ApiResponse<>(true, "Area created successfully", area);
+    }
+
+    @GetMapping
+    public ApiResponse<List<Area>> getAll() {
+        List<Area> areas = areaService.getAll();
+        return new ApiResponse<>(true, "All Areas fetched successfully", areas);
+    }
+
+    @GetMapping("/{id}")
+    public ApiResponse<Area> getById(@PathVariable Long id) {
+        Area area = areaService.getById(id);
+        return new ApiResponse<>(true, "Area fetched successfully", area);
+    }
+
+    @GetMapping("/by-plant/{plantId}")
+    public ApiResponse<List<Area>> getByPlantId(@PathVariable Long plantId) {
+        List<Area> areas = areaService.getByPlantId(plantId);
+        return new ApiResponse<>(true, "Areas fetched successfully", areas);
+    }
+
+    @PutMapping("/{id}")
+    public ApiResponse<Area> update(@PathVariable Long id, @Valid @RequestBody UpdateAreaRequest request) {
+        Area area = areaService.update(id, request);
+        return new ApiResponse<>(true, "Area updated successfully", area);
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<?> delete(@PathVariable Long id) {
+        areaService.delete(id);
+        return new ApiResponse<>(true, "Area deleted successfully", null);
+    }
+}
