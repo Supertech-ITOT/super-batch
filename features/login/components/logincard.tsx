@@ -1,13 +1,19 @@
 "use client";
 
 import { Eye, EyeOff, Lock, ShieldCheck, User } from "lucide-react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import { Input } from "../../../components/ui/input";
+import { Button } from "../../../components/ui/button";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function LoginCard() {
     const [showPassword, setShowPassword] = useState(false);
+    const router = useRouter();
+    const onSubmit = (e: React.SubmitEvent) => {
+        e.preventDefault();
+        router.replace("PlantModel");
+    }
     return (
         <div className="flex w-full max-w-md flex-col rounded-2xl border bg-card/60 p-10 shadow-2xl backdrop-blur-xl">
             {/* Logo Section */}
@@ -27,7 +33,7 @@ export default function LoginCard() {
                     Sign in to continue to SuperBatch
                 </span>
             </div>
-            <form className="flex flex-col gap-5 mt-6">
+            <form onSubmit={onSubmit} className="flex flex-col gap-5 mt-6">
                 <div className="relative">
                     <User className="w-4 h-4 absolute left-2 top-1/2 -translate-y-1/2" />
                     <Input

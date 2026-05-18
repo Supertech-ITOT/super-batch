@@ -1,24 +1,15 @@
-import FeatureCard from "@/components/featurecard";
-import FooterCard from "@/components/footercard";
-import LoginCard from "@/components/logincard";
+import FeatureCard from "@/features/login/components/featurecard";
+import FooterCard from "@/features/login/components/footercard";
+import LoginCard from "@/features/login/components/logincard";
+import LoginImage from "@/features/login/components/loginImage";
 import { Activity, BadgeCheck, FileText, Layers3, ShieldCheck } from "lucide-react";
-import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="min-h-screen w-full flex flex-row">
-      <div className="absolute inset-0 bg-cover bg-center">
-        <Image src="/light-bg.png"
-          alt="Background"
-          fill
-          className="pointer-events-none select-none object-cover"
-          priority
-          draggable={false}
-        />
-        <div className="absolute inset-0 bg-background/20" />
-      </div>
+    <div className="min-h-screen w-full flex flex-row overflow-hidden relative">
+      <LoginImage />
       <div className="xl:flex hidden flex-1 flex-col gap-4">
-        <div className="relative h-full top-10 left-10 z-10 flex flex-col w-full">
+        <div className="relative z-10 flex flex-col h-full px-10 pt-10">
           <div className="flex justify-start z-10 mt-10">
             {/* Logo Section */}
             <div className="flex items-center gap-4">
