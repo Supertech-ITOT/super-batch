@@ -1,101 +1,96 @@
-'use client';
+import FeatureCard from "@/components/featurecard";
+import FooterCard from "@/components/footercard";
+import LoginCard from "@/components/logincard";
+import { Activity, BadgeCheck, FileText, Layers3, ShieldCheck } from "lucide-react";
+import Image from "next/image";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Clock, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-
-export default function LoginPage() {
-  const router = useRouter();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  async function handleLogin(e: React.SubmitEvent) {
-    e.preventDefault();
-    if (!username.trim() || !password.trim()) {
-      toast.error('Please enter both username and password.');
-      return;
-    }
-    if (loading) return;
-    setLoading(true);
-    try {
-      // const result: LoginResponse = await window.api.auth.login(username.trim(), password.trim());
-      // if (!result.success || !result.data) {
-      //   toast.error(result.error ?? 'Login failed. Please try again.');
-      //   return;
-      // }
-      // toast.success(`Welcome, ${result.data.Username}! (${result.data.Category})`);
-      // localStorage.setItem('user', JSON.stringify(result.data));
-      router.replace('/PlantModel');
-    } catch {
-      toast.error('Unable to connect. Please contact your administrator.');
-    } finally {
-      setLoading(false);
-    }
-  }
-
+export default function Home() {
   return (
-    <div className="flex h-screen w-full items-center justify-center">
-      <div className="w-full max-w-md">
-        {/* Header */}
-        <div className="mb-6 flex  justify-center items-end gap-2">
-          <Clock className='w-9 h-9 text-destructive' />
-          <h1 className="text-4xl font-bold text-center">BatchScheduler</h1>
-        </div>
-        {/* Card */}
-        <div className="rounded-2xl bg-card px-8 pb-16 pt-8 shadow-xl">
-          <p className='font-medium text-lg my-2'>Sign-In To Continue</p>
-          <form onSubmit={handleLogin} className="space-y-5">
+    <div className="min-h-screen w-full flex flex-row">
+      <div className="absolute inset-0 bg-cover bg-center">
+        <Image src="/light-bg.png"
+          alt="Background"
+          fill
+          className="pointer-events-none select-none object-cover"
+          priority
+          draggable={false}
+        />
+        <div className="absolute inset-0 bg-background/20" />
+      </div>
+      <div className="xl:flex hidden flex-1 flex-col gap-4">
+        <div className="relative h-full top-10 left-10 z-10 flex flex-col w-full">
+          <div className="flex justify-start z-10 mt-10">
+            {/* Logo Section */}
+            <div className="flex items-center gap-4">
+              {/* Icon */}
+              <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 shadow-lg backdrop-blur-md">
+                <h1 className="text-6xl font-extrabold tracking-tight text-primary">
+                  S
+                </h1>
+              </div>
+              {/* Title */}
+              <div className="flex flex-col">
+                <h1 className="text-5xl font-extrabold">
+                  SUPER
+                  <span className="ml-1 text-primary">BATCH</span>
+                </h1>
 
-            {/* Username */}
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium text-muted-foreground">
-                Username
-              </Label>
-              <Input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter your username"
-                autoComplete="username"
-                disabled={loading}
-              />
+                <p className="mt-1 text-sm font-medium tracking-wide text-muted-foreground">
+                  Batch Control | Manufacturing Excellence
+                </p>
+              </div>
             </div>
+          </div>
+          <div className="mt-20">
+            <h2 className="text-3xl font-bold">
+              Enterprise Batch Management Solution
+            </h2>
+            <p className="text-md font-semibold leading-5 text-muted-foreground  max-w-xl text-justify mt-3">
+              SuperBatch is an advanced ISA-88 based batch management system
+              designed for process industries to achieve operational
+              excellence, product quality and regulatory compliance.
+            </p>
+          </div>
+          {/* Features */}
+          <div className="mt-12 flex flex-wrap gap-6">
+            <FeatureCard
+              icon={Layers3}
+              title="ISA-88"
+              subtitle="Compliant"
+            />
 
-            {/* Password */}
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium text-muted-foreground">
-                Password
-              </Label>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                autoComplete="current-password"
-                disabled={loading}
-              />
-            </div>
+            <FeatureCard
+              icon={Activity}
+              title="Real-time"
+              subtitle="Monitoring"
+            />
 
-            {/* Submit */}
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-primary cursor-pointer"
-            >
-              {loading ? (
-                <Loader2 className='w-4 h-4 text-white animate-spin' />
-              ) : (
-                'Sign In'
-              )}
-            </Button>
-          </form>
+            <FeatureCard
+              icon={FileText}
+              title="Recipe"
+              subtitle="Management"
+            />
+
+            <FeatureCard
+              icon={ShieldCheck}
+              title="Audit"
+              subtitle="Compliance"
+            />
+
+            <FeatureCard
+              icon={BadgeCheck}
+              title="Scalable"
+              subtitle="Secure"
+            />
+          </div>
         </div>
       </div>
-    </div>
-  );
+      <div className="flex flex-1 flex-col gap-4 justify-center items-center p-2">
+        <LoginCard />
+      </div>
+      <FooterCard />
+    </div >
+  )
 }
+
+
