@@ -1,7 +1,6 @@
-import { Button } from "@/components/ui/button";
 import PlantMenu from "@/features/plant/components/plant-menu";
 import PlantTree from "@/features/plant/components/plant-tree";
-import { Plus } from "lucide-react";
+import { Factory } from "lucide-react";
 
 export default function PlantModelPage() {
 
@@ -9,9 +8,12 @@ export default function PlantModelPage() {
         <div className="flex h-full flex-col overflow-hidden">
             {/* Header */}
             <div className="shrink-0 border-b p-6">
-                <h1 className="text-xl font-bold">
-                    Plant Model
-                </h1>
+                <div className="flex gap-2 items-center">
+                    <Factory className="w-6 h-6" />
+                    <h1 className="text-xl font-bold">
+                        Plant Model
+                    </h1>
+                </div>
 
                 <p className="text-sm text-muted-foreground">
                     Design, manage and visualize your plant hierarchy.

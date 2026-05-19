@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 import QueryProvider from "@/providers/query-provider";
+import ThemeProvider from "@/providers/theme-provider";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -13,13 +14,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
   return (
-    <html lang="en" className={cn("antialiased", "font-sans", inter.variable)}>
+    <html lang="en" suppressHydrationWarning className={cn("antialiased", "font-sans", inter.variable)}>
       <body>
-        <QueryProvider>
-          <main className="min-h-screen">
-            {children}
-          </main>
-        </QueryProvider>
+        <ThemeProvider>
+          <QueryProvider>
+            <main className="min-h-screen">
+              {children}
+            </main>
+          </QueryProvider>
+        </ThemeProvider>
         <Toaster richColors position="top-center" />
       </body>
     </html>

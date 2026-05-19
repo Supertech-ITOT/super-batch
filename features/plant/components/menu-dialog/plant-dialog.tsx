@@ -20,6 +20,7 @@ export default function PlantDialog({ open, onClose, plantId, isEdit }: Props) {
     const { data, isLoading } = useGetPlantById(plantId as number);
     const { register, handleSubmit, reset, formState: { errors, isSubmitting, isDirty } } = useForm<PlantSchema>({
         resolver: zodResolver(plantSchema),
+        defaultValues: { name: "" }
     });
 
     useEffect(() => {
@@ -75,7 +76,7 @@ export default function PlantDialog({ open, onClose, plantId, isEdit }: Props) {
                         <DialogClose asChild>
                             <Button disabled={loading} type="button" variant="outline" onClick={handleClose}>Cancel</Button>
                         </DialogClose>
-                        <Button type="submit" className="min-w-34" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : isEdit ? "Update Plant" : "Create Plant"}</Button>
+                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : isEdit ? "Update Plant" : "Create Plant"}</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

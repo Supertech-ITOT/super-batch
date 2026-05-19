@@ -98,7 +98,7 @@ export default function SideBar() {
                             <Link
                                 key={el.label}
                                 href={el.path}
-                                className={`flex flex-row gap-2 rounded-sm items-end  text-muted-foreground px-2 py-2 text-sm transition-all duration-300  ${active ? "bg-primary text-white" : "hover:text-black hover:bg-background hover:shadow"}`}>
+                                className={`flex flex-row gap-2 rounded-sm items-end  text-muted-foreground px-2 py-2 text-sm transition-all duration-300  ${active ? "bg-primary text-white" : "hover:bg-background hover:shadow"}`}>
                                 <Icon className="w-5 h-5" />
                                 {open && <span>{el.label}</span>}
                             </Link>
@@ -118,7 +118,7 @@ export default function SideBar() {
                             <Link
                                 key={el.label}
                                 href={el.path}
-                                className={`flex flex-row gap-2 rounded-sm items-end  text-muted-foreground px-2 py-2 text-sm transition-all duration-300  ${active ? "bg-primary text-white" : "hover:text-black hover:bg-background hover:shadow"}`}>
+                                className={`flex flex-row gap-2 rounded-sm items-end  text-muted-foreground px-2 py-2 text-sm transition-all duration-300  ${active ? "bg-primary text-white" : "hover:bg-background hover:shadow"}`}>
                                 <Icon className="w-5 h-5" />
                                 {open && <span>{el.label}</span>}
                             </Link>

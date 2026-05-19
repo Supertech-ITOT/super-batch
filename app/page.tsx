@@ -1,13 +1,27 @@
 import FeatureCard from "@/features/login/components/featurecard";
 import FooterCard from "@/features/login/components/footercard";
 import LoginCard from "@/features/login/components/logincard";
-import LoginImage from "@/features/login/components/loginImage";
 import { Activity, BadgeCheck, FileText, Layers3, ShieldCheck } from "lucide-react";
+import Image from "next/image";
 
 export default function Home() {
   return (
     <div className="min-h-screen w-full flex flex-row overflow-hidden relative">
-      <LoginImage />
+      <div className="absolute inset-0">
+        <Image
+          src="/light-bg.png"
+          alt="Background"
+          fill
+          className="object-cover dark:hidden"
+        />
+
+        <Image
+          src="/dark-bg.png"
+          alt="Background"
+          fill
+          className="hidden object-cover dark:block"
+        />
+      </div>
       <div className="xl:flex hidden flex-1 flex-col gap-4">
         <div className="relative z-10 flex flex-col h-full px-10 pt-10">
           <div className="flex justify-start z-10 mt-10">

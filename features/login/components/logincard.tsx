@@ -6,12 +6,20 @@ import { Button } from "../../../components/ui/button";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginSchema, loginSchema } from "../schemas/login-schema";
+import FormError from "@/components/form-error";
 
 export default function LoginCard() {
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
-    const onSubmit = (e: React.SubmitEvent) => {
-        e.preventDefault();
+    const { handleSubmit, register, formState: { errors, isDirty, isSubmitting } } = useForm<LoginSchema>({
+        resolver: zodResolver(loginSchema),
+        defaultValues: { username: "", password: "" }
+    });
+    const loading = isSubmitting;
+    const onSubmit = (data: LoginSchema) => {
         router.replace("PlantModel");
     }
     return (
@@ -33,20 +41,25 @@ export default function LoginCard() {
                     Sign in to continue to SuperBatch
                 </span>
             </div>
-            <form onSubmit={onSubmit} className="flex flex-col gap-5 mt-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 mt-6">
                 <div className="relative">
                     <User className="w-4 h-4 absolute left-2 top-1/2 -translate-y-1/2" />
                     <Input
+                        disabled={loading}
                         placeholder="Username"
                         type="text"
+                        {...register("username")}
                         className="pl-8 bg-background h-12"
                     />
                 </div>
+                <FormError msg={errors.username?.message} />
                 <div className="relative">
                     <Lock className="w-4 h-4 absolute left-2 top-1/2 -translate-y-1/2" />
                     <Input
+                        disabled={loading}
                         placeholder="Password"
                         type={showPassword ? "text" : "password"}
+                        {...register("password")}
                         className="pl-8 bg-background h-12"
                     />
                     <Button
@@ -55,20 +68,19 @@ export default function LoginCard() {
                         className="absolute right-2 top-1/2 -translate-y-1/2"
                         onClick={() => setShowPassword((prev) => !prev)}
                     >
-
-                        {showPassword ? (
-                            <EyeOff className="w-4 h-4 " />
-                        ) : (<Eye className="w-4 h-4" />)}
+                        {showPassword ? (<EyeOff className="w-4 h-4 " />) : (<Eye className="w-4 h-4" />)}
                     </Button>
                 </div>
+                <FormError msg={errors.password?.message} />
                 <Button className="text-primary place-self-end"
-                    variant={"ghost"}
+                    disabled={loading}
+                    variant="link"
                     type="button"
                     onClick={() => toast.warning("Please contact an administrator")}
                 >
                     Forgot Password?
                 </Button>
-                <Button type="submit" className="h-12!">
+                <Button disabled={loading || !isDirty} type="submit" className="h-12! text-white">
                     Sign In
                 </Button>
 

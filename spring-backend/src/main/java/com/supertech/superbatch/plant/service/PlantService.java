@@ -1,20 +1,19 @@
 package com.supertech.superbatch.plant.service;
 
 import com.supertech.superbatch.plant.dto.Plant.CreatePlantRequest;
+import com.supertech.superbatch.plant.dto.Plant.PlantResponse;
 import com.supertech.superbatch.plant.dto.Plant.UpdatePlantRequest;
-import com.supertech.superbatch.plant.entity.Plant;
-
 import java.util.List;
 
 public interface PlantService {
 
-    Plant create(CreatePlantRequest request);
+    void create(CreatePlantRequest request);
 
-    List<Plant> getAll();
+    List<PlantResponse> getAll();
 
-    Plant getById(Long id);
+    PlantResponse getById(Long id);
 
-    Plant update(Long id, UpdatePlantRequest request);
+    void update(Long id, UpdatePlantRequest request);
 
     void delete(Long id);
 
