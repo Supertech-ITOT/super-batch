@@ -1,5 +1,5 @@
 import api from "@/lib/axios";
-import { Plant } from "../types/plant.types";
+import { CreatePlantRequest, Plant, UpdatePlantRequest } from "../types/plant.types";
 import { ApiResponse } from "@/types/api.types";
 
 export const getPlants = async () => {
@@ -7,7 +7,17 @@ export const getPlants = async () => {
     return res.data;
 };
 
-export const createPlant = async (name: string) => {
-    const res = await api.post<ApiResponse<Plant>>("/plants", { name });
+export const getPlantById = async (id: number) => {
+    const res = await api.get<ApiResponse<Plant>>(`/plants/${id}`);
+    return res.data;
+};
+
+export const createPlant = async (data: CreatePlantRequest) => {
+    const res = await api.post<ApiResponse<Plant>>("/plants", data);
+    return res.data;
+};
+
+export const updatePlant = async ({ id, data }: { id: number, data: UpdatePlantRequest }) => {
+    const res = await api.patch<ApiResponse<Plant>>(`/plants/${id}`, data);
     return res.data;
 };

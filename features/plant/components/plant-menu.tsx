@@ -42,7 +42,7 @@ export default function PlantMenu() {
                     </DropdownMenuGroup>
                 </DropdownMenuContent>
             </DropdownMenu>
-            <PlantDialog open={dialogType === "plant"} onClose={() => setDialogType(null)} />
+            <PlantDialog open={dialogType === "plant"} onClose={() => setDialogType(null)} isEdit={false} />
         </>
     );
 }

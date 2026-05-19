@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import TreeView from "@/components/tree-veiw";
 
 import { Input } from "@/components/ui/input";
-import { Loader, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { PlantHierarchyResponse } from "../types/plant.types";
 import { usePlantHierarchy } from "../hooks/use-plant-hierarchy";
 import { Skeleton } from "@/components/ui/skeleton";

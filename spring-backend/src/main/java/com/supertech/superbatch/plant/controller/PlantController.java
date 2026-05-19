@@ -38,7 +38,7 @@ public class PlantController {
         return new ApiResponse<>(true, "Plant fetched successfully", plant);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ApiResponse<Plant> update(@PathVariable Long id, @Valid @RequestBody UpdatePlantRequest request) {
         Plant plant = plantService.update(id, request);
         return new ApiResponse<>(true, "Plant updated successfully", plant);

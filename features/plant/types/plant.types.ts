@@ -2,7 +2,12 @@ export interface Plant {
     id: number;
     name: string;
 }
-
+export interface CreatePlantRequest {
+    name: string;
+}
+export interface UpdatePlantRequest {
+    name: string;
+}
 
 export type PlantNodeType =
     | "plant"

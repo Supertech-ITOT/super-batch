@@ -2,6 +2,7 @@ package com.supertech.superbatch.plant.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,9 +30,11 @@ public class AreaController {
     private final AreaService areaService;
 
     @PostMapping
-    public ApiResponse<Area> create(@Valid @RequestBody CreateAreaRequest request) {
+    public ResponseEntity<ApiResponse<Area>> create(@Valid @RequestBody CreateAreaRequest request) {
         Area area = areaService.create(request);
-        return new ApiResponse<>(true, "Area created successfully", area);
+        return ResponseEntity.ok(
+                ApiResponse.success("Area created successfully", area));
+
     }
 
     @GetMapping
