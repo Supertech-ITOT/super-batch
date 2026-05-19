@@ -9,6 +9,7 @@ import com.supertech.superbatch.plant.service.PlantService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,32 +22,38 @@ public class PlantController {
     private final PlantService plantService;
 
     @PostMapping
-    public ApiResponse<Plant> create(@Valid @RequestBody CreatePlantRequest request) {
+    public ResponseEntity<ApiResponse<Plant>> create(@Valid @RequestBody CreatePlantRequest request) {
         Plant plant = plantService.create(request);
-        return new ApiResponse<>(true, "Plant created successfully", plant);
+        return ResponseEntity.ok(
+                ApiResponse.success("Plant created successfully", plant));
     }
 
     @GetMapping
-    public ApiResponse<List<Plant>> getAll() {
+    public ResponseEntity<ApiResponse<List<Plant>>> getAll() {
         List<Plant> plants = plantService.getAll();
-        return new ApiResponse<>(true, "All Plants fetched successfully", plants);
+        return ResponseEntity.ok(
+                ApiResponse.success("All Plants fetched successfully", plants));
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<Plant> getById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Plant>> getById(@PathVariable Long id) {
         Plant plant = plantService.getById(id);
-        return new ApiResponse<>(true, "Plant fetched successfully", plant);
+        return ResponseEntity.ok(
+                ApiResponse.success("Plant fetched successfully", plant));
     }
 
     @PatchMapping("/{id}")
-    public ApiResponse<Plant> update(@PathVariable Long id, @Valid @RequestBody UpdatePlantRequest request) {
+    public ResponseEntity<ApiResponse<Plant>> update(@PathVariable Long id,
+            @Valid @RequestBody UpdatePlantRequest request) {
         Plant plant = plantService.update(id, request);
-        return new ApiResponse<>(true, "Plant updated successfully", plant);
+        return ResponseEntity.ok(
+                ApiResponse.success("Plant updated successfully", plant));
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<?> delete(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<?>> delete(@PathVariable Long id) {
         plantService.delete(id);
-        return new ApiResponse<>(true, "Plant deleted successfully", null);
+        return ResponseEntity.ok(
+                ApiResponse.success("Plant deleted successfully", null));
     }
 }
