@@ -8,7 +8,6 @@ import com.supertech.superbatch.common.dto.ApiResponse;
 import com.supertech.superbatch.plant.dto.Unit.CreateUnitRequest;
 import com.supertech.superbatch.plant.dto.Unit.UnitResponse;
 import com.supertech.superbatch.plant.dto.Unit.UpdateUnitRequest;
-import com.supertech.superbatch.plant.entity.Unit;
 import com.supertech.superbatch.plant.service.UnitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +41,7 @@ public class UnitController {
     }
 
     @GetMapping("/by-area/{areaId}")
-    public ResponseEntity<ApiResponse<List<UnitResponse>>> getByPlantId(@PathVariable Long areaId) {
+    public ResponseEntity<ApiResponse<List<UnitResponse>>> getByAreaId(@PathVariable Long areaId) {
         List<UnitResponse> units = unitService.getByAreaId(areaId);
         return ResponseEntity.ok(
                 ApiResponse.success("Units fetched successfully", units));

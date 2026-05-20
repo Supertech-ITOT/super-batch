@@ -21,3 +21,8 @@ export const updatePlant = async ({ id, data }: { id: number, data: UpdatePlantR
     const res = await api.patch<ApiResponse<null>>(`/plants/${id}`, data);
     return res.data;
 };
+
+export const deleteUnit = async (id: number) => {
+    const res = await api.delete<ApiResponse<null>>(`/plants/${id}`);
+    return res.data;
+};

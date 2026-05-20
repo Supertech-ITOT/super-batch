@@ -17,7 +17,6 @@ import com.supertech.superbatch.common.dto.ApiResponse;
 import com.supertech.superbatch.plant.dto.Area.AreaResponse;
 import com.supertech.superbatch.plant.dto.Area.CreateAreaRequest;
 import com.supertech.superbatch.plant.dto.Area.UpdateAreaRequest;
-import com.supertech.superbatch.plant.entity.Area;
 import com.supertech.superbatch.plant.service.AreaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

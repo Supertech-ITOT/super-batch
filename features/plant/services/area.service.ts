@@ -21,3 +21,13 @@ export const updateArea = async ({ id, data }: { id: number, data: UpdateAreaReq
     const res = await api.patch<ApiResponse<null>>(`/areas/${id}`, data);
     return res.data;
 };
+
+export const deleteUnit = async (id: number) => {
+    const res = await api.delete<ApiResponse<null>>(`/areas/${id}`);
+    return res.data;
+};
+
+export const getByPlantId = async (plantId: number) => {
+    const res = await api.get<ApiResponse<AreaResponse[]>>(`/areas/by-plant/${plantId}`);
+    return res.data;
+};

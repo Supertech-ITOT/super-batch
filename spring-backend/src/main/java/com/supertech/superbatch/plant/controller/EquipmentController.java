@@ -8,7 +8,6 @@ import com.supertech.superbatch.common.dto.ApiResponse;
 import com.supertech.superbatch.plant.dto.Area.EquipmentResponse;
 import com.supertech.superbatch.plant.dto.Equipment.CreateEquipmentRequest;
 import com.supertech.superbatch.plant.dto.Equipment.UpdateEquipmentRequest;
-import com.supertech.superbatch.plant.entity.Equipment;
 import com.supertech.superbatch.plant.service.EquipmentService;
 
 import jakarta.validation.Valid;
@@ -43,7 +42,7 @@ public class EquipmentController {
     }
 
     @GetMapping("/by-unit/{unitId}")
-    public ResponseEntity<ApiResponse<List<EquipmentResponse>>> getByPlantId(@PathVariable Long unitId) {
+    public ResponseEntity<ApiResponse<List<EquipmentResponse>>> getByUnitId(@PathVariable Long unitId) {
         List<EquipmentResponse> equipments = equipmentService.getByUnitId(unitId);
         return ResponseEntity.ok(
                 ApiResponse.success("Equipments fetched successfully", equipments));
