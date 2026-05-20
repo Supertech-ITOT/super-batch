@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.supertech.superbatch.common.dto.ApiResponse;
+import com.supertech.superbatch.plant.dto.Area.AreaResponse;
 import com.supertech.superbatch.plant.dto.Area.CreateAreaRequest;
 import com.supertech.superbatch.plant.dto.Area.UpdateAreaRequest;
 import com.supertech.superbatch.plant.entity.Area;
@@ -29,43 +30,42 @@ public class AreaController {
     private final AreaService areaService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Area>> create(@Valid @RequestBody CreateAreaRequest request) {
-        Area area = areaService.create(request);
+    public ResponseEntity<ApiResponse<Void>> create(@Valid @RequestBody CreateAreaRequest request) {
+        areaService.create(request);
         return ResponseEntity.ok(
-                ApiResponse.success("Area created successfully", area));
+                ApiResponse.success("Area created successfully", null));
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Area>>> getAll() {
-        List<Area> areas = areaService.getAll();
-        return ResponseEntity.ok(
-                ApiResponse.success("All Areas fetched successfully", areas));
+    public ResponseEntity<ApiResponse<List<AreaResponse>>> getAll() {
+        List<AreaResponse> areas = areaService.getAll();
+        return ResponseEntity.ok(ApiResponse.success("All Areas fetched successfully", areas));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Area>> getById(@PathVariable Long id) {
-        Area area = areaService.getById(id);
-        return ResponseEntity.ok(
-                ApiResponse.success("Area fetched successfully", area));
+    public ResponseEntity<ApiResponse<AreaResponse>> getById(
+            @PathVariable Long id) {
+        AreaResponse area = areaService.getById(id);
+        return ResponseEntity.ok(ApiResponse.success("Area fetched successfully", area));
     }
 
     @GetMapping("/by-plant/{plantId}")
-    public ResponseEntity<ApiResponse<List<Area>>> getByPlantId(@PathVariable Long plantId) {
-        List<Area> areas = areaService.getByPlantId(plantId);
-        return ResponseEntity.ok(
-                ApiResponse.success("Areas fetched successfully", areas));
+    public ResponseEntity<ApiResponse<List<AreaResponse>>> getByPlantId(
+            @PathVariable Long plantId) {
+        List<AreaResponse> areas = areaService.getByPlantId(plantId);
+        return ResponseEntity.ok(ApiResponse.success("Areas fetched successfully", areas));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Area>> update(@PathVariable Long id,
+    public ResponseEntity<ApiResponse<Void>> update(@PathVariable Long id,
             @Valid @RequestBody UpdateAreaRequest request) {
-        Area area = areaService.update(id, request);
+        areaService.update(id, request);
         return ResponseEntity.ok(
-                ApiResponse.success("Area updated successfully", area));
+                ApiResponse.success("Area updated successfully", null));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<?>> delete(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         areaService.delete(id);
         return ResponseEntity.ok(
                 ApiResponse.success("Area deleted successfully", null));

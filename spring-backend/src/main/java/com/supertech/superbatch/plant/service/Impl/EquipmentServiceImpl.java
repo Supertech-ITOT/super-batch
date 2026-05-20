@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.plant.dto.Area.EquipmentResponse;
 import com.supertech.superbatch.plant.dto.Equipment.CreateEquipmentRequest;
 import com.supertech.superbatch.plant.dto.Equipment.UpdateEquipmentRequest;
 import com.supertech.superbatch.plant.entity.Equipment;
@@ -23,7 +24,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     private final UnitRepository unitRepository;
 
     @Override
-    public Equipment create(CreateEquipmentRequest request) {
+    public void create(CreateEquipmentRequest request) {
         if (equipmentRepository.existsByNameIgnoreCaseAndUnitId(request.name(), request.unitId())) {
             throw new DuplicateResourceException("Equipment already exists");
         }
@@ -31,26 +32,28 @@ public class EquipmentServiceImpl implements EquipmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
         Equipment equipment = Equipment.builder().name(request.name()).equipmentType(request.equipmentType()).unit(unit)
                 .build();
-        return equipmentRepository.save(equipment);
+        equipmentRepository.save(equipment);
     }
 
     @Override
-    public List<Equipment> getAll() {
-        return equipmentRepository.findAll();
+    public List<EquipmentResponse> getAll() {
+        return equipmentRepository.findAll().stream().map(this::mapToResponse).toList();
     }
 
     @Override
-    public Equipment getById(Long id) {
-        return equipmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
+    public EquipmentResponse getById(Long id) {
+        Equipment equipment = equipmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
+        return mapToResponse(equipment);
     }
 
     @Override
-    public List<Equipment> getByUnitId(long unitId) {
-        return equipmentRepository.findByUnitId(unitId);
+    public List<EquipmentResponse> getByUnitId(long unitId) {
+        return equipmentRepository.findByUnitId(unitId).stream().map(this::mapToResponse).toList();
     }
 
     @Override
-    public Equipment update(Long id, UpdateEquipmentRequest request) {
+    public void update(Long id, UpdateEquipmentRequest request) {
         Equipment equipment = equipmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
 
@@ -61,7 +64,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
         equipment.setName(request.name());
         equipment.setEquipmentType(request.equipmentType());
-        return equipmentRepository.save(equipment);
+        equipmentRepository.save(equipment);
     }
 
     @Override
@@ -69,6 +72,11 @@ public class EquipmentServiceImpl implements EquipmentService {
         Equipment equipment = equipmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
         equipmentRepository.delete(equipment);
+    }
+
+    private EquipmentResponse mapToResponse(Equipment equipment) {
+        return new EquipmentResponse(equipment.getId(), equipment.getName(), equipment.getUnit().getId(),
+                equipment.getEquipmentType());
     }
 
 }

@@ -8,6 +8,7 @@ import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.plant.dto.Unit.CreateUnitRequest;
+import com.supertech.superbatch.plant.dto.Unit.UnitResponse;
 import com.supertech.superbatch.plant.dto.Unit.UpdateUnitRequest;
 import com.supertech.superbatch.plant.entity.Area;
 import com.supertech.superbatch.plant.entity.Unit;
@@ -26,7 +27,7 @@ public class UnitServiceImpl implements UnitService {
     private final EquipmentRepository equipmentRepository;
 
     @Override
-    public Unit create(CreateUnitRequest request) {
+    public void create(CreateUnitRequest request) {
 
         if (unitRepository.existsByNameIgnoreCaseAndAreaId(request.name(), request.areaId())) {
             throw new DuplicateResourceException("Unit already exists");
@@ -35,26 +36,27 @@ public class UnitServiceImpl implements UnitService {
                 .findById(request.areaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
         Unit unit = Unit.builder().name(request.name()).unitType(request.unitType()).area(area).build();
-        return unitRepository.save(unit);
+        unitRepository.save(unit);
     }
 
     @Override
-    public List<Unit> getAll() {
-        return unitRepository.findAll();
+    public List<UnitResponse> getAll() {
+        return unitRepository.findAll().stream().map(this::mapToResponse).toList();
     }
 
     @Override
-    public Unit getById(Long id) {
-        return unitRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
+    public UnitResponse getById(Long id) {
+        Unit unit = unitRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
+        return mapToResponse(unit);
     }
 
     @Override
-    public List<Unit> getByAreaId(Long areaId) {
-        return unitRepository.findByAreaId(areaId);
+    public List<UnitResponse> getByAreaId(Long areaId) {
+        return unitRepository.findByAreaId(areaId).stream().map(this::mapToResponse).toList();
     }
 
     @Override
-    public Unit update(Long id, UpdateUnitRequest request) {
+    public void update(Long id, UpdateUnitRequest request) {
         Unit unit = unitRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
 
         if (unitRepository.existsByNameIgnoreCaseAndAreaId(request.name(), unit.getArea().getId())
@@ -64,7 +66,7 @@ public class UnitServiceImpl implements UnitService {
 
         unit.setName(request.name());
         unit.setUnitType(request.unitType());
-        return unitRepository.save(unit);
+        unitRepository.save(unit);
     }
 
     @Override
@@ -74,6 +76,10 @@ public class UnitServiceImpl implements UnitService {
         }
         Unit unit = unitRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
         unitRepository.delete(unit);
+    }
+
+    private UnitResponse mapToResponse(Unit unit) {
+        return new UnitResponse(unit.getId(), unit.getName(), unit.getArea().getId(), unit.getUnitType());
     }
 
 }

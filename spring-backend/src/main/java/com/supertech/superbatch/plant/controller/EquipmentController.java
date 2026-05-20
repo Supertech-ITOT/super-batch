@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.supertech.superbatch.common.dto.ApiResponse;
+import com.supertech.superbatch.plant.dto.Area.EquipmentResponse;
 import com.supertech.superbatch.plant.dto.Equipment.CreateEquipmentRequest;
 import com.supertech.superbatch.plant.dto.Equipment.UpdateEquipmentRequest;
 import com.supertech.superbatch.plant.entity.Equipment;
@@ -21,43 +22,43 @@ public class EquipmentController {
     private final EquipmentService equipmentService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Equipment>> create(@Valid @RequestBody CreateEquipmentRequest request) {
-        Equipment equipment = equipmentService.create(request);
+    public ResponseEntity<ApiResponse<Void>> create(@Valid @RequestBody CreateEquipmentRequest request) {
+        equipmentService.create(request);
         return ResponseEntity.ok(
-                ApiResponse.success("Equipment created successfully", equipment));
+                ApiResponse.success("Equipment created successfully", null));
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Equipment>>> getAll() {
-        List<Equipment> equipments = equipmentService.getAll();
+    public ResponseEntity<ApiResponse<List<EquipmentResponse>>> getAll() {
+        List<EquipmentResponse> equipments = equipmentService.getAll();
         return ResponseEntity.ok(
                 ApiResponse.success("All Equipments fetched successfully", equipments));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Equipment>> getById(@PathVariable Long id) {
-        Equipment equipment = equipmentService.getById(id);
+    public ResponseEntity<ApiResponse<EquipmentResponse>> getById(@PathVariable Long id) {
+        EquipmentResponse equipment = equipmentService.getById(id);
         return ResponseEntity.ok(
                 ApiResponse.success("Equipment fetched successfully", equipment));
     }
 
     @GetMapping("/by-unit/{unitId}")
-    public ResponseEntity<ApiResponse<List<Equipment>>> getByPlantId(@PathVariable Long unitId) {
-        List<Equipment> equipments = equipmentService.getByUnitId(unitId);
+    public ResponseEntity<ApiResponse<List<EquipmentResponse>>> getByPlantId(@PathVariable Long unitId) {
+        List<EquipmentResponse> equipments = equipmentService.getByUnitId(unitId);
         return ResponseEntity.ok(
                 ApiResponse.success("Equipments fetched successfully", equipments));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Equipment>> update(@PathVariable Long id,
+    public ResponseEntity<ApiResponse<Void>> update(
+            @PathVariable Long id,
             @Valid @RequestBody UpdateEquipmentRequest request) {
-        Equipment equipment = equipmentService.update(id, request);
-        return ResponseEntity.ok(
-                ApiResponse.success("Equipment updated successfully", equipment));
+        equipmentService.update(id, request);
+        return ResponseEntity.ok(ApiResponse.success("Equipment updated successfully", null));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<?>> delete(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         equipmentService.delete(id);
         return ResponseEntity.ok(
                 ApiResponse.success("Equipment deleted successfully", null));

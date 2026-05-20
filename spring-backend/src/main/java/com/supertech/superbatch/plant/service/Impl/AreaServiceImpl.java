@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.plant.dto.Area.AreaResponse;
 import com.supertech.superbatch.plant.dto.Area.CreateAreaRequest;
 import com.supertech.superbatch.plant.dto.Area.UpdateAreaRequest;
 import com.supertech.superbatch.plant.entity.Area;
@@ -26,7 +27,7 @@ public class AreaServiceImpl implements AreaService {
     private final UnitRepository unitRepository;
 
     @Override
-    public Area create(CreateAreaRequest request) {
+    public void create(CreateAreaRequest request) {
 
         if (areaRepository.existsByNameIgnoreCaseAndPlantId(request.name(), request.plantId())) {
             throw new DuplicateResourceException("Area already exists");
@@ -35,26 +36,27 @@ public class AreaServiceImpl implements AreaService {
                 .findById(request.plantId())
                 .orElseThrow(() -> new ResourceNotFoundException("Plant not found"));
         Area area = Area.builder().name(request.name()).plant(plant).build();
-        return areaRepository.save(area);
+        areaRepository.save(area);
     }
 
     @Override
-    public List<Area> getAll() {
-        return areaRepository.findAll();
+    public List<AreaResponse> getAll() {
+        return areaRepository.findAll().stream().map(this::mapToResponse).toList();
     }
 
     @Override
-    public Area getById(Long id) {
-        return areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area not found"));
+    public AreaResponse getById(Long id) {
+        Area area = areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area not found"));
+        return mapToResponse(area);
     }
 
     @Override
-    public List<Area> getByPlantId(Long plantId) {
-        return areaRepository.findByPlantId(plantId);
+    public List<AreaResponse> getByPlantId(Long plantId) {
+        return areaRepository.findByPlantId(plantId).stream().map(this::mapToResponse).toList();
     }
 
     @Override
-    public Area update(Long id, UpdateAreaRequest request) {
+    public void update(Long id, UpdateAreaRequest request) {
         Area area = areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area not found"));
 
         if (areaRepository.existsByNameIgnoreCaseAndPlantId(request.name(), area.getPlant().getId())
@@ -63,7 +65,7 @@ public class AreaServiceImpl implements AreaService {
         }
 
         area.setName(request.name());
-        return areaRepository.save(area);
+        areaRepository.save(area);
     }
 
     @Override
@@ -73,6 +75,10 @@ public class AreaServiceImpl implements AreaService {
         }
         Area area = areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area not found"));
         areaRepository.delete(area);
+    }
+
+    private AreaResponse mapToResponse(Area area) {
+        return new AreaResponse(area.getId(), area.getName(), area.getPlant().getId());
     }
 
 }

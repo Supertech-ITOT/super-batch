@@ -2,21 +2,21 @@ package com.supertech.superbatch.plant.service;
 
 import java.util.List;
 
+import com.supertech.superbatch.plant.dto.Area.EquipmentResponse;
 import com.supertech.superbatch.plant.dto.Equipment.CreateEquipmentRequest;
 import com.supertech.superbatch.plant.dto.Equipment.UpdateEquipmentRequest;
-import com.supertech.superbatch.plant.entity.Equipment;
 
 public interface EquipmentService {
 
-    Equipment create(CreateEquipmentRequest request);
+    void create(CreateEquipmentRequest request);
 
-    List<Equipment> getAll();
+    List<EquipmentResponse> getAll();
 
-    Equipment getById(Long id);
+    EquipmentResponse getById(Long id);
 
-    List<Equipment> getByUnitId(long unitId);
+    List<EquipmentResponse> getByUnitId(long unitId);
 
-    Equipment update(Long id, UpdateEquipmentRequest request);
+    void update(Long id, UpdateEquipmentRequest request);
 
     void delete(Long id);
 

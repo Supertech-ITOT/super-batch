@@ -4,18 +4,18 @@ import java.util.List;
 
 import com.supertech.superbatch.plant.dto.Unit.CreateUnitRequest;
 import com.supertech.superbatch.plant.dto.Unit.UpdateUnitRequest;
-import com.supertech.superbatch.plant.entity.Unit;
+import com.supertech.superbatch.plant.dto.Unit.UnitResponse;
 
 public interface UnitService {
-    Unit create(CreateUnitRequest request);
+    void create(CreateUnitRequest request);
 
-    List<Unit> getAll();
+    List<UnitResponse> getAll();
 
-    Unit getById(Long id);
+    UnitResponse getById(Long id);
 
-    List<Unit> getByAreaId(Long areaId);
+    List<UnitResponse> getByAreaId(Long areaId);
 
-    Unit update(Long id, UpdateUnitRequest request);
+    void update(Long id, UpdateUnitRequest request);
 
     void delete(Long id);
 }
