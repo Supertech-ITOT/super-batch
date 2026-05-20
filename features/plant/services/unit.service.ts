@@ -22,7 +22,7 @@ export const updateUnit = async ({ id, data }: { id: number, data: UpdateUnitReq
     return res.data;
 };
 
-export const deleteUnit = async (id: number) => {
+export const deleteUnit = async ({ id }: { id: number }) => {
     const res = await api.delete<ApiResponse<null>>(`/units/${id}`);
     return res.data;
 };

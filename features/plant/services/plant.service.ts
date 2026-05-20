@@ -22,7 +22,7 @@ export const updatePlant = async ({ id, data }: { id: number, data: UpdatePlantR
     return res.data;
 };
 
-export const deleteUnit = async (id: number) => {
+export const deletePlant = async ({ id }: { id: number }) => {
     const res = await api.delete<ApiResponse<null>>(`/plants/${id}`);
     return res.data;
 };

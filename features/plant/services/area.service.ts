@@ -22,7 +22,7 @@ export const updateArea = async ({ id, data }: { id: number, data: UpdateAreaReq
     return res.data;
 };
 
-export const deleteUnit = async (id: number) => {
+export const deleteArea = async ({ id }: { id: number }) => {
     const res = await api.delete<ApiResponse<null>>(`/areas/${id}`);
     return res.data;
 };

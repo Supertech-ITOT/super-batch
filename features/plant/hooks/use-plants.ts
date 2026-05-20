@@ -1,11 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createPlant, getPlantById, getPlants, updatePlant } from "../services/plant.service";
+import { createPlant, deletePlant, getPlantById, getPlants, updatePlant } from "../services/plant.service";
 
 
 export const useGetPlants = () => {
     return useQuery({
         queryKey: ["plants"],
-        queryFn: getPlants,
+        queryFn: async () => {
+            const res = await getPlants();
+            return res.data;
+        },
     });
 };
 
@@ -38,7 +41,7 @@ export const useUpdatePlant = () => {
             });
         },
     });
-}
+};
 
 export const useCreatePlant = () => {
     const queryClient = useQueryClient();
@@ -54,3 +57,26 @@ export const useCreatePlant = () => {
         },
     });
 };
+
+export const useDeletePlant = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: deletePlant,
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: ["plant-by-id", variables.id],
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: ["plants"],
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: ["plant-hierarchy"],
+            });
+
+
+        },
+
+    })
+}
