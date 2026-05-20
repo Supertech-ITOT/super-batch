@@ -23,6 +23,13 @@ export default function PlantTree() {
     const { data, isLoading, isError } = usePlantHierarchy();
     const [dialogType, setDialogType] = useState<PlantNodeType | null>(null);
 
+    const handleAdd = (node: PlantHierarchyResponse, type: PlantNodeType) => {
+        setParentNode(node);
+        requestAnimationFrame(() => {
+            setDialogType(type);
+        });
+    };
+
     // Search Logic
     const [search, setSearch] = useState("");
     const filteredData = useMemo(() => {
@@ -79,20 +86,19 @@ export default function PlantTree() {
                         onSelect={setSelected}
                         onEdit={(node) => { setEditNode(node); setDialogType(node.type); }}
                         onAdd={(node) => {
-                            setParentNode(node);
-                            if (node.type === "plant") setDialogType("area");
-                            if (node.type === "area") setDialogType("unit");
-                            if (node.type === "unit") setDialogType("equipment");
+                            if (node.type === "plant") handleAdd(node, "area");
+                            if (node.type === "area") handleAdd(node, "unit");
+                            if (node.type === "unit") handleAdd(node, "equipment");
                         }}
                         onNew={(nodeType) => setDialogType(nodeType)}
                         onDelete={(node) => setDeleteNode(node)}
                     />
                 )))}
             </div>
-            <PlantDialog open={dialogType === "plant"} onClose={() => { setDialogType(null); setEditNode(null) }} isEdit={!!editNode} plantId={editNode?.id} />
-            <AreaDialog open={dialogType === "area"} onClose={() => { setDialogType(null); setEditNode(null) }} isEdit={!!editNode} areaId={editNode?.id} plantId={parentNode?.id} />
-            <UnitDialog open={dialogType === "unit"} onClose={() => { setDialogType(null); setEditNode(null) }} isEdit={!!editNode} unitId={editNode?.id} areaId={parentNode?.id} />
-            <EquipmentDialog open={dialogType === "equipment"} onClose={() => { setDialogType(null); setEditNode(null) }} isEdit={!!editNode} equipmentId={editNode?.id} unitId={parentNode?.id} />
+            <PlantDialog open={dialogType === "plant"} onClose={() => { setDialogType(null); setEditNode(null); setParentNode(null); }} isEdit={!!editNode} plantId={editNode?.id} />
+            <AreaDialog open={dialogType === "area"} onClose={() => { setDialogType(null); setEditNode(null); setParentNode(null); }} isEdit={!!editNode} areaId={editNode?.id} plantId={parentNode?.id} />
+            <UnitDialog open={dialogType === "unit"} onClose={() => { setDialogType(null); setEditNode(null); setParentNode(null); }} isEdit={!!editNode} unitId={editNode?.id} areaId={parentNode?.id} />
+            <EquipmentDialog open={dialogType === "equipment"} onClose={() => { setDialogType(null); setEditNode(null); setParentNode(null); }} isEdit={!!editNode} equipmentId={editNode?.id} unitId={parentNode?.id} />
             <DeleteDialog open={!!deleteNode} onClose={() => setDeleteNode(null)} node={deleteNode ?? undefined} />
         </div>
     );

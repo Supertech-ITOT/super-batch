@@ -36,7 +36,7 @@ export const useUpdateEquipment = () => {
             });
 
             queryClient.invalidateQueries({
-                queryKey: ["equipment-hierarchy"],
+                queryKey: ["plant-hierarchy"],
             });
         },
     });
@@ -51,7 +51,7 @@ export const useCreateEquipment = () => {
                 queryKey: ["equipments"],
             });
             queryClient.invalidateQueries({
-                queryKey: ["equipment-hierarchy"],
+                queryKey: ["plant-hierarchy"],
             });
         },
     });
@@ -71,7 +71,7 @@ export const useDeleteEquipment = () => {
             });
 
             queryClient.invalidateQueries({
-                queryKey: ["equipment-hierarchy"],
+                queryKey: ["plant-hierarchy"],
             });
 
 

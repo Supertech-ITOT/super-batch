@@ -48,7 +48,7 @@ public class EquipmentController {
                 ApiResponse.success("Equipments fetched successfully", equipments));
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> update(
             @PathVariable Long id,
             @Valid @RequestBody UpdateEquipmentRequest request) {

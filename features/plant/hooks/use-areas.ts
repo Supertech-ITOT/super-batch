@@ -37,7 +37,7 @@ export const useUpdateArea = () => {
             });
 
             queryClient.invalidateQueries({
-                queryKey: ["area-hierarchy"],
+                queryKey: ["plant-hierarchy"],
             });
         },
     });
@@ -52,7 +52,7 @@ export const useCreateArea = () => {
                 queryKey: ["areas"],
             });
             queryClient.invalidateQueries({
-                queryKey: ["area-hierarchy"],
+                queryKey: ["plant-hierarchy"],
             });
         },
     });
@@ -72,7 +72,7 @@ export const useDeleteArea = () => {
             });
 
             queryClient.invalidateQueries({
-                queryKey: ["area-hierarchy"],
+                queryKey: ["plant-hierarchy"],
             });
 
 

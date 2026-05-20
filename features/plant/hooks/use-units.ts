@@ -36,7 +36,7 @@ export const useUpdateUnit = () => {
             });
 
             queryClient.invalidateQueries({
-                queryKey: ["unit-hierarchy"],
+                queryKey: ["plant-hierarchy"],
             });
         },
     });
@@ -51,7 +51,7 @@ export const useCreateUnit = () => {
                 queryKey: ["units"],
             });
             queryClient.invalidateQueries({
-                queryKey: ["unit-hierarchy"],
+                queryKey: ["plant-hierarchy"],
             });
         },
     });
@@ -71,7 +71,7 @@ export const useDeleteUnit = () => {
             });
 
             queryClient.invalidateQueries({
-                queryKey: ["unit-hierarchy"],
+                queryKey: ["plant-hierarchy"],
             });
 
 

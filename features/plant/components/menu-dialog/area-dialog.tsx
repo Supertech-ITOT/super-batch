@@ -1,46 +1,49 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { plantSchema, PlantSchema } from "../../schemas/plant-schema";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
-import { useCreatePlant, useGetPlantById, useUpdatePlant } from "../../hooks/use-plants";
+import { useGetPlants } from "../../hooks/use-plants";
 import { useEffect } from "react";
 import FormError from "@/components/form-error";
 import { toast } from "sonner";
 import { showApiError } from "@/lib/show-api-error";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { areaSchema, AreaSchema } from "../../schemas/area-schema";
+import { useCreateArea, useGetAreaById, useUpdateArea } from "../../hooks/use-areas";
 
 type Props = { open: boolean; onClose: () => void; areaId?: number; plantId?: number, isEdit: boolean };
 export default function AreaDialog({ open, onClose, areaId, plantId, isEdit }: Props) {
-    const { mutateAsync: createPlant, isPending: isCreating } = useCreatePlant();
-    const { mutateAsync: updatePlant, isPending: isUpdating } = useUpdatePlant();
-    const { data, isLoading } = useGetPlantById(areaId);
-    const { register, handleSubmit, reset, formState: { errors, isSubmitting, isDirty } } = useForm<PlantSchema>({
-        resolver: zodResolver(plantSchema),
-        defaultValues: { name: "" }
+    const { mutateAsync: createArea, isPending: isCreating } = useCreateArea();
+    const { mutateAsync: updateArea, isPending: isUpdating } = useUpdateArea();
+    const { data: plants, isLoading: plantsLoading } = useGetPlants();
+    const { data: area, isLoading: areaLoading } = useGetAreaById(areaId);
+    const { register, handleSubmit, reset, control, formState: { errors, isSubmitting, isDirty } } = useForm<AreaSchema>({
+        resolver: zodResolver(areaSchema),
+        defaultValues: { name: "", plantId: plantId ?? 0, }
     });
 
-
     useEffect(() => {
-        if (data && isEdit) {
-            reset({ name: data.name });
+        if (!open) return;
+        if (area && isEdit) {
+            reset({ name: area.name, plantId: area.plantId });
         }
-    }, [data, isEdit, reset]);
+        if (!isEdit && plantId) {
+            reset({ name: "", plantId: Number(plantId) });
+        }
+    }, [open, isEdit, area, plantId, reset]);
+    const loading = isCreating || isUpdating || plantsLoading || areaLoading || isSubmitting;
 
-    const loading = isSubmitting || isLoading || isCreating || isUpdating;
-
-    const onSubmit = async (formData: PlantSchema) => {
+    const onSubmit = async (formData: AreaSchema) => {
         try {
             if (isEdit) {
-                const res = await updatePlant({ id: areaId!, data: formData });
+                const res = await updateArea({ id: areaId!, data: formData });
                 toast.success(res.message ?? "Area updated successfully.");
             } else {
-                const res = await createPlant(formData);
+                const res = await createArea(formData);
                 toast.success(res.message ?? "Area created successfully.");
             }
             handleClose();
@@ -50,7 +53,7 @@ export default function AreaDialog({ open, onClose, areaId, plantId, isEdit }: P
     };
 
     const handleClose = () => {
-        reset();
+        reset({ name: "", plantId: 0, });
         onClose();
     };
 
@@ -74,19 +77,32 @@ export default function AreaDialog({ open, onClose, areaId, plantId, isEdit }: P
                     </div>
                     <div className="py-4 space-y-2">
                         <Label>Select Plant</Label>
-                        <Select>
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Theme" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectItem value="light">Light</SelectItem>
-                                    <SelectItem value="dark">Dark</SelectItem>
-                                    <SelectItem value="system">System</SelectItem>
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-
+                        <Controller
+                            control={control}
+                            name="plantId"
+                            render={({ field }) => (
+                                <Select
+                                    disabled={loading}
+                                    value={field.value?.toString() || ""}
+                                    onValueChange={(value) => {
+                                        const numericValue = parseInt(value, 10);
+                                        field.onChange(numericValue);
+                                    }}
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select plant" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            {plants?.map((p) => (
+                                                <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>
+                                            ))}
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
+                        <FormError msg={errors.plantId?.message} />
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>
