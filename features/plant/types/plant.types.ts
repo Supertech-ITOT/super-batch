@@ -16,7 +16,7 @@ export type PlantNodeType =
     | "equipment";
 
 export type PlantHierarchyResponse = {
-    id: string;
+    id: number;
     name: string;
     type: PlantNodeType;
     children?: PlantHierarchyResponse[];

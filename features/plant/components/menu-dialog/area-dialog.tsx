@@ -13,16 +13,18 @@ import { useEffect } from "react";
 import FormError from "@/components/form-error";
 import { toast } from "sonner";
 import { showApiError } from "@/lib/show-api-error";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-type Props = { open: boolean; onClose: () => void; plantId?: number; isEdit: boolean };
-export default function PlantDialog({ open, onClose, plantId, isEdit }: Props) {
+type Props = { open: boolean; onClose: () => void; areaId?: number; plantId?: number, isEdit: boolean };
+export default function AreaDialog({ open, onClose, areaId, plantId, isEdit }: Props) {
     const { mutateAsync: createPlant, isPending: isCreating } = useCreatePlant();
     const { mutateAsync: updatePlant, isPending: isUpdating } = useUpdatePlant();
-    const { data, isLoading } = useGetPlantById(plantId);
+    const { data, isLoading } = useGetPlantById(areaId);
     const { register, handleSubmit, reset, formState: { errors, isSubmitting, isDirty } } = useForm<PlantSchema>({
         resolver: zodResolver(plantSchema),
         defaultValues: { name: "" }
     });
+
 
     useEffect(() => {
         if (data && isEdit) {
@@ -35,11 +37,11 @@ export default function PlantDialog({ open, onClose, plantId, isEdit }: Props) {
     const onSubmit = async (formData: PlantSchema) => {
         try {
             if (isEdit) {
-                const res = await updatePlant({ id: plantId!, data: formData });
-                toast.success(res.message ?? "Plant updated successfully.");
+                const res = await updatePlant({ id: areaId!, data: formData });
+                toast.success(res.message ?? "Area updated successfully.");
             } else {
                 const res = await createPlant(formData);
-                toast.success(res.message ?? "Plant created successfully.");
+                toast.success(res.message ?? "Area created successfully.");
             }
             handleClose();
         } catch (error) {
@@ -57,24 +59,40 @@ export default function PlantDialog({ open, onClose, plantId, isEdit }: Props) {
             <DialogContent className="sm:max-w-md">
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <DialogHeader>
-                        <DialogTitle>{isEdit ? "Edit Plant" : "Create Plant"}</DialogTitle>
-                        <DialogDescription>{isEdit ? "Update plant information." : "Create a new plant entity."}</DialogDescription>
+                        <DialogTitle>{isEdit ? "Edit Area" : "Create Area"}</DialogTitle>
+                        <DialogDescription>{isEdit ? "Update area information." : "Create a new area entity."}</DialogDescription>
                     </DialogHeader>
                     <div className="py-4 space-y-2">
-                        <Label>Plant Name</Label>
+                        <Label>Area Name</Label>
                         <Input
                             type="text"
                             disabled={loading}
-                            placeholder="Enter plant name"
+                            placeholder="Enter area name"
                             {...register("name")}
                         />
                         <FormError msg={errors.name?.message} />
+                    </div>
+                    <div className="py-4 space-y-2">
+                        <Label>Select Plant</Label>
+                        <Select>
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Theme" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectItem value="light">Light</SelectItem>
+                                    <SelectItem value="dark">Dark</SelectItem>
+                                    <SelectItem value="system">System</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>
                             <Button disabled={loading} type="button" variant="outline" onClick={handleClose}>Cancel</Button>
                         </DialogClose>
-                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : isEdit ? "Update Plant" : "Create Plant"}</Button>
+                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : isEdit ? "Update Area" : "Create Area"}</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

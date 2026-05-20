@@ -6,13 +6,22 @@ import TreeView from "@/components/tree-veiw";
 
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { PlantHierarchyResponse } from "../types/plant.types";
+import { PlantHierarchyResponse, PlantNodeType } from "../types/plant.types";
 import { usePlantHierarchy } from "../hooks/use-plant-hierarchy";
 import { Skeleton } from "@/components/ui/skeleton";
+import PlantDialog from "./menu-dialog/plant-dialog";
+import AreaDialog from "./menu-dialog/area-dialog";
+import UnitDialog from "./menu-dialog/unit-dialog";
+import EquipmentDialog from "./menu-dialog/equipment-dialog";
+import DeleteDialog from "./menu-dialog/delete-dialog";
 
 export default function PlantTree() {
     const [selected, setSelected] = useState<PlantHierarchyResponse | null>(null);
+    const [editNode, setEditNode] = useState<PlantHierarchyResponse | null>(null);
+    const [deleteNode, setDeleteNode] = useState<PlantHierarchyResponse | null>(null);
+    const [parentNode, setParentNode] = useState<PlantHierarchyResponse | null>(null);
     const { data, isLoading, isError } = usePlantHierarchy();
+    const [dialogType, setDialogType] = useState<PlantNodeType | null>(null);
 
     // Search Logic
     const [search, setSearch] = useState("");
@@ -57,7 +66,6 @@ export default function PlantTree() {
                 <Input type="search" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" placeholder="Search plant hierarchy..." />
                 <Search className=" absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             </div>
-
             {/* Tree */}
             <div className="space-y-1">
                 {filteredData.length === 0 ? (
@@ -65,16 +73,27 @@ export default function PlantTree() {
                         No matching nodes found.
                     </div>
                 ) : (filteredData.map((node) => (
-                    <TreeView key={node.id} node={node} onSelect={setSelected} />
+                    <TreeView
+                        key={node.id}
+                        node={node}
+                        onSelect={setSelected}
+                        onEdit={(node) => { setEditNode(node); setDialogType(node.type); }}
+                        onAdd={(node) => {
+                            setParentNode(node);
+                            if (node.type === "plant") setDialogType("area");
+                            if (node.type === "area") setDialogType("unit");
+                            if (node.type === "unit") setDialogType("equipment");
+                        }}
+                        onNew={(nodeType) => setDialogType(nodeType)}
+                        onDelete={(node) => setDeleteNode(node)}
+                    />
                 )))}
             </div>
-            {selected && (
-                <div className="mt-4 border rounded p-3">
-                    <p>{selected.id}</p>
-                    <p>{selected.name}</p>
-                    <p>{selected.type}</p>
-                </div>
-            )}
+            <PlantDialog open={dialogType === "plant"} onClose={() => { setDialogType(null); setEditNode(null) }} isEdit={!!editNode} plantId={editNode?.id} />
+            <AreaDialog open={dialogType === "area"} onClose={() => { setDialogType(null); setEditNode(null) }} isEdit={!!editNode} areaId={editNode?.id} plantId={parentNode?.id} />
+            <UnitDialog open={dialogType === "unit"} onClose={() => { setDialogType(null); setEditNode(null) }} isEdit={!!editNode} unitId={editNode?.id} areaId={parentNode?.id} />
+            <EquipmentDialog open={dialogType === "equipment"} onClose={() => { setDialogType(null); setEditNode(null) }} isEdit={!!editNode} equipmentId={editNode?.id} unitId={parentNode?.id} />
+            <DeleteDialog open={!!deleteNode} onClose={() => setDeleteNode(null)} node={deleteNode ?? undefined} />
         </div>
     );
 }

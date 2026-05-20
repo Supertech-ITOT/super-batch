@@ -21,9 +21,9 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
             <main className="min-h-screen">
               {children}
             </main>
+            <Toaster richColors position="top-center" />
           </QueryProvider>
         </ThemeProvider>
-        <Toaster richColors position="top-center" />
       </body>
     </html>
   );
