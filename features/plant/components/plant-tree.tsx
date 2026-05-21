@@ -11,9 +11,11 @@ import { usePlantHierarchy } from "../hooks/use-plant-hierarchy";
 import { Skeleton } from "@/components/ui/skeleton";
 import PlantDialog from "./menu-dialog/plant-dialog";
 import AreaDialog from "./menu-dialog/area-dialog";
-import UnitDialog from "./menu-dialog/unit-dialog";
+import UnitDialog from "./menu-dialog/update-unit-dialog";
 import EquipmentDialog from "./menu-dialog/equipment-dialog";
 import DeleteDialog from "./menu-dialog/delete-dialog";
+import CreateUnitDialog from "./menu-dialog/create-unit-dialog";
+import UpdateUnitDialog from "./menu-dialog/update-unit-dialog";
 
 export default function PlantTree() {
     const [selected, setSelected] = useState<PlantHierarchyResponse | null>(null);
@@ -97,7 +99,8 @@ export default function PlantTree() {
             </div>
             <PlantDialog open={dialogType === "plant"} onClose={() => { setDialogType(null); setEditNode(null); setParentNode(null); }} isEdit={!!editNode} plantId={editNode?.id} />
             <AreaDialog open={dialogType === "area"} onClose={() => { setDialogType(null); setEditNode(null); setParentNode(null); }} isEdit={!!editNode} areaId={editNode?.id} plantId={parentNode?.id} />
-            <UnitDialog open={dialogType === "unit"} onClose={() => { setDialogType(null); setEditNode(null); setParentNode(null); }} isEdit={!!editNode} unitId={editNode?.id} areaId={parentNode?.id} />
+            <CreateUnitDialog open={dialogType === "unit"} onClose={() => { setDialogType(null); setEditNode(null); setParentNode(null); }} />
+            <UpdateUnitDialog open={dialogType === "unit"} onClose={() => { setDialogType(null); setEditNode(null); setParentNode(null); }} unitId={editNode?.id} />
             <EquipmentDialog open={dialogType === "equipment"} onClose={() => { setDialogType(null); setEditNode(null); setParentNode(null); }} isEdit={!!editNode} equipmentId={editNode?.id} unitId={parentNode?.id} />
             <DeleteDialog open={!!deleteNode} onClose={() => setDeleteNode(null)} node={deleteNode ?? undefined} />
         </div>

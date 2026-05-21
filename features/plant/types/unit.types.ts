@@ -12,4 +12,5 @@ export interface CreateUnitRequest {
 export interface UpdateUnitRequest {
     name: string;
     unitType: string;
+    areaId: number;
 }
