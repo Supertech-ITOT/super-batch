@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { showApiError } from "@/lib/show-api-error";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGetAreas } from "../../hooks/use-areas";
-import { useCreateUnit, useGetUnitById, useUpdateUnit } from "../../hooks/use-units";
+import { useGetUnitById, useUpdateUnit } from "../../hooks/use-units";
 import { UnitSchema, unitSchema } from "../../schemas/unit-schema";
 import { useGetUnitTypes } from "@/features/common/hooks/useMetadata";
 
@@ -28,16 +28,13 @@ export default function UpdateUnitDialog({ open, onClose, unitId }: Props) {
     });
 
     useEffect(() => {
-        if (!open) return;
-        if (unit && areas) {
-            reset({ name: unit.name, areaId: areas.find((f) => f.id === unit.areaId)?.name, unitType: unit.unitType });
-        }
-    }, [open, unit, reset, areas]);
+        if (!open || !unit || !areas) return;
+        reset({ name: unit.name, areaId: String(unit.areaId), unitType: unit.unitType });
+    }, [open, unit, areas, reset]);
     const loading = isUpdating || unitLoading || areasLoading || isSubmitting || unitTypeIsLoading;
 
     const onSubmit = async (formData: UnitSchema) => {
         try {
-            const areaId = areas?.find((f) => f.name === formData.areaId)?.id
             const res = await updateUnit({
                 id: unitId!, data: {
                     name: formData.name,
@@ -71,17 +68,17 @@ export default function UpdateUnitDialog({ open, onClose, unitId }: Props) {
                         <Input
                             type="text"
                             disabled={loading}
-                            placeholder="Enter unit name"
+                            placeholder="Enter Unit Name"
                             {...register("name")}
                         />
                         <FormError msg={errors.name?.message} />
                     </div>
                     <div className="py-4 space-y-2">
-                        <Label>Select Area</Label>
+                        <Label>Area</Label>
                         <Input
                             type="text"
                             disabled
-                            {...register("areaId")}
+                            value={areas?.find((a) => a.id === unit?.areaId)?.name ?? ""}
                         />
                     </div>
                     <div className="py-4 space-y-2">

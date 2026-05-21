@@ -14,9 +14,10 @@ import { useGetAreas } from "../../hooks/use-areas";
 import { useCreateUnit } from "../../hooks/use-units";
 import { UnitSchema, unitSchema } from "../../schemas/unit-schema";
 import { useGetUnitTypes } from "@/features/common/hooks/useMetadata";
+import { useEffect } from "react";
 
-type Props = { open: boolean; onClose: () => void };
-export default function CreateUnitDialog({ open, onClose }: Props) {
+type Props = { open: boolean; onClose: () => void; areaId?: number };
+export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
     const { mutateAsync: createUnit, isPending: isCreating } = useCreateUnit();
     const { data: areas, isLoading: areasLoading } = useGetAreas();
     const { data: unitTypes, isLoading: unitTypeIsLoading } = useGetUnitTypes();
@@ -24,6 +25,11 @@ export default function CreateUnitDialog({ open, onClose }: Props) {
         resolver: zodResolver(unitSchema),
         defaultValues: { name: "", areaId: "", unitType: "" }
     });
+
+    useEffect(() => {
+        if (!open || !areaId) return;
+        reset({ name: "", areaId: String(areaId), unitType: "" })
+    }, [open, areaId, reset]);
 
     const loading = isCreating || areasLoading || isSubmitting || unitTypeIsLoading;
     const onSubmit = async (formData: UnitSchema) => {
@@ -65,7 +71,7 @@ export default function CreateUnitDialog({ open, onClose }: Props) {
                             name="areaId"
                             render={({ field }) => (
                                 <Select
-                                    disabled={loading}
+                                    disabled={loading || !!areaId}
                                     value={field.value}
                                     onValueChange={field.onChange}
                                 >
