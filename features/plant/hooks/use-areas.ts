@@ -2,13 +2,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createArea, deleteArea, getAreaById, getAreas, getByPlantId, updateArea } from "../services/area.service"
 
 
-export const useGetAreas = () => {
+export const useGetAreas = (enabled = true) => {
     return useQuery({
         queryKey: ["areas"],
         queryFn: async () => {
             const res = await getAreas();
             return res.data;
-        }
+        },
+        enabled
     })
 }
 

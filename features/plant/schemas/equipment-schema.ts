@@ -6,8 +6,7 @@ export const equipmentSchema = z.object({
         .trim()
         .min(2, "Equipment name must contain at least 2 characters")
         .max(50, "Equipment name cannot exceed 50 characters"),
-    unitId: z.number({ error: "Unit is required" })
-        .min(1, "Unit is required"),
+    unitId: z.string().trim(),
     equipmentType: z.string().trim().min(2, "Equipment type is required")
 });
 

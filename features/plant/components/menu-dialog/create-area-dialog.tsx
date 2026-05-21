@@ -6,54 +6,41 @@ import { Label } from "@/components/ui/label";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
-import { useGetPlants } from "../../hooks/use-plants";
-import { useEffect } from "react";
 import FormError from "@/components/form-error";
 import { toast } from "sonner";
 import { showApiError } from "@/lib/show-api-error";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useCreateArea } from "../../hooks/use-areas";
+import { useEffect } from "react";
+import { useGetPlants } from "../../hooks/use-plants";
 import { areaSchema, AreaSchema } from "../../schemas/area-schema";
-import { useCreateArea, useGetAreaById, useUpdateArea } from "../../hooks/use-areas";
 
-type Props = { open: boolean; onClose: () => void; areaId?: number; plantId?: number, isEdit: boolean };
-export default function AreaDialog({ open, onClose, areaId, plantId, isEdit }: Props) {
+type Props = { open: boolean; onClose: () => void; plantId?: number };
+export default function CreateAreaDialog({ open, onClose, plantId }: Props) {
     const { mutateAsync: createArea, isPending: isCreating } = useCreateArea();
-    const { mutateAsync: updateArea, isPending: isUpdating } = useUpdateArea();
-    const { data: plants, isLoading: plantsLoading } = useGetPlants();
-    const { data: area, isLoading: areaLoading } = useGetAreaById(areaId);
+    const { data: plants, isLoading: plantsLoading } = useGetPlants(open);
     const { register, handleSubmit, reset, control, formState: { errors, isSubmitting, isDirty } } = useForm<AreaSchema>({
         resolver: zodResolver(areaSchema),
-        defaultValues: { name: "", plantId: plantId ?? 0, }
+        defaultValues: { name: "", plantId: "" }
     });
 
     useEffect(() => {
-        if (!open) return;
-        if (area && isEdit) {
-            reset({ name: area.name, plantId: area.plantId });
-        }
-        if (!isEdit && plantId) {
-            reset({ name: "", plantId: Number(plantId) });
-        }
-    }, [open, isEdit, area, plantId, reset]);
-    const loading = isCreating || isUpdating || plantsLoading || areaLoading || isSubmitting;
+        if (!open || !plantId) return;
+        reset({ name: "", plantId: String(plantId) })
+    }, [open, plantId, reset]);
 
+    const loading = isCreating || plantsLoading || isSubmitting;
     const onSubmit = async (formData: AreaSchema) => {
         try {
-            if (isEdit) {
-                const res = await updateArea({ id: areaId!, data: formData });
-                toast.success(res.message ?? "Area updated successfully.");
-            } else {
-                const res = await createArea(formData);
-                toast.success(res.message ?? "Area created successfully.");
-            }
+            const res = await createArea({ name: formData.name, plantId: Number(formData.plantId) });
+            toast.success(res.message ?? "Area created successfully.");
             handleClose();
         } catch (error) {
             showApiError(error);
         }
     };
-
     const handleClose = () => {
-        reset({ name: "", plantId: 0, });
+        reset({ name: "", plantId: "" });
         onClose();
     };
 
@@ -62,8 +49,8 @@ export default function AreaDialog({ open, onClose, areaId, plantId, isEdit }: P
             <DialogContent className="sm:max-w-md">
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <DialogHeader>
-                        <DialogTitle>{isEdit ? "Edit Area" : "Create Area"}</DialogTitle>
-                        <DialogDescription>{isEdit ? "Update area information." : "Create a new area entity."}</DialogDescription>
+                        <DialogTitle>Create Area</DialogTitle>
+                        <DialogDescription>Create a new area entity.</DialogDescription>
                     </DialogHeader>
                     <div className="py-4 space-y-2">
                         <Label>Area Name</Label>
@@ -82,15 +69,12 @@ export default function AreaDialog({ open, onClose, areaId, plantId, isEdit }: P
                             name="plantId"
                             render={({ field }) => (
                                 <Select
-                                    disabled={loading}
-                                    value={field.value?.toString() || ""}
-                                    onValueChange={(value) => {
-                                        const numericValue = parseInt(value, 10);
-                                        field.onChange(numericValue);
-                                    }}
+                                    disabled={loading || !!plantId}
+                                    value={field.value}
+                                    onValueChange={field.onChange}
                                 >
                                     <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Select plant" />
+                                        <SelectValue placeholder="Select Plant" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
@@ -104,11 +88,12 @@ export default function AreaDialog({ open, onClose, areaId, plantId, isEdit }: P
                         />
                         <FormError msg={errors.plantId?.message} />
                     </div>
+
                     <DialogFooter>
                         <DialogClose asChild>
                             <Button disabled={loading} type="button" variant="outline" onClick={handleClose}>Cancel</Button>
                         </DialogClose>
-                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : isEdit ? "Update Area" : "Create Area"}</Button>
+                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Create Area"}</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

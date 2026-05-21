@@ -9,4 +9,5 @@ export interface CreateAreaRequest {
 }
 export interface UpdateAreaRequest {
     name: string;
+    plantId: number;
 }

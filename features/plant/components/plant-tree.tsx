@@ -10,6 +10,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import DeleteDialog from "./menu-dialog/delete-dialog";
 import CreateUnitDialog from "./menu-dialog/create-unit-dialog";
 import UpdateUnitDialog from "./menu-dialog/update-unit-dialog";
+import CreatePlantDialog from "./menu-dialog/create-plant-dialog";
+import UpdatePlantDialog from "./menu-dialog/update-plant-dialog";
+import CreateAreaDialog from "./menu-dialog/create-area-dialog";
+import UpdateAreaDialog from "./menu-dialog/update-area-dialog";
+import CreateEquipmentDialog from "./menu-dialog/create-equipment-dialog";
+import UpdateEquipmentDialog from "./menu-dialog/update-equipment-dialog";
 
 export default function PlantTree() {
     const { data, isLoading, isError } = usePlantHierarchy();
@@ -89,35 +95,80 @@ export default function PlantTree() {
                             if (node.type === "area") handleAdd(node, "unit");
                             if (node.type === "unit") handleAdd(node, "equipment");
                         }}
-                        onNew={(nodeType) =>
-                            setDialog({
-                                type: nodeType,
-                                mode: "create",
-                                node: null,
-                            })
-                        }
                     />
                 )))}
             </div>
 
             {/* Dialogs */}
-            <CreateUnitDialog
-                open={dialog.type === "unit" && dialog.mode === "create"}
-                onClose={handleCloseDialog}
-                areaId={dialog.node?.id}
-            />
+            {dialog.type === "plant" && dialog.mode === "create" && (
+                <CreatePlantDialog
+                    open={true}
+                    onClose={handleCloseDialog}
+                />
+            )}
 
-            <UpdateUnitDialog
-                open={dialog.type === "unit" && dialog.mode === "edit"}
-                onClose={handleCloseDialog}
-                unitId={dialog.node?.id}
-            />
+            {dialog.type === "plant" && dialog.mode === "edit" && (
+                <UpdatePlantDialog
+                    open={true}
+                    onClose={handleCloseDialog}
+                    plantId={dialog.node?.id}
+                />
+            )}
+            {dialog.type === "area" && dialog.mode === "create" && (
+                <CreateAreaDialog
+                    open={true}
+                    onClose={handleCloseDialog}
+                    plantId={dialog.node?.id}
+                />
+            )}
 
-            <DeleteDialog
-                open={dialog.mode === "delete"}
-                onClose={handleCloseDialog}
-                node={dialog.node ?? undefined}
-            />
+            {dialog.type === "area" && dialog.mode === "edit" && (
+                <UpdateAreaDialog
+                    open={true}
+                    onClose={handleCloseDialog}
+                    areaId={dialog.node?.id}
+                />
+            )}
+
+            {dialog.type === "unit" && dialog.mode === "create" && (
+                <CreateUnitDialog
+                    open={true}
+                    onClose={handleCloseDialog}
+                    areaId={dialog.node?.id}
+                />
+            )}
+
+            {dialog.type === "unit" && dialog.mode === "edit" && (
+                <UpdateUnitDialog
+                    open={true}
+                    onClose={handleCloseDialog}
+                    unitId={dialog.node?.id}
+                />
+            )}
+
+            {dialog.type === "equipment" && dialog.mode === "create" && (
+                <CreateEquipmentDialog
+                    open={true}
+                    onClose={handleCloseDialog}
+                    unitId={dialog.node?.id}
+                />
+            )}
+
+            {dialog.type === "equipment" && dialog.mode === "edit" && (
+                <UpdateEquipmentDialog
+                    open={true}
+                    onClose={handleCloseDialog}
+                    equipmentId={dialog.node?.id}
+                />
+            )}
+
+            {dialog.mode === "delete" && (
+                <DeleteDialog
+                    open={true}
+                    onClose={handleCloseDialog}
+                    node={dialog.node ?? undefined}
+                />
+            )}
         </div>
     );
 }

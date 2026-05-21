@@ -12,38 +12,39 @@ import { toast } from "sonner";
 import { showApiError } from "@/lib/show-api-error";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGetAreas } from "../../hooks/use-areas";
-import { useGetUnitById, useUpdateUnit } from "../../hooks/use-units";
+import { useGetUnitById, useGetUnits, useUpdateUnit } from "../../hooks/use-units";
 import { UnitSchema, unitSchema } from "../../schemas/unit-schema";
-import { useGetUnitTypes } from "@/features/common/hooks/useMetadata";
+import { useGetEquipmentTypes, useGetUnitTypes } from "@/features/common/hooks/useMetadata";
+import { useGetEquipmentById, useUpdateEquipment } from "../../hooks/use-equipment";
+import { equipmentSchema, EquipmentSchema } from "../../schemas/equipment-schema";
 
-type Props = { open: boolean; onClose: () => void; unitId?: number };
-export default function UpdateUnitDialog({ open, onClose, unitId }: Props) {
-    const { mutateAsync: updateUnit, isPending: isUpdating } = useUpdateUnit();
-    const { data: areas, isLoading: areasLoading } = useGetAreas(open);
-    const { data: unit, isLoading: unitLoading } = useGetUnitById(unitId);
-    const { data: unitTypes, isLoading: unitTypeIsLoading } = useGetUnitTypes(open);
-    const { register, handleSubmit, reset, control, formState: { errors, isSubmitting, isDirty } } = useForm<UnitSchema>({
-        resolver: zodResolver(unitSchema),
-        defaultValues: { name: "", areaId: "", unitType: "" }
+type Props = { open: boolean; onClose: () => void; equipmentId?: number };
+export default function UpdateEquipmentDialog({ open, onClose, equipmentId }: Props) {
+    const { mutateAsync: updateEquipment, isPending: isUpdating } = useUpdateEquipment();
+    const { data: units, isLoading: unitsLoading } = useGetUnits(open);
+    const { data: equipment, isLoading: equipmentLoading } = useGetEquipmentById(equipmentId);
+    const { data: equipmentTypes, isLoading: equipmentTypeIsLoading } = useGetEquipmentTypes(open);
+    const { register, handleSubmit, reset, control, formState: { errors, isSubmitting, isDirty } } = useForm<EquipmentSchema>({
+        resolver: zodResolver(equipmentSchema),
+        defaultValues: { name: "", unitId: "", equipmentType: "" }
     });
 
     useEffect(() => {
-        if (!open || !unit || !areas) return;
-        reset({ name: unit.name, areaId: String(unit.areaId), unitType: unit.unitType });
-    }, [open, unit, areas, reset]);
-    const loading = isUpdating || unitLoading || areasLoading || isSubmitting || unitTypeIsLoading;
+        if (!open || !equipment || !units) return;
+        reset({ name: equipment.name, unitId: String(equipment.unitId), equipmentType: equipment.equipmentType });
+    }, [open, equipment, units, reset]);
+    const loading = isUpdating || unitsLoading || equipmentLoading || isSubmitting || equipmentTypeIsLoading;
 
-    const onSubmit = async (formData: UnitSchema) => {
+    const onSubmit = async (formData: EquipmentSchema) => {
         try {
-            const res = await updateUnit({
-                id: unitId!, data: {
+            const res = await updateEquipment({
+                id: equipmentId!, data: {
                     name: formData.name,
-                    unitType: formData.unitType,
-                    areaId: Number(formData.areaId)
+                    equipmentType: formData.equipmentType,
+                    unitId: Number(formData.unitId)
                 }
             });
-            toast.success(res.message ?? "Unit updated successfully.");
-
+            toast.success(res.message ?? "Equipment updated successfully.");
             handleClose();
         } catch (error) {
             showApiError(error);
@@ -51,7 +52,7 @@ export default function UpdateUnitDialog({ open, onClose, unitId }: Props) {
     };
 
     const handleClose = () => {
-        reset({ name: "", areaId: "", unitType: "" });
+        reset({ name: "", unitId: "", equipmentType: "" });
         onClose();
     };
 
@@ -60,32 +61,32 @@ export default function UpdateUnitDialog({ open, onClose, unitId }: Props) {
             <DialogContent className="sm:max-w-md">
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <DialogHeader>
-                        <DialogTitle>Update Unit</DialogTitle>
-                        <DialogDescription> Update Unit information</DialogDescription>
+                        <DialogTitle>Update Equipment</DialogTitle>
+                        <DialogDescription> Update Equipment information</DialogDescription>
                     </DialogHeader>
                     <div className="py-4 space-y-2">
-                        <Label>Unit Name</Label>
+                        <Label>Equipment Name</Label>
                         <Input
                             type="text"
                             disabled={loading}
-                            placeholder="Enter Unit Name"
+                            placeholder="Enter Equipment Name"
                             {...register("name")}
                         />
                         <FormError msg={errors.name?.message} />
                     </div>
                     <div className="py-4 space-y-2">
-                        <Label>Area</Label>
+                        <Label>Unit</Label>
                         <Input
                             type="text"
                             disabled
-                            value={areas?.find((a) => a.id === unit?.areaId)?.name ?? ""}
+                            value={units?.find((a) => a.id === equipment?.unitId)?.name ?? ""}
                         />
                     </div>
                     <div className="py-4 space-y-2">
-                        <Label>Select Unit Type</Label>
+                        <Label>Select Equipment Type</Label>
                         <Controller
                             control={control}
-                            name="unitType"
+                            name="equipmentType"
                             render={({ field }) => (
                                 <Select
                                     disabled={loading}
@@ -93,11 +94,11 @@ export default function UpdateUnitDialog({ open, onClose, unitId }: Props) {
                                     onValueChange={field.onChange}
                                 >
                                     <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Select Unit Type" />
+                                        <SelectValue placeholder="Select Equipment Type" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                            {unitTypes?.map((p) => (
+                                            {equipmentTypes?.map((p) => (
                                                 <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
                                             ))}
                                         </SelectGroup>
@@ -105,13 +106,13 @@ export default function UpdateUnitDialog({ open, onClose, unitId }: Props) {
                                 </Select>
                             )}
                         />
-                        <FormError msg={errors.unitType?.message} />
+                        <FormError msg={errors.equipmentType?.message} />
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>
                             <Button disabled={loading} type="button" variant="outline" onClick={handleClose}>Cancel</Button>
                         </DialogClose>
-                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Update Unit"}</Button>
+                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Update Equipment"}</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

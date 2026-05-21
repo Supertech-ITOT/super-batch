@@ -10,39 +10,40 @@ import FormError from "@/components/form-error";
 import { toast } from "sonner";
 import { showApiError } from "@/lib/show-api-error";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useGetAreas } from "../../hooks/use-areas";
-import { useCreateUnit } from "../../hooks/use-units";
-import { UnitSchema, unitSchema } from "../../schemas/unit-schema";
-import { useGetUnitTypes } from "@/features/common/hooks/useMetadata";
+import { useGetEquipmentTypes } from "@/features/common/hooks/useMetadata";
 import { useEffect } from "react";
+import { useCreateEquipment } from "../../hooks/use-equipment";
+import { equipmentSchema, EquipmentSchema } from "../../schemas/equipment-schema";
+import { useGetUnits } from "../../hooks/use-units";
 
-type Props = { open: boolean; onClose: () => void; areaId?: number };
-export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
-    const { mutateAsync: createUnit, isPending: isCreating } = useCreateUnit();
-    const { data: areas, isLoading: areasLoading } = useGetAreas(open);
-    const { data: unitTypes, isLoading: unitTypeIsLoading } = useGetUnitTypes(open);
-    const { register, handleSubmit, reset, control, formState: { errors, isSubmitting, isDirty } } = useForm<UnitSchema>({
-        resolver: zodResolver(unitSchema),
-        defaultValues: { name: "", areaId: "", unitType: "" }
+type Props = { open: boolean; onClose: () => void; unitId?: number };
+export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) {
+    const { mutateAsync: createEquipment, isPending: isCreating } = useCreateEquipment();
+    const { data: units, isLoading: unitsLoading } = useGetUnits(open);
+    const { data: equipmentTypes, isLoading: equipmentTypeIsLoading } = useGetEquipmentTypes(open);
+    const { register, handleSubmit, reset, control, formState: { errors, isSubmitting, isDirty } } = useForm<EquipmentSchema>({
+        resolver: zodResolver(equipmentSchema),
+        defaultValues: { name: "", unitId: "", equipmentType: "" }
     });
 
     useEffect(() => {
-        if (!open || !areaId) return;
-        reset({ name: "", areaId: String(areaId), unitType: "" })
-    }, [open, areaId, reset]);
+        if (!open || !unitId) return;
 
-    const loading = isCreating || areasLoading || isSubmitting || unitTypeIsLoading;
-    const onSubmit = async (formData: UnitSchema) => {
+        reset({ name: "", unitId: String(unitId), equipmentType: "" })
+    }, [open, unitId, reset]);
+
+    const loading = isCreating || unitsLoading || isSubmitting || equipmentTypeIsLoading;
+    const onSubmit = async (formData: EquipmentSchema) => {
         try {
-            const res = await createUnit({ name: formData.name, areaId: Number(formData.areaId), unitType: formData.unitType });
-            toast.success(res.message ?? "Unit created successfully.");
+            const res = await createEquipment({ name: formData.name, unitId: Number(formData.unitId), equipmentType: formData.equipmentType });
+            toast.success(res.message ?? "Equipment created successfully.");
             handleClose();
         } catch (error) {
             showApiError(error);
         }
     };
     const handleClose = () => {
-        reset({ name: "", areaId: "", unitType: "" });
+        reset({ name: "", unitId: "", equipmentType: "" });
         onClose();
     };
 
@@ -51,27 +52,27 @@ export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
             <DialogContent className="sm:max-w-md">
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <DialogHeader>
-                        <DialogTitle>Create Unit</DialogTitle>
-                        <DialogDescription>Create a new Unit entity.</DialogDescription>
+                        <DialogTitle>Create Equipment</DialogTitle>
+                        <DialogDescription>Create a new equipment entity.</DialogDescription>
                     </DialogHeader>
                     <div className="py-4 space-y-2">
-                        <Label>Unit Name</Label>
+                        <Label>Equipment Name</Label>
                         <Input
                             type="text"
                             disabled={loading}
-                            placeholder="Enter unit name"
+                            placeholder="Enter equipment name"
                             {...register("name")}
                         />
                         <FormError msg={errors.name?.message} />
                     </div>
                     <div className="py-4 space-y-2">
-                        <Label>Select Area</Label>
+                        <Label>Select Unit</Label>
                         <Controller
                             control={control}
-                            name="areaId"
+                            name="unitId"
                             render={({ field }) => (
                                 <Select
-                                    disabled={loading || !!areaId}
+                                    disabled={loading || !!unitId}
                                     value={field.value}
                                     onValueChange={field.onChange}
                                 >
@@ -80,21 +81,21 @@ export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                            {areas?.map((p) => (
-                                                <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>
+                                            {units?.map((u) => (
+                                                <SelectItem key={u.id} value={String(u.id)}>{u.name}</SelectItem>
                                             ))}
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
                             )}
                         />
-                        <FormError msg={errors.areaId?.message} />
+                        <FormError msg={errors.unitId?.message} />
                     </div>
                     <div className="py-4 space-y-2">
-                        <Label>Select Unit Type</Label>
+                        <Label>Select Equipment Type</Label>
                         <Controller
                             control={control}
-                            name="unitType"
+                            name="equipmentType"
                             render={({ field }) => (
                                 <Select
                                     disabled={loading}
@@ -102,25 +103,25 @@ export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
                                     onValueChange={field.onChange}
                                 >
                                     <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Select Unit Type" />
+                                        <SelectValue placeholder="Select Equipment Type" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                            {unitTypes?.map((p) => (
-                                                <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                                            {equipmentTypes?.map((e) => (
+                                                <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
                                             ))}
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
                             )}
                         />
-                        <FormError msg={errors.unitType?.message} />
+                        <FormError msg={errors.equipmentType?.message} />
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>
                             <Button disabled={loading} type="button" variant="outline" onClick={handleClose}>Cancel</Button>
                         </DialogClose>
-                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Create Unit"}</Button>
+                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Create Equipment"}</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

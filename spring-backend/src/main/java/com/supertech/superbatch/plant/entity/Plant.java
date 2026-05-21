@@ -19,5 +19,6 @@ public class Plant {
     private String name;
 
     @OneToMany(mappedBy = "plant")
+    @OrderBy("name ASC")
     private Set<Area> areas;
 }

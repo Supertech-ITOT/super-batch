@@ -2,13 +2,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createPlant, deletePlant, getPlantById, getPlants, updatePlant } from "../services/plant.service";
 
 
-export const useGetPlants = () => {
+export const useGetPlants = (enabled = true) => {
     return useQuery({
         queryKey: ["plants"],
         queryFn: async () => {
             const res = await getPlants();
             return res.data;
         },
+        enabled
     });
 };
 

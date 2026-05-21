@@ -1,13 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createUnit, deleteUnit, getByAreaId, getUnitById, getUnits, updateUnit } from "../services/unit.service";
 
-export const useGetUnits = () => {
+export const useGetUnits = (enabled = true) => {
     return useQuery({
         queryKey: ["units"],
         queryFn: async () => {
             const res = await getUnits();
             return res.data;
-        }
+        },
+        enabled
     })
 }
 

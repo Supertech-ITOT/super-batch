@@ -1,15 +1,16 @@
 export interface EquipmentResponse {
     id: number;
     name: string;
-    equipmentId: number;
+    unitId: number;
     equipmentType: string;
 }
 export interface CreateEquipmentRequest {
     name: string;
     equipmentType: string;
-    equipmentId: number;
+    unitId: number;
 }
 export interface UpdateEquipmentRequest {
     name: string;
     equipmentType: string;
+    unitId: number;
 }

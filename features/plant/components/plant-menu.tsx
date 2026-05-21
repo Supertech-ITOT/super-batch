@@ -3,12 +3,11 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Boxes, Building, Cpu, Factory, Plus } from "lucide-react";
 import { useState } from "react";
-import PlantDialog from "./menu-dialog/plant-dialog";
-import AreaDialog from "./menu-dialog/area-dialog";
-import UnitDialog from "./menu-dialog/update-unit-dialog";
-import EquipmentDialog from "./menu-dialog/equipment-dialog";
 import { PlantNodeType } from "../types/plant.types";
 import CreateUnitDialog from "./menu-dialog/create-unit-dialog";
+import CreatePlantDialog from "./menu-dialog/create-plant-dialog";
+import CreateAreaDialog from "./menu-dialog/create-area-dialog";
+import CreateEquipmentDialog from "./menu-dialog/create-equipment-dialog";
 
 
 
@@ -47,10 +46,12 @@ export default function PlantMenu() {
                     </DropdownMenuGroup>
                 </DropdownMenuContent>
             </DropdownMenu>
-            <PlantDialog open={dialogType === "plant"} onClose={() => setDialogType(null)} isEdit={false} />
-            <AreaDialog open={dialogType === "area"} onClose={() => setDialogType(null)} isEdit={false} />
+            <CreatePlantDialog open={dialogType === "plant"} onClose={() => setDialogType(null)} />
+            <CreateAreaDialog open={dialogType === "area"} onClose={() => setDialogType(null)} />
             <CreateUnitDialog open={dialogType === "unit"} onClose={() => setDialogType(null)} />
-            <EquipmentDialog open={dialogType === "equipment"} onClose={() => setDialogType(null)} isEdit={false} />
+            <CreateEquipmentDialog open={dialogType === "equipment"} onClose={() => setDialogType(null)} />
+
+
 
         </>
     );

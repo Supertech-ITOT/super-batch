@@ -12,10 +12,9 @@ type Props = {
     onEdit: (node: PlantHierarchyResponse) => void;
     onAdd: (node: PlantHierarchyResponse) => void;
     onDelete: (node: PlantHierarchyResponse) => void;
-    onNew: (nodeType: PlantNodeType) => void;
 };
 
-export default function TreeView({ node, level = 0, onSelect, onEdit, onAdd, onNew, onDelete }: Props) {
+export default function TreeView({ node, level = 0, onSelect, onEdit, onAdd, onDelete }: Props) {
     const [open, setOpen] = useState(true);
     const hasChildren = node.children && node.children.length > 0;
 
@@ -84,7 +83,6 @@ export default function TreeView({ node, level = 0, onSelect, onEdit, onAdd, onN
                     </ContextMenuTrigger>
                     <ContextMenuContent>
                         <ContextMenuLabel>Action</ContextMenuLabel>
-                        <ContextMenuItem onClick={() => onNew(node.type)}>New {node.type.charAt(0).toUpperCase() + node.type.slice(1).toLowerCase()}</ContextMenuItem>
                         {getAddLabel() && <ContextMenuItem onClick={() => onAdd(node)}>{getAddLabel()}</ContextMenuItem>}
                         <ContextMenuItem onClick={() => onEdit(node)}>Edit</ContextMenuItem>
                         <ContextMenuSeparator />
@@ -104,7 +102,7 @@ export default function TreeView({ node, level = 0, onSelect, onEdit, onAdd, onN
                         }}
                     />
                     {node.children?.map((child) => (
-                        <TreeView key={child.id} node={child} level={level + 1} onSelect={onSelect} onEdit={onEdit} onAdd={onAdd} onNew={onNew} onDelete={onDelete} />
+                        <TreeView key={child.id} node={child} level={level + 1} onSelect={onSelect} onEdit={onEdit} onAdd={onAdd} onDelete={onDelete} />
                     ))}
                 </div>
             )}

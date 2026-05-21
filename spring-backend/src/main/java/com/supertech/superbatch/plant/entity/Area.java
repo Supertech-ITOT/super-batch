@@ -26,5 +26,6 @@ public class Area {
     private Plant plant;
 
     @OneToMany(mappedBy = "area")
+    @OrderBy("name ASC")
     private Set<Unit> units;
 }

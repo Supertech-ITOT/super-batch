@@ -15,7 +15,8 @@ public interface PlantRepository extends JpaRepository<Plant, Long> {
                 FROM Plant p
                 LEFT JOIN FETCH p.areas a
                 LEFT JOIN FETCH a.units u
-                LEFT JOIN FETCH u.equipments
+                LEFT JOIN FETCH u.equipments e
+                ORDER BY p.name, a.name, u.name, e.name
             """)
     List<Plant> findAllHierarchy();
 }
