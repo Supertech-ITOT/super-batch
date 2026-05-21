@@ -71,14 +71,16 @@ export default function PlantTree() {
     }
 
     return (
-        <div>
+        <div className="h-full overflow-hidden flex flex-col">
             {/* Search */}
-            <div className="relative mb-3">
-                <Input type="search" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" placeholder="Search plant hierarchy..." />
-                <Search className=" absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <div className="sticky top-0 z-10  pb-2">
+                <div className="relative mb-3">
+                    <Input type="search" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" placeholder="Search plant hierarchy..." />
+                    <Search className=" absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                </div>
             </div>
             {/* Tree */}
-            <div className="space-y-1">
+            <div className="flex-1 overflow-y-auto space-y-1 scrollbar-none">
                 {filteredData.length === 0 ? (
                     <div className="py-8 text-center text-sm text-muted-foreground">
                         No matching nodes found.
@@ -98,6 +100,7 @@ export default function PlantTree() {
                     />
                 )))}
             </div>
+
 
             {/* Dialogs */}
             {dialog.type === "plant" && dialog.mode === "create" && (

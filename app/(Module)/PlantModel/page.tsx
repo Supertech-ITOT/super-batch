@@ -26,7 +26,7 @@ export default function PlantModelPage() {
                     <PlantMenu />
                 </div>
                 <div className="flex-1 flex min-h-0 gap-2">
-                    <div className="h-full min-w-80 overflow-y-auto rounded-sm border bg-card p-3 scrollbar-none">
+                    <div className="h-full min-w-80  rounded-sm border bg-card p-3 ">
                         <PlantTree />
                     </div>
                     <div className="h-full w-full rounded-sm border bg-card p-3">
