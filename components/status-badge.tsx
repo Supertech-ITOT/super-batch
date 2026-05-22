@@ -6,23 +6,29 @@ export default function StatusBadge({ status }: { status: string }) {
 
     switch (label) {
         case "Active":
-            clr = "bg-green-50 text-green-500";
+            clr =
+                "bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400";
             break;
 
         case "Inactive":
-            clr = "bg-gray-50 text-gray-500";
+            clr =
+                "bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-300";
             break;
 
         case "Maintenance":
-            clr = "bg-yellow-50  text-yellow-500";
+            clr =
+                "bg-yellow-50 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400";
             break;
 
         default:
-            clr = "bg-blue-50 text-blue-500";
+            clr =
+                "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400";
     }
 
     return (
-        <span className={`px-2 py-1 rounded-md text-xs font-bold shadow h-fit ${clr}`}>
+        <span
+            className={`px-2 py-1 rounded-md text-xs font-bold shadow h-fit ${clr}`}
+        >
             {label}
         </span>
     );

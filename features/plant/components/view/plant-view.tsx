@@ -134,7 +134,7 @@ export const Tdata = [
 export default function PlantView() {
     return (
         <div className=" flex justify-between flex-col h-full w-full bg-card p-4 overflow-y-auto scrollbar-none">
-            <div className="flex justify-between my-4">
+            <div className="flex justify-between flex-wrap gap-2 my-4">
                 <div className="flex gap-3 ">
                     <div className="flex justify-center items-center p-4 border rounded-md shadow aspect-square shrink-0 w-26">
                         <Factory className="h-16 w-16 text-primary" />
@@ -158,19 +158,26 @@ export default function PlantView() {
                         </h1>
                     </div>
                 </div>
-                <div className="space-x-3 ">
-                    <Button variant="outline" className="bg-card! min-w-25">
+                <div className="flex flex-col sm:flex-row gap-2 w-full xl:w-auto">
+                    <Button
+                        variant="outline"
+                        className="bg-card! w-full sm:w-auto min-w-30"
+                    >
                         <PenLineIcon className="w-4 h-4 text-foreground" />
                         <span className="text-foreground">Edit</span>
                     </Button>
-                    <Button variant="outline" className="bg-card! min-w-25">
+
+                    <Button
+                        variant="outline"
+                        className="bg-card! w-full sm:w-auto min-w-30"
+                    >
                         <Trash2 className="w-4 h-4 text-destructive" />
                         <span className="text-destructive">Delete</span>
                     </Button>
                 </div>
             </div>
             <Separator />
-            <div className="flex gap-4 my-4">
+            <div className="flex gap-4 my-4 overflow-x-auto overflow-y-hidden scrollbar-none pb-2">
                 <StatsCards Icon={Building} title="Area" value={data.totalArea} clr="#3882fa" subtitle="Total Area " />
                 <StatsCards Icon={Boxes} title="Unit" value={data.totalArea} clr="#2a922e" subtitle="Total Unit" />
                 <StatsCards Icon={Cpu} title="Equipment" value={data.totalArea} clr="#fcb765" subtitle="Total Equipment" />
