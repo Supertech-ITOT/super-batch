@@ -5,9 +5,10 @@
   "main": "electron-dist/main.js",
   "private": true,
   "scripts": {
-    "dev": "concurrently --kill-others \"npm run dev:next\" \"npm run dev:electron\"",
+    "dev": "concurrently --kill-others-on-fail \"npm run dev:next\" \"npm run dev:spring\" \"npm run dev:electron\"",
     "dev:next": "next dev -p 3000",
-    "dev:electron": "wait-on http://localhost:3000 && tsc -p tsconfig.electron.json && electron .",
+    "dev:spring": "cd spring-backend && mvnw.cmd spring-boot:run",
+    "dev:electron": "wait-on http://localhost:3000 http://localhost:8080 && tsc -p tsconfig.electron.json && electron .",
     "build": "npm run build:next && npm run build:electron",
     "build:next": "next build",
     "build:electron": "tsc -p tsconfig.electron.json",
