@@ -15,7 +15,8 @@ const data = {
     plantType: "Chemical Plant",
     totalArea: 12,
     totalUnit: 25,
-    totalEquipment: 100
+    totalEquipment: 100,
+    updatedAt: "02 May 26 12:23 PM"
 }
 export const Tdata = [
     {
@@ -156,6 +157,10 @@ export default function PlantView() {
                         <h1 className="text-muted-foreground text-sm ">Description: {" "}
                             <span className="font-semibold text-sm text-foreground">{data.description}</span>
                         </h1>
+
+                        <h1 className="text-muted-foreground text-sm ">Last Updated: {" "}
+                            <span className="font-semibold text-sm text-foreground">{data.updatedAt}</span>
+                        </h1>
                     </div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-2 w-full xl:w-auto">
@@ -177,7 +182,7 @@ export default function PlantView() {
                 </div>
             </div>
             <Separator />
-            <div className="flex gap-4 my-4 overflow-x-auto overflow-y-hidden scrollbar-none pb-2">
+            <div className="flex gap-4 my-4 overflow-x-auto overflow-y-hidden scrollbar-none pb-2 w-full">
                 <StatsCards Icon={Building} title="Area" value={data.totalArea} clr="#3882fa" subtitle="Total Area " />
                 <StatsCards Icon={Boxes} title="Unit" value={data.totalArea} clr="#2a922e" subtitle="Total Unit" />
                 <StatsCards Icon={Cpu} title="Equipment" value={data.totalArea} clr="#fcb765" subtitle="Total Equipment" />
