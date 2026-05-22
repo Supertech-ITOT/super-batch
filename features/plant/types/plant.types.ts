@@ -9,15 +9,3 @@ export interface UpdatePlantRequest {
     name: string;
 }
 
-export type PlantNodeType =
-    | "plant"
-    | "area"
-    | "unit"
-    | "equipment";
-
-export type PlantHierarchyResponse = {
-    id: number;
-    name: string;
-    type: PlantNodeType;
-    children?: PlantHierarchyResponse[];
-};

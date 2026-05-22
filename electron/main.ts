@@ -32,7 +32,6 @@ function createWindow(): void {
 
     if (isDev) {
         win.loadURL('http://localhost:3000');
-        win.webContents.openDevTools({ mode: "detach", });
         win.webContents.on("before-input-event", (_, input) => {
             if (input.control && input.shift && input.key.toLowerCase() === "i") {
                 win.webContents.toggleDevTools();
