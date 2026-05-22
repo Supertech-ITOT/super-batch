@@ -1,6 +1,5 @@
 import PlantMenu from "@/features/plant/components/plant-menu";
 import PlantTree from "@/features/plant/components/plant-tree";
-import PlantView from "@/features/plant/components/view/plant-view";
 import { Factory } from "lucide-react";
 
 export default function PlantModelPage() {
@@ -26,15 +25,7 @@ export default function PlantModelPage() {
                 <div className="flex justify-end">
                     <PlantMenu />
                 </div>
-                <div className="flex-1 flex min-h-0 gap-2">
-                    <div className="h-full min-w-80  rounded-sm border bg-card p-3 ">
-                        <PlantTree />
-                    </div>
-                    <div className="h-full w-full rounded-sm border bg-card p-3">
-
-                    </div>
-                </div>
-
+                <PlantModelClient />
             </div>
         </div>
     );

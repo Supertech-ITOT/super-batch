@@ -3,16 +3,12 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Boxes, Building, Cpu, Factory, Plus } from "lucide-react";
 import { useState } from "react";
-import { PlantNodeType } from "../types/plant.types";
-import CreateUnitDialog from "./menu-dialog/create-unit-dialog";
-import CreatePlantDialog from "./menu-dialog/create-plant-dialog";
-import CreateAreaDialog from "./menu-dialog/create-area-dialog";
-import CreateEquipmentDialog from "./menu-dialog/create-equipment-dialog";
-
+import { DialogType } from "../types/plant-hierarchy.types";
+import TreeDialogs from "./tree-dialogs";
 
 
 export default function PlantMenu() {
-    const [dialogType, setDialogType] = useState<PlantNodeType | null>(null);
+    const [dialog, setDialog] = useState<DialogType>({ type: null, mode: null, node: null });
     return (
         <>
             <DropdownMenu>
@@ -27,32 +23,26 @@ export default function PlantMenu() {
                 <DropdownMenuContent>
                     <DropdownMenuGroup>
                         <DropdownMenuLabel>Choose Entity</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => setDialogType("plant")}>
+                        <DropdownMenuItem onClick={() => setDialog({ mode: "create", type: "plant", node: null })}>
                             <Factory className="text-primary w-4 h-4" />
                             <span className="text-inherit!">Plant</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setDialogType("area")}>
+                        <DropdownMenuItem onClick={() => setDialog({ mode: "create", type: "area", node: null })}>
                             <Building className="text-primary w-4 h-4" />
                             <span>Area</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setDialogType("unit")}>
+                        <DropdownMenuItem onClick={() => setDialog({ mode: "create", type: "unit", node: null })}>
                             <Boxes className="text-primary w-4 h-4" />
                             <span>Unit</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setDialogType("equipment")}>
+                        <DropdownMenuItem onClick={() => setDialog({ mode: "create", type: "equipment", node: null })}>
                             <Cpu className="text-primary w-4 h-4" />
                             <span>Equipment</span>
                         </DropdownMenuItem>
                     </DropdownMenuGroup>
                 </DropdownMenuContent>
             </DropdownMenu>
-            <CreatePlantDialog open={dialogType === "plant"} onClose={() => setDialogType(null)} />
-            <CreateAreaDialog open={dialogType === "area"} onClose={() => setDialogType(null)} />
-            <CreateUnitDialog open={dialogType === "unit"} onClose={() => setDialogType(null)} />
-            <CreateEquipmentDialog open={dialogType === "equipment"} onClose={() => setDialogType(null)} />
-
-
-
+            <TreeDialogs dialog={dialog} onClose={() => setDialog({ type: null, mode: null, node: null, })} />
         </>
     );
 }
