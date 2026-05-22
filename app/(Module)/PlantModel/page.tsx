@@ -1,5 +1,6 @@
 import PlantMenu from "@/features/plant/components/plant-menu";
 import PlantTree from "@/features/plant/components/plant-tree";
+import PlantView from "@/features/plant/components/view/plant-view";
 import { Factory } from "lucide-react";
 
 export default function PlantModelPage() {
