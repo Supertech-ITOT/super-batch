@@ -5,16 +5,22 @@ import { Button } from "@/components/ui/button";
 import { ActionType, PlantHierarchyResponse } from "@/features/plant/types/plant-hierarchy.types";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuSeparator, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { TREE_CONFIG } from "@/features/plant/constants/tree-config";
+import { cn } from "@/lib/utils";
 
 type Props = {
     node: PlantHierarchyResponse;
     level?: number;
+    selectedNodeKey: string | null;
     onSelect: (node: PlantHierarchyResponse) => void;
     onAction: (action: ActionType, node: PlantHierarchyResponse) => void
 };
 
-function TreeNode({ node, level = 0, onSelect, onAction }: Props) {
+function TreeNode({ node, level = 0, onSelect, onAction, selectedNodeKey }: Props) {
     const [open, setOpen] = useState(true);
+    const nodeKey = `${node.type}-${node.id}`;
+
+    const isActive =
+        selectedNodeKey === nodeKey;
     const hasChildren = !!node.children?.length;
     const config = TREE_CONFIG[node.type];
     const Icon = config.icon;
@@ -44,8 +50,17 @@ function TreeNode({ node, level = 0, onSelect, onAction }: Props) {
                 {/* Node Icon + Label */}
                 <ContextMenu>
                     <ContextMenuTrigger asChild>
-                        <Button variant="ghost" onClick={() => onSelect(node)} className="flex hover:bg-muted items-center justify-start gap-2 flex-1 rounded-sm px-1 py-1 cursor-pointer">
-                            <Icon className="w-4 h-4 text-primary" />
+                        <Button
+                            variant="ghost"
+                            onClick={() => onSelect(node)}
+                            onContextMenu={() => onSelect(node)}
+                            className={cn(
+                                "flex h-8 flex-1 items-center justify-start gap-2 rounded-md px-2 transition-all",
+                                "hover:bg-muted",
+                                isActive && "bg-primary text-white hover:bg-primary/90 hover:text-white"
+                            )}
+                        >
+                            <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-primary"}`} />
                             <span className="text-sm">{node.name}</span>
                         </Button>
                     </ContextMenuTrigger>
@@ -65,7 +80,7 @@ function TreeNode({ node, level = 0, onSelect, onAction }: Props) {
                     {/* Tree Line */}
                     <div className="absolute top-0 bottom-0 w-px bg-border" style={{ left: `${level * 20 + 25}px` }} />
                     {node.children?.map((child) => (
-                        <TreeNode key={child.id} node={child} level={level + 1} onSelect={onSelect} onAction={onAction} />
+                        <TreeNode key={child.id} node={child} level={level + 1} onSelect={onSelect} onAction={onAction} selectedNodeKey={selectedNodeKey} />
                     ))}
                 </div>
             )}

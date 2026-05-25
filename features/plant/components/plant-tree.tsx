@@ -16,6 +16,8 @@ type Props = {
 
 export default function PlantTree({ onSelect }: Props) {
     const { data, isLoading, isError } = usePlantHierarchy();
+    const [selectedNodeKey, setSelectedNodeKey] =
+        useState<string | null>(null);
     const [search, setSearch] = useState("");
     const filteredData = useFilterTree(data, search);
     const [dialog, setDialog] = useState<DialogType>({ type: null, mode: null, node: null });
@@ -56,9 +58,15 @@ export default function PlantTree({ onSelect }: Props) {
                     </div>
                 ) : (filteredData.map((node) => (
                     <TreeNode
-                        key={node.id}
+                        key={`${node.type}-${node.id}`}
                         node={node}
-                        onSelect={onSelect}
+                        selectedNodeKey={selectedNodeKey}
+                        onSelect={(node) => {
+                            setSelectedNodeKey(
+                                `${node.type}-${node.id}`
+                            );
+                            onSelect(node);
+                        }}
                         onAction={handleAction}
                     />
                 )))}
