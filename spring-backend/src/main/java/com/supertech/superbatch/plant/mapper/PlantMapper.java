@@ -1,8 +1,13 @@
 package com.supertech.superbatch.plant.mapper;
 
+import org.springframework.stereotype.Component;
+
+import com.supertech.superbatch.plant.dto.Plant.CreatePlantRequest;
 import com.supertech.superbatch.plant.dto.Plant.PlantResponse;
+import com.supertech.superbatch.plant.dto.Plant.UpdatePlantRequest;
 import com.supertech.superbatch.plant.entity.Plant;
 
+@Component
 public class PlantMapper {
 
         public PlantResponse toResponse(Plant plant) {
@@ -33,12 +38,30 @@ public class PlantMapper {
                                 plant.getName(),
                                 plant.getDescription(),
                                 plant.getLocation(),
-                                plant.getStatus(),
+                                plant.getStatus().name(),
                                 plant.getPlantType(),
                                 totalArea,
                                 totalUnit,
                                 totalEquipment,
                                 plant.getCreatedAt(),
                                 plant.getUpdatedAt());
+        }
+
+        public Plant toEntity(CreatePlantRequest request) {
+                return Plant.builder()
+                                .name(request.name())
+                                .description(request.description())
+                                .location(request.location())
+                                .status(request.status())
+                                .plantType(request.plantType())
+                                .build();
+        }
+
+        public void updateEntity(Plant plant, UpdatePlantRequest request) {
+                plant.setName(request.name());
+                plant.setDescription(request.description());
+                plant.setLocation(request.location());
+                plant.setStatus(request.status());
+                plant.setPlantType(request.plantType());
         }
 }

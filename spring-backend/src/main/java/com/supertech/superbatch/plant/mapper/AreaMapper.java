@@ -1,8 +1,14 @@
 package com.supertech.superbatch.plant.mapper;
 
-import com.supertech.superbatch.plant.dto.Area.AreaResponse;
-import com.supertech.superbatch.plant.entity.Area;
+import org.springframework.stereotype.Component;
 
+import com.supertech.superbatch.plant.dto.Area.AreaResponse;
+import com.supertech.superbatch.plant.dto.Area.CreateAreaRequest;
+import com.supertech.superbatch.plant.dto.Area.UpdateAreaRequest;
+import com.supertech.superbatch.plant.entity.Area;
+import com.supertech.superbatch.plant.entity.Plant;
+
+@Component
 public class AreaMapper {
 
         public AreaResponse toResponse(Area area) {
@@ -25,11 +31,29 @@ public class AreaMapper {
                                 area.getPlant().getId(),
                                 area.getPlant().getName(),
                                 area.getDescription(),
-                                area.getStatus(),
+                                area.getStatus().name(),
                                 area.getAreaType(),
                                 totalUnit,
                                 totalEquipment,
                                 area.getCreatedAt(),
                                 area.getUpdatedAt());
+        }
+
+        public Area toEntity(CreateAreaRequest request, Plant plant) {
+                return Area.builder()
+                                .name(request.name())
+                                .description(request.description())
+                                .status(request.status())
+                                .areaType(request.areaType())
+                                .plant(plant)
+                                .build();
+        }
+
+        public void updateEntity(Area area, UpdateAreaRequest request, Plant plant) {
+                area.setName(request.name());
+                area.setDescription(request.description());
+                area.setStatus(request.status());
+                area.setAreaType(request.areaType());
+                area.setPlant(plant);
         }
 }

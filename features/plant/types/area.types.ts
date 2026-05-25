@@ -1,10 +1,10 @@
-import { StatusType } from "../enum/status.enum";
+
 
 export interface AreaResponse {
     id: number;
     name: string;
     description: string;
-    status: StatusType;
+    status: string;
     plantId: number;
     plantName: string;
     areaType: string;

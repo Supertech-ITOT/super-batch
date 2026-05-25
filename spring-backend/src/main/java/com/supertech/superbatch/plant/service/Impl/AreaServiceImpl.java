@@ -37,7 +37,7 @@ public class AreaServiceImpl implements AreaService {
         Plant plant = plantRepository
                 .findById(request.plantId())
                 .orElseThrow(() -> new ResourceNotFoundException("Plant not found"));
-        Area area = Area.builder().name(request.name()).plant(plant).build();
+        Area area = areaMapper.toEntity(request, plant);
         areaRepository.save(area);
     }
 
@@ -48,7 +48,7 @@ public class AreaServiceImpl implements AreaService {
 
     @Override
     public AreaResponse getById(Long id) {
-        Area area = areaRepository.findById(id)
+        Area area = areaRepository.findByIdWithHierarchy(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
         return areaMapper.toResponse(area);
     }
@@ -61,13 +61,15 @@ public class AreaServiceImpl implements AreaService {
     @Override
     public void update(Long id, UpdateAreaRequest request) {
         Area area = areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area not found"));
+        Plant plant = plantRepository.findById(request.plantId())
+                .orElseThrow(() -> new ResourceNotFoundException("Plant not found"));
 
         if (areaRepository.existsByNameIgnoreCaseAndPlantId(request.name(), area.getPlant().getId())
                 && !area.getName().equalsIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Area already exists");
         }
 
-        area.setName(request.name());
+        areaMapper.updateEntity(area, request, plant);
         areaRepository.save(area);
     }
 

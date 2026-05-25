@@ -5,84 +5,52 @@ import { Separator } from "@/components/ui/separator";
 import { Boxes, Building, Cpu, Factory, PenLineIcon, Trash2 } from "lucide-react";
 import { columns } from "./plant/columns";
 import DataTable from "./plant/data-table";
-import { PlantResponse } from "../../types/plant.types";
-import { StatusType } from "../../enum/status.enum";
-import { AreaResponse } from "../../types/area.types";
+import { useGetPlantById } from "../../hooks/use-plants";
+import { useGetAreasByPlantId } from "../../hooks/use-areas";
+import { format } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
-
-const data: PlantResponse = {
-    id: 435,
-    name: "Plant A",
-    description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem, repudiandae!",
-    location: "Lorem ipsum dolor sit amet,",
-    status: StatusType.ACTIVE,
-    plantType: "Chemical Plant",
-    totalArea: 12,
-    totalUnit: 25,
-    totalEquipment: 100,
-    createdAt: "02 May 26 12:23 PM",
-    updatedAt: "02 May 26 12:23 PM"
-}
-export const Tdata: AreaResponse[] = [
-    {
-        id: 1,
-        name: "Mixing Room",
-        areaType: "Production",
-        status: StatusType.ACTIVE,
-        description: "sjdfhdd",
-        plantId: 452,
-        plantName: "Plant A",
-        totalEquipment: 12,
-        totalUnit: 435,
-        updatedAt: "#$543",
-        createdAt: "45435",
-    },
-    {
-        id: 2,
-        name: "Storage Room",
-        areaType: "Warehouse",
-        status: StatusType.MAINTENANCE,
-        description: "sjdfhdd",
-        plantId: 452,
-        plantName: "Plant A",
-        totalEquipment: 12,
-        totalUnit: 435,
-        updatedAt: "#$543",
-        createdAt: "45435",
+export default function PlantView({ id }: { id: number }) {
+    const { data: plant, isLoading: plantIsLoading } = useGetPlantById(id);
+    const { data: areas, isLoading: areasIsLoading } = useGetAreasByPlantId(id);
+    const loading = plantIsLoading || areasIsLoading || !plant || !areas
+    if (loading) {
+        return (
+            <Skeleton className="h-full" />
+        );
     }
-];
-export default function PlantView() {
+
     return (
-        <div className=" flex justify-between flex-col h-full w-full bg-card p-4 overflow-y-auto scrollbar-none">
+        <div className="flex justify-between flex-col h-full w-full bg-card p-4 overflow-y-auto scrollbar-none">
             <div className="flex justify-between flex-wrap gap-2 my-4">
                 <div className="flex gap-3 ">
-                    <div className="flex justify-center items-center p-4 border rounded-md shadow aspect-square shrink-0 w-26">
-                        <Factory className="h-16 w-16 text-primary" />
+                    <div className="size-28 flex items-center justify-center border rounded-md shadow shrink-0">
+                        <Factory className="size-16 text-primary" />
                     </div>
                     <div className="flex flex-col">
                         <div className="space-x-2 flex">
-                            <span className="text-2xl font-bold">{data.name}</span>
-                            <StatusBadge status={data.status} />
+                            <span className="text-2xl font-bold">{plant.name}</span>
+                            <StatusBadge status={plant.status} />
                         </div>
 
                         <h1 className="text-muted-foreground text-sm ">Plant Type: {" "}
-                            <span className="font-semibold text-sm text-foreground">{data.plantType}</span>
+                            <span className="font-semibold text-sm text-foreground">{plant.plantType}</span>
                         </h1>
 
                         <h1 className="text-muted-foreground text-sm ">Location: {" "}
-                            <span className="font-semibold text-sm text-foreground">{data.location}</span>
+                            <span className="font-semibold text-sm text-foreground">{plant.location}</span>
                         </h1>
 
                         <h1 className="text-muted-foreground text-sm ">Description: {" "}
-                            <span className="font-semibold text-sm text-foreground">{data.description}</span>
+                            <span className="font-semibold text-sm text-foreground">{plant.description}</span>
                         </h1>
 
                         <div className="flex gap-2">
                             <h1 className="text-muted-foreground text-sm ">Created At: {" "}
-                                <span className="font-semibold text-sm text-foreground">{data.createdAt}</span>
+                                <span className="font-semibold text-sm text-foreground">{format(plant.createdAt, "dd MMM yy hh:mm a")}</span>
                             </h1>
                             <h1 className="text-muted-foreground text-sm ">Last Updated: {" "}
-                                <span className="font-semibold text-sm text-foreground">{data.updatedAt}</span>
+                                <span className="font-semibold text-sm text-foreground">{format(plant.updatedAt, "dd MMM yy hh:mm a")}</span>
                             </h1>
                         </div>
                     </div>
@@ -107,13 +75,13 @@ export default function PlantView() {
             </div>
             <Separator />
             <div className="flex gap-4 my-4 overflow-x-auto overflow-y-hidden scrollbar-none pb-2 w-full">
-                <StatsCards Icon={Building} title="Area" value={data.totalArea} clr="#3882fa" subtitle="Total Area " />
-                <StatsCards Icon={Boxes} title="Unit" value={data.totalUnit} clr="#2a922e" subtitle="Total Unit" />
-                <StatsCards Icon={Cpu} title="Equipment" value={data.totalEquipment} clr="#fcb765" subtitle="Total Equipment" />
+                <StatsCards Icon={Building} title="Area" value={plant.totalArea} clr="#3882fa" subtitle="Total Area " />
+                <StatsCards Icon={Boxes} title="Unit" value={plant.totalUnit} clr="#2a922e" subtitle="Total Unit" />
+                <StatsCards Icon={Cpu} title="Equipment" value={plant.totalEquipment} clr="#fcb765" subtitle="Total Equipment" />
             </div>
             <Separator />
             <div className="flex-1 min-h-0 my-4">
-                <DataTable columns={columns} data={Tdata} />
+                <DataTable columns={columns} data={areas} />
             </div>
         </div>
     )

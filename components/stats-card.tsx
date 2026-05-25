@@ -2,7 +2,7 @@ import { LucideIcon } from "lucide-react";
 
 type Prop = {
     title: string;
-    value: number;
+    value?: number;
     subtitle: string;
     clr: string;
     Icon: LucideIcon;

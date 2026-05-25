@@ -4,22 +4,20 @@ import { Separator } from "@/components/ui/separator";
 import { Cpu, PenLineIcon, Trash2 } from "lucide-react";
 import { StatusType } from "../../enum/status.enum";
 import { EquipmentResponse } from "../../types/equipment.types";
+import { useGetEquipmentById } from "../../hooks/use-equipment";
+import { Skeleton } from "@/components/ui/skeleton";
+import { format } from "date-fns";
 
 
-const data: EquipmentResponse = {
-    id: 34,
-    name: "Temperature 101",
-    description: "ghdfhgd",
-    status: StatusType.ACTIVE,
-    equipmentType: "Temperature",
-    createdAt: "34435",
-    unitName: "R101",
-    unitId: 34,
-    uom: "%",
-    tagName: "TT101",
-    updatedAt: "4543"
-}
-export default function EquipmentView() {
+
+export default function EquipmentView({ id }: { id: number }) {
+    const { data: equipment, isLoading: equipmentIsLoading } = useGetEquipmentById(id);
+    const loading = equipmentIsLoading || !equipment
+    if (loading) {
+        return (
+            <Skeleton className="h-full" />
+        );
+    }
     return (
         <div className=" flex justify-between flex-col h-full w-full bg-card p-4 overflow-y-auto scrollbar-none">
             <div className="flex justify-between flex-wrap gap-2 my-4">
@@ -29,11 +27,11 @@ export default function EquipmentView() {
                     </div>
                     <div className="flex flex-col">
                         <div className="space-x-2 flex">
-                            <span className="text-2xl font-bold">{data.name}</span>
-                            <StatusBadge status={data.status} />
+                            <span className="text-2xl font-bold">{equipment.name}</span>
+                            <StatusBadge status={equipment.status} />
                         </div>
                         <h1 className="text-muted-foreground text-sm ">Description: {" "}
-                            <span className="font-semibold text-sm text-foreground">{data.description}</span>
+                            <span className="font-semibold text-sm text-foreground">{equipment.description}</span>
                         </h1>
                     </div>
                 </div>
@@ -61,60 +59,60 @@ export default function EquipmentView() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div className="rounded-xl border bg-card p-4">
                         <p className="text-xs text-muted-foreground">ID</p>
-                        <p className="text-sm font-semibold">{data.id}</p>
+                        <p className="text-sm font-semibold">{equipment.id}</p>
                     </div>
 
                     <div className="rounded-xl border bg-card p-4">
                         <p className="text-xs text-muted-foreground">Name</p>
-                        <p className="text-sm font-semibold">{data.name}</p>
+                        <p className="text-sm font-semibold">{equipment.name}</p>
                     </div>
 
                     <div className="rounded-xl border bg-card p-4">
                         <p className="text-xs text-muted-foreground">Equipment Type</p>
                         <p className="text-sm font-semibold">
-                            {data.equipmentType}
+                            {equipment.equipmentType}
                         </p>
                     </div>
 
                     <div className="rounded-xl border bg-card p-4">
                         <p className="text-xs text-muted-foreground">Status</p>
 
-                        <StatusBadge status={data.status} />
+                        <StatusBadge status={equipment.status} />
                     </div>
 
                     <div className="rounded-xl border bg-card p-4">
                         <p className="text-xs text-muted-foreground">Parent Name</p>
-                        <p className="text-sm font-semibold">{data.unitName}</p>
+                        <p className="text-sm font-semibold">{equipment.unitName}</p>
                     </div>
 
                     <div className="rounded-xl border bg-card p-4">
                         <p className="text-xs text-muted-foreground">Parent ID</p>
-                        <p className="text-sm font-semibold">{data.unitId}</p>
+                        <p className="text-sm font-semibold">{equipment.unitId}</p>
                     </div>
 
                     <div className="rounded-xl border bg-card p-4">
                         <p className="text-xs text-muted-foreground">Tag Name</p>
                         <p className="font-mono text-sm font-semibold">
-                            {data.tagName}
+                            {equipment.tagName}
                         </p>
                     </div>
 
                     <div className="rounded-xl border bg-card p-4">
                         <p className="text-xs text-muted-foreground">UOM</p>
-                        <p className="text-sm font-semibold">{data.uom}</p>
+                        <p className="text-sm font-semibold">{equipment.uom}</p>
                     </div>
 
                     <div className="rounded-xl border bg-card p-4">
                         <p className="text-xs text-muted-foreground">Created At</p>
                         <p className="text-sm font-semibold">
-                            {data.createdAt}
+                            {format(equipment.createdAt, "dd MMM yy hh:mm a")}
                         </p>
                     </div>
 
                     <div className="rounded-xl border bg-card p-4">
                         <p className="text-xs text-muted-foreground">Last Updated</p>
                         <p className="text-sm font-semibold">
-                            {data.updatedAt}
+                            {format(equipment.updatedAt, "dd MMM yy hh:mm a")}
                         </p>
                     </div>
 

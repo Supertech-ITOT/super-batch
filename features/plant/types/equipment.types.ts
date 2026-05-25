@@ -1,11 +1,11 @@
-import { StatusType } from "../enum/status.enum";
+
 
 export interface EquipmentResponse {
     id: number;
     name: string;
     description: string;
     tagName: string;
-    status: StatusType;
+    status: string;
     uom: string;
     unitId: number;
     unitName: string;

@@ -32,8 +32,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         }
         Unit unit = unitRepository.findById(request.unitId())
                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
-        Equipment equipment = Equipment.builder().name(request.name()).equipmentType(request.equipmentType()).unit(unit)
-                .build();
+        Equipment equipment = equipmentMapper.toEntity(request, unit);
         equipmentRepository.save(equipment);
     }
 
@@ -58,14 +57,15 @@ public class EquipmentServiceImpl implements EquipmentService {
     public void update(Long id, UpdateEquipmentRequest request) {
         Equipment equipment = equipmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
+        Unit unit = unitRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
 
         if (equipmentRepository.existsByNameIgnoreCaseAndUnitId(request.name(), equipment.getUnit().getId())
                 && !equipment.getName().equalsIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Equipment already exists");
         }
 
-        equipment.setName(request.name());
-        equipment.setEquipmentType(request.equipmentType());
+        equipmentMapper.updateEntity(equipment, request, unit);
         equipmentRepository.save(equipment);
     }
 

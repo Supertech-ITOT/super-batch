@@ -5,54 +5,22 @@ import { Separator } from "@/components/ui/separator";
 import { Boxes, Building, Cpu, PenLineIcon, Trash2 } from "lucide-react";
 import { columns } from "./area/columns";
 import DataTable from "./area/data-table";
-import { AreaResponse } from "../../types/area.types";
-import { StatusType } from "../../enum/status.enum";
-import { UnitResponse } from "../../types/unit.types";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useGetAreaById } from "../../hooks/use-areas";
+import { useGetUnitsByAreaId } from "../../hooks/use-units";
+import { format } from "date-fns";
 
 
-const data: AreaResponse = {
-    id: 4354574398,
-    name: "Area A",
-    description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem, repudiandae!",
-    status: StatusType.ACTIVE,
-    plantId: 32434,
-    plantName: "Plant A",
-    areaType: "Chemical Area",
-    totalUnit: 25,
-    totalEquipment: 100,
-    updatedAt: "02 May 26 12:23 PM",
-    createdAt: "02 May 26 12:23 PM"
-}
-export const Tdata: UnitResponse[] = [
-    {
-        areaId: 4543,
-        code: "R101",
-        createdAt: "56545",
-        updatedAt: "546456",
-        description: "dsfdsff",
-        id: 446,
-        name: "R101",
-        status: StatusType.ACTIVE,
-        totalEquipment: 435,
-        unitType: "TANK",
-        areaName: "df"
-    },
-    {
-        areaId: 4543,
-        code: "R102",
-        createdAt: "56545",
-        updatedAt: "546456",
-        description: "dsfdsff",
-        id: 46,
-        name: "R102",
-        status: StatusType.INACTIVE,
-        totalEquipment: 435,
-        unitType: "TANK",
-        areaName: "df"
+
+export default function AreaView({ id }: { id: number }) {
+    const { data: area, isLoading: areaIsLoading } = useGetAreaById(id);
+    const { data: units, isLoading: unitsIsLoading } = useGetUnitsByAreaId(id);
+    const loading = unitsIsLoading || areaIsLoading || !area || !units
+    if (loading) {
+        return (
+            <Skeleton className="h-full" />
+        );
     }
-
-];
-export default function AreaView() {
     return (
         <div className=" flex justify-between flex-col h-full w-full bg-card p-4 overflow-y-auto scrollbar-none">
             <div className="flex justify-between flex-wrap gap-2 my-4">
@@ -62,24 +30,24 @@ export default function AreaView() {
                     </div>
                     <div className="flex flex-col">
                         <div className="space-x-2 flex">
-                            <span className="text-2xl font-bold">{data.name}</span>
-                            <StatusBadge status={data.status} />
+                            <span className="text-2xl font-bold">{area.name}</span>
+                            <StatusBadge status={area.status} />
                         </div>
                         <h1 className="text-muted-foreground text-sm ">Area Type: {" "}
-                            <span className="font-semibold text-sm text-foreground">{data.areaType}</span>
+                            <span className="font-semibold text-sm text-foreground">{area.areaType}</span>
                         </h1>
                         <h1 className="text-muted-foreground text-sm ">Parent: {" "}
-                            <span className="font-semibold text-sm text-foreground">{data.plantName}</span>
+                            <span className="font-semibold text-sm text-foreground">{area.plantName}</span>
                         </h1>
                         <h1 className="text-muted-foreground text-sm ">Description: {" "}
-                            <span className="font-semibold text-sm text-foreground">{data.description}</span>
+                            <span className="font-semibold text-sm text-foreground">{area.description}</span>
                         </h1>
                         <div className="flex gap-2">
                             <h1 className="text-muted-foreground text-sm ">Created At: {" "}
-                                <span className="font-semibold text-sm text-foreground">{data.createdAt}</span>
+                                <span className="font-semibold text-sm text-foreground">{format(area.createdAt, "dd MMM yy hh:mm a")}</span>
                             </h1>
                             <h1 className="text-muted-foreground text-sm ">Last Updated: {" "}
-                                <span className="font-semibold text-sm text-foreground">{data.updatedAt}</span>
+                                <span className="font-semibold text-sm text-foreground">{format(area.updatedAt, "dd MMM yy hh:mm a")}</span>
                             </h1>
                         </div>
                     </div>
@@ -104,12 +72,12 @@ export default function AreaView() {
             </div>
             <Separator />
             <div className="flex gap-4 my-4 overflow-x-auto overflow-y-hidden scrollbar-none pb-2 w-full">
-                <StatsCards Icon={Boxes} title="Unit" value={data.totalUnit} clr="#2a922e" subtitle="Total Unit" />
-                <StatsCards Icon={Cpu} title="Equipment" value={data.totalEquipment} clr="#fcb765" subtitle="Total Equipment" />
+                <StatsCards Icon={Boxes} title="Unit" value={area.totalUnit} clr="#2a922e" subtitle="Total Unit" />
+                <StatsCards Icon={Cpu} title="Equipment" value={area.totalEquipment} clr="#fcb765" subtitle="Total Equipment" />
             </div>
             <Separator />
             <div className="flex-1 min-h-0 my-4">
-                <DataTable columns={columns} data={Tdata} />
+                <DataTable columns={columns} data={units} />
             </div>
         </div>
     )

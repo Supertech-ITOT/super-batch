@@ -37,7 +37,7 @@ public class UnitServiceImpl implements UnitService {
         Area area = areaRepository
                 .findById(request.areaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
-        Unit unit = Unit.builder().name(request.name()).unitType(request.unitType()).area(area).build();
+        Unit unit = unitMapper.toEntity(request, area);
         unitRepository.save(unit);
     }
 
@@ -48,7 +48,8 @@ public class UnitServiceImpl implements UnitService {
 
     @Override
     public UnitResponse getById(Long id) {
-        Unit unit = unitRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
+        Unit unit = unitRepository.findByIdWithHierarchy(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
         return unitMapper.toResponse(unit);
     }
 
@@ -60,14 +61,14 @@ public class UnitServiceImpl implements UnitService {
     @Override
     public void update(Long id, UpdateUnitRequest request) {
         Unit unit = unitRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
+        Area area = areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area not found"));
 
         if (unitRepository.existsByNameIgnoreCaseAndAreaId(request.name(), unit.getArea().getId())
                 && !unit.getName().equalsIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Unit already exists");
         }
 
-        unit.setName(request.name());
-        unit.setUnitType(request.unitType());
+        unitMapper.updateEntity(unit, request, area);
         unitRepository.save(unit);
     }
 

@@ -80,9 +80,9 @@ export const useDeleteEquipment = () => {
     });
 };
 
-export const useGetByUnitId = (unitId?: number) => {
+export const useGetEquipmentsByUnitId = (unitId?: number) => {
     return useQuery({
-        queryKey: ["unit-by-id", unitId],
+        queryKey: ["equipments-by-unitId", unitId],
         queryFn: async () => {
             const res = await getByUnitId(unitId!);
             return res.data;

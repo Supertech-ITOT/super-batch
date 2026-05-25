@@ -33,7 +33,8 @@ public class Unit {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private StatusType status;
+    @Builder.Default
+    private StatusType status = StatusType.ACTIVE;
 
     @Enumerated(EnumType.STRING)
     private UnitType unitType;

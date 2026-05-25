@@ -12,6 +12,7 @@ export default function Home() {
           src="/light-bg.png"
           alt="Background"
           fill
+          priority
           className="object-cover dark:hidden"
         />
 
@@ -19,6 +20,7 @@ export default function Home() {
           src="/dark-bg.png"
           alt="Background"
           fill
+          priority
           className="hidden object-cover dark:block"
         />
       </div>

@@ -27,7 +27,7 @@ public class PlantServiceImpl implements PlantService {
         if (plantRepository.existsByNameIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Plant already exists");
         }
-        Plant plant = Plant.builder().name(request.name()).build();
+        Plant plant = plantMapper.toEntity(request);
         plantRepository.save(plant);
     }
 
@@ -38,7 +38,8 @@ public class PlantServiceImpl implements PlantService {
 
     @Override
     public PlantResponse getById(Long id) {
-        Plant plant = plantRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Plant not found"));
+        Plant plant = plantRepository.findByIdWithHierarchy(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Plant not found"));
         return plantMapper.toResponse(plant);
     }
 
@@ -49,7 +50,7 @@ public class PlantServiceImpl implements PlantService {
                 && !plant.getName().equalsIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Plant already exists");
         }
-        plant.setName(request.name());
+        plantMapper.updateEntity(plant, request);
         plantRepository.save(plant);
     }
 

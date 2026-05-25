@@ -82,9 +82,9 @@ export const useDeleteArea = () => {
     })
 }
 
-export const useGetByPlantId = (plantId?: number) => {
+export const useGetAreasByPlantId = (plantId?: number) => {
     return useQuery({
-        queryKey: ["plant-by-id", plantId],
+        queryKey: ["areas-by-plantId", plantId],
         queryFn: async () => {
             const res = await getByPlantId(plantId!);
             return res.data;

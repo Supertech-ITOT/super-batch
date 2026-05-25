@@ -1,4 +1,5 @@
-export default function StatusBadge({ status }: { status: string }) {
+export default function StatusBadge({ status }: { status?: string }) {
+    if (!status) return;
     const label =
         status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
 

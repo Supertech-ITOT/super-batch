@@ -81,9 +81,9 @@ export const useDeleteUnit = () => {
     });
 };
 
-export const useGetByAreaId = (areaId?: number) => {
+export const useGetUnitsByAreaId = (areaId?: number) => {
     return useQuery({
-        queryKey: ["area-by-id", areaId],
+        queryKey: ["units-by-areaId", areaId],
         queryFn: async () => {
             const res = await getByAreaId(areaId!);
             return res.data;

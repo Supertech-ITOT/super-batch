@@ -28,7 +28,8 @@ public class Equipment {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private StatusType status;
+    @Builder.Default
+    private StatusType status = StatusType.ACTIVE;
 
     @Column(unique = true)
     private String tagName;

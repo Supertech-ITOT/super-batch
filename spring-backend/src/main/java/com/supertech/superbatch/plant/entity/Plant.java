@@ -33,7 +33,8 @@ public class Plant {
     private String location;
 
     @Enumerated(EnumType.STRING)
-    private StatusType status;
+    @Builder.Default
+    private StatusType status = StatusType.ACTIVE;
 
     private String plantType;
 

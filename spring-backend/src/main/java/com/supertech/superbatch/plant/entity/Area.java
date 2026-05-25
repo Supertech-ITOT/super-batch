@@ -37,7 +37,8 @@ public class Area {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private StatusType status;
+    @Builder.Default
+    private StatusType status = StatusType.ACTIVE;
 
     private String areaType;
 
