@@ -12,6 +12,7 @@ import com.supertech.superbatch.plant.dto.Area.CreateAreaRequest;
 import com.supertech.superbatch.plant.dto.Area.UpdateAreaRequest;
 import com.supertech.superbatch.plant.entity.Area;
 import com.supertech.superbatch.plant.entity.Plant;
+import com.supertech.superbatch.plant.mapper.AreaMapper;
 import com.supertech.superbatch.plant.repository.AreaRepository;
 import com.supertech.superbatch.plant.repository.PlantRepository;
 import com.supertech.superbatch.plant.repository.UnitRepository;
@@ -25,6 +26,7 @@ public class AreaServiceImpl implements AreaService {
     private final AreaRepository areaRepository;
     private final PlantRepository plantRepository;
     private final UnitRepository unitRepository;
+    private final AreaMapper areaMapper;
 
     @Override
     public void create(CreateAreaRequest request) {
@@ -41,18 +43,19 @@ public class AreaServiceImpl implements AreaService {
 
     @Override
     public List<AreaResponse> getAll() {
-        return areaRepository.findAll().stream().map(this::mapToResponse).toList();
+        return areaRepository.findAll().stream().map(areaMapper::toResponse).toList();
     }
 
     @Override
     public AreaResponse getById(Long id) {
-        Area area = areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area not found"));
-        return mapToResponse(area);
+        Area area = areaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
+        return areaMapper.toResponse(area);
     }
 
     @Override
     public List<AreaResponse> getByPlantId(Long plantId) {
-        return areaRepository.findByPlantId(plantId).stream().map(this::mapToResponse).toList();
+        return areaRepository.findByPlantId(plantId).stream().map(areaMapper::toResponse).toList();
     }
 
     @Override
@@ -75,10 +78,6 @@ public class AreaServiceImpl implements AreaService {
         }
         Area area = areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area not found"));
         areaRepository.delete(area);
-    }
-
-    private AreaResponse mapToResponse(Area area) {
-        return new AreaResponse(area.getId(), area.getName(), area.getPlant().getId());
     }
 
 }

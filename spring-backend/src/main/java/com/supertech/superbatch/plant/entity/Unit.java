@@ -1,8 +1,13 @@
 package com.supertech.superbatch.plant.entity;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.supertech.superbatch.common.enums.StatusType;
 import com.supertech.superbatch.plant.enums.UnitType;
 
 import jakarta.persistence.*;
@@ -23,6 +28,13 @@ public class Unit {
 
     private String name;
 
+    private String code;
+
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    private StatusType status;
+
     @Enumerated(EnumType.STRING)
     private UnitType unitType;
 
@@ -33,4 +45,11 @@ public class Unit {
     @OneToMany(mappedBy = "unit")
     @OrderBy("name ASC")
     private Set<Equipment> equipments;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
 }

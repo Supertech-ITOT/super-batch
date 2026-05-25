@@ -12,6 +12,7 @@ import com.supertech.superbatch.plant.dto.Unit.UnitResponse;
 import com.supertech.superbatch.plant.dto.Unit.UpdateUnitRequest;
 import com.supertech.superbatch.plant.entity.Area;
 import com.supertech.superbatch.plant.entity.Unit;
+import com.supertech.superbatch.plant.mapper.UnitMapper;
 import com.supertech.superbatch.plant.repository.AreaRepository;
 import com.supertech.superbatch.plant.repository.EquipmentRepository;
 import com.supertech.superbatch.plant.repository.UnitRepository;
@@ -25,6 +26,7 @@ public class UnitServiceImpl implements UnitService {
     private final UnitRepository unitRepository;
     private final AreaRepository areaRepository;
     private final EquipmentRepository equipmentRepository;
+    private final UnitMapper unitMapper;
 
     @Override
     public void create(CreateUnitRequest request) {
@@ -41,18 +43,18 @@ public class UnitServiceImpl implements UnitService {
 
     @Override
     public List<UnitResponse> getAll() {
-        return unitRepository.findAll().stream().map(this::mapToResponse).toList();
+        return unitRepository.findAll().stream().map(unitMapper::toResponse).toList();
     }
 
     @Override
     public UnitResponse getById(Long id) {
         Unit unit = unitRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
-        return mapToResponse(unit);
+        return unitMapper.toResponse(unit);
     }
 
     @Override
     public List<UnitResponse> getByAreaId(Long areaId) {
-        return unitRepository.findByAreaId(areaId).stream().map(this::mapToResponse).toList();
+        return unitRepository.findByAreaId(areaId).stream().map(unitMapper::toResponse).toList();
     }
 
     @Override
@@ -76,10 +78,6 @@ public class UnitServiceImpl implements UnitService {
         }
         Unit unit = unitRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
         unitRepository.delete(unit);
-    }
-
-    private UnitResponse mapToResponse(Unit unit) {
-        return new UnitResponse(unit.getId(), unit.getName(), unit.getArea().getId(), unit.getUnitType());
     }
 
 }

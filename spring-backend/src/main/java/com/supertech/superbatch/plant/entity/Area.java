@@ -1,8 +1,13 @@
 package com.supertech.superbatch.plant.entity;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.supertech.superbatch.common.enums.StatusType;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,4 +33,17 @@ public class Area {
     @OneToMany(mappedBy = "area")
     @OrderBy("name ASC")
     private Set<Unit> units;
+
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    private StatusType status;
+
+    private String areaType;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }

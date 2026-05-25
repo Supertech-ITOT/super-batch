@@ -7,6 +7,7 @@ import com.supertech.superbatch.plant.dto.Plant.CreatePlantRequest;
 import com.supertech.superbatch.plant.dto.Plant.PlantResponse;
 import com.supertech.superbatch.plant.dto.Plant.UpdatePlantRequest;
 import com.supertech.superbatch.plant.entity.Plant;
+import com.supertech.superbatch.plant.mapper.PlantMapper;
 import com.supertech.superbatch.plant.repository.AreaRepository;
 import com.supertech.superbatch.plant.repository.PlantRepository;
 import com.supertech.superbatch.plant.service.PlantService;
@@ -19,6 +20,7 @@ import java.util.List;
 public class PlantServiceImpl implements PlantService {
     private final PlantRepository plantRepository;
     private final AreaRepository areaRepository;
+    private final PlantMapper plantMapper;
 
     @Override
     public void create(CreatePlantRequest request) {
@@ -31,13 +33,13 @@ public class PlantServiceImpl implements PlantService {
 
     @Override
     public List<PlantResponse> getAll() {
-        return plantRepository.findAll().stream().map(this::mapToResponse).toList();
+        return plantRepository.findAll().stream().map(plantMapper::toResponse).toList();
     }
 
     @Override
     public PlantResponse getById(Long id) {
         Plant plant = plantRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Plant not found"));
-        return mapToResponse(plant);
+        return plantMapper.toResponse(plant);
     }
 
     @Override
@@ -60,7 +62,4 @@ public class PlantServiceImpl implements PlantService {
         plantRepository.delete(plant);
     }
 
-    private PlantResponse mapToResponse(Plant plant) {
-        return new PlantResponse(plant.getId(), plant.getName());
-    }
 }

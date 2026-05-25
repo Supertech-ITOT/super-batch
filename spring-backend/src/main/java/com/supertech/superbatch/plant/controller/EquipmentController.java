@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.supertech.superbatch.common.dto.ApiResponse;
-import com.supertech.superbatch.plant.dto.Area.EquipmentResponse;
 import com.supertech.superbatch.plant.dto.Equipment.CreateEquipmentRequest;
+import com.supertech.superbatch.plant.dto.Equipment.EquipmentResponse;
 import com.supertech.superbatch.plant.dto.Equipment.UpdateEquipmentRequest;
 import com.supertech.superbatch.plant.service.EquipmentService;
 
