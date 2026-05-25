@@ -1,8 +1,17 @@
+import { StatusType } from "../enum/status.enum";
+
 export interface UnitResponse {
     id: number;
     name: string;
-    unitType: string;
+    code: string;
+    description: string;
+    status: StatusType;
     areaId: number;
+    areaName: string;
+    unitType: string;
+    totalEquipment: number;
+    createdAt: string;
+    updatedAt: string;
 }
 export interface CreateUnitRequest {
     name: string;

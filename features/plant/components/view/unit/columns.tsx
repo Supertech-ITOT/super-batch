@@ -6,18 +6,21 @@ import StatusBadge from "@/components/status-badge";
 import { MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
-import { AreaResponse } from "@/features/plant/types/area.types";
+import { EquipmentResponse } from "@/features/plant/types/equipment.types";
 
 
-
-export const columns: ColumnDef<AreaResponse>[] = [
+export const columns: ColumnDef<EquipmentResponse>[] = [
     {
         accessorKey: "name",
-        header: "Area Name",
+        header: "Equipment Name",
     },
     {
-        accessorKey: "areaType",
-        header: "Area Type",
+        accessorKey: "equipmentType",
+        header: "Equipment Type",
+    },
+    {
+        accessorKey: "uom",
+        header: "Equipment UOM",
     },
     {
         accessorKey: "status",
@@ -37,18 +40,14 @@ export const columns: ColumnDef<AreaResponse>[] = [
         ),
     },
     {
-        accessorKey: "totalUnit",
-        header: "Units",
-    },
-    {
-        accessorKey: "totalEquipment",
-        header: "Equipment",
+        accessorKey: "tagName",
+        header: "Tag Name",
     },
     {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => {
-            const area = row.original
+            const equipment = row.original
 
             return (
                 <DropdownMenu>

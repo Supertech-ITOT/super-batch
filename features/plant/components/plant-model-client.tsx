@@ -4,6 +4,9 @@ import { useState } from "react";
 import PlantTree from "./plant-tree";
 import { PlantHierarchyResponse, } from "../types/plant-hierarchy.types";
 import PlantView from "./view/plant-view";
+import AreaView from "./view/area-view";
+import UnitView from "./view/unit-view";
+import EquipmentView from "./view/equipment-view";
 
 export default function PlantModelClient() {
     const [selected, setSelected] = useState<PlantHierarchyResponse | null>(null);
@@ -18,7 +21,7 @@ export default function PlantModelClient() {
 
             {/* Details */}
             <div className="h-full flex-1 rounded-sm border bg-card p-3">
-                <PlantView />
+                <EquipmentView />
             </div>
         </div>
     );

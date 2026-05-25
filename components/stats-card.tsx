@@ -10,7 +10,7 @@ type Prop = {
 export default function StatsCards({ title, value, subtitle, clr, Icon }: Prop) {
     return (
         <div
-            className="rounded-xl p-4 bg-card flex items-center justify-between shadow-sm min-w-55 shrink-0 border"
+            className="rounded-xl p-4 bg-card flex items-center justify-between shadow-sm min-w-55 shrink-0 border transform-gpu transition-all duration-200 ease-out hover:scale-95 hover:shadow-md"
         >
             <div>
                 <p className="text-sm text-muted-foreground font-medium">

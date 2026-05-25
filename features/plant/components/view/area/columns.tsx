@@ -6,18 +6,17 @@ import StatusBadge from "@/components/status-badge";
 import { MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
-import { AreaResponse } from "@/features/plant/types/area.types";
+import { UnitResponse } from "@/features/plant/types/unit.types";
 
 
-
-export const columns: ColumnDef<AreaResponse>[] = [
+export const columns: ColumnDef<UnitResponse>[] = [
     {
         accessorKey: "name",
-        header: "Area Name",
+        header: "Unit Name",
     },
     {
-        accessorKey: "areaType",
-        header: "Area Type",
+        accessorKey: "unitType",
+        header: "Unit Type",
     },
     {
         accessorKey: "status",
@@ -37,10 +36,6 @@ export const columns: ColumnDef<AreaResponse>[] = [
         ),
     },
     {
-        accessorKey: "totalUnit",
-        header: "Units",
-    },
-    {
         accessorKey: "totalEquipment",
         header: "Equipment",
     },
@@ -48,7 +43,7 @@ export const columns: ColumnDef<AreaResponse>[] = [
         id: "actions",
         header: "Actions",
         cell: ({ row }) => {
-            const area = row.original
+            const unit = row.original
 
             return (
                 <DropdownMenu>

@@ -2,81 +2,78 @@ import StatsCards from "@/components/stats-card";
 import StatusBadge from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Boxes, Building, Cpu, Factory, PenLineIcon, Trash2 } from "lucide-react";
-import { columns } from "./plant/columns";
-import DataTable from "./plant/data-table";
-import { PlantResponse } from "../../types/plant.types";
-import { StatusType } from "../../enum/status.enum";
+import { Boxes, Building, Cpu, PenLineIcon, Trash2 } from "lucide-react";
+import { columns } from "./area/columns";
+import DataTable from "./area/data-table";
 import { AreaResponse } from "../../types/area.types";
+import { StatusType } from "../../enum/status.enum";
+import { UnitResponse } from "../../types/unit.types";
 
 
-const data: PlantResponse = {
-    id: 435,
-    name: "Plant A",
+const data: AreaResponse = {
+    id: 4354574398,
+    name: "Area A",
     description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem, repudiandae!",
-    location: "Lorem ipsum dolor sit amet,",
     status: StatusType.ACTIVE,
-    plantType: "Chemical Plant",
-    totalArea: 12,
+    plantId: 32434,
+    plantName: "Plant A",
+    areaType: "Chemical Area",
     totalUnit: 25,
     totalEquipment: 100,
-    createdAt: "02 May 26 12:23 PM",
-    updatedAt: "02 May 26 12:23 PM"
+    updatedAt: "02 May 26 12:23 PM",
+    createdAt: "02 May 26 12:23 PM"
 }
-export const Tdata: AreaResponse[] = [
+export const Tdata: UnitResponse[] = [
     {
-        id: 1,
-        name: "Mixing Room",
-        areaType: "Production",
+        areaId: 4543,
+        code: "R101",
+        createdAt: "56545",
+        updatedAt: "546456",
+        description: "dsfdsff",
+        id: 446,
+        name: "R101",
         status: StatusType.ACTIVE,
-        description: "sjdfhdd",
-        plantId: 452,
-        plantName: "Plant A",
-        totalEquipment: 12,
-        totalUnit: 435,
-        updatedAt: "#$543",
-        createdAt: "45435",
+        totalEquipment: 435,
+        unitType: "TANK",
+        areaName: "df"
     },
     {
-        id: 2,
-        name: "Storage Room",
-        areaType: "Warehouse",
-        status: StatusType.MAINTENANCE,
-        description: "sjdfhdd",
-        plantId: 452,
-        plantName: "Plant A",
-        totalEquipment: 12,
-        totalUnit: 435,
-        updatedAt: "#$543",
-        createdAt: "45435",
+        areaId: 4543,
+        code: "R102",
+        createdAt: "56545",
+        updatedAt: "546456",
+        description: "dsfdsff",
+        id: 46,
+        name: "R102",
+        status: StatusType.INACTIVE,
+        totalEquipment: 435,
+        unitType: "TANK",
+        areaName: "df"
     }
+
 ];
-export default function PlantView() {
+export default function AreaView() {
     return (
         <div className=" flex justify-between flex-col h-full w-full bg-card p-4 overflow-y-auto scrollbar-none">
             <div className="flex justify-between flex-wrap gap-2 my-4">
                 <div className="flex gap-3 ">
-                    <div className="flex justify-center items-center p-4 border rounded-md shadow aspect-square shrink-0 w-26">
-                        <Factory className="h-16 w-16 text-primary" />
+                    <div className="size-28 flex items-center justify-center border rounded-md shadow shrink-0">
+                        <Building className="size-16 text-primary" />
                     </div>
                     <div className="flex flex-col">
                         <div className="space-x-2 flex">
                             <span className="text-2xl font-bold">{data.name}</span>
                             <StatusBadge status={data.status} />
                         </div>
-
-                        <h1 className="text-muted-foreground text-sm ">Plant Type: {" "}
-                            <span className="font-semibold text-sm text-foreground">{data.plantType}</span>
+                        <h1 className="text-muted-foreground text-sm ">Area Type: {" "}
+                            <span className="font-semibold text-sm text-foreground">{data.areaType}</span>
                         </h1>
-
-                        <h1 className="text-muted-foreground text-sm ">Location: {" "}
-                            <span className="font-semibold text-sm text-foreground">{data.location}</span>
+                        <h1 className="text-muted-foreground text-sm ">Parent: {" "}
+                            <span className="font-semibold text-sm text-foreground">{data.plantName}</span>
                         </h1>
-
                         <h1 className="text-muted-foreground text-sm ">Description: {" "}
                             <span className="font-semibold text-sm text-foreground">{data.description}</span>
                         </h1>
-
                         <div className="flex gap-2">
                             <h1 className="text-muted-foreground text-sm ">Created At: {" "}
                                 <span className="font-semibold text-sm text-foreground">{data.createdAt}</span>
@@ -107,7 +104,6 @@ export default function PlantView() {
             </div>
             <Separator />
             <div className="flex gap-4 my-4 overflow-x-auto overflow-y-hidden scrollbar-none pb-2 w-full">
-                <StatsCards Icon={Building} title="Area" value={data.totalArea} clr="#3882fa" subtitle="Total Area " />
                 <StatsCards Icon={Boxes} title="Unit" value={data.totalUnit} clr="#2a922e" subtitle="Total Unit" />
                 <StatsCards Icon={Cpu} title="Equipment" value={data.totalEquipment} clr="#fcb765" subtitle="Total Equipment" />
             </div>

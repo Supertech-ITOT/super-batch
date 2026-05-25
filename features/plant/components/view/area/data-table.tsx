@@ -30,7 +30,7 @@ const DataTable = <TData, TValue>({ columns, data }: DataTableProps<TData, TValu
         <div className="flex flex-col h-full">
             <div className="flex items-center pb-2">
                 <Input
-                    placeholder="Filter area..."
+                    placeholder="Filter units..."
                     value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
                         table.getColumn("name")?.setFilterValue(event.target.value)
