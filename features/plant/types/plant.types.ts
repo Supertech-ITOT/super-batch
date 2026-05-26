@@ -1,10 +1,11 @@
+import { StatusType } from "./status.type";
 
 export interface PlantResponse {
     id: number;
     name: string;
     description: string;
     location: string;
-    status: string;
+    status: StatusType;
     plantType: string;
     totalArea: number;
     totalUnit: number;
@@ -14,8 +15,16 @@ export interface PlantResponse {
 }
 export interface CreatePlantRequest {
     name: string;
+    description: string;
+    location: string;
+    status: StatusType;
+    plantType: string;
 }
 export interface UpdatePlantRequest {
     name: string;
+    description: string;
+    location: string;
+    status: StatusType;
+    plantType: string;
 }
 

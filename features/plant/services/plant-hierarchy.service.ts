@@ -1,5 +1,5 @@
 import api from "@/lib/axios";
-import { PlantHierarchyResponse } from "../types/plant.types";
+import { PlantHierarchyResponse } from "../types/plant-hierarchy.types";
 import { ApiResponse } from "@/types/api.types";
 
 export const getPlantHierarchy = async () => {

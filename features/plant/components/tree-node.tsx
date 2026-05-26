@@ -6,6 +6,7 @@ import { ActionType, PlantHierarchyResponse } from "@/features/plant/types/plant
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuSeparator, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { TREE_CONFIG } from "@/features/plant/constants/tree-config";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 type Props = {
     node: PlantHierarchyResponse;
@@ -18,9 +19,8 @@ type Props = {
 function TreeNode({ node, level = 0, onSelect, onAction, selectedNodeKey }: Props) {
     const [open, setOpen] = useState(true);
     const nodeKey = `${node.type}-${node.id}`;
-
-    const isActive =
-        selectedNodeKey === nodeKey;
+    const router = useRouter();
+    const isActive = selectedNodeKey === nodeKey;
     const hasChildren = !!node.children?.length;
     const config = TREE_CONFIG[node.type];
     const Icon = config.icon;
@@ -52,7 +52,7 @@ function TreeNode({ node, level = 0, onSelect, onAction, selectedNodeKey }: Prop
                     <ContextMenuTrigger asChild>
                         <Button
                             variant="ghost"
-                            onClick={() => onSelect(node)}
+                            onClick={() => router.replace(`/PlantModel/${node.type}?id=${node.id}`)}
                             onContextMenu={() => onSelect(node)}
                             className={cn(
                                 "flex h-8 flex-1 items-center justify-start gap-2 rounded-md px-2 transition-all",

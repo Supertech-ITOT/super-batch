@@ -39,7 +39,7 @@ public class PlantController {
         return ResponseEntity.ok(ApiResponse.success("Plant fetched successfully", plant));
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> update(@PathVariable Long id,
             @Valid @RequestBody UpdatePlantRequest request) {
         plantService.update(id, request);

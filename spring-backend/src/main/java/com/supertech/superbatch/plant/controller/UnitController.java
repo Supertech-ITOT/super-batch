@@ -47,7 +47,7 @@ public class UnitController {
                 ApiResponse.success("Units fetched successfully", units));
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> update(@PathVariable Long id,
             @Valid @RequestBody UpdateUnitRequest request) {
         unitService.update(id, request);

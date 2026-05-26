@@ -10,14 +10,9 @@ import TreeSearch from "./tree-search";
 import { useFilterTree } from "../hooks/use-filter-tree";
 import { TREE_CONFIG } from "../constants/tree-config";
 
-type Props = {
-    onSelect: (node: PlantHierarchyResponse) => void;
-};
-
-export default function PlantTree({ onSelect }: Props) {
+export default function PlantTree() {
     const { data, isLoading, isError } = usePlantHierarchy();
-    const [selectedNodeKey, setSelectedNodeKey] =
-        useState<string | null>(null);
+    const [selectedNodeKey, setSelectedNodeKey] = useState<string | null>(null);
     const [search, setSearch] = useState("");
     const filteredData = useFilterTree(data, search);
     const [dialog, setDialog] = useState<DialogType>({ type: null, mode: null, node: null });
@@ -62,10 +57,7 @@ export default function PlantTree({ onSelect }: Props) {
                         node={node}
                         selectedNodeKey={selectedNodeKey}
                         onSelect={(node) => {
-                            setSelectedNodeKey(
-                                `${node.type}-${node.id}`
-                            );
-                            onSelect(node);
+                            setSelectedNodeKey(`${node.type}-${node.id}`);
                         }}
                         onAction={handleAction}
                     />

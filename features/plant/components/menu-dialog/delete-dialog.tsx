@@ -1,16 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Loader } from "lucide-react";
-import { PlantHierarchyResponse } from "../../types/plant.types";
+import { PlantHierarchyResponse } from "../../types/plant-hierarchy.types";
 import { showApiError } from "@/lib/show-api-error";
 import { useDeleteArea } from "../../hooks/use-areas";
 import { useDeletePlant } from "../../hooks/use-plants";
 import { useDeleteUnit } from "../../hooks/use-units";
 import { useDeleteEquipment } from "../../hooks/use-equipment";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type Props = { open: boolean; onClose: () => void; node?: PlantHierarchyResponse };
 export default function DeleteDialog({ open, onClose, node }: Props) {
+    const router = useRouter();
     const plantType = node ? node.type.charAt(0).toUpperCase() + node.type.slice(1).toLowerCase() : "";
     const { mutateAsync: deletePlant, isPending: deletePlantIsPending } = useDeletePlant();
     const { mutateAsync: deleteArea, isPending: deleteAreaIsPending } = useDeleteArea();
@@ -24,6 +26,7 @@ export default function DeleteDialog({ open, onClose, node }: Props) {
                 case "plant": {
                     const res = await deletePlant({ id: node.id });
                     toast.success(res.message ?? "Plant deleted successfully.");
+                    router.replace("/PlantModel");
                     break;
                 }
                 case "area": {

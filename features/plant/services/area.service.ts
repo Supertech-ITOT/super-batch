@@ -18,7 +18,7 @@ export const createArea = async (data: CreateAreaRequest) => {
 };
 
 export const updateArea = async ({ id, data }: { id: number, data: UpdateAreaRequest }) => {
-    const res = await api.patch<ApiResponse<null>>(`/areas/${id}`, data);
+    const res = await api.put<ApiResponse<null>>(`/areas/${id}`, data);
     return res.data;
 };
 

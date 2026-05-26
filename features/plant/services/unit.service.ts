@@ -18,7 +18,7 @@ export const createUnit = async (data: CreateUnitRequest) => {
 };
 
 export const updateUnit = async ({ id, data }: { id: number, data: UpdateUnitRequest }) => {
-    const res = await api.patch<ApiResponse<null>>(`/units/${id}`, data);
+    const res = await api.put<ApiResponse<null>>(`/units/${id}`, data);
     return res.data;
 };
 

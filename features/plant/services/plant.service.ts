@@ -18,7 +18,7 @@ export const createPlant = async (data: CreatePlantRequest) => {
 };
 
 export const updatePlant = async ({ id, data }: { id: number, data: UpdatePlantRequest }) => {
-    const res = await api.patch<ApiResponse<null>>(`/plants/${id}`, data);
+    const res = await api.put<ApiResponse<null>>(`/plants/${id}`, data);
     return res.data;
 };
 

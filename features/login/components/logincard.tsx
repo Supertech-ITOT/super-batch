@@ -20,7 +20,7 @@ export default function LoginCard() {
     });
     const loading = isSubmitting;
     const onSubmit = (data: LoginSchema) => {
-        router.replace("PlantModel");
+        router.replace("/PlantModel");
     }
     return (
         <div className="flex w-full max-w-md flex-col rounded-2xl border bg-card/60 p-10 shadow-2xl backdrop-blur-xl">

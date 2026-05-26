@@ -18,7 +18,7 @@ export const createEquipment = async (data: CreateEquipmentRequest) => {
 }
 
 export const updateEquipment = async ({ id, data }: { id: number, data: UpdateEquipmentRequest }) => {
-    const res = await api.patch<ApiResponse<null>>(`/equipments/${id}`, data);
+    const res = await api.put<ApiResponse<null>>(`/equipments/${id}`, data);
     return res.data;
 }
 

@@ -64,7 +64,7 @@ export const useDeletePlant = () => {
     return useMutation({
         mutationFn: deletePlant,
         onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({
+            queryClient.removeQueries({
                 queryKey: ["plant-by-id", variables.id],
             });
 
