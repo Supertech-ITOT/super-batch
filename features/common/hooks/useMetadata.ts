@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { getEquipmentTypes, getUnitTypes } from "../services/metadata.service"
+import { getEquipmentTypes, getUnitTypes, getUomTypes } from "../services/metadata.service"
 
 export const useGetEquipmentTypes = (enabled = true) => {
     return useQuery({
@@ -17,6 +17,16 @@ export const useGetUnitTypes = (enabled = true) => {
         queryKey: ["unit-types"],
         queryFn: async () => {
             const res = await getUnitTypes();
+            return res.data;
+        },
+        enabled
+    })
+}
+export const useGetUomTypes = (enabled = true) => {
+    return useQuery({
+        queryKey: ["uom-types"],
+        queryFn: async () => {
+            const res = await getUomTypes();
             return res.data;
         },
         enabled

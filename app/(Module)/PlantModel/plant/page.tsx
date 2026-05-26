@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 export default function PlantPage() {
     const searchParams = useSearchParams();
-    const id = searchParams.get("id");
+    const id = Number(searchParams.get("id"));
     const router = useRouter();
     return (
         <div className="flex h-full flex-col overflow-hidden">
@@ -41,7 +41,7 @@ export default function PlantPage() {
                     </div>
                     {/* Details */}
                     <div className="h-full flex-1 rounded-sm border bg-card p-3">
-                        <PlantView id={Number(id)} />
+                        <PlantView id={id} />
                     </div>
                 </div>
             </div>

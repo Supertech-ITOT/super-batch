@@ -43,7 +43,7 @@ public class AreaServiceImpl implements AreaService {
 
     @Override
     public List<AreaResponse> getAll() {
-        return areaRepository.findAll().stream().map(areaMapper::toResponse).toList();
+        return areaRepository.findAllHierarchy().stream().map(areaMapper::toResponse).toList();
     }
 
     @Override

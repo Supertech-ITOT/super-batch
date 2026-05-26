@@ -1,3 +1,4 @@
+import { StatusType } from "./status.type";
 
 
 export interface AreaResponse {
@@ -16,8 +17,14 @@ export interface AreaResponse {
 export interface CreateAreaRequest {
     name: string;
     plantId: number;
+    description: string;
+    status: StatusType;
+    areaType: string;
 }
 export interface UpdateAreaRequest {
     name: string;
     plantId: number;
+    description: string;
+    status: StatusType;
+    areaType: string;
 }

@@ -30,7 +30,7 @@ public class PlantHierarchyServiceImpl implements PlantHierarchyService {
         private PlantHierarchyResponse mapPlant(Plant plant) {
 
                 return new PlantHierarchyResponse(
-                                plant.getId().toString(),
+                                plant.getId(),
                                 plant.getName(),
                                 "plant",
                                 plant.getAreas() == null
@@ -43,7 +43,7 @@ public class PlantHierarchyServiceImpl implements PlantHierarchyService {
 
         private PlantHierarchyResponse mapArea(Area area) {
                 return new PlantHierarchyResponse(
-                                area.getId().toString(),
+                                area.getId(),
                                 area.getName(),
                                 "area",
                                 area.getUnits() == null
@@ -56,7 +56,7 @@ public class PlantHierarchyServiceImpl implements PlantHierarchyService {
 
         private PlantHierarchyResponse mapUnit(Unit unit) {
                 return new PlantHierarchyResponse(
-                                unit.getId().toString(),
+                                unit.getId(),
                                 unit.getName(),
                                 "unit",
                                 unit.getEquipments() == null
@@ -69,7 +69,7 @@ public class PlantHierarchyServiceImpl implements PlantHierarchyService {
 
         private PlantHierarchyResponse mapEquipment(Equipment equipment) {
                 return new PlantHierarchyResponse(
-                                equipment.getId().toString(),
+                                equipment.getId(),
                                 equipment.getName(),
                                 "equipment",
                                 List.of());

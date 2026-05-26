@@ -9,12 +9,12 @@ import { Loader } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { showApiError } from "@/lib/show-api-error";
-import { useGetPlantById, useUpdatePlant } from "../../hooks/use-plants";
 import { plantSchema, PlantSchema, PlantSchemaLimit } from "../../schemas/plant-schema";
 import { Textarea } from "@/components/ui/textarea";
 import { StatusConfig, StatusType } from "../../types/status.type";
 import clsx from "clsx";
 import CharacterProgress from "@/components/character-progress";
+import { useGetPlantById, useUpdatePlant } from "../../hooks/use-plants";
 
 type Props = { open: boolean; onClose: () => void; plantId?: number };
 export default function UpdatePlantDialog({ open, onClose, plantId }: Props) {
@@ -125,7 +125,12 @@ export default function UpdatePlantDialog({ open, onClose, plantId }: Props) {
                                             disabled={loading}
                                             variant="outline"
                                             key={status.value}
-                                            onClick={() => setValue("status", status.value as StatusType)}
+                                            onClick={() =>
+                                                setValue("status", status.value as StatusType, {
+                                                    shouldDirty: true,
+                                                    shouldValidate: true,
+                                                })
+                                            }
                                             className={clsx(
                                                 "relative flex-1 h-8 rounded-none border bg-card py-0.5 flex items-center justify-center gap-3 text-left hover:bg-muted/50",
                                                 selected ? "bg-primary/5" : ""

@@ -55,7 +55,7 @@ public class MetadataController {
     public ResponseEntity<ApiResponse<List<OptionDto>>> getUomTypes() {
 
         List<OptionDto> data = Arrays.stream(UomType.values())
-                .map(type -> new OptionDto(type.name(), type.getSymbol()))
+                .map(type -> new OptionDto(type.name() + " (" + type.getSymbol() + ")", type.name()))
                 .toList();
 
         return ResponseEntity.ok(ApiResponse.success("UOM types fetched successfully", data));

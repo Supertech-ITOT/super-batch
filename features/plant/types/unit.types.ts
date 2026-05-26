@@ -1,10 +1,11 @@
+import { StatusType } from "./status.type";
 
 export interface UnitResponse {
     id: number;
     name: string;
     code: string;
     description: string;
-    status: string;
+    status: StatusType;
     areaId: number;
     areaName: string;
     unitType: string;
@@ -14,11 +15,17 @@ export interface UnitResponse {
 }
 export interface CreateUnitRequest {
     name: string;
+    code: string;
+    description: string;
+    status: StatusType;
     unitType: string;
     areaId: number;
 }
 export interface UpdateUnitRequest {
     name: string;
+    code: string;
+    description: string;
+    status: StatusType;
     unitType: string;
     areaId: number;
 }

@@ -62,7 +62,7 @@ export default function CreatePlantDialog({ open, onClose }: Props) {
                                 type="text"
                                 disabled={loading}
                                 placeholder="Alpha Plant"
-                                maxLength={100}
+                                maxLength={PlantSchemaLimit.name.max}
                                 {...register("name")}
                             />
                         </div>
@@ -75,6 +75,7 @@ export default function CreatePlantDialog({ open, onClose }: Props) {
                                 disabled={loading}
                                 placeholder="Brief plant overview"
                                 className="min-h-30 w-full resize-none break-all overflow-hidden"
+                                maxLength={PlantSchemaLimit.description.max}
                                 {...register("description")}
                             />
                         </div>
@@ -88,6 +89,7 @@ export default function CreatePlantDialog({ open, onClose }: Props) {
                                     type="text"
                                     disabled={loading}
                                     placeholder="Mumbai, India"
+                                    maxLength={PlantSchemaLimit.location.max}
                                     {...register("location")}
                                 />
                             </div>
@@ -100,6 +102,7 @@ export default function CreatePlantDialog({ open, onClose }: Props) {
                                     type="text"
                                     disabled={loading}
                                     placeholder="Manufacturing"
+                                    maxLength={PlantSchemaLimit.plantType.max}
                                     {...register("plantType")}
                                 />
                             </div>
@@ -115,7 +118,12 @@ export default function CreatePlantDialog({ open, onClose }: Props) {
                                             disabled={loading}
                                             variant="outline"
                                             key={status.value}
-                                            onClick={() => setValue("status", status.value as StatusType)}
+                                            onClick={() =>
+                                                setValue("status", status.value as StatusType, {
+                                                    shouldDirty: true,
+                                                    shouldValidate: true,
+                                                })
+                                            }
                                             className={clsx(
                                                 "relative flex-1 h-8 rounded-none border bg-card py-0.5 flex items-center justify-center gap-3 text-left hover:bg-muted/50",
                                                 selected ? "bg-primary/5" : ""

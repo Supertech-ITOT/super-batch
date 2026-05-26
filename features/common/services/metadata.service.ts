@@ -11,3 +11,7 @@ export const getUnitTypes = async () => {
     const res = await api.get<ApiResponse<OptionResponse[]>>("/metadata/unit-types");
     return res.data;
 }
+export const getUomTypes = async () => {
+    const res = await api.get<ApiResponse<OptionResponse[]>>("/metadata/uom-types");
+    return res.data;
+}

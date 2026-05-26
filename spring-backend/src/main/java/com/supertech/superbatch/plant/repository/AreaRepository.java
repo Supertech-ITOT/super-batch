@@ -29,6 +29,14 @@ public interface AreaRepository extends JpaRepository<Area, Long> {
             """)
     List<Area> findByPlantId(@Param("plantId") Long plantId);
 
+    @Query("""
+                SELECT DISTINCT a
+                FROM Area a
+                LEFT JOIN FETCH a.units u
+                LEFT JOIN FETCH u.equipments e
+            """)
+    List<Area> findAllHierarchy();
+
     boolean existsByNameIgnoreCaseAndPlantId(String name, Long plantId);
 
     boolean existsByPlantId(Long plantId);

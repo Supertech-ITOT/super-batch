@@ -33,7 +33,7 @@ public class PlantServiceImpl implements PlantService {
 
     @Override
     public List<PlantResponse> getAll() {
-        return plantRepository.findAll().stream().map(plantMapper::toResponse).toList();
+        return plantRepository.findAllHierarchy().stream().map(plantMapper::toResponse).toList();
     }
 
     @Override

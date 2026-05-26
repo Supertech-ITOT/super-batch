@@ -21,6 +21,7 @@ export const useGetPlantById = (id?: number) => {
             return res.data;
         },
         enabled: !!id,
+        staleTime: 0,
     });
 };
 

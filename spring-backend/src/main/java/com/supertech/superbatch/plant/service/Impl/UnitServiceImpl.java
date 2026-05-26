@@ -43,7 +43,7 @@ public class UnitServiceImpl implements UnitService {
 
     @Override
     public List<UnitResponse> getAll() {
-        return unitRepository.findAll().stream().map(unitMapper::toResponse).toList();
+        return unitRepository.findAllHierarchy().stream().map(unitMapper::toResponse).toList();
     }
 
     @Override
