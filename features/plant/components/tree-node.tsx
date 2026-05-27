@@ -6,7 +6,7 @@ import { ActionType, PlantHierarchyResponse } from "@/features/plant/types/plant
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuSeparator, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { TREE_CONFIG } from "@/features/plant/constants/tree-config";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 type Props = {
     node: PlantHierarchyResponse;
@@ -18,9 +18,16 @@ type Props = {
 
 function TreeNode({ node, level = 0, onSelect, onAction, selectedNodeKey }: Props) {
     const [open, setOpen] = useState(true);
-    const nodeKey = `${node.type}-${node.id}`;
     const router = useRouter();
-    const isActive = selectedNodeKey === nodeKey;
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const activeId = searchParams.get("id");
+    const segments = pathname.split("/").filter(Boolean);
+    const currentType = segments[segments.length - 1];
+    const nodeKey = `${node.type}-${node.id}`;
+    const isRouteActive = activeId === String(node.id) && currentType === node.type;
+    const isContextActive = selectedNodeKey === nodeKey;
+    const isActive = isRouteActive || isContextActive;
     const hasChildren = !!node.children?.length;
     const config = TREE_CONFIG[node.type];
     const Icon = config.icon;
@@ -55,13 +62,13 @@ function TreeNode({ node, level = 0, onSelect, onAction, selectedNodeKey }: Prop
                             onClick={() => router.replace(`/PlantModel/${node.type}?id=${node.id}`)}
                             onContextMenu={() => onSelect(node)}
                             className={cn(
-                                "flex h-8 flex-1 items-center justify-start gap-2 rounded-md px-2 transition-all",
+                                "flex h-8 flex-1 items-center justify-start gap-2 rounded-md text-primary px-2 transition-all",
                                 "hover:bg-muted",
-                                isActive && "bg-primary text-white hover:bg-primary/90 hover:text-white"
+                                isActive && "bg-primary/5"
                             )}
                         >
-                            <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-primary"}`} />
-                            <span className="text-sm">{node.name}</span>
+                            <Icon className={`w-4! h-4! ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+                            <span className={`text-sm ${isActive ? "text-primary" : "text-muted-foreground"}`}>{node.name}</span>
                         </Button>
                     </ContextMenuTrigger>
                     <ContextMenuContent>
@@ -80,7 +87,7 @@ function TreeNode({ node, level = 0, onSelect, onAction, selectedNodeKey }: Prop
                     {/* Tree Line */}
                     <div className="absolute top-0 bottom-0 w-px bg-border" style={{ left: `${level * 20 + 25}px` }} />
                     {node.children?.map((child) => (
-                        <TreeNode key={child.id} node={child} level={level + 1} onSelect={onSelect} onAction={onAction} selectedNodeKey={selectedNodeKey} />
+                        <TreeNode key={`${child.type}-${child.id}`} node={child} level={level + 1} onSelect={onSelect} onAction={onAction} selectedNodeKey={selectedNodeKey} />
                     ))}
                 </div>
             )}

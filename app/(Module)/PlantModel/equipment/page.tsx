@@ -1,9 +1,16 @@
+"use client";
+import { Button } from "@/components/ui/button";
 import PlantMenu from "@/features/plant/components/plant-menu";
 import PlantTree from "@/features/plant/components/plant-tree";
-import { Boxes, Factory } from "lucide-react";
+import EquipmentView from "@/features/plant/components/view/equipment-view";
+import PlantView from "@/features/plant/components/view/plant-view";
+import { ChevronLeft, Factory } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function PlantModelPage() {
-
+export default function EquipmentPage() {
+    const searchParams = useSearchParams();
+    const id = Number(searchParams.get("id"));
+    const router = useRouter();
     return (
         <div className="flex h-full flex-col overflow-hidden">
             {/* Header */}
@@ -11,7 +18,7 @@ export default function PlantModelPage() {
                 <div className="flex gap-2 items-center">
                     <Factory className="w-6 h-6" />
                     <h1 className="text-xl font-bold">
-                        Plant Model
+                        Equipment
                     </h1>
                 </div>
 
@@ -22,7 +29,10 @@ export default function PlantModelPage() {
 
             {/* Content */}
             <div className="flex-1 flex flex-col min-h-0 p-4 gap-2">
-                <div className="flex justify-end">
+                <div className="flex justify-between items-center">
+                    <Button onClick={() => router.replace("/PlantModel")} variant="outline" className=" size-12 hover:scale-110 transition-all duration-200 bg-card! shadow  rounded-full border">
+                        <ChevronLeft className="w-6! h-6!" />
+                    </Button>
                     <PlantMenu />
                 </div>
                 <div className="flex flex-1 min-h-0 gap-2">
@@ -31,19 +41,8 @@ export default function PlantModelPage() {
                         <PlantTree />
                     </div>
                     {/* Details */}
-                    <div className="flex h-full flex-1 items-center justify-center rounded-xl border bg-card p-6">
-                        <div className="flex max-w-sm flex-col items-center text-center">
-                            <div className="mb-4 rounded-full border bg-muted p-6">
-                                <Boxes className="h-16 w-16 text-muted-foreground" />
-                            </div>
-                            <h2 className="text-lg font-semibold tracking-tight">
-                                No Entity Selected
-                            </h2>
-                            <p className="mt-2 text-sm text-muted-foreground">
-                                Select a plant, area, unit, or equipment from the hierarchy panel
-                                to view detailed information and manage configurations.
-                            </p>
-                        </div>
+                    <div className="h-full flex-1 rounded-sm border bg-card p-3">
+                        <EquipmentView id={id} />
                     </div>
                 </div>
             </div>
