@@ -9,10 +9,14 @@ import { useGetEquipmentsByUnitId } from "../../hooks/use-equipment";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetUnitById } from "../../hooks/use-units";
 import { format } from "date-fns";
+import { useState } from "react";
+import { DialogType } from "../../types/plant-hierarchy.types";
+import TreeDialogs from "../tree-dialogs";
 
 export default function UnitView({ id }: { id: number }) {
     const { data: unit, isLoading: unitIsLoading } = useGetUnitById(id);
     const { data: equipments, isLoading: equipmentsIsLoading } = useGetEquipmentsByUnitId(id);
+    const [dialog, setDialog] = useState<DialogType>({ type: null, mode: null, node: null });
     const loading = unitIsLoading || equipmentsIsLoading || !unit || !equipments
     if (loading) {
         return (
@@ -54,6 +58,7 @@ export default function UnitView({ id }: { id: number }) {
                     <Button
                         variant="outline"
                         className="bg-card! w-full sm:w-auto min-w-30"
+                        onClick={() => setDialog({ type: "unit", mode: "edit", node: { id: unit.id, name: unit.name, type: "unit" } })}
                     >
                         <PenLineIcon className="w-4 h-4 text-foreground" />
                         <span className="text-foreground">Edit</span>
@@ -62,10 +67,12 @@ export default function UnitView({ id }: { id: number }) {
                     <Button
                         variant="outline"
                         className="bg-card! w-full sm:w-auto min-w-30"
+                        onClick={() => setDialog({ type: "unit", mode: "delete", node: { id: unit.id, name: unit.name, type: "unit" } })}
                     >
                         <Trash2 className="w-4 h-4 text-destructive" />
                         <span className="text-destructive">Delete</span>
                     </Button>
+                    <TreeDialogs dialog={dialog} onClose={() => setDialog({ type: null, mode: null, node: null, })} redirect />
                 </div>
             </div>
             <Separator />

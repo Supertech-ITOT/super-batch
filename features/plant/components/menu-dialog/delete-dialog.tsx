@@ -10,8 +10,8 @@ import { useDeleteEquipment } from "../../hooks/use-equipment";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-type Props = { open: boolean; onClose: () => void; node?: PlantHierarchyResponse };
-export default function DeleteDialog({ open, onClose, node }: Props) {
+type Props = { open: boolean; onClose: () => void; node?: PlantHierarchyResponse, redirect?: boolean };
+export default function DeleteDialog({ open, onClose, node, redirect }: Props) {
     const router = useRouter();
     const plantType = node ? node.type.charAt(0).toUpperCase() + node.type.slice(1).toLowerCase() : "";
     const { mutateAsync: deletePlant, isPending: deletePlantIsPending } = useDeletePlant();
@@ -26,8 +26,7 @@ export default function DeleteDialog({ open, onClose, node }: Props) {
             switch (node.type) {
                 case "plant":
                     message = (await deletePlant({ id: node.id })).message;
-                    router.replace("/PlantModel");
-                    return;
+                    break;
                 case "area":
                     message = (await deleteArea({ id: node.id })).message;
                     break;
@@ -40,13 +39,11 @@ export default function DeleteDialog({ open, onClose, node }: Props) {
             }
             toast.success(message ?? `${plantType} deleted successfully.`);
             onClose();
-            router.refresh();
+            if (redirect) router.replace("/PlantModel");
         } catch (error) {
             showApiError(error);
         }
     };
-
-
     return (
         <Dialog open={open} onOpenChange={(value) => { if (!value) onClose() }}>
             <DialogContent className="sm:max-w-md">

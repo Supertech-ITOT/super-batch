@@ -2,16 +2,18 @@ import StatusBadge from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Cpu, PenLineIcon, Trash2 } from "lucide-react";
-import { StatusType } from "../../enum/status.enum";
-import { EquipmentResponse } from "../../types/equipment.types";
 import { useGetEquipmentById } from "../../hooks/use-equipment";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
+import { useState } from "react";
+import { DialogType } from "../../types/plant-hierarchy.types";
+import TreeDialogs from "../tree-dialogs";
 
 
 
 export default function EquipmentView({ id }: { id: number }) {
     const { data: equipment, isLoading: equipmentIsLoading } = useGetEquipmentById(id);
+    const [dialog, setDialog] = useState<DialogType>({ type: null, mode: null, node: null });
     const loading = equipmentIsLoading || !equipment
     if (loading) {
         return (
@@ -39,6 +41,7 @@ export default function EquipmentView({ id }: { id: number }) {
                     <Button
                         variant="outline"
                         className="bg-card! w-full sm:w-auto min-w-30"
+                        onClick={() => setDialog({ type: "equipment", mode: "edit", node: { id: equipment.id, name: equipment.name, type: "equipment" } })}
                     >
                         <PenLineIcon className="w-4 h-4 text-foreground" />
                         <span className="text-foreground">Edit</span>
@@ -47,10 +50,12 @@ export default function EquipmentView({ id }: { id: number }) {
                     <Button
                         variant="outline"
                         className="bg-card! w-full sm:w-auto min-w-30"
+                        onClick={() => setDialog({ type: "equipment", mode: "delete", node: { id: equipment.id, name: equipment.name, type: "equipment" } })}
                     >
                         <Trash2 className="w-4 h-4 text-destructive" />
                         <span className="text-destructive">Delete</span>
                     </Button>
+                    <TreeDialogs dialog={dialog} onClose={() => setDialog({ type: null, mode: null, node: null, })} redirect />
                 </div>
             </div>
             <Separator />

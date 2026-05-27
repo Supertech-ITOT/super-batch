@@ -9,12 +9,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useGetAreaById } from "../../hooks/use-areas";
 import { useGetUnitsByAreaId } from "../../hooks/use-units";
 import { format } from "date-fns";
+import { useState } from "react";
+import { DialogType } from "../../types/plant-hierarchy.types";
+import TreeDialogs from "../tree-dialogs";
 
 
 
 export default function AreaView({ id }: { id: number }) {
     const { data: area, isLoading: areaIsLoading } = useGetAreaById(id);
     const { data: units, isLoading: unitsIsLoading } = useGetUnitsByAreaId(id);
+    const [dialog, setDialog] = useState<DialogType>({ type: null, mode: null, node: null });
     const loading = unitsIsLoading || areaIsLoading || !area || !units
     if (loading) {
         return (
@@ -56,6 +60,7 @@ export default function AreaView({ id }: { id: number }) {
                     <Button
                         variant="outline"
                         className="bg-card! w-full sm:w-auto min-w-30"
+                        onClick={() => setDialog({ type: "area", mode: "edit", node: { id: area.id, name: area.name, type: "area" } })}
                     >
                         <PenLineIcon className="w-4 h-4 text-foreground" />
                         <span className="text-foreground">Edit</span>
@@ -64,10 +69,12 @@ export default function AreaView({ id }: { id: number }) {
                     <Button
                         variant="outline"
                         className="bg-card! w-full sm:w-auto min-w-30"
+                        onClick={() => setDialog({ type: "area", mode: "delete", node: { id: area.id, name: area.name, type: "area" } })}
                     >
                         <Trash2 className="w-4 h-4 text-destructive" />
                         <span className="text-destructive">Delete</span>
                     </Button>
+                    <TreeDialogs dialog={dialog} onClose={() => setDialog({ type: null, mode: null, node: null, })} redirect />
                 </div>
             </div>
             <Separator />

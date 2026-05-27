@@ -10,13 +10,13 @@ import CreateEquipmentDialog from "./menu-dialog/create-equipment-dialog";
 import UpdateEquipmentDialog from "./menu-dialog/update-equipment-dialog";
 import { DialogType } from "../types/plant-hierarchy.types";
 
-type Props = { dialog: DialogType, onClose: () => void; };
-export default function TreeDialogs({ dialog, onClose, }: Props) {
+type Props = { dialog: DialogType, onClose: () => void; redirect?: boolean };
+export default function TreeDialogs({ dialog, onClose, redirect }: Props) {
     const node = dialog.node;
 
     if (dialog.mode === "delete") {
         return (
-            <DeleteDialog open onClose={onClose} node={node || undefined} />
+            <DeleteDialog open onClose={onClose} node={node || undefined} redirect={redirect} />
         );
     }
 
