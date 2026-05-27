@@ -1,6 +1,7 @@
 import api from "@/lib/axios"
 import { ApiResponse } from "@/types/api.types"
 import { CreateEquipmentRequest, EquipmentResponse, UpdateEquipmentRequest } from "../types/equipment.types";
+import { PlantHierarchyResponse } from "../types/plant-hierarchy.types";
 
 export const getEquipments = async () => {
     const res = await api.get<ApiResponse<EquipmentResponse[]>>("/equipments");
@@ -22,7 +23,7 @@ export const updateEquipment = async ({ id, data }: { id: number, data: UpdateEq
     return res.data;
 }
 
-export const deleteEquipment = async ({ id, unitId }: { id: number, unitId: number }) => {
+export const deleteEquipment = async ({ id }: { id: number }) => {
     const res = await api.delete<ApiResponse<null>>(`/equipments/${id}`);
     return res.data;
 };

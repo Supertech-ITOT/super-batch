@@ -1,6 +1,7 @@
 import api from "@/lib/axios"
 import { ApiResponse } from "@/types/api.types"
 import { CreateUnitRequest, UnitResponse, UpdateUnitRequest } from "../types/unit.types"
+import { PlantHierarchyResponse } from "../types/plant-hierarchy.types";
 
 export const getUnits = async () => {
     const res = await api.get<ApiResponse<UnitResponse[]>>("/units");
@@ -22,7 +23,7 @@ export const updateUnit = async ({ id, data }: { id: number, data: UpdateUnitReq
     return res.data;
 };
 
-export const deleteUnit = async ({ id, areaId }: { id: number, areaId: number }) => {
+export const deleteUnit = async ({ id }: { id: number }) => {
     const res = await api.delete<ApiResponse<null>>(`/units/${id}`);
     return res.data;
 };

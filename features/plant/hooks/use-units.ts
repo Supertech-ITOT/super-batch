@@ -31,11 +31,12 @@ export const useUpdateUnit = () => {
             queryClient.invalidateQueries({
                 queryKey: ["unit-by-id", variables.id],
             });
-
+            queryClient.invalidateQueries({
+                queryKey: ["units-by-areaId", variables.data.areaId],
+            });
             queryClient.invalidateQueries({
                 queryKey: ["units"],
             });
-
             queryClient.invalidateQueries({
                 queryKey: ["plant-hierarchy"],
             });
@@ -55,6 +56,9 @@ export const useCreateUnit = () => {
                 queryKey: ["area-by-id", variables.areaId],
             });
             queryClient.invalidateQueries({
+                queryKey: ["units-by-areaId", variables.areaId],
+            });
+            queryClient.invalidateQueries({
                 queryKey: ["plant-hierarchy"],
             });
         },
@@ -69,11 +73,9 @@ export const useDeleteUnit = () => {
             queryClient.invalidateQueries({
                 queryKey: ["unit-by-id", variables.id],
             });
-
             queryClient.invalidateQueries({
                 queryKey: ["units"],
             });
-
             queryClient.invalidateQueries({
                 queryKey: ["plant-hierarchy"],
             });

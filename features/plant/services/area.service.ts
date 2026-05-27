@@ -1,6 +1,7 @@
 import api from "@/lib/axios";
 import { CreateAreaRequest, AreaResponse, UpdateAreaRequest } from "../types/area.types";
 import { ApiResponse } from "@/types/api.types";
+import { PlantHierarchyResponse } from "../types/plant-hierarchy.types";
 
 export const getAreas = async () => {
     const res = await api.get<ApiResponse<AreaResponse[]>>("/areas");
@@ -22,7 +23,7 @@ export const updateArea = async ({ id, data }: { id: number, data: UpdateAreaReq
     return res.data;
 };
 
-export const deleteArea = async ({ id, plantId }: { id: number, plantId: number }) => {
+export const deleteArea = async ({ id }: { id: number }) => {
     const res = await api.delete<ApiResponse<null>>(`/areas/${id}`);
     return res.data;
 };

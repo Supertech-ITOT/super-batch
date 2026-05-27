@@ -32,11 +32,12 @@ export const useUpdateArea = () => {
             queryClient.invalidateQueries({
                 queryKey: ["area-by-id", variables.id],
             });
-
+            queryClient.invalidateQueries({
+                queryKey: ["areas-by-plantId", variables.data.plantId],
+            });
             queryClient.invalidateQueries({
                 queryKey: ["areas"],
             });
-
             queryClient.invalidateQueries({
                 queryKey: ["plant-hierarchy"],
             });
@@ -56,6 +57,9 @@ export const useCreateArea = () => {
                 queryKey: ["plant-by-id", variables.plantId],
             });
             queryClient.invalidateQueries({
+                queryKey: ["areas-by-plantId", variables.plantId],
+            });
+            queryClient.invalidateQueries({
                 queryKey: ["plant-hierarchy"],
             });
         },
@@ -70,11 +74,9 @@ export const useDeleteArea = () => {
             queryClient.invalidateQueries({
                 queryKey: ["area-by-id", variables.id],
             });
-
             queryClient.invalidateQueries({
                 queryKey: ["areas"],
             });
-
             queryClient.invalidateQueries({
                 queryKey: ["plant-hierarchy"],
             });

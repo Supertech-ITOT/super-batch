@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createEquipment, deleteEquipment, getByUnitId, getEquipmentById, getEquipments, updateEquipment } from "../services/equipment.service";
+import { queryKeys } from "./query-keys";
 
 export const useGetEquipment = () => {
     return useQuery({
-        queryKey: ["equipments"],
+        queryKey: queryKeys.equipments,
         queryFn: async () => {
             const res = await getEquipments();
             return res.data;
@@ -13,7 +14,7 @@ export const useGetEquipment = () => {
 
 export const useGetEquipmentById = (id?: number) => {
     return useQuery({
-        queryKey: ["Equipment-by-id", id],
+        queryKey: id ? queryKeys.equipment(id) : [],
         queryFn: async () => {
             const res = await getEquipmentById(id!);
             return res.data;
@@ -26,17 +27,12 @@ export const useUpdateEquipment = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: updateEquipment,
-        onSuccess: (_, variables) => {
+        onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["equipment-by-id", variables.id],
+                queryKey: queryKeys.equipments,
             });
-
             queryClient.invalidateQueries({
-                queryKey: ["equipments"],
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: ["plant-hierarchy"],
+                queryKey: queryKeys.plantHierarchy,
             });
         },
     });
@@ -48,13 +44,16 @@ export const useCreateEquipment = () => {
         mutationFn: createEquipment,
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
-                queryKey: ["equipments"],
+                queryKey: queryKeys.equipments,
             });
             queryClient.invalidateQueries({
-                queryKey: ["unit-by-id", variables.unitId],
+                queryKey: queryKeys.unit(variables.unitId)
             });
             queryClient.invalidateQueries({
-                queryKey: ["plant-hierarchy"],
+                queryKey: queryKeys.equipmentsByUnit(variables.unitId),
+            });
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.plantHierarchy,
             });
         },
     });
@@ -64,17 +63,12 @@ export const useDeleteEquipment = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: deleteEquipment,
-        onSuccess: (_, variables) => {
+        onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["equipment-by-id", variables.id],
+                queryKey: queryKeys.equipments,
             });
-
             queryClient.invalidateQueries({
-                queryKey: ["equipments"],
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: ["plant-hierarchy"],
+                queryKey: queryKeys.plantHierarchy,
             });
 
 
@@ -85,7 +79,7 @@ export const useDeleteEquipment = () => {
 
 export const useGetEquipmentsByUnitId = (unitId?: number) => {
     return useQuery({
-        queryKey: ["equipments-by-unitId", unitId],
+        queryKey: unitId ? queryKeys.equipmentsByUnit(unitId) : [],
         queryFn: async () => {
             const res = await getByUnitId(unitId!);
             return res.data;

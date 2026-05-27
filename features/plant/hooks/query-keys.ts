@@ -1,0 +1,18 @@
+export const queryKeys = {
+    plants: ["plants"] as const,
+    plant: (id: number) => ["plants", id] as const,
+
+    areas: ["areas"] as const,
+    area: (id: number) => ["areas", id] as const,
+    areasByPlant: (plantId: number) => ["areas", "plant", plantId] as const,
+
+    units: ["units"] as const,
+    unit: (id: number) => ["units", id] as const,
+    unitsByArea: (areaId: number) => ["units", "area", areaId] as const,
+
+    equipments: ["equipments"] as const,
+    equipment: (id: number) => ["equipments", id] as const,
+    equipmentsByUnit: (unitId: number) => ["equipments", "unit", unitId] as const,
+
+    plantHierarchy: ["plant-hierarchy"] as const,
+};

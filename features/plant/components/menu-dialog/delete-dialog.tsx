@@ -22,32 +22,25 @@ export default function DeleteDialog({ open, onClose, node }: Props) {
     const handleDelete = async () => {
         if (!node) return;
         try {
+            let message = "";
             switch (node.type) {
-                case "plant": {
-                    const res = await deletePlant({ id: node.id, });
-                    toast.success(res.message ?? "Plant deleted successfully.");
+                case "plant":
+                    message = (await deletePlant({ id: node.id })).message;
                     router.replace("/PlantModel");
-                    break;
-                }
-                case "area": {
-                    const res = await deleteArea({ id: node.id });
-                    toast.success(res.message ?? "Area deleted successfully.");
-                    break;
-                }
-                case "unit": {
-                    const res = await deleteUnit({ id: node.id });
-                    toast.success(res.message ?? "Unit deleted successfully.");
-                    break;
-                }
-                case "equipment": {
-                    const res = await deleteEquipment({ id: node.id });
-                    toast.success(res.message ?? "Equipment deleted successfully.");
-                    break;
-                }
-                default:
                     return;
+                case "area":
+                    message = (await deleteArea({ id: node.id })).message;
+                    break;
+                case "unit":
+                    message = (await deleteUnit({ id: node.id })).message;
+                    break;
+                case "equipment":
+                    message = (await deleteEquipment({ id: node.id })).message;
+                    break;
             }
+            toast.success(message ?? `${plantType} deleted successfully.`);
             onClose();
+            router.refresh();
         } catch (error) {
             showApiError(error);
         }
