@@ -1,35 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-    createPlant,
-    deletePlant,
-    getPlantById,
-    getPlants,
-    updatePlant,
-} from "../services/plant.service";
+import { createPlant, deletePlant, getPlantById, getPlants, updatePlant } from "../services/plant.service";
 
-// Query Keys
-const plantKeys = {
-    all: ["plants"] as const,
-    detail: (id: number) => ["plant-by-id", id] as const,
-    hierarchy: ["plant-hierarchy"] as const,
-};
 
-// Get all plants
 export const useGetPlants = (enabled = true) => {
     return useQuery({
-        queryKey: plantKeys.all,
+        queryKey: ["plants"],
         queryFn: async () => {
             const res = await getPlants();
             return res.data;
         },
-        enabled,
+        enabled
     });
 };
 
-// Get plant by id
 export const useGetPlantById = (id?: number) => {
     return useQuery({
-        queryKey: id ? plantKeys.detail(id) : ["plant-by-id"],
+        queryKey: ["plant-by-id", id],
         queryFn: async () => {
             const res = await getPlantById(id!);
             return res.data;
@@ -39,64 +25,61 @@ export const useGetPlantById = (id?: number) => {
     });
 };
 
-// Update plant
 export const useUpdatePlant = () => {
     const queryClient = useQueryClient();
-
     return useMutation({
         mutationFn: updatePlant,
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
-                queryKey: plantKeys.detail(variables.id),
+                queryKey: ["plant-by-id", variables.id],
             });
 
             queryClient.invalidateQueries({
-                queryKey: plantKeys.all,
+                queryKey: ["plants"],
             });
 
             queryClient.invalidateQueries({
-                queryKey: plantKeys.hierarchy,
+                queryKey: ["plant-hierarchy"],
             });
         },
     });
 };
 
-// Create plant
 export const useCreatePlant = () => {
     const queryClient = useQueryClient();
-
     return useMutation({
         mutationFn: createPlant,
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: plantKeys.all,
+                queryKey: ["plants"],
             });
-
             queryClient.invalidateQueries({
-                queryKey: plantKeys.hierarchy,
+                queryKey: ["plant-hierarchy"],
             });
         },
     });
 };
 
-// Delete plant
 export const useDeletePlant = () => {
     const queryClient = useQueryClient();
-
     return useMutation({
         mutationFn: deletePlant,
         onSuccess: (_, variables) => {
             queryClient.removeQueries({
-                queryKey: plantKeys.detail(variables.id),
+                queryKey: ["plant-by-id", variables.id],
             });
 
             queryClient.invalidateQueries({
-                queryKey: plantKeys.all,
+                queryKey: ["plants"],
             });
 
             queryClient.invalidateQueries({
-                queryKey: plantKeys.hierarchy,
+                queryKey: ["plant-hierarchy"],
             });
+
+
         },
-    });
-};
+
+    })
+}
+
