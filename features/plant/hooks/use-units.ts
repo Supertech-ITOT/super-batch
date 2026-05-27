@@ -47,9 +47,12 @@ export const useCreateUnit = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: createUnit,
-        onSuccess: () => {
+        onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
                 queryKey: ["units"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["area-by-id", variables.areaId],
             });
             queryClient.invalidateQueries({
                 queryKey: ["plant-hierarchy"],

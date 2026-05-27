@@ -62,7 +62,7 @@ export default function CreateAreaDialog({ open, onClose, plantId }: Props) {
                         <DialogTitle>Create Area</DialogTitle>
                         <DialogDescription>Create a new area entity.</DialogDescription>
                     </DialogHeader>
-                    <div className="py-4 space-y-4">
+                    <div className="py-4 space-y-6">
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
                                 <Label>Name</Label>
@@ -90,7 +90,7 @@ export default function CreateAreaDialog({ open, onClose, plantId }: Props) {
                             />
                         </div>
                         <div className="flex gap-2">
-                            <div className="space-y-2 relative">
+                            <div className="space-y-2 relative flex-1">
                                 <div className="flex items-center justify-between">
                                     <Label>Area Type</Label>
                                     <CharacterProgress value={watch("areaType")} max={AreaSchemaLimit.areaType.max} />
@@ -98,7 +98,7 @@ export default function CreateAreaDialog({ open, onClose, plantId }: Props) {
                                 <Input
                                     type="text"
                                     disabled={loading}
-                                    placeholder="Manufacturing"
+                                    placeholder="Chemical Area"
                                     maxLength={AreaSchemaLimit.areaType.max}
                                     {...register("areaType")}
                                 />

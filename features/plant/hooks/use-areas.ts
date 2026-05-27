@@ -48,9 +48,12 @@ export const useCreateArea = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: createArea,
-        onSuccess: () => {
+        onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
                 queryKey: ["areas"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["plant-by-id", variables.plantId],
             });
             queryClient.invalidateQueries({
                 queryKey: ["plant-hierarchy"],

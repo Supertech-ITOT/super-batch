@@ -46,9 +46,12 @@ export const useCreateEquipment = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: createEquipment,
-        onSuccess: () => {
+        onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
                 queryKey: ["equipments"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["unit-by-id", variables.unitId],
             });
             queryClient.invalidateQueries({
                 queryKey: ["plant-hierarchy"],

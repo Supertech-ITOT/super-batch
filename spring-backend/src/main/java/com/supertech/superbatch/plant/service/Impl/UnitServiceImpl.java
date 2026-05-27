@@ -61,7 +61,8 @@ public class UnitServiceImpl implements UnitService {
     @Override
     public void update(Long id, UpdateUnitRequest request) {
         Unit unit = unitRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
-        Area area = areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area not found"));
+        Area area = areaRepository.findById(request.areaId())
+                .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
 
         if (unitRepository.existsByNameIgnoreCaseAndAreaId(request.name(), unit.getArea().getId())
                 && !unit.getName().equalsIgnoreCase(request.name())) {

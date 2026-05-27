@@ -1,8 +1,6 @@
 package com.supertech.superbatch.plant.mapper;
 
 import org.springframework.stereotype.Component;
-
-import com.supertech.superbatch.common.util.EnumUtil;
 import com.supertech.superbatch.plant.dto.Equipment.CreateEquipmentRequest;
 import com.supertech.superbatch.plant.dto.Equipment.EquipmentResponse;
 import com.supertech.superbatch.plant.dto.Equipment.UpdateEquipmentRequest;
@@ -18,10 +16,10 @@ public class EquipmentMapper {
                 equipment.getDescription(),
                 equipment.getStatus().name(),
                 equipment.getTagName(),
-                equipment.getUom().getSymbol(),
+                equipment.getUom().name(),
                 equipment.getUnit().getName(),
                 equipment.getUnit().getId(),
-                EnumUtil.formatLabel(equipment.getEquipmentType().name()),
+                equipment.getEquipmentType().name(),
                 equipment.getCreatedAt(),
                 equipment.getUpdatedAt()
 

@@ -57,7 +57,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     public void update(Long id, UpdateEquipmentRequest request) {
         Equipment equipment = equipmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
-        Unit unit = unitRepository.findById(id)
+        Unit unit = unitRepository.findById(request.unitId())
                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
 
         if (equipmentRepository.existsByNameIgnoreCaseAndUnitId(request.name(), equipment.getUnit().getId())

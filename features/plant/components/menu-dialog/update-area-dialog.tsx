@@ -3,30 +3,33 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useForm } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import { useEffect } from "react";
-import FormError from "@/components/form-error";
 import { toast } from "sonner";
 import { showApiError } from "@/lib/show-api-error";
 import { useGetAreaById, useUpdateArea } from "../../hooks/use-areas";
 import { useGetPlants } from "../../hooks/use-plants";
-import { areaSchema, AreaSchema } from "../../schemas/area-schema";
+import { areaSchema, AreaSchema, AreaSchemaLimit } from "../../schemas/area-schema";
+import CharacterProgress from "@/components/character-progress";
+import { Textarea } from "@/components/ui/textarea";
+import { StatusConfig, StatusType } from "../../types/status.type";
+import clsx from "clsx";
 
 type Props = { open: boolean; onClose: () => void; areaId?: number };
 export default function UpdateAreaDialog({ open, onClose, areaId }: Props) {
     const { mutateAsync: updateArea, isPending: isUpdating } = useUpdateArea();
     const { data: plants, isLoading: plantsLoading } = useGetPlants(open);
     const { data: area, isLoading: areaLoading } = useGetAreaById(areaId);
-    const { register, handleSubmit, reset, formState: { errors, isSubmitting, isDirty } } = useForm<AreaSchema>({
+    const { register, handleSubmit, reset, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<AreaSchema>({
         resolver: zodResolver(areaSchema),
-        defaultValues: { name: "", plantId: "" }
+        defaultValues: { name: "", plantId: undefined, description: "", areaType: "", status: StatusType.ACTIVE }
     });
 
     useEffect(() => {
         if (!open || !area || !plants) return;
-        reset({ name: area.name, plantId: String(area.plantId) });
+        reset({ name: area.name, plantId: String(area.plantId), areaType: area.areaType, description: area.description, status: area.status });
     }, [open, area, plants, reset]);
     const loading = isUpdating || plantsLoading || areaLoading || isSubmitting;
 
@@ -35,7 +38,10 @@ export default function UpdateAreaDialog({ open, onClose, areaId }: Props) {
             const res = await updateArea({
                 id: areaId!, data: {
                     name: formData.name,
-                    plantId: Number(formData.plantId)
+                    plantId: Number(formData.plantId),
+                    areaType: formData.areaType,
+                    description: formData.description,
+                    status: formData.status
                 }
             });
             toast.success(res.message ?? "Area updated successfully.");
@@ -46,35 +52,105 @@ export default function UpdateAreaDialog({ open, onClose, areaId }: Props) {
     };
 
     const handleClose = () => {
-        reset({ name: "", plantId: "" });
+        reset({ name: "", plantId: undefined, description: "", areaType: "", status: StatusType.ACTIVE });
         onClose();
+    };
+
+    const onInvalid = (errors: FieldErrors<AreaSchema>) => {
+        const firstError = Object.values(errors)[0];
+        if (firstError?.message) {
+            toast.error(firstError.message.toString());
+        }
     };
 
     return (
         <Dialog open={open} onOpenChange={(value) => { if (!value) handleClose() }}>
             <DialogContent className="sm:max-w-md">
-                <form onSubmit={handleSubmit(onSubmit)}>
+                <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
                     <DialogHeader>
                         <DialogTitle>Update Area</DialogTitle>
                         <DialogDescription> Update Area information</DialogDescription>
                     </DialogHeader>
-                    <div className="py-4 space-y-2">
-                        <Label>Area Name</Label>
-                        <Input
-                            type="text"
-                            disabled={loading}
-                            placeholder="Enter Area Name"
-                            {...register("name")}
-                        />
-                        <FormError msg={errors.name?.message} />
-                    </div>
-                    <div className="py-4 space-y-2">
-                        <Label>Plant</Label>
-                        <Input
-                            type="text"
-                            disabled
-                            value={plants?.find((p) => p.id === area?.plantId)?.name ?? ""}
-                        />
+                    <div className="py-4 space-y-6">
+                        <div className="space-y-2 relative">
+                            <div className="flex items-center justify-between">
+                                <Label>Name</Label>
+                                <CharacterProgress value={watch("name")} max={AreaSchemaLimit.name.max} />
+                            </div>
+                            <Input
+                                type="text"
+                                disabled={loading}
+                                placeholder="GreenLand Area"
+                                maxLength={AreaSchemaLimit.name.max}
+                                {...register("name")}
+                            />
+                        </div>
+                        <div className="space-y-2 relative">
+                            <div className="flex items-center justify-between">
+                                <Label>Description</Label>
+                                <CharacterProgress value={watch("description")} max={AreaSchemaLimit.description.max} />
+                            </div>
+                            <Textarea
+                                disabled={loading}
+                                placeholder="Brief area overview"
+                                className="min-h-30 w-full resize-none break-all overflow-hidden"
+                                maxLength={AreaSchemaLimit.description.max}
+                                {...register("description")}
+                            />
+                        </div>
+                        <div className="flex gap-2">
+                            <div className="space-y-2 relative flex-1">
+                                <div className="flex items-center justify-between">
+                                    <Label>Area Type</Label>
+                                    <CharacterProgress value={watch("areaType")} max={AreaSchemaLimit.areaType.max} />
+                                </div>
+                                <Input
+                                    type="text"
+                                    disabled={loading}
+                                    placeholder="Chemical Area"
+                                    maxLength={AreaSchemaLimit.areaType.max}
+                                    {...register("areaType")}
+                                />
+                            </div>
+                            <div className="space-y-2 flex-1">
+                                <Label>Plant</Label>
+                                <Input
+                                    type="text"
+                                    disabled
+                                    value={plants?.find((p) => p.id === area?.plantId)?.name ?? ""}
+                                />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Status</Label>
+                            <div className="flex rounded-md border overflow-hidden transition-all duration-200">
+                                {StatusConfig.map((status) => {
+                                    const selected = watch("status") === status.value;
+                                    return (
+                                        <Button
+                                            type="button"
+                                            disabled={loading}
+                                            variant="outline"
+                                            key={status.value}
+                                            onClick={() =>
+                                                setValue("status", status.value as StatusType, {
+                                                    shouldDirty: true,
+                                                    shouldValidate: true,
+                                                })
+                                            }
+                                            className={clsx(
+                                                "relative flex-1 h-8 rounded-none border bg-card py-0.5 flex items-center justify-center gap-3 text-left hover:bg-muted/50",
+                                                selected ? "bg-primary/5" : ""
+                                            )}
+                                        >
+                                            <div className={clsx("h-3 w-3 rounded-full", status.dot)} />
+                                            <span className="font-medium text-xs">{status.label}</span>
+                                            {selected && <div className="absolute bottom-0 h-0.5 w-full bg-primary" />}
+                                        </Button>
+                                    );
+                                })}
+                            </div>
+                        </div>
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>

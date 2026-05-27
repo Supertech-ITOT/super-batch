@@ -1,8 +1,6 @@
 package com.supertech.superbatch.plant.mapper;
 
 import org.springframework.stereotype.Component;
-
-import com.supertech.superbatch.common.util.EnumUtil;
 import com.supertech.superbatch.plant.dto.Unit.CreateUnitRequest;
 import com.supertech.superbatch.plant.dto.Unit.UnitResponse;
 import com.supertech.superbatch.plant.dto.Unit.UpdateUnitRequest;
@@ -23,7 +21,7 @@ public class UnitMapper {
                 unit.getStatus().name(),
                 unit.getArea().getId(),
                 unit.getArea().getName(),
-                EnumUtil.formatLabel(unit.getUnitType().name()),
+                unit.getUnitType().name(),
                 totalEquipment,
                 unit.getCreatedAt(),
                 unit.getUpdatedAt());

@@ -5,7 +5,7 @@ export interface AreaResponse {
     id: number;
     name: string;
     description: string;
-    status: string;
+    status: StatusType;
     plantId: number;
     plantName: string;
     areaType: string;

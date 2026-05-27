@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import { useEffect } from "react";
@@ -13,8 +13,13 @@ import { showApiError } from "@/lib/show-api-error";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGetAreas } from "../../hooks/use-areas";
 import { useGetUnitById, useUpdateUnit } from "../../hooks/use-units";
-import { UnitSchema, unitSchema } from "../../schemas/unit-schema";
+import { UnitSchema, unitSchema, UnitSchemaLimit } from "../../schemas/unit-schema";
 import { useGetUnitTypes } from "@/features/common/hooks/useMetadata";
+import CharacterProgress from "@/components/character-progress";
+import { Textarea } from "@/components/ui/textarea";
+import { StatusConfig, StatusType } from "../../types/status.type";
+import clsx from "clsx";
+import { PlantSchema } from "../../schemas/plant-schema";
 
 type Props = { open: boolean; onClose: () => void; unitId?: number };
 export default function UpdateUnitDialog({ open, onClose, unitId }: Props) {
@@ -22,14 +27,14 @@ export default function UpdateUnitDialog({ open, onClose, unitId }: Props) {
     const { data: areas, isLoading: areasLoading } = useGetAreas(open);
     const { data: unit, isLoading: unitLoading } = useGetUnitById(unitId);
     const { data: unitTypes, isLoading: unitTypeIsLoading } = useGetUnitTypes(open);
-    const { register, handleSubmit, reset, control, formState: { errors, isSubmitting, isDirty } } = useForm<UnitSchema>({
+    const { register, handleSubmit, reset, control, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<UnitSchema>({
         resolver: zodResolver(unitSchema),
-        defaultValues: { name: "", areaId: "", unitType: "" }
+        defaultValues: { name: "", areaId: undefined, unitType: undefined, code: "", description: "", status: StatusType.ACTIVE }
     });
 
     useEffect(() => {
         if (!open || !unit || !areas) return;
-        reset({ name: unit.name, areaId: String(unit.areaId), unitType: unit.unitType });
+        reset({ name: unit.name, areaId: String(unit.areaId), unitType: unit.unitType, code: unit.code, description: unit.description, status: unit.status });
     }, [open, unit, areas, reset]);
     const loading = isUpdating || unitLoading || areasLoading || isSubmitting || unitTypeIsLoading;
 
@@ -39,7 +44,10 @@ export default function UpdateUnitDialog({ open, onClose, unitId }: Props) {
                 id: unitId!, data: {
                     name: formData.name,
                     unitType: formData.unitType,
-                    areaId: Number(formData.areaId)
+                    areaId: Number(formData.areaId),
+                    code: formData.code,
+                    description: formData.description,
+                    status: formData.status
                 }
             });
             toast.success(res.message ?? "Unit updated successfully.");
@@ -51,61 +59,134 @@ export default function UpdateUnitDialog({ open, onClose, unitId }: Props) {
     };
 
     const handleClose = () => {
-        reset({ name: "", areaId: "", unitType: "" });
+        reset({ name: "", areaId: undefined, unitType: undefined, code: "", description: "", status: StatusType.ACTIVE });
         onClose();
+    };
+
+    const onInvalid = (errors: FieldErrors<PlantSchema>) => {
+        const firstError = Object.values(errors)[0];
+        if (firstError?.message) {
+            toast.error(firstError.message.toString());
+        }
     };
 
     return (
         <Dialog open={open} onOpenChange={(value) => { if (!value) handleClose() }}>
             <DialogContent className="sm:max-w-md">
-                <form onSubmit={handleSubmit(onSubmit)}>
+                <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
                     <DialogHeader>
                         <DialogTitle>Update Unit</DialogTitle>
                         <DialogDescription> Update Unit information</DialogDescription>
                     </DialogHeader>
-                    <div className="py-4 space-y-2">
-                        <Label>Unit Name</Label>
-                        <Input
-                            type="text"
-                            disabled={loading}
-                            placeholder="Enter Unit Name"
-                            {...register("name")}
-                        />
-                        <FormError msg={errors.name?.message} />
-                    </div>
-                    <div className="py-4 space-y-2">
-                        <Label>Area</Label>
-                        <Input
-                            type="text"
-                            disabled
-                            value={areas?.find((a) => a.id === unit?.areaId)?.name ?? ""}
-                        />
-                    </div>
-                    <div className="py-4 space-y-2">
-                        <Label>Select Unit Type</Label>
-                        <Controller
-                            control={control}
-                            name="unitType"
-                            render={({ field }) => (
-                                <Select
-                                    disabled={loading}
-                                    value={field.value}
-                                    onValueChange={field.onChange}
-                                >
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Select Unit Type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {unitTypes?.map((p) => (
-                                                <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
-                                            ))}
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                            )}
-                        />
-                        <FormError msg={errors.unitType?.message} />
+                    <div className="py-4 space-y-6">
+                        <div className="space-y-2 relative">
+                            <div className="flex items-center justify-between">
+                                <Label>Name</Label>
+                                <CharacterProgress value={watch("name")} max={UnitSchemaLimit.name.max} />
+                            </div>
+                            <Input
+                                type="text"
+                                disabled={loading}
+                                placeholder="Reactor 101"
+                                maxLength={UnitSchemaLimit.name.max}
+                                {...register("name")}
+                            />
+                        </div>
+                        <div className="space-y-2 relative">
+                            <div className="flex items-center justify-between">
+                                <Label>Unit Code</Label>
+                                <CharacterProgress value={watch("code")} max={UnitSchemaLimit.code.max} />
+                            </div>
+                            <Input
+                                type="text"
+                                disabled={loading}
+                                placeholder="R101"
+                                maxLength={UnitSchemaLimit.code.max}
+                                {...register("code")}
+                            />
+                        </div>
+                        <div className="space-y-2 relative">
+                            <div className="flex items-center justify-between">
+                                <Label>Description</Label>
+                                <CharacterProgress value={watch("description")} max={UnitSchemaLimit.description.max} />
+                            </div>
+                            <Textarea
+                                disabled={loading}
+                                placeholder="Brief unit overview"
+                                className="min-h-30 w-full resize-none break-all overflow-hidden"
+                                maxLength={UnitSchemaLimit.description.max}
+                                {...register("description")}
+                            />
+                        </div>
+                        <div className="flex gap-2">
+
+                            <div className="space-y-2 relative flex-1">
+                                <Label>Area</Label>
+                                <Input
+                                    type="text"
+                                    disabled
+                                    value={areas?.find((a) => a.id === unit?.areaId)?.name ?? ""}
+                                />
+                            </div>
+                            <div className="flex-1 space-y-2 relative">
+                                <Label>Select Unit Type</Label>
+                                <Controller
+                                    control={control}
+                                    name="unitType"
+                                    render={({ field }) => (
+                                        <Select
+                                            disabled={loading}
+                                            value={field.value}
+                                            onValueChange={field.onChange}
+                                        >
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Select Unit Type" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    {unitTypes?.map((p) => (
+                                                        <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
+
+                            </div>
+
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Status</Label>
+                            <div className="flex rounded-md border overflow-hidden transition-all duration-200">
+                                {StatusConfig.map((status) => {
+                                    const selected = watch("status") === status.value;
+                                    return (
+                                        <Button
+                                            type="button"
+                                            disabled={loading}
+                                            variant="outline"
+                                            key={status.value}
+                                            onClick={() =>
+                                                setValue("status", status.value as StatusType, {
+                                                    shouldDirty: true,
+                                                    shouldValidate: true,
+                                                })
+                                            }
+                                            className={clsx(
+                                                "relative flex-1 h-8 rounded-none border bg-card py-0.5 flex items-center justify-center gap-3 text-left hover:bg-muted/50",
+                                                selected ? "bg-primary/5" : ""
+                                            )}
+                                        >
+                                            <div className={clsx("h-3 w-3 rounded-full", status.dot)} />
+                                            <span className="font-medium text-xs">{status.label}</span>
+                                            {selected && <div className="absolute bottom-0 h-0.5 w-full bg-primary" />}
+                                        </Button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>

@@ -33,7 +33,7 @@ export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
 
     useEffect(() => {
         if (!open || !areaId) return;
-        reset({ name: "", areaId: String(areaId), unitType: "" })
+        reset({ name: "", areaId: String(areaId), unitType: undefined, code: "", description: "", status: StatusType.ACTIVE })
     }, [open, areaId, reset]);
 
     const loading = isCreating || areasLoading || isSubmitting || unitTypeIsLoading;
@@ -72,7 +72,7 @@ export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
                         <DialogTitle>Create Unit</DialogTitle>
                         <DialogDescription>Create a new Unit entity.</DialogDescription>
                     </DialogHeader>
-                    <div className="py-4 space-y-4">
+                    <div className="py-4 space-y-6">
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
                                 <Label>Name</Label>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ActionType, DialogType, PlantHierarchyResponse } from "../types/plant-hierarchy.types";
+import { ActionType, addParentIds, DialogType, PlantHierarchyResponse } from "../types/plant-hierarchy.types";
 import { usePlantHierarchy } from "../hooks/use-plant-hierarchy";
 import { Skeleton } from "@/components/ui/skeleton";
 import TreeDialogs from "./tree-dialogs";
@@ -12,11 +12,13 @@ import { TREE_CONFIG } from "../constants/tree-config";
 
 export default function PlantTree() {
     const { data, isLoading, isError } = usePlantHierarchy();
+    const hierarchy = data ? addParentIds(data) : [];
     const [selectedNodeKey, setSelectedNodeKey] = useState<string | null>(null);
     const [search, setSearch] = useState("");
-    const filteredData = useFilterTree(data, search);
+    const filteredData = useFilterTree(hierarchy, search);
     const [dialog, setDialog] = useState<DialogType>({ type: null, mode: null, node: null });
     const handleAction = (action: ActionType, node: PlantHierarchyResponse) => {
+        console.log(node)
         const type = action === "create" ? TREE_CONFIG[node.type].childType : node.type;
         if (!type) return;
         setDialog({ type, mode: action, node, });

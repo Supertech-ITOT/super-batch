@@ -24,7 +24,7 @@ export default function DeleteDialog({ open, onClose, node }: Props) {
         try {
             switch (node.type) {
                 case "plant": {
-                    const res = await deletePlant({ id: node.id });
+                    const res = await deletePlant({ id: node.id, });
                     toast.success(res.message ?? "Plant deleted successfully.");
                     router.replace("/PlantModel");
                     break;

@@ -35,7 +35,7 @@ export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) 
     useEffect(() => {
         if (!open || !unitId) return;
 
-        reset({ name: "", unitId: String(unitId), equipmentType: "" })
+        reset({ name: "", unitId: String(unitId), equipmentType: undefined, description: "", status: StatusType.ACTIVE, tagName: "", uom: undefined })
     }, [open, unitId, reset]);
 
     const loading = isCreating || unitsLoading || isSubmitting || equipmentTypeIsLoading || uomTypesIsLoading;
