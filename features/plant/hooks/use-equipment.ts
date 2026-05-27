@@ -47,12 +47,6 @@ export const useCreateEquipment = () => {
                 queryKey: queryKeys.equipments,
             });
             queryClient.invalidateQueries({
-                queryKey: queryKeys.unit(variables.unitId)
-            });
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.equipmentsByUnit(variables.unitId),
-            });
-            queryClient.invalidateQueries({
                 queryKey: queryKeys.plantHierarchy,
             });
         },

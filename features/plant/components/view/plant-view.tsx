@@ -1,3 +1,5 @@
+"use client"
+
 import StatsCards from "@/components/stats-card";
 import StatusBadge from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
@@ -9,10 +11,17 @@ import { useGetPlantById } from "../../hooks/use-plants";
 import { useGetAreasByPlantId } from "../../hooks/use-areas";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import TreeDialogs from "../tree-dialogs";
+import { useState } from "react";
+import { DialogType } from "../../types/plant-hierarchy.types";
+import UpdatePlantDialog from "../menu-dialog/update-plant-dialog";
+import { boolean } from "zod";
 
 export default function PlantView({ id }: { id: number }) {
     const { data: plant, isLoading: plantIsLoading } = useGetPlantById(id);
     const { data: areas, isLoading: areasIsLoading } = useGetAreasByPlantId(id);
+    const [dialog, setDialog] = useState<DialogType>({ type: null, mode: null, node: null });
+    const [open, setOpen] = useState<boolean>(false);
     const loading = plantIsLoading || areasIsLoading || !plant || !areas
     if (loading) {
         return (
@@ -59,6 +68,7 @@ export default function PlantView({ id }: { id: number }) {
                     <Button
                         variant="outline"
                         className="bg-card! w-full sm:w-auto min-w-30"
+                        onClick={() => setOpen(true)}
                     >
                         <PenLineIcon className="w-4 h-4 text-foreground" />
                         <span className="text-foreground">Edit</span>
@@ -67,10 +77,12 @@ export default function PlantView({ id }: { id: number }) {
                     <Button
                         variant="outline"
                         className="bg-card! w-full sm:w-auto min-w-30"
+                        onClick={() => setOpen(true)}
                     >
                         <Trash2 className="w-4 h-4 text-destructive" />
                         <span className="text-destructive">Delete</span>
                     </Button>
+                    <UpdatePlantDialog open={open} onClose={() => setOpen(false)} plantId={id} />
                 </div>
             </div>
             <Separator />
@@ -83,6 +95,7 @@ export default function PlantView({ id }: { id: number }) {
             <div className="flex-1 min-h-0 my-4">
                 <DataTable columns={columns} data={areas} />
             </div>
+
         </div>
     )
 } 

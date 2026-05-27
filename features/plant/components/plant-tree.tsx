@@ -18,7 +18,6 @@ export default function PlantTree() {
     const filteredData = useFilterTree(hierarchy, search);
     const [dialog, setDialog] = useState<DialogType>({ type: null, mode: null, node: null });
     const handleAction = (action: ActionType, node: PlantHierarchyResponse) => {
-        console.log(node)
         const type = action === "create" ? TREE_CONFIG[node.type].childType : node.type;
         if (!type) return;
         setDialog({ type, mode: action, node, });

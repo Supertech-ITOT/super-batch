@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createUnit, deleteUnit, getByAreaId, getUnitById, getUnits, updateUnit } from "../services/unit.service";
+import { queryKeys } from "./query-keys";
 
 export const useGetUnits = (enabled = true) => {
     return useQuery({
-        queryKey: ["units"],
+        queryKey: queryKeys.units,
         queryFn: async () => {
             const res = await getUnits();
             return res.data;
@@ -14,7 +15,7 @@ export const useGetUnits = (enabled = true) => {
 
 export const useGetUnitById = (id?: number) => {
     return useQuery({
-        queryKey: ["unit-by-id", id],
+        queryKey: id ? queryKeys.area(id) : [],
         queryFn: async () => {
             const res = await getUnitById(id!);
             return res.data;
@@ -29,16 +30,10 @@ export const useUpdateUnit = () => {
         mutationFn: updateUnit,
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
-                queryKey: ["unit-by-id", variables.id],
+                queryKey: queryKeys.units,
             });
             queryClient.invalidateQueries({
-                queryKey: ["units-by-areaId", variables.data.areaId],
-            });
-            queryClient.invalidateQueries({
-                queryKey: ["units"],
-            });
-            queryClient.invalidateQueries({
-                queryKey: ["plant-hierarchy"],
+                queryKey: queryKeys.plantHierarchy,
             });
         },
     });
@@ -50,16 +45,10 @@ export const useCreateUnit = () => {
         mutationFn: createUnit,
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
-                queryKey: ["units"],
+                queryKey: queryKeys.units,
             });
             queryClient.invalidateQueries({
-                queryKey: ["area-by-id", variables.areaId],
-            });
-            queryClient.invalidateQueries({
-                queryKey: ["units-by-areaId", variables.areaId],
-            });
-            queryClient.invalidateQueries({
-                queryKey: ["plant-hierarchy"],
+                queryKey: queryKeys.plantHierarchy,
             });
         },
     });
@@ -71,16 +60,11 @@ export const useDeleteUnit = () => {
         mutationFn: deleteUnit,
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
-                queryKey: ["unit-by-id", variables.id],
+                queryKey: queryKeys.units,
             });
             queryClient.invalidateQueries({
-                queryKey: ["units"],
+                queryKey: queryKeys.plantHierarchy,
             });
-            queryClient.invalidateQueries({
-                queryKey: ["plant-hierarchy"],
-            });
-
-
         },
 
     });
@@ -88,7 +72,7 @@ export const useDeleteUnit = () => {
 
 export const useGetUnitsByAreaId = (areaId?: number) => {
     return useQuery({
-        queryKey: ["units-by-areaId", areaId],
+        queryKey: areaId ? queryKeys.unitsByArea(areaId) : [],
         queryFn: async () => {
             const res = await getByAreaId(areaId!);
             return res.data;
