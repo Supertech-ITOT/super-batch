@@ -2,6 +2,9 @@ package com.supertech.superbatch.plant.entity;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.supertech.superbatch.common.enums.StatusType;
 import com.supertech.superbatch.common.enums.UomType;
@@ -40,8 +43,10 @@ public class Equipment {
     @Enumerated(EnumType.STRING)
     private EquipmentType equipmentType;
 
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @ManyToOne
