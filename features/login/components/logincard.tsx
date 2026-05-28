@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema, loginSchema } from "../schemas/login-schema";
 import FormError from "@/components/form-error";
+import Image from "next/image";
 
 export default function LoginCard() {
     const [showPassword, setShowPassword] = useState(false);
@@ -26,11 +27,15 @@ export default function LoginCard() {
         <div className="flex w-full max-w-md flex-col rounded-2xl border bg-card/60 p-10 shadow-2xl backdrop-blur-xl">
             {/* Logo Section */}
             <div className="flex items-center justify-center gap-4">
-                <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 shadow-lg backdrop-blur-md">
-                    <h1 className="text-6xl font-extrabold tracking-tight text-primary">
-                        S
-                    </h1>
-                </div>
+                <Image
+                    src="/icon.png"
+                    alt="SuperBatch Icon"
+                    priority
+                    width={102}
+                    height={102}
+                    draggable={false}
+                    className="object-contain"
+                />
             </div>
             {/* Content Section */}
             <div>

@@ -3,9 +3,10 @@ import { FileText, CalendarClock, BookOpen, Factory, Users, ShieldCheck, Clipboa
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { useState } from "react";
+import Image from "next/image";
 
 type RouteType = {
     label: string;
@@ -66,6 +67,7 @@ const AdminRoutes: RouteType[] = [
 
 export default function SideBar() {
     const pathname = usePathname();
+    const router = useRouter();
     const [open, setOpen] = useState<boolean>(true);
     const user = { name: "Manav Pande", role: "Administrator", };
     const initials = user.name.split(" ").map((word) => word[0]).join("").toUpperCase();
@@ -79,9 +81,45 @@ export default function SideBar() {
             )}
             <aside className={`min-h-screen z-50 border-r transition-all duration-300 bg-card overflow-hidden flex flex-col  ${open ? "w-60 p-4" : "w-18 items-center"}`}>
                 <div className="flex justify-between items-center my-4">
-                    {open && <h1 className="text-2xl font-bold ">Super Batch</h1>}
-                    <Button onClick={() => setOpen((prev) => !prev)} variant="ghost" size="icon-lg">
-                        <PanelLeftClose className="w-6! h-6! text-muted-foreground" />
+
+                    <Button
+                        onClick={() => setOpen((prev) => !prev)}
+                        variant="ghost"
+                        size="icon-lg"
+                        className="h-auto w-full justify-start "
+                    >
+                        {open ? (
+                            <div className="w-46">
+                                <Image
+                                    src="/superbatch-light.png"
+                                    alt="SuperBatch Light Logo"
+                                    priority
+                                    width={500}
+                                    height={120}
+                                    draggable={false}
+                                    className="w-full h-auto object-contain dark:hidden"
+                                />
+                                <Image
+                                    src="/superbatch-dark.png"
+                                    alt="SuperBatch Dark Logo"
+                                    priority
+                                    width={500}
+                                    height={120}
+                                    draggable={false}
+                                    className="hidden dark:block w-full h-auto object-contain"
+                                />
+                            </div>
+                        ) : (
+                            <Image
+                                src="/icon.png"
+                                alt="SuperBatch Icon"
+                                priority
+                                width={20}
+                                height={20}
+                                draggable={false}
+                                className="w-8 h-8 object-contain"
+                            />
+                        )}
                     </Button>
                 </div>
 
@@ -147,7 +185,7 @@ export default function SideBar() {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent side="top" align="end" className="min-w-fit!">
-                            <DropdownMenuItem className="cursor-pointer text-destructive justify-center">
+                            <DropdownMenuItem onClick={() => router.replace("/")} className="cursor-pointer text-destructive justify-center">
                                 <LogOut className="w-4 h-4 mr-2" />
                                 {open && <span>Logout</span>}
                             </DropdownMenuItem>

@@ -9,6 +9,7 @@ export const useGetUnits = (enabled = true) => {
             const res = await getUnits();
             return res.data;
         },
+        staleTime: 0,
         enabled
     })
 }
@@ -20,6 +21,7 @@ export const useGetUnitById = (id?: number) => {
             const res = await getUnitById(id!);
             return res.data;
         },
+        staleTime: 0,
         enabled: !!id,
     });
 };

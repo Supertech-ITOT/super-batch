@@ -13,6 +13,7 @@ export default function Home() {
           alt="Background"
           fill
           priority
+          draggable={false}
           className="object-cover dark:hidden"
         />
 
@@ -21,34 +22,35 @@ export default function Home() {
           alt="Background"
           fill
           priority
+          draggable={false}
           className="hidden object-cover dark:block"
         />
       </div>
-      <div className="xl:flex hidden flex-1 flex-col gap-4">
+      <div className="xl:flex hidden flex-1 flex-col ">
         <div className="relative z-10 flex flex-col h-full px-10 pt-10">
-          <div className="flex justify-start z-10 mt-10">
-            {/* Logo Section */}
-            <div className="flex items-center gap-4">
-              {/* Icon */}
-              <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 shadow-lg backdrop-blur-md">
-                <h1 className="text-6xl font-extrabold tracking-tight text-primary">
-                  S
-                </h1>
-              </div>
-              {/* Title */}
-              <div className="flex flex-col">
-                <h1 className="text-5xl font-extrabold">
-                  SUPER
-                  <span className="ml-1 text-primary">BATCH</span>
-                </h1>
-
-                <p className="mt-1 text-sm font-medium tracking-wide text-muted-foreground">
-                  Batch Control | Manufacturing Excellence
-                </p>
-              </div>
-            </div>
+          <div className="flex z-10 select-none">
+            <Image
+              src="/superbatch-light.png"
+              alt="SuperBatch Light Logo"
+              priority
+              width={640}
+              height={100}
+              draggable={false}
+              sizes="(max-width: 768px) 320px, 640px"
+              className="h-auto w-auto object-contain dark:hidden"
+            />
+            <Image
+              src="/superbatch-dark.png"
+              alt="SuperBatch Dark Logo"
+              priority
+              width={640}
+              height={100}
+              draggable={false}
+              sizes="(max-width: 768px) 320px, 640px"
+              className="h-auto w-auto object-contain hidden dark:block"
+            />
           </div>
-          <div className="mt-20">
+          <div className="mt-8">
             <h2 className="text-3xl font-bold">
               Enterprise Batch Management Solution
             </h2>
