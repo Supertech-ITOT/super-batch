@@ -59,7 +59,7 @@ function TreeNode({ node, level = 0, onSelect, onAction, selectedNodeKey }: Prop
                     <ContextMenuTrigger asChild>
                         <Button
                             variant="ghost"
-                            onClick={() => router.replace(`/PlantModel/${node.type}?id=${node.id}`)}
+                            onClick={() => router.push(`/PlantModel/${node.type}?id=${node.id}`)}
                             onContextMenu={() => onSelect(node)}
                             className={cn(
                                 "flex h-8 flex-1 items-center justify-start gap-2 rounded-md text-primary px-2 transition-all",

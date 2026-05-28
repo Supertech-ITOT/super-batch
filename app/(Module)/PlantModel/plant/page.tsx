@@ -13,7 +13,7 @@ export default function PlantPage() {
             {/* Header */}
             <div className="shrink-0 border-b p-4 flex gap-4 items-end">
 
-                <Button onClick={() => router.replace("/PlantModel")} variant="outline" className=" size-12 hover:scale-110 transition-all duration-200 bg-card! shadow  rounded-full border">
+                <Button onClick={() => router.back()} variant="outline" className=" size-12 hover:scale-110 transition-all duration-200 bg-card! shadow  rounded-full border">
                     <ChevronLeft className="w-6! h-6!" />
                 </Button>
                 <div className="flex flex-col">

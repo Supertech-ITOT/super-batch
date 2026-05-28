@@ -10,6 +10,7 @@ export const useGetAreas = (enabled = true) => {
             const res = await getAreas();
             return res.data;
         },
+        staleTime: 0,
         enabled
     })
 }
@@ -21,6 +22,7 @@ export const useGetAreaById = (id?: number) => {
             const res = await getAreaById(id!);
             return res.data;
         },
+        staleTime: 0,
         enabled: !!id,
     });
 };
@@ -78,6 +80,7 @@ export const useGetAreasByPlantId = (plantId?: number) => {
             const res = await getByPlantId(plantId!);
             return res.data;
         },
+        staleTime: 0,
         enabled: !!plantId,
     });
 

@@ -5,12 +5,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+import { useRouter } from "next/navigation"
+interface DataTableProps<
+    TData extends { id: number },
+    TValue
+> {
+    columns: ColumnDef<TData, TValue>[];
+    data: TData[];
 }
 
-const DataTable = <TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) => {
+const DataTable = <TData extends { id: number }, TValue>({ columns, data }: DataTableProps<TData, TValue>) => {
+    const router = useRouter();
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const table = useReactTable({
@@ -62,7 +67,7 @@ const DataTable = <TData, TValue>({ columns, data }: DataTableProps<TData, TValu
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow
-                                    key={row.id}
+                                    key={row.id} onClick={() => router.push(`/PlantModel/area?id=${row.original.id}`)}
                                     data-state={row.getIsSelected() && "selected"}
                                 >
                                     {row.getVisibleCells().map((cell) => (

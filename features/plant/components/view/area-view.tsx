@@ -14,11 +14,10 @@ import { DialogType } from "../../types/plant-hierarchy.types";
 import TreeDialogs from "../tree-dialogs";
 
 
-
 export default function AreaView({ id }: { id: number }) {
     const { data: area, isLoading: areaIsLoading } = useGetAreaById(id);
     const { data: units, isLoading: unitsIsLoading } = useGetUnitsByAreaId(id);
-    const [dialog, setDialog] = useState<DialogType>({ type: null, mode: null, node: null });
+    const [dialog, setDialog] = useState<DialogType & { redirect?: boolean }>({ type: null, mode: null, node: null, redirect: false });
     const loading = unitsIsLoading || areaIsLoading || !area || !units
     if (loading) {
         return (
@@ -60,7 +59,7 @@ export default function AreaView({ id }: { id: number }) {
                     <Button
                         variant="outline"
                         className="bg-card! w-full sm:w-auto min-w-30"
-                        onClick={() => setDialog({ type: "area", mode: "edit", node: { id: area.id, name: area.name, type: "area" } })}
+                        onClick={() => setDialog({ type: "area", mode: "edit", node: { id: area.id, name: area.name, type: "area" }, redirect: false })}
                     >
                         <PenLineIcon className="w-4 h-4 text-foreground" />
                         <span className="text-foreground">Edit</span>
@@ -69,12 +68,12 @@ export default function AreaView({ id }: { id: number }) {
                     <Button
                         variant="outline"
                         className="bg-card! w-full sm:w-auto min-w-30"
-                        onClick={() => setDialog({ type: "area", mode: "delete", node: { id: area.id, name: area.name, type: "area" } })}
+                        onClick={() => setDialog({ type: "area", mode: "delete", node: { id: area.id, name: area.name, type: "area" }, redirect: true })}
                     >
                         <Trash2 className="w-4 h-4 text-destructive" />
                         <span className="text-destructive">Delete</span>
                     </Button>
-                    <TreeDialogs dialog={dialog} onClose={() => setDialog({ type: null, mode: null, node: null, })} redirect />
+                    <TreeDialogs dialog={dialog} redirect={dialog.redirect} onClose={() => setDialog({ type: null, mode: null, node: null, redirect: false })} />
                 </div>
             </div>
             <Separator />
@@ -84,7 +83,10 @@ export default function AreaView({ id }: { id: number }) {
             </div>
             <Separator />
             <div className="flex-1 min-h-0 my-4">
-                <DataTable columns={columns} data={units} />
+                <DataTable
+                    columns={columns({ setDialog })}
+                    data={units}
+                />
             </div>
         </div>
     )

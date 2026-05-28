@@ -10,6 +10,7 @@ export const useGetPlants = (enabled = true) => {
             const res = await getPlants();
             return res.data;
         },
+        staleTime: 0,
         enabled
     });
 };

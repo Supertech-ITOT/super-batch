@@ -19,7 +19,7 @@ import { DialogType } from "../../types/plant-hierarchy.types";
 export default function PlantView({ id }: { id: number }) {
     const { data: plant, isLoading: plantIsLoading } = useGetPlantById(id);
     const { data: areas, isLoading: areasIsLoading } = useGetAreasByPlantId(id);
-    const [dialog, setDialog] = useState<DialogType>({ type: null, mode: null, node: null });
+    const [dialog, setDialog] = useState<DialogType & { redirect?: boolean }>({ type: null, mode: null, node: null, redirect: false });
     const loading = plantIsLoading || areasIsLoading || !plant || !areas
     if (loading) {
         return (
@@ -66,7 +66,7 @@ export default function PlantView({ id }: { id: number }) {
                     <Button
                         variant="outline"
                         className="bg-card! w-full sm:w-auto min-w-30"
-                        onClick={() => setDialog({ type: "plant", mode: "edit", node: { id: plant.id, name: plant.name, type: "plant" } })}
+                        onClick={() => setDialog({ type: "plant", mode: "edit", node: { id: plant.id, name: plant.name, type: "plant" }, redirect: false })}
                     >
                         <PenLineIcon className="w-4 h-4 text-foreground" />
                         <span className="text-foreground">Edit</span>
@@ -75,12 +75,12 @@ export default function PlantView({ id }: { id: number }) {
                     <Button
                         variant="outline"
                         className="bg-card! w-full sm:w-auto min-w-30"
-                        onClick={() => setDialog({ type: "plant", mode: "delete", node: { id: plant.id, name: plant.name, type: "plant" } })}
+                        onClick={() => setDialog({ type: "plant", mode: "delete", node: { id: plant.id, name: plant.name, type: "plant" }, redirect: true })}
                     >
                         <Trash2 className="w-4 h-4 text-destructive" />
                         <span className="text-destructive">Delete</span>
                     </Button>
-                    <TreeDialogs dialog={dialog} onClose={() => setDialog({ type: null, mode: null, node: null, })} redirect />
+                    <TreeDialogs dialog={dialog} redirect={dialog.redirect} onClose={() => setDialog({ type: null, mode: null, node: null, redirect: false })} />
                 </div>
             </div>
             <Separator />
@@ -91,7 +91,10 @@ export default function PlantView({ id }: { id: number }) {
             </div>
             <Separator />
             <div className="flex-1 min-h-0 my-4">
-                <DataTable columns={columns} data={areas} />
+                <DataTable
+                    columns={columns({ setDialog })}
+                    data={areas}
+                />
             </div>
 
         </div>

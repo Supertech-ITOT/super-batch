@@ -9,6 +9,7 @@ export const useGetEquipment = () => {
             const res = await getEquipments();
             return res.data;
         },
+        staleTime: 0,
     });
 };
 
@@ -19,6 +20,7 @@ export const useGetEquipmentById = (id?: number) => {
             const res = await getEquipmentById(id!);
             return res.data;
         },
+        staleTime: 0,
         enabled: !!id,
     });
 };
@@ -27,7 +29,7 @@ export const useUpdateEquipment = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: updateEquipment,
-        onSuccess: () => {
+        onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
                 queryKey: queryKeys.equipments,
             });
@@ -78,6 +80,7 @@ export const useGetEquipmentsByUnitId = (unitId?: number) => {
             const res = await getByUnitId(unitId!);
             return res.data;
         },
+        staleTime: 0,
         enabled: !!unitId,
     });
 

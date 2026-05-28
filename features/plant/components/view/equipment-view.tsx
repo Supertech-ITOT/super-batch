@@ -13,7 +13,7 @@ import TreeDialogs from "../tree-dialogs";
 
 export default function EquipmentView({ id }: { id: number }) {
     const { data: equipment, isLoading: equipmentIsLoading } = useGetEquipmentById(id);
-    const [dialog, setDialog] = useState<DialogType>({ type: null, mode: null, node: null });
+    const [dialog, setDialog] = useState<DialogType & { redirect?: boolean }>({ type: null, mode: null, node: null, redirect: false });
     const loading = equipmentIsLoading || !equipment
     if (loading) {
         return (
@@ -41,7 +41,7 @@ export default function EquipmentView({ id }: { id: number }) {
                     <Button
                         variant="outline"
                         className="bg-card! w-full sm:w-auto min-w-30"
-                        onClick={() => setDialog({ type: "equipment", mode: "edit", node: { id: equipment.id, name: equipment.name, type: "equipment" } })}
+                        onClick={() => setDialog({ type: "equipment", mode: "edit", node: { id: equipment.id, name: equipment.name, type: "equipment" }, redirect: false })}
                     >
                         <PenLineIcon className="w-4 h-4 text-foreground" />
                         <span className="text-foreground">Edit</span>
@@ -50,12 +50,13 @@ export default function EquipmentView({ id }: { id: number }) {
                     <Button
                         variant="outline"
                         className="bg-card! w-full sm:w-auto min-w-30"
-                        onClick={() => setDialog({ type: "equipment", mode: "delete", node: { id: equipment.id, name: equipment.name, type: "equipment" } })}
+                        onClick={() => setDialog({ type: "equipment", mode: "delete", node: { id: equipment.id, name: equipment.name, type: "equipment" }, redirect: true })}
                     >
+
                         <Trash2 className="w-4 h-4 text-destructive" />
                         <span className="text-destructive">Delete</span>
                     </Button>
-                    <TreeDialogs dialog={dialog} onClose={() => setDialog({ type: null, mode: null, node: null, })} redirect />
+                    <TreeDialogs dialog={dialog} redirect={dialog.redirect} onClose={() => setDialog({ type: null, mode: null, node: null, redirect: false })} />
                 </div>
             </div>
             <Separator />
