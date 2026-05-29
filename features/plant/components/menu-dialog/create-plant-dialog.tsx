@@ -11,7 +11,7 @@ import { showApiError } from "@/lib/show-api-error";
 import { useCreatePlant } from "../../hooks/use-plants";
 import { PlantSchema, plantSchema, PlantSchemaLimit } from "../../schemas/plant-schema";
 import { Textarea } from "@/components/ui/textarea";
-import { StatusConfig, StatusType } from "../../types/status.type";
+import { StatusConfig, StatusType } from "../../../common/types/status.type";
 import clsx from "clsx";
 import CharacterProgress from "@/components/character-progress";
 

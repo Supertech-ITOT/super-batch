@@ -1,6 +1,8 @@
 import PlantMenu from "@/features/plant/components/plant-menu";
+import PlantTab from "@/features/plant/components/plant-tab";
 import PlantTree from "@/features/plant/components/plant-tree";
 import { Boxes, Factory } from "lucide-react";
+
 
 export default function PlantModelPage() {
 
@@ -22,16 +24,17 @@ export default function PlantModelPage() {
 
             {/* Content */}
             <div className="flex-1 flex flex-col min-h-0 p-4 gap-2">
-                <div className="flex justify-end">
+                <div className="flex justify-between">
+                    <PlantTab />
                     <PlantMenu />
                 </div>
                 <div className="flex flex-1 min-h-0 gap-2">
                     {/* Tree */}
-                    <div className="h-full min-w-80 rounded-sm border bg-card p-3">
+                    <div className="h-full min-w-80 rounded-lg border bg-card p-3">
                         <PlantTree />
                     </div>
                     {/* Details */}
-                    <div className="flex h-full flex-1 items-center justify-center rounded-xl border bg-card p-6">
+                    <div className="flex h-full flex-1 items-center justify-center rounded-lg border bg-card p-6">
                         <div className="flex max-w-sm flex-col items-center text-center">
                             <div className="mb-4 rounded-full border bg-muted p-6">
                                 <Boxes className="h-16 w-16 text-muted-foreground" />

@@ -13,7 +13,7 @@ export default function PlantMenu() {
         <>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button className="h-12 gap-2 bg-card hover:bg-card shadow" >
+                    <Button className="h-12 gap-2 bg-card hover:bg-card shadow rounded-lg!" >
                         <div className="bg-primary/20 rounded-md p-2">
                             <Plus className="w-4! h-4! text-primary" />
                         </div>

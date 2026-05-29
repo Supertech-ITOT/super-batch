@@ -15,7 +15,7 @@ export default function SettingMenu() {
     const [option, setOption] = useState<SettingOptions>("general");
     return (
         <>
-            <div className="h-full min-w-80 overflow-y-auto rounded-sm border bg-card p-3 scrollbar-none">
+            <div className="h-full min-w-80 overflow-y-auto rounded-lg border bg-card p-3 scrollbar-none">
                 <div className="flex flex-col gap-2">
                     {Menus.map((m, idx) => {
                         const isActive = option === m.value;
@@ -36,7 +36,7 @@ export default function SettingMenu() {
                     })}
                 </div>
             </div>
-            <div className="h-full w-full rounded-sm border bg-card p-3">
+            <div className="h-full w-full rounded-lg border bg-card p-3">
                 {option === "general" && <GeneralSetting />}
             </div>
         </>

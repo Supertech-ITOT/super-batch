@@ -1,4 +1,4 @@
-import { StatusType } from "./status.type";
+import { StatusType } from "../../common/types/status.type";
 
 
 export interface AreaResponse {

@@ -14,7 +14,7 @@ import { useGetPlants } from "../../hooks/use-plants";
 import { areaSchema, AreaSchema, AreaSchemaLimit } from "../../schemas/area-schema";
 import CharacterProgress from "@/components/character-progress";
 import { Textarea } from "@/components/ui/textarea";
-import { StatusConfig, StatusType } from "../../types/status.type";
+import { StatusConfig, StatusType } from "../../../common/types/status.type";
 import clsx from "clsx";
 
 type Props = { open: boolean; onClose: () => void; areaId?: number };

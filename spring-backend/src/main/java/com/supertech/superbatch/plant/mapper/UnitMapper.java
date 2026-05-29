@@ -18,10 +18,10 @@ public class UnitMapper {
                 unit.getName(),
                 unit.getCode(),
                 unit.getDescription(),
-                unit.getStatus().name(),
+                unit.getStatus(),
                 unit.getArea().getId(),
                 unit.getArea().getName(),
-                unit.getUnitType().name(),
+                unit.getUnitType(),
                 totalEquipment,
                 unit.getCreatedAt(),
                 unit.getUpdatedAt());

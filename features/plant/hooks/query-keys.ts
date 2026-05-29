@@ -14,5 +14,11 @@ export const queryKeys = {
     equipment: (id: number) => ["equipments", id] as const,
     equipmentsByUnit: (unitId: number) => ["equipments", "unit", unitId] as const,
 
+    materials: ["materials"] as const,
+    material: (id: number) => ["materials", id] as const,
+
+    parameters: ["parameters"] as const,
+    parameter: (id: number) => ["parameters", id] as const,
+
     plantHierarchy: ["plant-hierarchy"] as const,
 };

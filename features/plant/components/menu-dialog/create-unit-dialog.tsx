@@ -17,7 +17,7 @@ import { useGetUnitTypes } from "@/features/common/hooks/useMetadata";
 import { useEffect } from "react";
 import CharacterProgress from "@/components/character-progress";
 import { Textarea } from "@/components/ui/textarea";
-import { StatusConfig, StatusType } from "../../types/status.type";
+import { StatusConfig, StatusType } from "../../../common/types/status.type";
 import clsx from "clsx";
 import { PlantSchema } from "../../schemas/plant-schema";
 

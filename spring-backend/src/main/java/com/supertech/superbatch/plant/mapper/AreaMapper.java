@@ -31,7 +31,7 @@ public class AreaMapper {
                                 area.getPlant().getId(),
                                 area.getPlant().getName(),
                                 area.getDescription(),
-                                area.getStatus().name(),
+                                area.getStatus(),
                                 area.getAreaType(),
                                 totalUnit,
                                 totalEquipment,

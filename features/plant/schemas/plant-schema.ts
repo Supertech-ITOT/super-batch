@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { StatusType } from "../types/status.type";
+import { StatusType } from "../../common/types/status.type";
 
 export const PlantSchemaLimit = {
     name: { min: 3, max: 100, },

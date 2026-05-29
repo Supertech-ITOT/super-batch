@@ -14,7 +14,7 @@ import { useGetUnits } from "../../hooks/use-units";
 import { useGetEquipmentTypes, useGetUomTypes } from "@/features/common/hooks/useMetadata";
 import { useGetEquipmentById, useUpdateEquipment } from "../../hooks/use-equipment";
 import { equipmentSchema, EquipmentSchema, EquipmentSchemaLimit } from "../../schemas/equipment-schema";
-import { StatusConfig, StatusType } from "../../types/status.type";
+import { StatusConfig, StatusType } from "../../../common/types/status.type";
 import { PlantSchema } from "../../schemas/plant-schema";
 import CharacterProgress from "@/components/character-progress";
 import { Textarea } from "@/components/ui/textarea";

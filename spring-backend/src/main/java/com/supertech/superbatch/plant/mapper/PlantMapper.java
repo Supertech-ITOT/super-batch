@@ -38,7 +38,7 @@ public class PlantMapper {
                                 plant.getName(),
                                 plant.getDescription(),
                                 plant.getLocation(),
-                                plant.getStatus().name(),
+                                plant.getStatus(),
                                 plant.getPlantType(),
                                 totalArea,
                                 totalUnit,

@@ -6,6 +6,7 @@ import com.supertech.superbatch.common.enums.StatusType;
 import com.supertech.superbatch.common.enums.UomType;
 import com.supertech.superbatch.common.util.EnumUtil;
 import com.supertech.superbatch.plant.enums.EquipmentType;
+import com.supertech.superbatch.plant.enums.MaterialType;
 import com.supertech.superbatch.plant.enums.UnitType;
 
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,16 @@ public class MetadataController {
                 type.name()))
                 .toList();
         return ResponseEntity.ok(ApiResponse.success("Unit types fetched successfully", data));
+
+    }
+
+    @GetMapping("/material-types")
+    public ResponseEntity<ApiResponse<List<OptionDto>>> getMaterialTypes() {
+        List<OptionDto> data = Arrays.stream(MaterialType.values()).map(type -> new OptionDto(
+                EnumUtil.formatLabel(type.name()),
+                type.name()))
+                .toList();
+        return ResponseEntity.ok(ApiResponse.success("Material types fetched successfully", data));
 
     }
 

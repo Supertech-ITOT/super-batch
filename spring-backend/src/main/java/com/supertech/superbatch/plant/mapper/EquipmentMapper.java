@@ -14,12 +14,12 @@ public class EquipmentMapper {
                 equipment.getId(),
                 equipment.getName(),
                 equipment.getDescription(),
-                equipment.getStatus().name(),
+                equipment.getStatus(),
                 equipment.getTagName(),
-                equipment.getUom().name(),
+                equipment.getUom(),
                 equipment.getUnit().getName(),
                 equipment.getUnit().getId(),
-                equipment.getEquipmentType().name(),
+                equipment.getEquipmentType(),
                 equipment.getCreatedAt(),
                 equipment.getUpdatedAt()
 
