@@ -1,6 +1,6 @@
-import FeatureCard from "@/features/login/components/featurecard";
-import FooterCard from "@/features/login/components/footercard";
-import LoginCard from "@/features/login/components/logincard";
+import FeatureCard from "@/components/featurecard";
+import FooterCard from "@/components/footercard";
+import LoginCard from "@/features/auth/components/logincard";
 import { Activity, BadgeCheck, FileText, Layers3, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 
