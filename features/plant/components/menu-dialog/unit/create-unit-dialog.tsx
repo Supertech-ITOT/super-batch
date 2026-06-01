@@ -10,54 +10,51 @@ import FormError from "@/components/form-error";
 import { toast } from "sonner";
 import { showApiError } from "@/lib/show-api-error";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useGetEquipmentTypes, useGetUomTypes } from "@/features/common/hooks/useMetadata";
+import { useGetAreas } from "../../../hooks/use-areas";
+import { useCreateUnit } from "../../../hooks/use-units";
+import { UnitSchema, unitSchema, UnitSchemaLimit } from "../../../schemas/unit-schema";
+import { useGetUnitTypes } from "@/features/common/hooks/useMetadata";
 import { useEffect } from "react";
-import { useCreateEquipment } from "../../hooks/use-equipment";
-import { equipmentSchema, EquipmentSchema, EquipmentSchemaLimit } from "../../schemas/equipment-schema";
-import { useGetUnits } from "../../hooks/use-units";
 import CharacterProgress from "@/components/character-progress";
 import { Textarea } from "@/components/ui/textarea";
-import { StatusConfig, StatusType } from "../../../common/types/status.type";
+import { StatusConfig, StatusType } from "../../../../common/types/status.type";
 import clsx from "clsx";
-import { PlantSchema } from "../../schemas/plant-schema";
+import { PlantSchema } from "../../../schemas/plant-schema";
 
-type Props = { open: boolean; onClose: () => void; unitId?: number };
-export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) {
-    const { mutateAsync: createEquipment, isPending: isCreating } = useCreateEquipment();
-    const { data: units, isLoading: unitsLoading } = useGetUnits(open);
-    const { data: equipmentTypes, isLoading: equipmentTypeIsLoading } = useGetEquipmentTypes(open);
-    const { data: uomTypes, isLoading: uomTypesIsLoading } = useGetUomTypes(open);
-    const { register, handleSubmit, reset, control, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<EquipmentSchema>({
-        resolver: zodResolver(equipmentSchema),
-        defaultValues: { name: "", unitId: undefined, equipmentType: undefined, description: "", status: StatusType.ACTIVE, tagName: "", uom: undefined }
+type Props = { open: boolean; onClose: () => void; areaId?: number };
+export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
+    const { mutateAsync: createUnit, isPending: isCreating } = useCreateUnit();
+    const { data: areas, isLoading: areasLoading } = useGetAreas(open);
+    const { data: unitTypes, isLoading: unitTypeIsLoading } = useGetUnitTypes(open);
+    const { register, handleSubmit, reset, control, watch, setValue, formState: { errors, isSubmitting, isDirty } } = useForm<UnitSchema>({
+        resolver: zodResolver(unitSchema),
+        defaultValues: { name: "", areaId: undefined, unitType: undefined, code: "", description: "", status: StatusType.ACTIVE }
     });
 
     useEffect(() => {
-        if (!open || !unitId) return;
+        if (!open || !areaId) return;
+        reset({ name: "", areaId: String(areaId), unitType: undefined, code: "", description: "", status: StatusType.ACTIVE })
+    }, [open, areaId, reset]);
 
-        reset({ name: "", unitId: String(unitId), equipmentType: undefined, description: "", status: StatusType.ACTIVE, tagName: "", uom: undefined })
-    }, [open, unitId, reset]);
-
-    const loading = isCreating || unitsLoading || isSubmitting || equipmentTypeIsLoading || uomTypesIsLoading;
-    const onSubmit = async (formData: EquipmentSchema) => {
+    const loading = isCreating || areasLoading || isSubmitting || unitTypeIsLoading;
+    const onSubmit = async (formData: UnitSchema) => {
         try {
-            const res = await createEquipment({
-                name: formData.name,
+            const res = await createUnit({
+                areaId: Number(formData.areaId),
+                code: formData.code,
                 description: formData.description,
-                equipmentType: formData.equipmentType,
+                name: formData.name,
                 status: formData.status,
-                tagName: formData.tagName,
-                unitId: Number(formData.unitId),
-                uom: formData.uom
+                unitType: formData.unitType
             });
-            toast.success(res.message ?? "Equipment created successfully.");
+            toast.success(res.message ?? "Unit created successfully.");
             handleClose();
         } catch (error) {
             showApiError(error);
         }
     };
     const handleClose = () => {
-        reset({ name: "", unitId: undefined, equipmentType: undefined, description: "", status: StatusType.ACTIVE, tagName: "", uom: undefined });
+        reset({ name: "", areaId: undefined, unitType: "", code: "", description: "", status: StatusType.ACTIVE });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<PlantSchema>) => {
@@ -72,96 +69,68 @@ export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) 
             <DialogContent className="sm:max-w-md">
                 <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
                     <DialogHeader>
-                        <DialogTitle>Create Equipment</DialogTitle>
-                        <DialogDescription>Create a new equipment entity.</DialogDescription>
+                        <DialogTitle>Create Unit</DialogTitle>
+                        <DialogDescription>Create a new Unit entity.</DialogDescription>
                     </DialogHeader>
-                    <div className="py-4 space-y-4">
+                    <div className="py-4 space-y-6">
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
                                 <Label>Name</Label>
-                                <CharacterProgress value={watch("name")} max={EquipmentSchemaLimit.name.max} />
+                                <CharacterProgress value={watch("name")} max={UnitSchemaLimit.name.max} />
                             </div>
                             <Input
                                 type="text"
                                 disabled={loading}
-                                placeholder="Temperature 101"
-                                maxLength={EquipmentSchemaLimit.name.max}
+                                placeholder="Reactor 101"
+                                maxLength={UnitSchemaLimit.name.max}
                                 {...register("name")}
                             />
                         </div>
-                        <div className="flex gap-2">
-                            <div className="space-y-2 relative flex-1">
-                                <div className="flex items-center justify-between">
-                                    <Label>Tag Name</Label>
-                                    <CharacterProgress value={watch("tagName")} max={EquipmentSchemaLimit.tagName.max} />
-                                </div>
-                                <Input
-                                    type="text"
-                                    disabled={loading}
-                                    placeholder="TT101"
-                                    maxLength={EquipmentSchemaLimit.tagName.max}
-                                    {...register("tagName")}
-                                />
+                        <div className="space-y-2 relative">
+                            <div className="flex items-center justify-between">
+                                <Label>Unit Code</Label>
+                                <CharacterProgress value={watch("code")} max={UnitSchemaLimit.code.max} />
                             </div>
-                            <div className="flex-1 space-y-2">
-                                <Label>Select Uom Type</Label>
-                                <Controller
-                                    control={control}
-                                    name="uom"
-                                    render={({ field }) => (
-                                        <Select
-                                            disabled={loading}
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Uom Type" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {uomTypes?.map((e) => (
-                                                        <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                            </div>
+                            <Input
+                                type="text"
+                                disabled={loading}
+                                placeholder="R101"
+                                maxLength={UnitSchemaLimit.code.max}
+                                {...register("code")}
+                            />
                         </div>
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
                                 <Label>Description</Label>
-                                <CharacterProgress value={watch("description")} max={EquipmentSchemaLimit.description.max} />
+                                <CharacterProgress value={watch("description")} max={UnitSchemaLimit.description.max} />
                             </div>
                             <Textarea
                                 disabled={loading}
-                                placeholder="Brief equipment overview"
+                                placeholder="Brief unit overview"
                                 className="min-h-30 w-full resize-none break-all overflow-hidden"
-                                maxLength={EquipmentSchemaLimit.description.max}
+                                maxLength={UnitSchemaLimit.description.max}
                                 {...register("description")}
                             />
                         </div>
                         <div className="flex gap-2">
-
                             <div className="space-y-2 flex-1">
-                                <Label>Select Unit</Label>
+                                <Label>Select Area</Label>
                                 <Controller
                                     control={control}
-                                    name="unitId"
+                                    name="areaId"
                                     render={({ field }) => (
                                         <Select
-                                            disabled={loading || !!unitId}
+                                            disabled={loading || !!areaId}
                                             value={field.value}
                                             onValueChange={field.onChange}
                                         >
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Unit" />
+                                                <SelectValue placeholder="Select Area" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    {units?.map((u) => (
-                                                        <SelectItem key={u.id} value={String(u.id)}>{u.name}</SelectItem>
+                                                    {areas?.map((p) => (
+                                                        <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>
                                                     ))}
                                                 </SelectGroup>
                                             </SelectContent>
@@ -170,10 +139,10 @@ export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) 
                                 />
                             </div>
                             <div className="flex-1 space-y-2">
-                                <Label>Select Equipment Type</Label>
+                                <Label>Select Unit Type</Label>
                                 <Controller
                                     control={control}
-                                    name="equipmentType"
+                                    name="unitType"
                                     render={({ field }) => (
                                         <Select
                                             disabled={loading}
@@ -181,19 +150,21 @@ export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) 
                                             onValueChange={field.onChange}
                                         >
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Equipment Type" />
+                                                <SelectValue placeholder="Select Unit Type" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    {equipmentTypes?.map((e) => (
-                                                        <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
+                                                    {unitTypes?.map((p) => (
+                                                        <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
                                                     ))}
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
                                     )}
                                 />
+
                             </div>
+
                         </div>
                         <div className="space-y-2">
                             <Label>Status</Label>
@@ -230,7 +201,7 @@ export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) 
                         <DialogClose asChild>
                             <Button disabled={loading} type="button" variant="outline" onClick={handleClose}>Cancel</Button>
                         </DialogClose>
-                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Create Equipment"}</Button>
+                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Create Unit"}</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

@@ -1,13 +1,13 @@
 "use client";
 import DeleteDialog from "./menu-dialog/delete-dialog";
-import CreateUnitDialog from "./menu-dialog/create-unit-dialog";
-import UpdateUnitDialog from "./menu-dialog/update-unit-dialog";
-import CreatePlantDialog from "./menu-dialog/create-plant-dialog";
-import UpdatePlantDialog from "./menu-dialog/update-plant-dialog";
-import CreateAreaDialog from "./menu-dialog/create-area-dialog";
-import UpdateAreaDialog from "./menu-dialog/update-area-dialog";
-import CreateEquipmentDialog from "./menu-dialog/create-equipment-dialog";
-import UpdateEquipmentDialog from "./menu-dialog/update-equipment-dialog";
+import CreateUnitDialog from "./menu-dialog/unit/create-unit-dialog";
+import UpdateUnitDialog from "./menu-dialog/unit/update-unit-dialog";
+import CreatePlantDialog from "./menu-dialog/plant/create-plant-dialog";
+import UpdatePlantDialog from "./menu-dialog/plant/update-plant-dialog";
+import CreateAreaDialog from "./menu-dialog/area/create-area-dialog";
+import UpdateAreaDialog from "./menu-dialog/area/update-area-dialog";
+import CreateEquipmentDialog from "./menu-dialog/equipment/create-equipment-dialog";
+import UpdateEquipmentDialog from "./menu-dialog/equipment/update-equipment-dialog";
 import { DialogType } from "../types/plant-hierarchy.types";
 
 type Props = { dialog: DialogType, onClose: () => void; redirect?: boolean };

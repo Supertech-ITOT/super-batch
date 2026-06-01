@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { useState } from "react";
 import { DialogType } from "../../types/plant-hierarchy.types";
 import TreeDialogs from "../tree-dialogs";
+import { toDisplayText } from "@/lib/format-enum";
 
 
 
@@ -76,7 +77,7 @@ export default function EquipmentView({ id }: { id: number }) {
                     <div className="rounded-xl border bg-card p-4">
                         <p className="text-xs text-muted-foreground">Equipment Type</p>
                         <p className="text-sm font-semibold">
-                            {equipment.equipmentType}
+                            {toDisplayText(equipment.equipmentType)}
                         </p>
                     </div>
 

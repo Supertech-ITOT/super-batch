@@ -2,63 +2,56 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react"
-import StatusBadge from "@/components/status-badge";
 import { MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
-import { EquipmentResponse } from "@/features/plant/types/equipment.types";
-import { DialogType } from "@/features/plant/types/plant-hierarchy.types";
+import { MaterialResponse } from "@/features/plant/types/material.types";
 import { toDisplayText } from "@/lib/format-enum";
+import { MaterialDialogState } from "./material-view";
 
-type Props = {
-    setDialog: React.Dispatch<
-        React.SetStateAction<
-            DialogType & { redirect?: boolean }
-        >
-    >;
-};
-export const columns = ({
-    setDialog,
-}: Props): ColumnDef<EquipmentResponse>[] => [
+
+
+export const columns = (
+    setDialog: React.Dispatch<React.SetStateAction<MaterialDialogState>>
+): ColumnDef<MaterialResponse>[] => [
+        {
+            accessorKey: "id",
+            header: "Material ID",
+        },
         {
             accessorKey: "name",
-            header: "Equipment Name",
+            header: "Material Name",
         },
         {
-            accessorKey: "equipmentType",
-            header: "Equipment Type",
-            cell: ({ row }) => toDisplayText(row.original.equipmentType),
+            accessorKey: "code",
+            header: "Material Code",
         },
         {
-            accessorKey: "uom",
-            header: "Equipment UOM",
-        },
-        {
-            accessorKey: "status",
+            accessorKey: "materialType",
             header: ({ column }) => {
                 return (
                     <Button
                         variant="ghost"
                         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                     >
-                        Status
+                        Material Type
                         <ArrowUpDown className="ml-2 h-4 w-4" />
                     </Button>
                 )
             },
             cell: ({ row }) => (
-                <StatusBadge status={row.original.status} />
+                toDisplayText(row.original.materialType)
             ),
         },
         {
-            accessorKey: "tagName",
-            header: "Tag Name",
+            accessorKey: "uom",
+            header: "UOM",
         },
         {
             id: "actions",
             header: "Actions",
             cell: ({ row }) => {
-                const equipment = row.original
+                const unit = row.original
 
                 return (
                     <DropdownMenu>
@@ -71,13 +64,23 @@ export const columns = ({
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setDialog({ type: "equipment", mode: "edit", node: { id: equipment.id, name: equipment.name, type: "equipment" }, redirect: false }) }}>
-                                Edit
-                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={(e) => {
+                                e.stopPropagation(); setDialog({
+                                    open: true,
+                                    action: "edit",
+                                    materialId: row.original.id,
+                                });
+                            }}>
+                                Edit</DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem variant="destructive" onClick={(e) => { e.stopPropagation(); setDialog({ type: "equipment", mode: "delete", node: { id: equipment.id, name: equipment.name, type: "equipment" }, redirect: false }) }}>
-                                Delete
-                            </DropdownMenuItem>
+                            <DropdownMenuItem variant="destructive" onClick={(e) => {
+                                e.stopPropagation(); setDialog({
+                                    open: true,
+                                    action: "delete",
+                                    materialId: row.original.id,
+                                });
+                            }}>
+                                Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )

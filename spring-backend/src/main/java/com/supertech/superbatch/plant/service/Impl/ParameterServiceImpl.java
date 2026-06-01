@@ -61,6 +61,7 @@ public class ParameterServiceImpl implements ParameterService {
             throw new DuplicateResourceException("Parameter code already exists");
         }
         parameterMapper.updateEntity(parameter, request);
+        parameterRepository.save(parameter);
     }
 
     @Override

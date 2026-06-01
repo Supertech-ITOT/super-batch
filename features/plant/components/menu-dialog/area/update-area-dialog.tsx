@@ -6,104 +6,118 @@ import { Label } from "@/components/ui/label";
 import { FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import { showApiError } from "@/lib/show-api-error";
-import { useCreatePlant } from "../../hooks/use-plants";
-import { PlantSchema, plantSchema, PlantSchemaLimit } from "../../schemas/plant-schema";
-import { Textarea } from "@/components/ui/textarea";
-import { StatusConfig, StatusType } from "../../../common/types/status.type";
-import clsx from "clsx";
+import { useGetAreaById, useUpdateArea } from "../../../hooks/use-areas";
+import { useGetPlants } from "../../../hooks/use-plants";
+import { areaSchema, AreaSchema, AreaSchemaLimit } from "../../../schemas/area-schema";
 import CharacterProgress from "@/components/character-progress";
+import { Textarea } from "@/components/ui/textarea";
+import { StatusConfig, StatusType } from "../../../../common/types/status.type";
+import clsx from "clsx";
 
-type Props = { open: boolean; onClose: () => void };
-export default function CreatePlantDialog({ open, onClose }: Props) {
-    const { mutateAsync: createPlant, isPending: isCreating } = useCreatePlant();
-    const { register, handleSubmit, reset, setValue, watch, formState: { isSubmitting, isDirty } } = useForm<PlantSchema>({
-        resolver: zodResolver(plantSchema),
-        defaultValues: { name: "", description: "", status: StatusType.ACTIVE, location: "", plantType: "" }
+type Props = { open: boolean; onClose: () => void; areaId?: number };
+export default function UpdateAreaDialog({ open, onClose, areaId }: Props) {
+    const { mutateAsync: updateArea, isPending: isUpdating } = useUpdateArea();
+    const { data: plants, isLoading: plantsLoading } = useGetPlants(open);
+    const { data: area, isLoading: areaLoading } = useGetAreaById(areaId);
+    const { register, handleSubmit, reset, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<AreaSchema>({
+        resolver: zodResolver(areaSchema),
+        defaultValues: { name: "", plantId: undefined, description: "", areaType: "", status: StatusType.ACTIVE }
     });
-    const loading = isCreating || isSubmitting;
-    const onSubmit = async (formData: PlantSchema) => {
+
+    useEffect(() => {
+        if (!open || !area || !plants) return;
+        reset({ name: area.name, plantId: String(area.plantId), areaType: area.areaType, description: area.description, status: area.status });
+    }, [open, area, plants, reset]);
+    const loading = isUpdating || plantsLoading || areaLoading || isSubmitting;
+
+    const onSubmit = async (formData: AreaSchema) => {
         try {
-            const res = await createPlant(formData);
-            toast.success(res.message ?? "Plant created successfully.");
+            const res = await updateArea({
+                id: areaId!, data: {
+                    name: formData.name,
+                    plantId: Number(formData.plantId),
+                    areaType: formData.areaType,
+                    description: formData.description,
+                    status: formData.status
+                }
+            });
+            toast.success(res.message ?? "Area updated successfully.");
             handleClose();
         } catch (error) {
             showApiError(error);
         }
     };
+
     const handleClose = () => {
-        reset({ name: "", description: "", status: StatusType.ACTIVE, location: "", plantType: "" });
+        reset({ name: "", plantId: undefined, description: "", areaType: "", status: StatusType.ACTIVE });
         onClose();
     };
-    const onInvalid = (errors: FieldErrors<PlantSchema>) => {
+
+    const onInvalid = (errors: FieldErrors<AreaSchema>) => {
         const firstError = Object.values(errors)[0];
         if (firstError?.message) {
             toast.error(firstError.message.toString());
         }
     };
 
-
     return (
         <Dialog open={open} onOpenChange={(value) => { if (!value) handleClose() }}>
-            <DialogContent className="sm:max-w-md overflow-hidden">
+            <DialogContent className="sm:max-w-md">
                 <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
                     <DialogHeader>
-                        <DialogTitle>Create Plant</DialogTitle>
-                        <DialogDescription>Create a new plant entity.</DialogDescription>
+                        <DialogTitle>Update Area</DialogTitle>
+                        <DialogDescription> Update Area information</DialogDescription>
                     </DialogHeader>
-                    <div className="py-4 space-y-4">
+                    <div className="py-4 space-y-6">
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
                                 <Label>Name</Label>
-                                <CharacterProgress value={watch("name")} max={PlantSchemaLimit.name.max} />
+                                <CharacterProgress value={watch("name")} max={AreaSchemaLimit.name.max} />
                             </div>
                             <Input
                                 type="text"
                                 disabled={loading}
-                                placeholder="Alpha Plant"
-                                maxLength={PlantSchemaLimit.name.max}
+                                placeholder="GreenLand Area"
+                                maxLength={AreaSchemaLimit.name.max}
                                 {...register("name")}
                             />
                         </div>
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
                                 <Label>Description</Label>
-                                <CharacterProgress value={watch("description")} max={PlantSchemaLimit.description.max} />
+                                <CharacterProgress value={watch("description")} max={AreaSchemaLimit.description.max} />
                             </div>
                             <Textarea
                                 disabled={loading}
-                                placeholder="Brief plant overview"
+                                placeholder="Brief area overview"
                                 className="min-h-30 w-full resize-none break-all overflow-hidden"
-                                maxLength={PlantSchemaLimit.description.max}
+                                maxLength={AreaSchemaLimit.description.max}
                                 {...register("description")}
                             />
                         </div>
                         <div className="flex gap-2">
-                            <div className="space-y-2 relative">
+                            <div className="space-y-2 relative flex-1">
                                 <div className="flex items-center justify-between">
-                                    <Label>Location</Label>
-                                    <CharacterProgress value={watch("location")} max={PlantSchemaLimit.location.max} />
+                                    <Label>Area Type</Label>
+                                    <CharacterProgress value={watch("areaType")} max={AreaSchemaLimit.areaType.max} />
                                 </div>
                                 <Input
                                     type="text"
                                     disabled={loading}
-                                    placeholder="Mumbai, India"
-                                    maxLength={PlantSchemaLimit.location.max}
-                                    {...register("location")}
+                                    placeholder="Chemical Area"
+                                    maxLength={AreaSchemaLimit.areaType.max}
+                                    {...register("areaType")}
                                 />
                             </div>
-                            <div className="space-y-2 relative">
-                                <div className="flex items-center justify-between">
-                                    <Label>Plant Type</Label>
-                                    <CharacterProgress value={watch("plantType")} max={PlantSchemaLimit.plantType.max} />
-                                </div>
+                            <div className="space-y-2 flex-1">
+                                <Label>Plant</Label>
                                 <Input
                                     type="text"
-                                    disabled={loading}
-                                    placeholder="Manufacturing"
-                                    maxLength={PlantSchemaLimit.plantType.max}
-                                    {...register("plantType")}
+                                    disabled
+                                    value={plants?.find((p) => p.id === area?.plantId)?.name ?? ""}
                                 />
                             </div>
                         </div>
@@ -142,7 +156,7 @@ export default function CreatePlantDialog({ open, onClose }: Props) {
                         <DialogClose asChild>
                             <Button disabled={loading} type="button" variant="outline" onClick={handleClose}>Cancel</Button>
                         </DialogClose>
-                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Create Plant"}</Button>
+                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Update Area"}</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

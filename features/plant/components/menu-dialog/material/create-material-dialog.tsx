@@ -10,20 +10,20 @@ import { toast } from "sonner";
 import { showApiError } from "@/lib/show-api-error";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGetMaterialTypes, useGetUomTypes } from "@/features/common/hooks/useMetadata";
-import { useCreateMaterial } from "../../hooks/use-materials";
-import { materialSchema, MaterialSchema, MaterialSchemaLimit } from "../../schemas/material-schema";
+import { useCreateMaterial } from "../../../hooks/use-materials";
+import { materialSchema, MaterialSchema, MaterialSchemaLimit } from "../../../schemas/material-schema";
 import CharacterProgress from "@/components/character-progress";
 import { Textarea } from "@/components/ui/textarea";
-import { PlantSchema } from "../../schemas/plant-schema";
+import { PlantSchema } from "../../../schemas/plant-schema";
 
 type Props = { open: boolean; onClose: () => void; };
 export default function CreateMaterialDialog({ open, onClose }: Props) {
     const { mutateAsync: createMaterial, isPending: isCreating } = useCreateMaterial();
     const { data: materialTypes, isLoading: materialTypeIsLoading } = useGetMaterialTypes(open);
     const { data: uomTypes, isLoading: uomTypesIsLoading } = useGetUomTypes(open);
-    const { register, handleSubmit, reset, control, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<MaterialSchema>({
+    const { register, handleSubmit, reset, control, watch, formState: { isSubmitting, isDirty } } = useForm<MaterialSchema>({
         resolver: zodResolver(materialSchema),
-        defaultValues: { name: "", materialType: undefined, description: "", code: "", uom: undefined }
+        defaultValues: { name: "", materialType: "", description: "", code: "", uom: "" }
     });
     const loading = isCreating || isSubmitting || materialTypeIsLoading || uomTypesIsLoading;
     const onSubmit = async (formData: MaterialSchema) => {
@@ -42,7 +42,7 @@ export default function CreateMaterialDialog({ open, onClose }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ name: "", materialType: undefined, description: "", code: "", uom: undefined });
+        reset({ name: "", materialType: "", description: "", code: "", uom: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<PlantSchema>) => {

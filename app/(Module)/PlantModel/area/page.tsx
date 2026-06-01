@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import AreaView from "@/features/plant/components/view/area-view";
+import AreaView from "@/features/plant/components/view/area/area-view";
 import { ChevronLeft, Factory } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 

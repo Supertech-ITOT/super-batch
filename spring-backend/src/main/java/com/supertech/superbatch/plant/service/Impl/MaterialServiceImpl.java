@@ -61,6 +61,7 @@ public class MaterialServiceImpl implements MaterialService {
             throw new DuplicateResourceException("Material code already exists");
         }
         materialMapper.updateEntity(material, request);
+        materialRepository.save(material);
     }
 
     @Override

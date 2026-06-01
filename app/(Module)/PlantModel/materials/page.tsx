@@ -1,5 +1,5 @@
 import PlantTab from "@/features/plant/components/plant-tab";
-import ParameterView from "@/features/plant/components/view/parameter-view";
+import MaterialView from "@/features/plant/components/view/material/material-view";
 import { Factory } from "lucide-react";
 
 
@@ -25,7 +25,7 @@ export default function MaterialsPage() {
                 <div className="flex">
                     <PlantTab />
                 </div>
-                <ParameterView />
+                <MaterialView />
             </div>
         </div>
     );
