@@ -5,7 +5,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 interface DataTableProps<
     TData extends { id: number },
     TValue
@@ -17,7 +16,6 @@ interface DataTableProps<
 const DataTable = <TData extends { id: number }, TValue>({ columns, data }: DataTableProps<TData, TValue>) => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    const router = useRouter();
     const table = useReactTable({
         data,
         columns,
@@ -35,7 +33,7 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data }: Data
         <div className="flex flex-col min-h-0 flex-1">
             <div className="flex items-center pb-2">
                 <Input
-                    placeholder="Filter parameters..."
+                    placeholder="Filter transitions..."
                     value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
                         table.getColumn("name")?.setFilterValue(event.target.value)

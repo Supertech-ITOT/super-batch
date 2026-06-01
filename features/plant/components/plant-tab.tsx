@@ -1,6 +1,6 @@
 "use client";
 
-import { Gauge, LayoutGrid, Package } from "lucide-react";
+import { LayoutGrid, Package, Workflow } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -19,9 +19,9 @@ export default function PlantTab() {
             icon: Package,
         },
         {
-            label: "Parameters",
-            path: "/PlantModel/parameters/",
-            icon: Gauge,
+            label: "Process Configuration",
+            path: "/PlantModel/process/",
+            icon: Workflow,
         },
     ];
 

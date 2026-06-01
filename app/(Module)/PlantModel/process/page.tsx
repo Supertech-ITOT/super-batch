@@ -1,5 +1,5 @@
 import PlantTab from "@/features/plant/components/plant-tab";
-import ParameterView from "@/features/plant/components/view/parameter/parameter-view";
+import ParameterView from "@/features/plant/components/view/process-view";
 import { Factory } from "lucide-react";
 
 

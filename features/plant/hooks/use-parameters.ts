@@ -1,5 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { createParameter, deleteParameter, getParameterById, getParameters, updateParameter } from "../services/parameter.service"
+import { useQuery } from "@tanstack/react-query"
+import { getParameterById, getParameters } from "../services/parameter.service"
 import { queryKeys } from "./query-keys";
 
 
@@ -25,41 +25,6 @@ export const useGetParameterById = (id?: number) => {
     });
 };
 
-export const useUpdateParameter = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: updateParameter,
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.parameters,
-            });
-        },
-    });
-};
 
-export const useCreateParameter = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: createParameter,
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.parameters,
-            });
-        },
-    });
-};
-
-export const useDeleteParameter = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: deleteParameter,
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.parameters,
-            });
-        },
-
-    })
-}
 
 

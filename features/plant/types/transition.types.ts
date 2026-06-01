@@ -1,8 +1,7 @@
 
-export interface ParameterResponse {
+export interface TransitionResponse {
     id: number;
     name: string;
     code: string;
-    uom: string;
     active: boolean;
 }

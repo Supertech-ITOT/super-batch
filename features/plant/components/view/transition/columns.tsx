@@ -1,10 +1,10 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import { ParameterResponse } from "@/features/plant/types/parameter.types";
+import { TransitionResponse } from "@/features/plant/types/transition.types";
 import StatusBadge from "@/components/status-badge";
 
 
-export const columns: ColumnDef<ParameterResponse>[] = [
+export const columns: ColumnDef<TransitionResponse>[] = [
     {
         accessorKey: "id",
         header: "Id",
@@ -18,10 +18,6 @@ export const columns: ColumnDef<ParameterResponse>[] = [
         header: "Code",
     },
     {
-        accessorKey: "uom",
-        header: "UOM",
-    },
-    {
         accessorKey: "active",
         header: "Status",
         cell: ({ row }) => (
@@ -29,7 +25,7 @@ export const columns: ColumnDef<ParameterResponse>[] = [
                 status={row.original.active ? "active" : "inactive"}
             />
         )
-    }
+    },
 ];
 
 export default columns;

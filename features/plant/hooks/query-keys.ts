@@ -20,5 +20,11 @@ export const queryKeys = {
     parameters: ["parameters"] as const,
     parameter: (id: number) => ["parameters", id] as const,
 
+    actions: ["actions"] as const,
+    action: (id: number) => ["actions", id] as const,
+
+    transitions: ["transitions"] as const,
+    transition: (id: number) => ["transitions", id] as const,
+
     plantHierarchy: ["plant-hierarchy"] as const,
 };
