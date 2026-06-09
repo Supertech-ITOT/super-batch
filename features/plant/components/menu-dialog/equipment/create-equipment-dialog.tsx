@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
-import FormError from "@/components/form-error";
+import FormError from "@/components/form/form-error";
 import { toast } from "sonner";
 import { showApiError } from "@/lib/show-api-error";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -15,11 +15,10 @@ import { useEffect } from "react";
 import { useCreateEquipment } from "../../../hooks/use-equipment";
 import { equipmentSchema, EquipmentSchema, EquipmentSchemaLimit } from "../../../schemas/equipment-schema";
 import { useGetUnits } from "../../../hooks/use-units";
-import CharacterProgress from "@/components/character-progress";
+import CharacterProgress from "@/components/form/character-progress";
 import { Textarea } from "@/components/ui/textarea";
 import { StatusConfig, StatusType } from "../../../../common/types/status.type";
 import clsx from "clsx";
-import { PlantSchema } from "../../../schemas/plant-schema";
 
 type Props = { open: boolean; onClose: () => void; unitId?: number };
 export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) {
@@ -60,7 +59,7 @@ export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) 
         reset({ name: "", unitId: undefined, equipmentType: undefined, description: "", status: StatusType.ACTIVE, tagName: "", uom: undefined });
         onClose();
     };
-    const onInvalid = (errors: FieldErrors<PlantSchema>) => {
+    const onInvalid = (errors: FieldErrors<EquipmentSchema>) => {
         const firstError = Object.values(errors)[0];
         if (firstError?.message) {
             toast.error(firstError.message.toString());

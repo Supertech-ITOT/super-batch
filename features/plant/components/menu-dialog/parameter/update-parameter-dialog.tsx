@@ -12,19 +12,19 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { useGetUomTypes } from "@/features/common/hooks/useMetadata";
 import { useGetParameterById, useUpdateParameter } from "../../../hooks/use-parameters";
 import { parameterSchema, ParameterSchema, ParameterSchemaLimit } from "../../../schemas/parameter-schema";
-import CharacterProgress from "@/components/character-progress";
-import { Textarea } from "@/components/ui/textarea";
-import { PlantSchema } from "../../../schemas/plant-schema";
+import CharacterProgress from "@/components/form/character-progress";
 import { useEffect } from "react";
+import StatusToggle from "@/components/form/status-toggle";
+import { StatusConfig } from "@/features/common/types/status.type";
 
 type Props = { open: boolean; onClose: () => void; parameterId?: number };
 export default function UpdateParameterDialog({ open, onClose, parameterId }: Props) {
     const { mutateAsync: updateParameter, isPending: isUpdating } = useUpdateParameter();
     const { data: parameter, isLoading: parameterIsLoading } = useGetParameterById(parameterId);
     const { data: uomTypes, isLoading: uomTypesIsLoading } = useGetUomTypes(open);
-    const { register, handleSubmit, reset, control, watch, formState: { isSubmitting, isDirty } } = useForm<ParameterSchema>({
+    const { register, handleSubmit, reset, control, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<ParameterSchema>({
         resolver: zodResolver(parameterSchema),
-        defaultValues: { name: "", description: "", code: "", uom: "" }
+        defaultValues: { name: "", active: true, code: "", uom: "" }
     });
 
     useEffect(() => {
@@ -32,7 +32,7 @@ export default function UpdateParameterDialog({ open, onClose, parameterId }: Pr
         reset({
             name: parameter.name,
             code: parameter.code,
-            description: parameter.description,
+            active: parameter.active,
             uom: parameter.uom,
         });
     }, [open, parameter, reset]);
@@ -48,10 +48,10 @@ export default function UpdateParameterDialog({ open, onClose, parameterId }: Pr
         }
     };
     const handleClose = () => {
-        reset({ name: "", description: "", code: "", uom: "" });
+        reset({ name: "", active: true, code: "", uom: "" });
         onClose();
     };
-    const onInvalid = (errors: FieldErrors<PlantSchema>) => {
+    const onInvalid = (errors: FieldErrors<ParameterSchema>) => {
         const firstError = Object.values(errors)[0];
         if (firstError?.message) {
             toast.error(firstError.message.toString());
@@ -120,19 +120,14 @@ export default function UpdateParameterDialog({ open, onClose, parameterId }: Pr
                                 />
                             </div>
                         </div>
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Description</Label>
-                                <CharacterProgress value={watch("description")} max={ParameterSchemaLimit.description.max} />
-                            </div>
-                            <Textarea
-                                disabled={loading}
-                                placeholder="Brief parameter overview"
-                                className="min-h-30 w-full resize-none break-all overflow-hidden"
-                                maxLength={ParameterSchemaLimit.description.max}
-                                {...register("description")}
-                            />
-                        </div>
+                        <StatusToggle
+                            label="Status"
+                            value={watch("active") ? "ACTIVE" : "INACTIVE"}
+                            options={StatusConfig.filter(
+                                (s) => s.value === "ACTIVE" || s.value === "INACTIVE"
+                            )} onChange={(value) => setValue("active", value === "ACTIVE")}
+                        />
+
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>

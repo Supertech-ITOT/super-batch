@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema, loginSchema } from "../schemas/login-schema";
-import FormError from "@/components/form-error";
+import FormError from "@/components/form/form-error";
 import Image from "next/image";
 
 export default function LoginCard() {

@@ -12,9 +12,8 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { useGetMaterialTypes, useGetUomTypes } from "@/features/common/hooks/useMetadata";
 import { useCreateMaterial } from "../../../hooks/use-materials";
 import { materialSchema, MaterialSchema, MaterialSchemaLimit } from "../../../schemas/material-schema";
-import CharacterProgress from "@/components/character-progress";
+import CharacterProgress from "@/components/form/character-progress";
 import { Textarea } from "@/components/ui/textarea";
-import { PlantSchema } from "../../../schemas/plant-schema";
 
 type Props = { open: boolean; onClose: () => void; };
 export default function CreateMaterialDialog({ open, onClose }: Props) {
@@ -45,7 +44,7 @@ export default function CreateMaterialDialog({ open, onClose }: Props) {
         reset({ name: "", materialType: "", description: "", code: "", uom: "" });
         onClose();
     };
-    const onInvalid = (errors: FieldErrors<PlantSchema>) => {
+    const onInvalid = (errors: FieldErrors<MaterialSchema>) => {
         const firstError = Object.values(errors)[0];
         if (firstError?.message) {
             toast.error(firstError.message.toString());

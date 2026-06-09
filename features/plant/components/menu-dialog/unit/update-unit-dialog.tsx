@@ -7,7 +7,7 @@ import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import { useEffect } from "react";
-import FormError from "@/components/form-error";
+import FormError from "@/components/form/form-error";
 import { toast } from "sonner";
 import { showApiError } from "@/lib/show-api-error";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -15,7 +15,7 @@ import { useGetAreas } from "../../../hooks/use-areas";
 import { useGetUnitById, useUpdateUnit } from "../../../hooks/use-units";
 import { UnitSchema, unitSchema, UnitSchemaLimit } from "../../../schemas/unit-schema";
 import { useGetUnitTypes } from "@/features/common/hooks/useMetadata";
-import CharacterProgress from "@/components/character-progress";
+import CharacterProgress from "@/components/form/character-progress";
 import { Textarea } from "@/components/ui/textarea";
 import { StatusConfig, StatusType } from "../../../../common/types/status.type";
 import clsx from "clsx";
@@ -63,7 +63,7 @@ export default function UpdateUnitDialog({ open, onClose, unitId }: Props) {
         onClose();
     };
 
-    const onInvalid = (errors: FieldErrors<PlantSchema>) => {
+    const onInvalid = (errors: FieldErrors<UnitSchema>) => {
         const firstError = Object.values(errors)[0];
         if (firstError?.message) {
             toast.error(firstError.message.toString());

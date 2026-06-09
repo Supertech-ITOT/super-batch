@@ -15,8 +15,7 @@ import { useGetEquipmentTypes, useGetUomTypes } from "@/features/common/hooks/us
 import { useGetEquipmentById, useUpdateEquipment } from "../../../hooks/use-equipment";
 import { equipmentSchema, EquipmentSchema, EquipmentSchemaLimit } from "../../../schemas/equipment-schema";
 import { StatusConfig, StatusType } from "../../../../common/types/status.type";
-import { PlantSchema } from "../../../schemas/plant-schema";
-import CharacterProgress from "@/components/character-progress";
+import CharacterProgress from "@/components/form/character-progress";
 import { Textarea } from "@/components/ui/textarea";
 import clsx from "clsx";
 
@@ -72,7 +71,7 @@ export default function UpdateEquipmentDialog({ open, onClose, equipmentId }: Pr
         onClose();
     };
 
-    const onInvalid = (errors: FieldErrors<PlantSchema>) => {
+    const onInvalid = (errors: FieldErrors<EquipmentSchema>) => {
         const firstError = Object.values(errors)[0];
         if (firstError?.message) {
             toast.error(firstError.message.toString());

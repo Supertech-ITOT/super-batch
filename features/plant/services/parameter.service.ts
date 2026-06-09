@@ -1,6 +1,6 @@
 import api from "@/lib/axios";
 import { ApiResponse } from "@/types/api.types";
-import { ParameterResponse } from "../types/parameter.types";
+import { CreateParameterRequest, ParameterResponse, UpdateParameterRequest } from "../types/parameter.types";
 
 
 export const getParameters = async () => {
@@ -13,5 +13,19 @@ export const getParameterById = async (id: number) => {
     return res.data;
 };
 
+export const createParameter = async (data: CreateParameterRequest) => {
+    const res = await api.post<ApiResponse<null>>("/parameters", data);
+    return res.data;
+};
+
+export const updateParameter = async ({ id, data }: { id: number, data: UpdateParameterRequest }) => {
+    const res = await api.put<ApiResponse<null>>(`/parameters/${id}`, data);
+    return res.data;
+};
+
+export const deleteParameter = async ({ id }: { id: number }) => {
+    const res = await api.delete<ApiResponse<null>>(`/parameters/${id}`);
+    return res.data;
+};
 
 

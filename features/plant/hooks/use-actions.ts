@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query"
-import { getActionById, getActions } from "../services/action.service"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { createAction, deleteAction, getActionById, getActions, updateAction } from "../services/action.service"
 import { queryKeys } from "./query-keys";
 
 
@@ -28,3 +28,39 @@ export const useGetActionById = (id?: number) => {
 
 
 
+export const useUpdateAction = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: updateAction,
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.actions,
+            });
+        },
+    });
+};
+
+export const useCreateAction = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: createAction,
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.actions,
+            });
+        },
+    });
+};
+
+export const useDeleteAction = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: deleteAction,
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.actions,
+            });
+        },
+
+    })
+}

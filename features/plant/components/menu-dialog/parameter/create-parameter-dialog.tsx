@@ -12,24 +12,25 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { useGetUomTypes } from "@/features/common/hooks/useMetadata";
 import { useCreateParameter } from "../../../hooks/use-parameters";
 import { parameterSchema, ParameterSchema, ParameterSchemaLimit } from "../../../schemas/parameter-schema";
-import CharacterProgress from "@/components/character-progress";
-import { Textarea } from "@/components/ui/textarea";
-import { PlantSchema } from "../../../schemas/plant-schema";
+import CharacterProgress from "@/components/form/character-progress";
+import StatusToggle from "@/components/form/status-toggle";
+import { StatusConfig } from "@/features/common/types/status.type";
+
 
 type Props = { open: boolean; onClose: () => void; };
 export default function CreateParameterDialog({ open, onClose }: Props) {
     const { mutateAsync: createParameter, isPending: isCreating } = useCreateParameter();
     const { data: uomTypes, isLoading: uomTypesIsLoading } = useGetUomTypes(open);
-    const { register, handleSubmit, reset, control, watch, formState: { isSubmitting, isDirty } } = useForm<ParameterSchema>({
+    const { register, handleSubmit, reset, control, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<ParameterSchema>({
         resolver: zodResolver(parameterSchema),
-        defaultValues: { name: "", description: "", code: "", uom: "" }
+        defaultValues: { name: "", active: true, code: "", uom: "" }
     });
     const loading = isCreating || isSubmitting || uomTypesIsLoading;
     const onSubmit = async (formData: ParameterSchema) => {
         try {
             const res = await createParameter({
                 name: formData.name,
-                description: formData.description,
+                active: formData.active,
                 code: formData.code,
                 uom: formData.uom
             });
@@ -40,10 +41,10 @@ export default function CreateParameterDialog({ open, onClose }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ name: "", description: "", code: "", uom: "" });
+        reset({ name: "", active: true, code: "", uom: "" });
         onClose();
     };
-    const onInvalid = (errors: FieldErrors<PlantSchema>) => {
+    const onInvalid = (errors: FieldErrors<ParameterSchema>) => {
         const firstError = Object.values(errors)[0];
         if (firstError?.message) {
             toast.error(firstError.message.toString());
@@ -112,19 +113,14 @@ export default function CreateParameterDialog({ open, onClose }: Props) {
                                 />
                             </div>
                         </div>
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Description</Label>
-                                <CharacterProgress value={watch("description")} max={ParameterSchemaLimit.description.max} />
-                            </div>
-                            <Textarea
-                                disabled={loading}
-                                placeholder="Brief parameter overview"
-                                className="min-h-30 w-full resize-none break-all overflow-hidden"
-                                maxLength={ParameterSchemaLimit.description.max}
-                                {...register("description")}
-                            />
-                        </div>
+                        <StatusToggle
+                            label="Status"
+                            value={watch("active") ? "ACTIVE" : "INACTIVE"}
+                            options={StatusConfig.filter(
+                                (s) => s.value === "ACTIVE" || s.value === "INACTIVE"
+                            )} onChange={(value) => setValue("active", value === "ACTIVE")}
+                        />
+
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>

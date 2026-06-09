@@ -12,7 +12,7 @@ import { showApiError } from "@/lib/show-api-error";
 import { useGetAreaById, useUpdateArea } from "../../../hooks/use-areas";
 import { useGetPlants } from "../../../hooks/use-plants";
 import { areaSchema, AreaSchema, AreaSchemaLimit } from "../../../schemas/area-schema";
-import CharacterProgress from "@/components/character-progress";
+import CharacterProgress from "@/components/form/character-progress";
 import { Textarea } from "@/components/ui/textarea";
 import { StatusConfig, StatusType } from "../../../../common/types/status.type";
 import clsx from "clsx";

@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { showApiError } from "@/lib/show-api-error";
 import { Textarea } from "@/components/ui/textarea";
 import clsx from "clsx";
-import CharacterProgress from "@/components/character-progress";
+import CharacterProgress from "@/components/form/character-progress";
 import { useCreatePlant } from "@/features/plant/hooks/use-plants";
 import { StatusConfig, StatusType } from "@/features/common/types/status.type";
 import { PlantSchema, plantSchema, PlantSchemaLimit } from "@/features/plant/schemas/plant-schema";

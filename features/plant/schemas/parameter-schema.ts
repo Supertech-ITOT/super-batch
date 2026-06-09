@@ -2,7 +2,6 @@ import z from "zod";
 
 export const ParameterSchemaLimit = {
     name: { min: 2, max: 100 },
-    description: { min: 2, max: 100 },
     code: { min: 2, max: 50 },
 } as const;
 
@@ -40,21 +39,8 @@ export const parameterSchema = z.object({
             "Parameter code must contain only uppercase letters, numbers, hyphen, or underscore"
         ),
 
-    description: z
-        .string()
-        .trim()
-        .min(
-            ParameterSchemaLimit.description.min,
-            `Description must be at least ${ParameterSchemaLimit.description.min} characters`
-        )
-        .max(
-            ParameterSchemaLimit.description.max,
-            `Description cannot exceed ${ParameterSchemaLimit.description.max} characters`
-        ),
-
-
-
-    uom: z.string({ error: "Uom type is required." }).trim(),
+    uom: z.string({ error: "Uom type is required." }).min(1, "UOM is required").trim(),
+    active: z.boolean(),
 });
 
 export type ParameterSchema = z.infer<typeof parameterSchema>;
