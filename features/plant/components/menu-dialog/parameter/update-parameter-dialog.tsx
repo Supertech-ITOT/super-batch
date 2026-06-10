@@ -34,10 +34,7 @@ export default function UpdateParameterDialog({ open, onClose, parameterId }: Pr
             name: parameter.name,
             code: parameter.code,
             active: parameter.active,
-            uom: parameter.uom,
-
-
-
+            uom: parameter.uom.value,
         });
     }, [open, parameter, reset]);
 
@@ -137,7 +134,7 @@ export default function UpdateParameterDialog({ open, onClose, parameterId }: Pr
                             value={watch("active") ? "ACTIVE" : "INACTIVE"}
                             options={StatusConfig.filter(
                                 (s) => s.value === "ACTIVE" || s.value === "INACTIVE"
-                            )} onChange={(value) => setValue("active", value === "ACTIVE")}
+                            )} onChange={(value) => setValue("active", value === "ACTIVE", { shouldDirty: true, })}
                         />
 
                     </div>

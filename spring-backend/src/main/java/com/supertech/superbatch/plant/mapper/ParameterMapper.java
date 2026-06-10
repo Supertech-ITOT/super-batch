@@ -7,14 +7,19 @@ import com.supertech.superbatch.plant.dto.Parameter.ParameterResponse;
 import com.supertech.superbatch.plant.dto.Parameter.UpdateParameterRequest;
 import com.supertech.superbatch.plant.entity.ParameterMaster;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class ParameterMapper {
+    private final UomMapper uomMapper;
+
     public ParameterResponse toResponse(ParameterMaster parameter) {
         return new ParameterResponse(
                 parameter.getId(),
                 parameter.getCode(),
                 parameter.getName(),
-                parameter.getUom(),
+                uomMapper.toResponse(parameter.getUom()),
                 parameter.getActive());
     }
 

@@ -2,6 +2,7 @@ package com.supertech.superbatch.plant.service.Impl;
 
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
@@ -24,7 +25,8 @@ public class TransitionServiceImpl implements TransitionService {
 
     @Override
     public List<TransitionResponse> getAll() {
-        return transitionMasterRepository.findAll().stream().map(transitionMapper::toResponse).toList();
+        return transitionMasterRepository.findAll(Sort.by(Sort.Direction.ASC, "id")).stream()
+                .map(transitionMapper::toResponse).toList();
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.supertech.superbatch.plant.dto.Material;
 
 import java.time.LocalDateTime;
 
-import com.supertech.superbatch.common.enums.UomType;
+import com.supertech.superbatch.plant.dto.UOM.UomResponse;
 import com.supertech.superbatch.plant.enums.MaterialType;
 
 public record MaterialResponse(
@@ -10,7 +10,7 @@ public record MaterialResponse(
         String code,
         String name,
         MaterialType materialType,
-        UomType uom,
+        UomResponse uom,
         String description,
         LocalDateTime createdAt,
         LocalDateTime updatedAt) {

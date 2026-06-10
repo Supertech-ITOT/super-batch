@@ -28,6 +28,7 @@ export const columns = (
         {
             accessorKey: "uom",
             header: "UOM",
+            cell: ({ row }) => row.original.uom.symbol
         },
         {
             accessorKey: "active",

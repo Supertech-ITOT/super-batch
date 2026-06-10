@@ -1,4 +1,5 @@
 import { StatusType } from "../../common/types/status.type";
+import { UomResponse } from "./uom.types";
 
 
 export interface EquipmentResponse {
@@ -7,7 +8,7 @@ export interface EquipmentResponse {
     description: string;
     tagName: string;
     status: StatusType;
-    uom: string;
+    uom: UomResponse;
     unitId: number;
     unitName: string;
     equipmentType: string;

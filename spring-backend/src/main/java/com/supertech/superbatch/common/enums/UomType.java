@@ -27,4 +27,8 @@ public enum UomType {
     public String getSymbol() {
         return symbol;
     }
+
+    public String getValue() {
+        return name();
+    }
 }

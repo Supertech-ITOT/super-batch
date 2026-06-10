@@ -116,7 +116,7 @@ export default function UpdateTransitionDialog({ open, onClose, transitionId }: 
                             value={watch("active") ? "ACTIVE" : "INACTIVE"}
                             options={StatusConfig.filter(
                                 (s) => s.value === "ACTIVE" || s.value === "INACTIVE"
-                            )} onChange={(value) => setValue("active", value === "ACTIVE")}
+                            )} onChange={(value) => setValue("active", value === "ACTIVE", { shouldDirty: true, })}
                         />
                     </div>
                     <DialogFooter>

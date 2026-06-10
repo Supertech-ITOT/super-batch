@@ -34,7 +34,7 @@ export default function UpdateMaterialDialog({ open, onClose, materialId }: Prop
             code: material.code,
             description: material.description,
             materialType: material.materialType,
-            uom: material.uom,
+            uom: material.uom.value,
         });
     }, [open, material, reset]);
 

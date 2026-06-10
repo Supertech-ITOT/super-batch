@@ -7,8 +7,13 @@ import com.supertech.superbatch.plant.dto.Equipment.UpdateEquipmentRequest;
 import com.supertech.superbatch.plant.entity.Equipment;
 import com.supertech.superbatch.plant.entity.Unit;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class EquipmentMapper {
+    private final UomMapper uomMapper;
+
     public EquipmentResponse toResponse(Equipment equipment) {
         return new EquipmentResponse(
                 equipment.getId(),
@@ -16,7 +21,7 @@ public class EquipmentMapper {
                 equipment.getDescription(),
                 equipment.getStatus(),
                 equipment.getTagName(),
-                equipment.getUom(),
+                uomMapper.toResponse(equipment.getUom()),
                 equipment.getUnit().getName(),
                 equipment.getUnit().getId(),
                 equipment.getEquipmentType(),

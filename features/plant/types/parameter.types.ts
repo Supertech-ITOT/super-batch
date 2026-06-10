@@ -1,9 +1,10 @@
+import { UomResponse } from "./uom.types";
 
 export interface ParameterResponse {
     id: number;
     name: string;
     code: string;
-    uom: string;
+    uom: UomResponse;
     active: boolean;
 }
 

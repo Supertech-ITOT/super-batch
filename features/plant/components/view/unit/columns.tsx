@@ -32,6 +32,7 @@ export const columns = ({
         {
             accessorKey: "uom",
             header: "Equipment UOM",
+            cell: ({ row }) => row.original.uom.symbol
         },
         {
             accessorKey: "status",

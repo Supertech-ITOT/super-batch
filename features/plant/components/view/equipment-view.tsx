@@ -99,14 +99,14 @@ export default function EquipmentView({ id }: { id: number }) {
 
                     <div className="rounded-xl border bg-card p-4">
                         <p className="text-xs text-muted-foreground">Tag Name</p>
-                        <p className="font-mono text-sm font-semibold">
+                        <p className="text-sm font-semibold">
                             {equipment.tagName}
                         </p>
                     </div>
 
                     <div className="rounded-xl border bg-card p-4">
                         <p className="text-xs text-muted-foreground">UOM</p>
-                        <p className="text-sm font-semibold">{equipment.uom}</p>
+                        <p className="text-sm font-semibold">{equipment.uom.symbol}</p>
                     </div>
 
                     <div className="rounded-xl border bg-card p-4">

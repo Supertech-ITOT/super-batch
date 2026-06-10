@@ -1,3 +1,4 @@
+import { UomResponse } from "./uom.types";
 
 export interface MaterialResponse {
     id: number;
@@ -5,7 +6,7 @@ export interface MaterialResponse {
     description: string;
     code: string;
     materialType: string;
-    uom: string;
+    uom: UomResponse;
     createdAt: string;
     updatedAt: string;
 }

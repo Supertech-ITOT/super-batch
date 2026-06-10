@@ -3,7 +3,7 @@ package com.supertech.superbatch.plant.dto.Equipment;
 import java.time.LocalDateTime;
 
 import com.supertech.superbatch.common.enums.StatusType;
-import com.supertech.superbatch.common.enums.UomType;
+import com.supertech.superbatch.plant.dto.UOM.UomResponse;
 import com.supertech.superbatch.plant.enums.EquipmentType;
 
 public record EquipmentResponse(
@@ -12,7 +12,7 @@ public record EquipmentResponse(
                 String description,
                 StatusType status,
                 String tagName,
-                UomType uom,
+                UomResponse uom,
                 String unitName,
                 Long unitId,
                 EquipmentType equipmentType,

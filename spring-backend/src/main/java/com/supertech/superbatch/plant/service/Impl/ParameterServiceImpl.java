@@ -2,6 +2,7 @@ package com.supertech.superbatch.plant.service.Impl;
 
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
@@ -24,7 +25,8 @@ public class ParameterServiceImpl implements ParameterService {
 
     @Override
     public List<ParameterResponse> getAll() {
-        return parameterRepository.findAll().stream().map(parameterMapper::toResponse).toList();
+        return parameterRepository.findAll(Sort.by(Sort.Direction.ASC, "id")).stream().map(parameterMapper::toResponse)
+                .toList();
     }
 
     @Override

@@ -7,15 +7,20 @@ import com.supertech.superbatch.plant.dto.Material.MaterialResponse;
 import com.supertech.superbatch.plant.dto.Material.UpdateMaterialRequest;
 import com.supertech.superbatch.plant.entity.Material;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class MaterialMapper {
+    private final UomMapper uomMapper;
+
     public MaterialResponse toResponse(Material material) {
         return new MaterialResponse(
                 material.getId(),
                 material.getCode(),
                 material.getName(),
                 material.getMaterialType(),
-                material.getUom(),
+                uomMapper.toResponse(material.getUom()),
                 material.getDescription(),
                 material.getCreatedAt(),
                 material.getUpdatedAt());

@@ -40,7 +40,7 @@ export default function UpdateEquipmentDialog({ open, onClose, equipmentId }: Pr
             description: equipment.description,
             status: equipment.status,
             tagName: equipment.tagName,
-            uom: equipment.uom
+            uom: equipment.uom.value
         });
 
     }, [open, equipment, units, reset]);
