@@ -130,7 +130,7 @@ export default function ProcessView() {
                                                 {p.desc}
                                             </p>
                                         </div>
-                                        <Button style={{ backgroundColor: p.color }} onClick={() => openDialog(p.entity, "create", null)}>
+                                        <Button className="text-white" style={{ backgroundColor: p.color }} onClick={() => openDialog(p.entity, "create", null)}>
                                             <Plus className="size-5!" />
                                             Add {p.label}
                                         </Button>

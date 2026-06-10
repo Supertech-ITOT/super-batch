@@ -2,13 +2,14 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react"
-import StatusBadge from "@/components/status-badge";
 import { MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
 import { EquipmentResponse } from "@/features/plant/types/equipment.types";
 import { DialogType } from "@/features/plant/types/plant-hierarchy.types";
 import { toDisplayText } from "@/lib/format-enum";
+import { Badge } from "@/components/ui/badge";
+import { StatusBadgeStyles } from "@/features/common/types/status.type";
 
 type Props = {
     setDialog: React.Dispatch<
@@ -48,7 +49,12 @@ export const columns = ({
                 )
             },
             cell: ({ row }) => (
-                <StatusBadge status={row.original.status} />
+                <Badge
+                    variant="outline"
+                    className={StatusBadgeStyles[row.original.status]}
+                >
+                    {toDisplayText(row.original.status)}
+                </Badge>
             ),
         },
         {

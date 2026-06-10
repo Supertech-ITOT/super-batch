@@ -1,4 +1,3 @@
-import StatusBadge from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Cpu, PenLineIcon, Trash2 } from "lucide-react";
@@ -9,6 +8,8 @@ import { useState } from "react";
 import { DialogType } from "../../types/plant-hierarchy.types";
 import TreeDialogs from "../tree-dialogs";
 import { toDisplayText } from "@/lib/format-enum";
+import { Badge } from "@/components/ui/badge";
+import { StatusBadgeStyles } from "@/features/common/types/status.type";
 
 
 
@@ -31,7 +32,12 @@ export default function EquipmentView({ id }: { id: number }) {
                     <div className="flex flex-col">
                         <div className="space-x-2 flex">
                             <span className="text-2xl font-bold">{equipment.name}</span>
-                            <StatusBadge status={equipment.status} />
+                            <Badge
+                                variant="outline"
+                                className={StatusBadgeStyles[equipment.status]}
+                            >
+                                {toDisplayText(equipment.status)}
+                            </Badge>
                         </div>
                         <h1 className="text-muted-foreground text-sm ">Description: {" "}
                             <span className="font-semibold text-sm text-foreground">{equipment.description}</span>
@@ -83,8 +89,12 @@ export default function EquipmentView({ id }: { id: number }) {
 
                     <div className="rounded-xl border bg-card p-4">
                         <p className="text-xs text-muted-foreground">Status</p>
-
-                        <StatusBadge status={equipment.status} />
+                        <Badge
+                            variant="outline"
+                            className={StatusBadgeStyles[equipment.status]}
+                        >
+                            {toDisplayText(equipment.status)}
+                        </Badge>
                     </div>
 
                     <div className="rounded-xl border bg-card p-4">

@@ -1,7 +1,6 @@
 "use client"
 
 import StatsCards from "@/components/stats-card";
-import StatusBadge from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Boxes, Building, Cpu, Factory, PenLineIcon, Trash2 } from "lucide-react";
@@ -14,6 +13,9 @@ import { useGetPlantById } from "@/features/plant/hooks/use-plants";
 import { useGetAreasByPlantId } from "@/features/plant/hooks/use-areas";
 import { DialogType } from "@/features/plant/types/plant-hierarchy.types";
 import TreeDialogs from "../../tree-dialogs";
+import { StatusBadgeStyles } from "@/features/common/types/status.type";
+import { toDisplayText } from "@/lib/format-enum";
+import { Badge } from "@/components/ui/badge";
 
 
 
@@ -38,7 +40,12 @@ export default function PlantView({ id }: { id: number }) {
                     <div className="flex flex-col">
                         <div className="space-x-2 flex">
                             <span className="text-2xl font-bold">{plant.name}</span>
-                            <StatusBadge status={plant.status} />
+                            <Badge
+                                variant="outline"
+                                className={StatusBadgeStyles[plant.status]}
+                            >
+                                {toDisplayText(plant.status)}
+                            </Badge>
                         </div>
 
                         <h1 className="text-muted-foreground text-sm ">Plant Type: {" "}

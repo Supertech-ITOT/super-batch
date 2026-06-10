@@ -42,7 +42,7 @@ export default function MaterialView() {
                     </div>
                 </div>
                 <div className="flex justify-between items-center">
-                    <Button onClick={() => setDialog({ open: true, action: "create", materialId: null })}>
+                    <Button className="text-white" onClick={() => setDialog({ open: true, action: "create", materialId: null })}>
                         <Plus className="size-5!" />
                         Add Materials
                     </Button>

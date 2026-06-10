@@ -6,15 +6,20 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { DialogType, PlantHierarchyResponse } from "@/features/plant/types/plant-hierarchy.types"
 interface DataTableProps<
     TData extends { id: number },
     TValue
 > {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
+    node: PlantHierarchyResponse,
+    setDialog: React.Dispatch<
+        React.SetStateAction<DialogType>
+    >;
 }
 
-const DataTable = <TData extends { id: number }, TValue>({ columns, data }: DataTableProps<TData, TValue>) => {
+const DataTable = <TData extends { id: number }, TValue>({ columns, data, setDialog, node }: DataTableProps<TData, TValue>) => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const router = useRouter();
@@ -33,7 +38,7 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data }: Data
 
     return (
         <div className="flex flex-col h-full">
-            <div className="flex items-center pb-2">
+            <div className="flex items-center justify-between pb-2">
                 <Input
                     placeholder="Filter equipments..."
                     value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
@@ -42,6 +47,9 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data }: Data
                     }
                     className="max-w-sm"
                 />
+                <Button onClick={() => setDialog({ mode: "create", type: "equipment", node: node })}>
+                    Add Equipments
+                </Button>
             </div>
             <div className="rounded-md border min-h-81">
                 <Table>

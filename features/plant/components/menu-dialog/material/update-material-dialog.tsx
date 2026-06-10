@@ -24,12 +24,13 @@ export default function UpdateMaterialDialog({ open, onClose, materialId }: Prop
     const { data: uomTypes, isLoading: uomTypesIsLoading } = useGetUomTypes(open);
     const { register, handleSubmit, reset, control, watch, formState: { isSubmitting, isDirty } } = useForm<MaterialSchema>({
         resolver: zodResolver(materialSchema),
-        defaultValues: { name: "", materialType: "", description: "", code: "", uom: "" }
+        defaultValues: { id: "", name: "", materialType: "", description: "", code: "", uom: "" }
     });
 
     useEffect(() => {
         if (!open || !material) return;
         reset({
+            id: String(material.id),
             name: material.name,
             code: material.code,
             description: material.description,
@@ -41,7 +42,16 @@ export default function UpdateMaterialDialog({ open, onClose, materialId }: Prop
     const loading = isUpdating || isSubmitting || materialTypeIsLoading || uomTypesIsLoading || materialIsLoading;
     const onSubmit = async (formData: MaterialSchema) => {
         try {
-            const res = await updateMaterial({ id: materialId!, data: formData });
+            const res = await updateMaterial({
+                id: materialId!, data: {
+                    id: Number(formData.id),
+                    code: formData.code,
+                    name: formData.name,
+                    description: formData.description,
+                    uom: formData.uom,
+                    materialType: formData.materialType
+                }
+            });
             toast.success(res.message ?? "Material updated successfully.");
             handleClose();
         } catch (error) {
@@ -49,7 +59,7 @@ export default function UpdateMaterialDialog({ open, onClose, materialId }: Prop
         }
     };
     const handleClose = () => {
-        reset({ name: "", materialType: "", description: "", code: "", uom: "" });
+        reset({ id: "", name: "", materialType: "", description: "", code: "", uom: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<MaterialSchema>) => {
@@ -68,6 +78,17 @@ export default function UpdateMaterialDialog({ open, onClose, materialId }: Prop
                         <DialogDescription>Update material information.</DialogDescription>
                     </DialogHeader>
                     <div className="py-4 space-y-4">
+                        <div className="space-y-2 relative">
+                            <div className="flex items-center justify-between">
+                                <Label>Id</Label>
+                            </div>
+                            <Input
+                                type="number"
+                                disabled={loading}
+                                placeholder="Id"
+                                {...register("id")}
+                            />
+                        </div>
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
                                 <Label>Name</Label>

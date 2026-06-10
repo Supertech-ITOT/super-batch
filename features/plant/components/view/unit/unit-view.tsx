@@ -1,5 +1,4 @@
 import StatsCards from "@/components/stats-card";
-import StatusBadge from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Boxes, Cpu, PenLineIcon, Trash2 } from "lucide-react";
@@ -12,6 +11,9 @@ import { DialogType } from "@/features/plant/types/plant-hierarchy.types";
 import { columns } from "./columns";
 import DataTable from "./data-table";
 import TreeDialogs from "../../tree-dialogs";
+import { toDisplayText } from "@/lib/format-enum";
+import { StatusBadgeStyles } from "@/features/common/types/status.type";
+import { Badge } from "@/components/ui/badge";
 
 export default function UnitView({ id }: { id: number }) {
     const { data: unit, isLoading: unitIsLoading } = useGetUnitById(id);
@@ -33,7 +35,12 @@ export default function UnitView({ id }: { id: number }) {
                     <div className="flex flex-col">
                         <div className="space-x-2 flex">
                             <span className="text-2xl font-bold">{unit.name}</span>
-                            <StatusBadge status={unit.status} />
+                            <Badge
+                                variant="outline"
+                                className={StatusBadgeStyles[unit.status]}
+                            >
+                                {toDisplayText(unit.status)}
+                            </Badge>
                         </div>
                         <h1 className="text-muted-foreground text-sm ">Unit Type: {" "}
                             <span className="font-semibold text-sm text-foreground">{unit.unitType}</span>
@@ -84,6 +91,8 @@ export default function UnitView({ id }: { id: number }) {
                 <DataTable
                     columns={columns({ setDialog })}
                     data={equipments}
+                    setDialog={setDialog}
+                    node={{ id: unit.id, name: unit.name, type: "unit" }}
                 />
             </div>
         </div>

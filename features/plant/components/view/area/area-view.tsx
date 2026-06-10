@@ -1,5 +1,4 @@
 import StatsCards from "@/components/stats-card";
-import StatusBadge from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Boxes, Building, Cpu, PenLineIcon, Trash2 } from "lucide-react";
@@ -12,6 +11,9 @@ import { DialogType } from "@/features/plant/types/plant-hierarchy.types";
 import DataTable from "./data-table";
 import TreeDialogs from "../../tree-dialogs";
 import { columns } from "./columns";
+import { StatusBadgeStyles } from "@/features/common/types/status.type";
+import { Badge } from "@/components/ui/badge";
+import { toDisplayText } from "@/lib/format-enum";
 
 
 
@@ -35,7 +37,12 @@ export default function AreaView({ id }: { id: number }) {
                     <div className="flex flex-col">
                         <div className="space-x-2 flex">
                             <span className="text-2xl font-bold">{area.name}</span>
-                            <StatusBadge status={area.status} />
+                            <Badge
+                                variant="outline"
+                                className={StatusBadgeStyles[area.status]}
+                            >
+                                {toDisplayText(area.status)}
+                            </Badge>
                         </div>
                         <h1 className="text-muted-foreground text-sm ">Area Type: {" "}
                             <span className="font-semibold text-sm text-foreground">{area.areaType}</span>

@@ -7,5 +7,7 @@ import com.supertech.superbatch.plant.entity.Material;
 public interface MaterialRepository extends JpaRepository<Material, Long> {
     boolean existsByNameIgnoreCase(String name);
 
+    boolean existsById(Long id);
+
     boolean existsByCodeIgnoreCase(String code);
 }

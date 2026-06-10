@@ -1,11 +1,13 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
 import { ParameterResponse } from "@/features/plant/types/parameter.types";
-import StatusBadge from "@/components/status-badge";
 import { ProcessDialogState } from "../process-view";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { MoreHorizontal } from "lucide-react"
+import { StatusBadgeStyles } from "@/features/common/types/status.type";
+import { Badge } from "@/components/ui/badge";
+import { toDisplayText } from "@/lib/format-enum";
 
 
 
@@ -34,9 +36,12 @@ export const columns = (
             accessorKey: "active",
             header: "Status",
             cell: ({ row }) => (
-                <StatusBadge
-                    status={row.original.active ? "active" : "inactive"}
-                />
+                <Badge
+                    variant="outline"
+                    className={StatusBadgeStyles[row.original.active ? "ACTIVE" : "INACTIVE"]}
+                >
+                    {toDisplayText(row.original.active ? "ACTIVE" : "INACTIVE")}
+                </Badge>
             )
         },
         {

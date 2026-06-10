@@ -24,6 +24,10 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     public void create(CreateMaterialRequest request) {
+        if (materialRepository.existsById(request.id())) {
+            throw new DuplicateResourceException("Material id already exists");
+        }
+
         if (materialRepository.existsByNameIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Material name already exists");
         }
@@ -51,6 +55,12 @@ public class MaterialServiceImpl implements MaterialService {
     public void update(Long id, UpdateMaterialRequest request) {
         Material material = materialRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Material not found"));
+
+        if (!material.getId().equals(request.id())
+                && materialRepository.existsById(request.id())) {
+            throw new DuplicateResourceException("Material id already exists");
+        }
+
         if (materialRepository.existsByNameIgnoreCase(request.name())
                 && !material.getName().equalsIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Material name already exists");

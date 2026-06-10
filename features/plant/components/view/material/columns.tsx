@@ -5,9 +5,10 @@ import { ArrowUpDown } from "lucide-react"
 import { MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
-import { MaterialResponse } from "@/features/plant/types/material.types";
+import { MaterialResponse, MaterialTypeBadgeStyles } from "@/features/plant/types/material.types";
 import { toDisplayText } from "@/lib/format-enum";
 import { MaterialDialogState } from "./material-view";
+import { Badge } from "@/components/ui/badge";
 
 
 
@@ -39,9 +40,18 @@ export const columns = (
                     </Button>
                 )
             },
-            cell: ({ row }) => (
-                toDisplayText(row.original.materialType)
-            ),
+            cell: ({ row }) => {
+                const type = row.original.materialType;
+                return (
+                    <Badge
+                        variant="outline"
+                        className={MaterialTypeBadgeStyles[type as keyof typeof MaterialTypeBadgeStyles]}
+                    >
+                        {toDisplayText(type)}
+                    </Badge>
+
+                );
+            },
         },
         {
             accessorKey: "uom",
