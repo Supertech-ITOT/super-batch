@@ -21,12 +21,13 @@ export default function UpdateTransitionDialog({ open, onClose, transitionId }: 
     const { data: transition, isLoading: transitionIsLoading } = useGetTransitionById(transitionId);
     const { register, handleSubmit, reset, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<TransitionSchema>({
         resolver: zodResolver(transitionSchema),
-        defaultValues: { name: "", active: true, code: "" }
+        defaultValues: { id: "", name: "", active: true, code: "" }
     });
 
     useEffect(() => {
         if (!open || !transition) return;
         reset({
+            id: String(transition.id),
             name: transition.name,
             code: transition.code,
             active: transition.active,
@@ -36,7 +37,14 @@ export default function UpdateTransitionDialog({ open, onClose, transitionId }: 
     const loading = isUpdating || isSubmitting || transitionIsLoading;
     const onSubmit = async (formData: TransitionSchema) => {
         try {
-            const res = await updateTransition({ id: transitionId!, data: formData });
+            const res = await updateTransition({
+                id: transitionId!, data: {
+                    id: Number(formData.id),
+                    name: formData.name,
+                    code: formData.code,
+                    active: formData.active
+                }
+            });
             toast.success(res.message ?? "Transition updated successfully.");
             handleClose();
         } catch (error) {
@@ -44,7 +52,7 @@ export default function UpdateTransitionDialog({ open, onClose, transitionId }: 
         }
     };
     const handleClose = () => {
-        reset({ name: "", active: true, code: "" });
+        reset({ id: "", name: "", active: true, code: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<TransitionSchema>) => {
@@ -65,13 +73,24 @@ export default function UpdateTransitionDialog({ open, onClose, transitionId }: 
                     <div className="py-4 space-y-4">
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
+                                <Label>Id</Label>
+                            </div>
+                            <Input
+                                type="number"
+                                disabled={loading}
+                                placeholder="Id"
+                                {...register("id")}
+                            />
+                        </div>
+                        <div className="space-y-2 relative">
+                            <div className="flex items-center justify-between">
                                 <Label>Name</Label>
                                 <CharacterProgress value={watch("name")} max={TransitionSchemaLimit.name.max} />
                             </div>
                             <Input
                                 type="text"
                                 disabled={loading}
-                                placeholder="Titanium Dioxide"
+                                placeholder="Equal"
                                 maxLength={TransitionSchemaLimit.name.max}
                                 {...register("name")}
                             />
@@ -79,13 +98,13 @@ export default function UpdateTransitionDialog({ open, onClose, transitionId }: 
                         <div className="flex gap-2">
                             <div className="space-y-2 relative flex-1">
                                 <div className="flex items-center justify-between">
-                                    <Label>Transition Code</Label>
+                                    <Label>Code</Label>
                                     <CharacterProgress value={watch("code")} max={TransitionSchemaLimit.code.max} />
                                 </div>
                                 <Input
                                     type="text"
                                     disabled={loading}
-                                    placeholder="TD101"
+                                    placeholder="EQ"
                                     maxLength={TransitionSchemaLimit.code.max}
                                     {...register("code")}
                                 />

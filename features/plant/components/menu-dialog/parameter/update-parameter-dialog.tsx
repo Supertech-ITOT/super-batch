@@ -24,23 +24,35 @@ export default function UpdateParameterDialog({ open, onClose, parameterId }: Pr
     const { data: uomTypes, isLoading: uomTypesIsLoading } = useGetUomTypes(open);
     const { register, handleSubmit, reset, control, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<ParameterSchema>({
         resolver: zodResolver(parameterSchema),
-        defaultValues: { name: "", active: true, code: "", uom: "" }
+        defaultValues: { id: "", name: "", active: true, code: "", uom: "" }
     });
 
     useEffect(() => {
         if (!open || !parameter) return;
         reset({
+            id: String(parameter.id),
             name: parameter.name,
             code: parameter.code,
             active: parameter.active,
             uom: parameter.uom,
+
+
+
         });
     }, [open, parameter, reset]);
 
     const loading = isUpdating || isSubmitting || uomTypesIsLoading || parameterIsLoading;
     const onSubmit = async (formData: ParameterSchema) => {
         try {
-            const res = await updateParameter({ id: parameterId!, data: formData });
+            const res = await updateParameter({
+                id: parameterId!, data: {
+                    active: formData.active,
+                    code: formData.code,
+                    id: Number(formData.id),
+                    name: formData.name,
+                    uom: formData.uom
+                }
+            });
             toast.success(res.message ?? "Parameter updated successfully.");
             handleClose();
         } catch (error) {
@@ -48,7 +60,7 @@ export default function UpdateParameterDialog({ open, onClose, parameterId }: Pr
         }
     };
     const handleClose = () => {
-        reset({ name: "", active: true, code: "", uom: "" });
+        reset({ id: "", name: "", active: true, code: "", uom: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<ParameterSchema>) => {
@@ -75,7 +87,7 @@ export default function UpdateParameterDialog({ open, onClose, parameterId }: Pr
                             <Input
                                 type="text"
                                 disabled={loading}
-                                placeholder="Titanium Dioxide"
+                                placeholder="Temperature"
                                 maxLength={ParameterSchemaLimit.name.max}
                                 {...register("name")}
                             />
@@ -83,13 +95,13 @@ export default function UpdateParameterDialog({ open, onClose, parameterId }: Pr
                         <div className="flex gap-2">
                             <div className="space-y-2 relative flex-1">
                                 <div className="flex items-center justify-between">
-                                    <Label>Parameter Code</Label>
+                                    <Label>Code</Label>
                                     <CharacterProgress value={watch("code")} max={ParameterSchemaLimit.code.max} />
                                 </div>
                                 <Input
                                     type="text"
                                     disabled={loading}
-                                    placeholder="TD101"
+                                    placeholder="TT"
                                     maxLength={ParameterSchemaLimit.code.max}
                                     {...register("code")}
                                 />

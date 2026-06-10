@@ -21,12 +21,13 @@ export default function UpdateActionDialog({ open, onClose, actionId }: Props) {
     const { data: action, isLoading: actionIsLoading } = useGetActionById(actionId);
     const { register, handleSubmit, reset, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<ActionSchema>({
         resolver: zodResolver(actionSchema),
-        defaultValues: { name: "", active: true, code: "" }
+        defaultValues: { id: "", name: "", active: true, code: "" }
     });
 
     useEffect(() => {
         if (!open || !action) return;
         reset({
+            id: String(action.id),
             name: action.name,
             code: action.code,
             active: action.active,
@@ -36,7 +37,14 @@ export default function UpdateActionDialog({ open, onClose, actionId }: Props) {
     const loading = isUpdating || isSubmitting || actionIsLoading;
     const onSubmit = async (formData: ActionSchema) => {
         try {
-            const res = await updateAction({ id: actionId!, data: formData });
+            const res = await updateAction({
+                id: Number(actionId!), data: {
+                    active: formData.active,
+                    code: formData.code,
+                    name: formData.name,
+                    id: Number(formData.id)
+                }
+            });
             toast.success(res.message ?? "Action updated successfully.");
             handleClose();
         } catch (error) {
@@ -44,7 +52,7 @@ export default function UpdateActionDialog({ open, onClose, actionId }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ name: "", active: true, code: "" });
+        reset({ id: "", name: "", active: true, code: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<ActionSchema>) => {
@@ -82,7 +90,7 @@ export default function UpdateActionDialog({ open, onClose, actionId }: Props) {
                             <Input
                                 type="text"
                                 disabled={loading}
-                                placeholder="Titanium Dioxide"
+                                placeholder="Charge"
                                 maxLength={ActionSchemaLimit.name.max}
                                 {...register("name")}
                             />
@@ -96,7 +104,7 @@ export default function UpdateActionDialog({ open, onClose, actionId }: Props) {
                                 <Input
                                     type="text"
                                     disabled={loading}
-                                    placeholder="TD101"
+                                    placeholder="CHARGE"
                                     maxLength={ActionSchemaLimit.code.max}
                                     {...register("code")}
                                 />

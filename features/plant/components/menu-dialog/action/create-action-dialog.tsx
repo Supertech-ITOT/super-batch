@@ -82,7 +82,7 @@ export default function CreateActionDialog({ open, onClose }: Props) {
                         <div className="flex gap-2">
                             <div className="space-y-2 relative flex-1">
                                 <div className="flex items-center justify-between">
-                                    <Label>Action</Label>
+                                    <Label>Code</Label>
                                     <CharacterProgress value={watch("code")} max={ActionSchemaLimit.code.max} />
                                 </div>
                                 <Input

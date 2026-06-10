@@ -23,12 +23,13 @@ export default function CreateParameterDialog({ open, onClose }: Props) {
     const { data: uomTypes, isLoading: uomTypesIsLoading } = useGetUomTypes(open);
     const { register, handleSubmit, reset, control, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<ParameterSchema>({
         resolver: zodResolver(parameterSchema),
-        defaultValues: { name: "", active: true, code: "", uom: "" }
+        defaultValues: { id: "", name: "", active: true, code: "", uom: "" }
     });
     const loading = isCreating || isSubmitting || uomTypesIsLoading;
     const onSubmit = async (formData: ParameterSchema) => {
         try {
             const res = await createParameter({
+                id: Number(formData.id),
                 name: formData.name,
                 active: formData.active,
                 code: formData.code,
@@ -41,7 +42,7 @@ export default function CreateParameterDialog({ open, onClose }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ name: "", active: true, code: "", uom: "" });
+        reset({ id: "", name: "", active: true, code: "", uom: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<ParameterSchema>) => {
@@ -62,6 +63,17 @@ export default function CreateParameterDialog({ open, onClose }: Props) {
                     <div className="py-4 space-y-4">
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
+                                <Label>Id</Label>
+                            </div>
+                            <Input
+                                type="number"
+                                disabled={loading}
+                                placeholder="Id"
+                                {...register("id")}
+                            />
+                        </div>
+                        <div className="space-y-2 relative">
+                            <div className="flex items-center justify-between">
                                 <Label>Name</Label>
                                 <CharacterProgress value={watch("name")} max={ParameterSchemaLimit.name.max} />
                             </div>
@@ -76,13 +88,13 @@ export default function CreateParameterDialog({ open, onClose }: Props) {
                         <div className="flex gap-2">
                             <div className="space-y-2 relative flex-1">
                                 <div className="flex items-center justify-between">
-                                    <Label>Parameter Code</Label>
+                                    <Label>Code</Label>
                                     <CharacterProgress value={watch("code")} max={ParameterSchemaLimit.code.max} />
                                 </div>
                                 <Input
                                     type="text"
                                     disabled={loading}
-                                    placeholder="TT101"
+                                    placeholder="TT"
                                     maxLength={ParameterSchemaLimit.code.max}
                                     {...register("code")}
                                 />

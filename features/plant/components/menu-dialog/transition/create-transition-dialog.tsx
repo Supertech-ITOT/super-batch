@@ -18,12 +18,13 @@ export default function CreateTransitionDialog({ open, onClose }: Props) {
     const { mutateAsync: createTransition, isPending: isCreating } = useCreateTransition();
     const { register, handleSubmit, reset, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<TransitionSchema>({
         resolver: zodResolver(transitionSchema),
-        defaultValues: { name: "", active: true, code: "" }
+        defaultValues: { id: "", name: "", active: true, code: "" }
     });
     const loading = isCreating || isSubmitting;
     const onSubmit = async (formData: TransitionSchema) => {
         try {
             const res = await createTransition({
+                id: Number(formData.id),
                 name: formData.name,
                 active: formData.active,
                 code: formData.code,
@@ -35,7 +36,7 @@ export default function CreateTransitionDialog({ open, onClose }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ name: "", active: true, code: "" });
+        reset({ id: "", name: "", active: true, code: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<TransitionSchema>) => {
@@ -54,6 +55,17 @@ export default function CreateTransitionDialog({ open, onClose }: Props) {
                         <DialogDescription>Create a new transition entity.</DialogDescription>
                     </DialogHeader>
                     <div className="py-4 space-y-4">
+                        <div className="space-y-2 relative">
+                            <div className="flex items-center justify-between">
+                                <Label>Id</Label>
+                            </div>
+                            <Input
+                                type="number"
+                                disabled={loading}
+                                placeholder="Id"
+                                {...register("id")}
+                            />
+                        </div>
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
                                 <Label>Name</Label>
