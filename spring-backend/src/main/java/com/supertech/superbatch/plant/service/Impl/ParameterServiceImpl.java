@@ -36,6 +36,9 @@ public class ParameterServiceImpl implements ParameterService {
 
     @Override
     public void create(CreateParameterRequest request) {
+        if (parameterRepository.existsById(request.id())) {
+            throw new DuplicateResourceException("Parameter id already exists");
+        }
         if (parameterRepository.existsByNameIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Parameter name already exists");
         }
@@ -50,6 +53,10 @@ public class ParameterServiceImpl implements ParameterService {
     public void update(Long id, UpdateParameterRequest request) {
         ParameterMaster parameterMaster = parameterRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Parameter not found"));
+        if (!parameterMaster.getId().equals(request.id())
+                && parameterRepository.existsById(request.id())) {
+            throw new DuplicateResourceException("Parameter id already exists");
+        }
         if (parameterRepository.existsByNameIgnoreCase(request.name())
                 && !parameterMaster.getName().equalsIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Parameter name already exists");

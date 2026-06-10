@@ -8,4 +8,7 @@ public interface ParameterRepository extends JpaRepository<ParameterMaster, Long
     boolean existsByNameIgnoreCase(String name);
 
     boolean existsByCodeIgnoreCase(String code);
+
+    boolean existsById(Long id);
+
 }

@@ -7,6 +7,7 @@ export const TransitionSchemaLimit = {
 
 
 export const transitionSchema = z.object({
+    id: z.string({ error: "Id is required." }).min(1, "Id is required").trim(),
     name: z
         .string()
         .trim()

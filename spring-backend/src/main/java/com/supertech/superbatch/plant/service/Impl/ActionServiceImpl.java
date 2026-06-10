@@ -36,6 +36,9 @@ public class ActionServiceImpl implements ActionService {
 
     @Override
     public void create(CreateActionRequest request) {
+        if (actionMasterRepository.existsById(request.id())) {
+            throw new DuplicateResourceException("Action Id already exists");
+        }
         if (actionMasterRepository.existsByNameIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Action name already exists");
         }
@@ -48,26 +51,31 @@ public class ActionServiceImpl implements ActionService {
 
     @Override
     public void update(Long id, UpdateActionRequest request) {
-        ActionMaster material = actionMasterRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("ActionMaster not found"));
+        ActionMaster actionMaster = actionMasterRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Action not found"));
+
+        if (!actionMaster.getId().equals(request.id())
+                && actionMasterRepository.existsById(request.id())) {
+            throw new DuplicateResourceException("Action id already exists");
+        }
         if (actionMasterRepository.existsByNameIgnoreCase(request.name())
-                && !material.getName().equalsIgnoreCase(request.name())) {
-            throw new DuplicateResourceException("ActionMaster name already exists");
+                && !actionMaster.getName().equalsIgnoreCase(request.name())) {
+            throw new DuplicateResourceException("Action name already exists");
         }
 
         if (actionMasterRepository.existsByCodeIgnoreCase(request.code())
-                && !material.getCode().equalsIgnoreCase(request.code())) {
-            throw new DuplicateResourceException("ActionMaster code already exists");
+                && !actionMaster.getCode().equalsIgnoreCase(request.code())) {
+            throw new DuplicateResourceException("Action code already exists");
         }
-        actionMapper.updateEntity(material, request);
-        actionMasterRepository.save(material);
+        actionMapper.updateEntity(actionMaster, request);
+        actionMasterRepository.save(actionMaster);
     }
 
     @Override
     public void delete(Long id) {
-        ActionMaster material = actionMasterRepository.findById(id)
+        ActionMaster actionMaster = actionMasterRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("ActionMaster not found."));
-        actionMasterRepository.delete(material);
+        actionMasterRepository.delete(actionMaster);
     }
 
 }

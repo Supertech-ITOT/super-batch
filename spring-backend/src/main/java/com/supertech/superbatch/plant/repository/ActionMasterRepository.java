@@ -7,5 +7,7 @@ import com.supertech.superbatch.plant.entity.ActionMaster;
 public interface ActionMasterRepository extends JpaRepository<ActionMaster, Long> {
     boolean existsByNameIgnoreCase(String name);
 
+    boolean existsById(Long id);
+
     boolean existsByCodeIgnoreCase(String code);
 }

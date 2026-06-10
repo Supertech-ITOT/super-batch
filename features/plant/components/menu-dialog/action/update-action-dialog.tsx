@@ -65,6 +65,17 @@ export default function UpdateActionDialog({ open, onClose, actionId }: Props) {
                     <div className="py-4 space-y-4">
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
+                                <Label>Id</Label>
+                            </div>
+                            <Input
+                                type="number"
+                                disabled={loading}
+                                placeholder="Id"
+                                {...register("id")}
+                            />
+                        </div>
+                        <div className="space-y-2 relative">
+                            <div className="flex items-center justify-between">
                                 <Label>Name</Label>
                                 <CharacterProgress value={watch("name")} max={ActionSchemaLimit.name.max} />
                             </div>
@@ -79,7 +90,7 @@ export default function UpdateActionDialog({ open, onClose, actionId }: Props) {
                         <div className="flex gap-2">
                             <div className="space-y-2 relative flex-1">
                                 <div className="flex items-center justify-between">
-                                    <Label>Action Code</Label>
+                                    <Label>Code</Label>
                                     <CharacterProgress value={watch("code")} max={ActionSchemaLimit.code.max} />
                                 </div>
                                 <Input

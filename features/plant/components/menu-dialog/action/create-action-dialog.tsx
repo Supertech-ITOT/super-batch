@@ -18,12 +18,13 @@ export default function CreateActionDialog({ open, onClose }: Props) {
     const { mutateAsync: createAction, isPending: isCreating } = useCreateAction();
     const { register, handleSubmit, reset, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<ActionSchema>({
         resolver: zodResolver(actionSchema),
-        defaultValues: { name: "", active: true, code: "" }
+        defaultValues: { id: "", name: "", active: true, code: "" }
     });
     const loading = isCreating || isSubmitting;
     const onSubmit = async (formData: ActionSchema) => {
         try {
             const res = await createAction({
+                id: Number(formData.id),
                 name: formData.name,
                 active: formData.active,
                 code: formData.code,
@@ -35,7 +36,7 @@ export default function CreateActionDialog({ open, onClose }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ name: "", active: true, code: "" });
+        reset({ id: "", name: "", active: true, code: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<ActionSchema>) => {
@@ -56,13 +57,24 @@ export default function CreateActionDialog({ open, onClose }: Props) {
                     <div className="py-4 space-y-4">
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
+                                <Label>Id</Label>
+                            </div>
+                            <Input
+                                type="number"
+                                disabled={loading}
+                                placeholder="Id"
+                                {...register("id")}
+                            />
+                        </div>
+                        <div className="space-y-2 relative">
+                            <div className="flex items-center justify-between">
                                 <Label>Name</Label>
                                 <CharacterProgress value={watch("name")} max={ActionSchemaLimit.name.max} />
                             </div>
                             <Input
                                 type="text"
                                 disabled={loading}
-                                placeholder="Equal"
+                                placeholder="Charge"
                                 maxLength={ActionSchemaLimit.name.max}
                                 {...register("name")}
                             />
@@ -70,13 +82,13 @@ export default function CreateActionDialog({ open, onClose }: Props) {
                         <div className="flex gap-2">
                             <div className="space-y-2 relative flex-1">
                                 <div className="flex items-center justify-between">
-                                    <Label>Action Code</Label>
+                                    <Label>Action</Label>
                                     <CharacterProgress value={watch("code")} max={ActionSchemaLimit.code.max} />
                                 </div>
                                 <Input
                                     type="text"
                                     disabled={loading}
-                                    placeholder="EQ"
+                                    placeholder="CHARGE"
                                     maxLength={ActionSchemaLimit.code.max}
                                     {...register("code")}
                                 />

@@ -10,7 +10,7 @@ import com.supertech.superbatch.plant.enums.ActionType;
 import com.supertech.superbatch.plant.enums.ParameterType;
 import com.supertech.superbatch.plant.enums.TransitionType;
 import com.supertech.superbatch.plant.repository.ActionMasterRepository;
-import com.supertech.superbatch.plant.repository.ParameterMasterRepository;
+import com.supertech.superbatch.plant.repository.ParameterRepository;
 import com.supertech.superbatch.plant.repository.TransitionMasterRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class ProcessConfigurationInitializer implements CommandLineRunner {
     private final ActionMasterRepository actionRepository;
     private final TransitionMasterRepository transitionRepository;
-    private final ParameterMasterRepository parameterRepository;
+    private final ParameterRepository parameterRepository;
 
     @Override
     public void run(String... args) {

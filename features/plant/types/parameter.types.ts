@@ -9,6 +9,7 @@ export interface ParameterResponse {
 
 
 export interface CreateParameterRequest {
+    id: number;
     name: string;
     code: string;
     uom: string;
@@ -16,6 +17,7 @@ export interface CreateParameterRequest {
 }
 
 export interface UpdateParameterRequest {
+    id: number;
     name: string;
     code: string;
     uom: string;

@@ -36,6 +36,9 @@ public class TransitionServiceImpl implements TransitionService {
 
     @Override
     public void create(CreateTransitionRequest request) {
+        if (transitionMasterRepository.existsById(request.id())) {
+            throw new DuplicateResourceException("Transition id already exists");
+        }
         if (transitionMasterRepository.existsByNameIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Transition name already exists");
         }
@@ -50,6 +53,12 @@ public class TransitionServiceImpl implements TransitionService {
     public void update(Long id, UpdateTransitionRequest request) {
         TransitionMaster transitionMaster = transitionMasterRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transition not found"));
+
+        if (!transitionMaster.getId().equals(request.id())
+                && transitionMasterRepository.existsById(request.id())) {
+            throw new DuplicateResourceException("Transition id already exists");
+        }
+
         if (transitionMasterRepository.existsByNameIgnoreCase(request.name())
                 && !transitionMaster.getName().equalsIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Transition name already exists");
