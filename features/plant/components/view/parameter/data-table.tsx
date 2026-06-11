@@ -5,7 +5,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 interface DataTableProps<
     TData extends { id: number },
     TValue
@@ -17,7 +16,6 @@ interface DataTableProps<
 const DataTable = <TData extends { id: number }, TValue>({ columns, data }: DataTableProps<TData, TValue>) => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    const router = useRouter();
     const table = useReactTable({
         data,
         columns,
@@ -43,7 +41,7 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data }: Data
                     className="max-w-sm"
                 />
             </div>
-            <div className="rounded-md border h-112.5 overflow-auto">
+            <div className="rounded-md border h-134 overflow-auto">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

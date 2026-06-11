@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ParameterMaster {
+public class Parameter {
 
     @Id
     private Long id;

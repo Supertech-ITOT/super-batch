@@ -3,15 +3,15 @@ package com.supertech.superbatch.plant.initializer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import com.supertech.superbatch.plant.entity.ActionMaster;
-import com.supertech.superbatch.plant.entity.ParameterMaster;
-import com.supertech.superbatch.plant.entity.TransitionMaster;
+import com.supertech.superbatch.plant.entity.Action;
+import com.supertech.superbatch.plant.entity.Parameter;
+import com.supertech.superbatch.plant.entity.Transition;
 import com.supertech.superbatch.plant.enums.ActionType;
 import com.supertech.superbatch.plant.enums.ParameterType;
 import com.supertech.superbatch.plant.enums.TransitionType;
-import com.supertech.superbatch.plant.repository.ActionMasterRepository;
+import com.supertech.superbatch.plant.repository.ActionRepository;
 import com.supertech.superbatch.plant.repository.ParameterRepository;
-import com.supertech.superbatch.plant.repository.TransitionMasterRepository;
+import com.supertech.superbatch.plant.repository.TransitionRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,8 +20,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 
 public class ProcessConfigurationInitializer implements CommandLineRunner {
-    private final ActionMasterRepository actionRepository;
-    private final TransitionMasterRepository transitionRepository;
+    private final ActionRepository actionRepository;
+    private final TransitionRepository transitionRepository;
     private final ParameterRepository parameterRepository;
 
     @Override
@@ -36,7 +36,7 @@ public class ProcessConfigurationInitializer implements CommandLineRunner {
             return;
         }
         for (ActionType type : ActionType.values()) {
-            ActionMaster action = new ActionMaster();
+            Action action = new Action();
             action.setId(type.getId());
             action.setCode(type.name());
             action.setName(type.getDisplayName());
@@ -51,7 +51,7 @@ public class ProcessConfigurationInitializer implements CommandLineRunner {
             return;
         }
         for (TransitionType type : TransitionType.values()) {
-            TransitionMaster transition = new TransitionMaster();
+            Transition transition = new Transition();
             transition.setId(type.getId());
             transition.setCode(type.name());
             transition.setName(type.getDisplayName());
@@ -66,7 +66,7 @@ public class ProcessConfigurationInitializer implements CommandLineRunner {
             return;
         }
         for (ParameterType type : ParameterType.values()) {
-            ParameterMaster parameter = new ParameterMaster();
+            Parameter parameter = new Parameter();
             parameter.setId(type.getId());
             parameter.setCode(type.name());
             parameter.setName(type.getDisplayName());

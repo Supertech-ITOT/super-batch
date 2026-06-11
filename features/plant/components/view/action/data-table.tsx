@@ -41,7 +41,7 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data }: Data
                     className="max-w-sm"
                 />
             </div>
-            <div className="rounded-md border h-112.5 overflow-auto">
+            <div className="rounded-md border h-134 overflow-auto">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

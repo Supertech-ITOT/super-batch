@@ -10,9 +10,9 @@ import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.plant.dto.Transition.CreateTransitionRequest;
 import com.supertech.superbatch.plant.dto.Transition.UpdateTransitionRequest;
 import com.supertech.superbatch.plant.dto.Transition.TransitionResponse;
-import com.supertech.superbatch.plant.entity.TransitionMaster;
+import com.supertech.superbatch.plant.entity.Transition;
 import com.supertech.superbatch.plant.mapper.TransitionMapper;
-import com.supertech.superbatch.plant.repository.TransitionMasterRepository;
+import com.supertech.superbatch.plant.repository.TransitionRepository;
 import com.supertech.superbatch.plant.service.TransitionService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,65 +20,65 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class TransitionServiceImpl implements TransitionService {
-    private final TransitionMasterRepository transitionMasterRepository;
+    private final TransitionRepository transitionRepository;
     private final TransitionMapper transitionMapper;
 
     @Override
     public List<TransitionResponse> getAll() {
-        return transitionMasterRepository.findAll(Sort.by(Sort.Direction.ASC, "id")).stream()
+        return transitionRepository.findAll(Sort.by(Sort.Direction.ASC, "id")).stream()
                 .map(transitionMapper::toResponse).toList();
     }
 
     @Override
     public TransitionResponse getById(Long id) {
-        TransitionMaster transition = transitionMasterRepository.findById(id)
+        Transition transition = transitionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transition not found."));
         return transitionMapper.toResponse(transition);
     }
 
     @Override
     public void create(CreateTransitionRequest request) {
-        if (transitionMasterRepository.existsById(request.id())) {
+        if (transitionRepository.existsById(request.id())) {
             throw new DuplicateResourceException("Transition id already exists");
         }
-        if (transitionMasterRepository.existsByNameIgnoreCase(request.name())) {
+        if (transitionRepository.existsByNameIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Transition name already exists");
         }
-        if (transitionMasterRepository.existsByCodeIgnoreCase(request.code())) {
+        if (transitionRepository.existsByCodeIgnoreCase(request.code())) {
             throw new DuplicateResourceException("Transition code already exists");
         }
-        TransitionMaster transitionMaster = transitionMapper.toEntity(request);
-        transitionMasterRepository.save(transitionMaster);
+        Transition transitionMaster = transitionMapper.toEntity(request);
+        transitionRepository.save(transitionMaster);
     }
 
     @Override
     public void update(Long id, UpdateTransitionRequest request) {
-        TransitionMaster transitionMaster = transitionMasterRepository.findById(id)
+        Transition transitionMaster = transitionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transition not found"));
 
         if (!transitionMaster.getId().equals(request.id())
-                && transitionMasterRepository.existsById(request.id())) {
+                && transitionRepository.existsById(request.id())) {
             throw new DuplicateResourceException("Transition id already exists");
         }
 
-        if (transitionMasterRepository.existsByNameIgnoreCase(request.name())
+        if (transitionRepository.existsByNameIgnoreCase(request.name())
                 && !transitionMaster.getName().equalsIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Transition name already exists");
         }
 
-        if (transitionMasterRepository.existsByCodeIgnoreCase(request.code())
+        if (transitionRepository.existsByCodeIgnoreCase(request.code())
                 && !transitionMaster.getCode().equalsIgnoreCase(request.code())) {
             throw new DuplicateResourceException("Transition code already exists");
         }
         transitionMapper.updateEntity(transitionMaster, request);
-        transitionMasterRepository.save(transitionMaster);
+        transitionRepository.save(transitionMaster);
     }
 
     @Override
     public void delete(Long id) {
-        TransitionMaster transitionMaster = transitionMasterRepository.findById(id)
+        Transition transitionMaster = transitionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transition not found."));
-        transitionMasterRepository.delete(transitionMaster);
+        transitionRepository.delete(transitionMaster);
     }
 
 }

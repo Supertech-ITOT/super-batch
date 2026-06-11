@@ -1,5 +1,5 @@
 "use client";
-import { FileText, CalendarClock, BookOpen, Factory, Users, ShieldCheck, ClipboardList, Settings, ChevronUp, Home, LogOut, LucideIcon, Sidebar, PanelLeftOpen, PanelLeftClose } from "lucide-react";
+import { FileText, CalendarClock, BookOpenText, Factory, Users, ShieldCheck, ClipboardList, Settings, ChevronUp, Home, LogOut, LucideIcon, PanelLeftOpen } from "lucide-react";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import Link from "next/link";
@@ -33,7 +33,7 @@ const OperationRoutes: RouteType[] = [
     {
         label: "Recipe",
         path: "/Recipe",
-        icon: BookOpen,
+        icon: BookOpenText,
     },
     {
         label: "PlantModel",

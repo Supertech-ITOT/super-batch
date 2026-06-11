@@ -5,11 +5,11 @@ import org.springframework.stereotype.Component;
 import com.supertech.superbatch.plant.dto.Transition.CreateTransitionRequest;
 import com.supertech.superbatch.plant.dto.Transition.UpdateTransitionRequest;
 import com.supertech.superbatch.plant.dto.Transition.TransitionResponse;
-import com.supertech.superbatch.plant.entity.TransitionMaster;
+import com.supertech.superbatch.plant.entity.Transition;
 
 @Component
 public class TransitionMapper {
-    public TransitionResponse toResponse(TransitionMaster transition) {
+    public TransitionResponse toResponse(Transition transition) {
         return new TransitionResponse(
                 transition.getId(),
                 transition.getCode(),
@@ -17,8 +17,8 @@ public class TransitionMapper {
                 transition.getActive());
     }
 
-    public TransitionMaster toEntity(CreateTransitionRequest request) {
-        return TransitionMaster.builder()
+    public Transition toEntity(CreateTransitionRequest request) {
+        return Transition.builder()
                 .id(request.id())
                 .code(request.code())
                 .name(request.name())
@@ -26,7 +26,7 @@ public class TransitionMapper {
                 .build();
     }
 
-    public void updateEntity(TransitionMaster transitionMaster, UpdateTransitionRequest request) {
+    public void updateEntity(Transition transitionMaster, UpdateTransitionRequest request) {
         transitionMaster.setId(request.id());
         transitionMaster.setCode(request.code());
         transitionMaster.setName(request.name());

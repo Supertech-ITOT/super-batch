@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class ActionMaster {
+public class Transition {
     @Id
     private Long id;
     private String name;

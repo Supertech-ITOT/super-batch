@@ -10,9 +10,9 @@ import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.plant.dto.Action.ActionResponse;
 import com.supertech.superbatch.plant.dto.Action.CreateActionRequest;
 import com.supertech.superbatch.plant.dto.Action.UpdateActionRequest;
-import com.supertech.superbatch.plant.entity.ActionMaster;
+import com.supertech.superbatch.plant.entity.Action;
 import com.supertech.superbatch.plant.mapper.ActionMapper;
-import com.supertech.superbatch.plant.repository.ActionMasterRepository;
+import com.supertech.superbatch.plant.repository.ActionRepository;
 import com.supertech.superbatch.plant.service.ActionService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ActionServiceImpl implements ActionService {
-    private final ActionMasterRepository actionMasterRepository;
+    private final ActionRepository actionMasterRepository;
     private final ActionMapper actionMapper;
 
     @Override
@@ -31,7 +31,7 @@ public class ActionServiceImpl implements ActionService {
 
     @Override
     public ActionResponse getById(Long id) {
-        ActionMaster parameter = actionMasterRepository.findById(id)
+        Action parameter = actionMasterRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Action not found."));
         return actionMapper.toResponse(parameter);
     }
@@ -47,13 +47,13 @@ public class ActionServiceImpl implements ActionService {
         if (actionMasterRepository.existsByCodeIgnoreCase(request.code())) {
             throw new DuplicateResourceException("Action code already exists");
         }
-        ActionMaster actionMaster = actionMapper.toEntity(request);
+        Action actionMaster = actionMapper.toEntity(request);
         actionMasterRepository.save(actionMaster);
     }
 
     @Override
     public void update(Long id, UpdateActionRequest request) {
-        ActionMaster actionMaster = actionMasterRepository.findById(id)
+        Action actionMaster = actionMasterRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Action not found"));
 
         if (!actionMaster.getId().equals(request.id())
@@ -75,8 +75,8 @@ public class ActionServiceImpl implements ActionService {
 
     @Override
     public void delete(Long id) {
-        ActionMaster actionMaster = actionMasterRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("ActionMaster not found."));
+        Action actionMaster = actionMasterRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Action not found."));
         actionMasterRepository.delete(actionMaster);
     }
 

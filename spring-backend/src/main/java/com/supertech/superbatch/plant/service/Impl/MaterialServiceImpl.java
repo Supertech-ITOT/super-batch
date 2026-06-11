@@ -2,6 +2,7 @@ package com.supertech.superbatch.plant.service.Impl;
 
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
@@ -41,7 +42,8 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     public List<MaterialResponse> getAll() {
-        return materialRepository.findAll().stream().map(materialMapper::toResponse).toList();
+        return materialRepository.findAll(Sort.by(Sort.Direction.ASC, "id")).stream().map(materialMapper::toResponse)
+                .toList();
     }
 
     @Override

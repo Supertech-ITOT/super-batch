@@ -1,0 +1,37 @@
+"use client"
+import { Button } from "@/components/ui/button";
+import { BookOpenTextIcon, ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+export default function CreateRecipePage() {
+    const router = useRouter();
+    return (
+        <div className="flex h-full flex-col overflow-hidden">
+            {/* Header */}
+            <div className="shrink-0 border-b p-4 flex gap-4 items-end">
+
+                <Button onClick={() => router.back()} variant="outline" className=" size-12 hover:scale-110 transition-all duration-200 bg-card! shadow  rounded-full border">
+                    <ChevronLeft className="w-6! h-6!" />
+                </Button>
+                <div className="flex flex-col">
+
+                    <div className="flex gap-2 items-center">
+                        <BookOpenTextIcon className="w-6 h-6" />
+                        <h1 className="text-xl font-bold">
+                            Recipe Engine
+                        </h1>
+                    </div>
+
+                    <p className="text-sm text-muted-foreground">
+                        Design, manage and visualize your plant.
+                    </p>
+                </div>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 flex min-h-0 p-4">
+
+            </div>
+        </div>
+    );
+}

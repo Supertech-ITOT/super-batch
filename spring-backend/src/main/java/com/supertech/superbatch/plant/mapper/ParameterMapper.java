@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import com.supertech.superbatch.plant.dto.Parameter.CreateParameterRequest;
 import com.supertech.superbatch.plant.dto.Parameter.ParameterResponse;
 import com.supertech.superbatch.plant.dto.Parameter.UpdateParameterRequest;
-import com.supertech.superbatch.plant.entity.ParameterMaster;
+import com.supertech.superbatch.plant.entity.Parameter;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 public class ParameterMapper {
     private final UomMapper uomMapper;
 
-    public ParameterResponse toResponse(ParameterMaster parameter) {
+    public ParameterResponse toResponse(Parameter parameter) {
         return new ParameterResponse(
                 parameter.getId(),
                 parameter.getCode(),
@@ -23,8 +23,8 @@ public class ParameterMapper {
                 parameter.getActive());
     }
 
-    public ParameterMaster toEntity(CreateParameterRequest request) {
-        return ParameterMaster.builder()
+    public Parameter toEntity(CreateParameterRequest request) {
+        return Parameter.builder()
                 .id(request.id())
                 .code(request.code())
                 .active(request.active())
@@ -34,7 +34,7 @@ public class ParameterMapper {
 
     }
 
-    public void updateEntity(ParameterMaster parameterMaster, UpdateParameterRequest request) {
+    public void updateEntity(Parameter parameterMaster, UpdateParameterRequest request) {
         parameterMaster.setId(request.id());
         parameterMaster.setName(request.name());
         parameterMaster.setCode(request.code());
