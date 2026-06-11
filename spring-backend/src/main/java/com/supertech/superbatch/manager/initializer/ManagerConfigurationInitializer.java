@@ -1,6 +1,7 @@
 package com.supertech.superbatch.manager.initializer;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
@@ -23,6 +24,7 @@ public class ManagerConfigurationInitializer implements CommandLineRunner {
     private final PermissionRepository permissionRepository;
     private final ModuleRepository moduleRepository;
     private final UsersRepository usersRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) {
@@ -81,6 +83,7 @@ public class ManagerConfigurationInitializer implements CommandLineRunner {
             Users users = Users.builder()
                     .name("Super Admin")
                     .email("itotsoftware@supertech.co.in")
+                    .password(passwordEncoder.encode("Super@123"))
                     .role(role)
                     .build();
             users = usersRepository.save(users);
