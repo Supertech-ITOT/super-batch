@@ -37,10 +37,7 @@ public class ProcessConfigurationInitializer implements CommandLineRunner {
         }
         for (ActionType type : ActionType.values()) {
             Action action = new Action();
-            action.setId(type.getId());
-            action.setCode(type.name());
             action.setName(type.getDisplayName());
-            action.setActive(true);
             actionRepository.save(action);
         }
 
@@ -52,10 +49,7 @@ public class ProcessConfigurationInitializer implements CommandLineRunner {
         }
         for (TransitionType type : TransitionType.values()) {
             Transition transition = new Transition();
-            transition.setId(type.getId());
-            transition.setCode(type.name());
             transition.setName(type.getDisplayName());
-            transition.setActive(true);
             transitionRepository.save(transition);
         }
 
@@ -67,11 +61,8 @@ public class ProcessConfigurationInitializer implements CommandLineRunner {
         }
         for (ParameterType type : ParameterType.values()) {
             Parameter parameter = new Parameter();
-            parameter.setId(type.getId());
-            parameter.setCode(type.name());
             parameter.setName(type.getDisplayName());
             parameter.setUom(type.getDefaultUom());
-            parameter.setActive(true);
             parameterRepository.save(parameter);
         }
 

@@ -5,13 +5,6 @@ import { ProcessDialogState } from "../process-view";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { MoreHorizontal } from "lucide-react"
-import { StatusBadgeStyles } from "@/features/common/types/status.type";
-import { Badge } from "@/components/ui/badge";
-import { toDisplayText } from "@/lib/format-enum";
-
-
-
-
 export const columns = (
     setDialog: React.Dispatch<React.SetStateAction<ProcessDialogState>>
 ): ColumnDef<ParameterResponse>[] => [
@@ -24,31 +17,15 @@ export const columns = (
             header: "Name",
         },
         {
-            accessorKey: "code",
-            header: "Code",
-        },
-        {
             accessorKey: "uom",
             header: "UOM",
             cell: ({ row }) => row.original.uom.symbol
         },
         {
-            accessorKey: "active",
-            header: "Status",
-            cell: ({ row }) => (
-                <Badge
-                    variant="outline"
-                    className={StatusBadgeStyles[row.original.active ? "ACTIVE" : "INACTIVE"]}
-                >
-                    {toDisplayText(row.original.active ? "ACTIVE" : "INACTIVE")}
-                </Badge>
-            )
-        },
-        {
             id: "actions",
             header: "Actions",
             cell: ({ row }) => {
-                const unit = row.original
+                const parameter = row.original
 
                 return (
                     <DropdownMenu>
@@ -66,7 +43,7 @@ export const columns = (
                                     open: true,
                                     action: "edit",
                                     entity: "parameter",
-                                    id: row.original.id,
+                                    id: parameter.id,
                                 });
                             }}>
                                 Edit</DropdownMenuItem>
@@ -76,7 +53,7 @@ export const columns = (
                                     open: true,
                                     action: "delete",
                                     entity: "parameter",
-                                    id: row.original.id,
+                                    id: parameter.id,
                                 });
                             }}>
                                 Delete</DropdownMenuItem>

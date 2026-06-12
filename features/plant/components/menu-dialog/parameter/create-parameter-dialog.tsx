@@ -13,8 +13,6 @@ import { useGetUomTypes } from "@/features/common/hooks/useMetadata";
 import { useCreateParameter } from "../../../hooks/use-parameters";
 import { parameterSchema, ParameterSchema, ParameterSchemaLimit } from "../../../schemas/parameter-schema";
 import CharacterProgress from "@/components/form/character-progress";
-import StatusToggle from "@/components/form/status-toggle";
-import { StatusConfig } from "@/features/common/types/status.type";
 
 
 type Props = { open: boolean; onClose: () => void; };
@@ -23,16 +21,13 @@ export default function CreateParameterDialog({ open, onClose }: Props) {
     const { data: uomTypes, isLoading: uomTypesIsLoading } = useGetUomTypes(open);
     const { register, handleSubmit, reset, control, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<ParameterSchema>({
         resolver: zodResolver(parameterSchema),
-        defaultValues: { id: "", name: "", active: true, code: "", uom: "" }
+        defaultValues: { name: "", uom: "" }
     });
     const loading = isCreating || isSubmitting || uomTypesIsLoading;
     const onSubmit = async (formData: ParameterSchema) => {
         try {
             const res = await createParameter({
-                id: Number(formData.id),
                 name: formData.name,
-                active: formData.active,
-                code: formData.code,
                 uom: formData.uom
             });
             toast.success(res.message ?? "Parameter created successfully.");
@@ -42,7 +37,7 @@ export default function CreateParameterDialog({ open, onClose }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ id: "", name: "", active: true, code: "", uom: "" });
+        reset({ name: "", uom: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<ParameterSchema>) => {
@@ -63,17 +58,6 @@ export default function CreateParameterDialog({ open, onClose }: Props) {
                     <div className="py-4 space-y-4">
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
-                                <Label>Id</Label>
-                            </div>
-                            <Input
-                                type="number"
-                                disabled={loading}
-                                placeholder="Id"
-                                {...register("id")}
-                            />
-                        </div>
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
                                 <Label>Name</Label>
                                 <CharacterProgress value={watch("name")} max={ParameterSchemaLimit.name.max} />
                             </div>
@@ -85,54 +69,32 @@ export default function CreateParameterDialog({ open, onClose }: Props) {
                                 {...register("name")}
                             />
                         </div>
-                        <div className="flex gap-2">
-                            <div className="space-y-2 relative flex-1">
-                                <div className="flex items-center justify-between">
-                                    <Label>Code</Label>
-                                    <CharacterProgress value={watch("code")} max={ParameterSchemaLimit.code.max} />
-                                </div>
-                                <Input
-                                    type="text"
-                                    disabled={loading}
-                                    placeholder="TT"
-                                    maxLength={ParameterSchemaLimit.code.max}
-                                    {...register("code")}
-                                />
-                            </div>
-                            <div className="flex-1 space-y-2">
-                                <Label>Select Uom Type</Label>
-                                <Controller
-                                    control={control}
-                                    name="uom"
-                                    render={({ field }) => (
-                                        <Select
-                                            disabled={loading}
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Uom Type" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {uomTypes?.map((e) => (
-                                                        <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                            </div>
-                        </div>
-                        <StatusToggle
-                            label="Status"
-                            value={watch("active") ? "ACTIVE" : "INACTIVE"}
-                            options={StatusConfig.filter(
-                                (s) => s.value === "ACTIVE" || s.value === "INACTIVE"
-                            )} onChange={(value) => setValue("active", value === "ACTIVE")}
-                        />
 
+                        <div className="space-y-2 relative">
+                            <Label>Select Uom Type</Label>
+                            <Controller
+                                control={control}
+                                name="uom"
+                                render={({ field }) => (
+                                    <Select
+                                        disabled={loading}
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select Uom Type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {uomTypes?.map((e) => (
+                                                    <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+                        </div>
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>

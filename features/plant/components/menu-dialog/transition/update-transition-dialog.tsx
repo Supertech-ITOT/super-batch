@@ -12,8 +12,6 @@ import { useGetTransitionById, useUpdateTransition } from "../../../hooks/use-tr
 import { transitionSchema, TransitionSchema, TransitionSchemaLimit } from "../../../schemas/transition-schema";
 import CharacterProgress from "@/components/form/character-progress";
 import { useEffect } from "react";
-import StatusToggle from "@/components/form/status-toggle";
-import { StatusConfig } from "@/features/common/types/status.type";
 
 type Props = { open: boolean; onClose: () => void; transitionId?: number };
 export default function UpdateTransitionDialog({ open, onClose, transitionId }: Props) {
@@ -21,29 +19,19 @@ export default function UpdateTransitionDialog({ open, onClose, transitionId }: 
     const { data: transition, isLoading: transitionIsLoading } = useGetTransitionById(transitionId);
     const { register, handleSubmit, reset, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<TransitionSchema>({
         resolver: zodResolver(transitionSchema),
-        defaultValues: { id: "", name: "", active: true, code: "" }
+        defaultValues: { name: "" }
     });
 
     useEffect(() => {
         if (!open || !transition) return;
-        reset({
-            id: String(transition.id),
-            name: transition.name,
-            code: transition.code,
-            active: transition.active,
-        });
+        reset({ name: transition.name });
     }, [open, transition, reset]);
 
     const loading = isUpdating || isSubmitting || transitionIsLoading;
     const onSubmit = async (formData: TransitionSchema) => {
         try {
             const res = await updateTransition({
-                id: transitionId!, data: {
-                    id: Number(formData.id),
-                    name: formData.name,
-                    code: formData.code,
-                    active: formData.active
-                }
+                id: transitionId!, data: formData
             });
             toast.success(res.message ?? "Transition updated successfully.");
             handleClose();
@@ -52,7 +40,7 @@ export default function UpdateTransitionDialog({ open, onClose, transitionId }: 
         }
     };
     const handleClose = () => {
-        reset({ id: "", name: "", active: true, code: "" });
+        reset({ name: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<TransitionSchema>) => {
@@ -73,17 +61,6 @@ export default function UpdateTransitionDialog({ open, onClose, transitionId }: 
                     <div className="py-4 space-y-4">
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
-                                <Label>Id</Label>
-                            </div>
-                            <Input
-                                type="number"
-                                disabled={loading}
-                                placeholder="Id"
-                                {...register("id")}
-                            />
-                        </div>
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
                                 <Label>Name</Label>
                                 <CharacterProgress value={watch("name")} max={TransitionSchemaLimit.name.max} />
                             </div>
@@ -95,29 +72,6 @@ export default function UpdateTransitionDialog({ open, onClose, transitionId }: 
                                 {...register("name")}
                             />
                         </div>
-                        <div className="flex gap-2">
-                            <div className="space-y-2 relative flex-1">
-                                <div className="flex items-center justify-between">
-                                    <Label>Code</Label>
-                                    <CharacterProgress value={watch("code")} max={TransitionSchemaLimit.code.max} />
-                                </div>
-                                <Input
-                                    type="text"
-                                    disabled={loading}
-                                    placeholder="EQ"
-                                    maxLength={TransitionSchemaLimit.code.max}
-                                    {...register("code")}
-                                />
-                            </div>
-
-                        </div>
-                        <StatusToggle
-                            label="Status"
-                            value={watch("active") ? "ACTIVE" : "INACTIVE"}
-                            options={StatusConfig.filter(
-                                (s) => s.value === "ACTIVE" || s.value === "INACTIVE"
-                            )} onChange={(value) => setValue("active", value === "ACTIVE", { shouldDirty: true, })}
-                        />
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>

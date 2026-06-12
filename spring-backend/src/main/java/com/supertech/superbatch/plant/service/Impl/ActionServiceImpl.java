@@ -38,14 +38,8 @@ public class ActionServiceImpl implements ActionService {
 
     @Override
     public void create(CreateActionRequest request) {
-        if (actionMasterRepository.existsById(request.id())) {
-            throw new DuplicateResourceException("Action Id already exists");
-        }
         if (actionMasterRepository.existsByNameIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Action name already exists");
-        }
-        if (actionMasterRepository.existsByCodeIgnoreCase(request.code())) {
-            throw new DuplicateResourceException("Action code already exists");
         }
         Action actionMaster = actionMapper.toEntity(request);
         actionMasterRepository.save(actionMaster);
@@ -56,18 +50,9 @@ public class ActionServiceImpl implements ActionService {
         Action actionMaster = actionMasterRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Action not found"));
 
-        if (!actionMaster.getId().equals(request.id())
-                && actionMasterRepository.existsById(request.id())) {
-            throw new DuplicateResourceException("Action id already exists");
-        }
         if (actionMasterRepository.existsByNameIgnoreCase(request.name())
                 && !actionMaster.getName().equalsIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Action name already exists");
-        }
-
-        if (actionMasterRepository.existsByCodeIgnoreCase(request.code())
-                && !actionMaster.getCode().equalsIgnoreCase(request.code())) {
-            throw new DuplicateResourceException("Action code already exists");
         }
         actionMapper.updateEntity(actionMaster, request);
         actionMasterRepository.save(actionMaster);

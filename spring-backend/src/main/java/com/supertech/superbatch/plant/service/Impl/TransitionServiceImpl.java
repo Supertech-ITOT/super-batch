@@ -38,14 +38,8 @@ public class TransitionServiceImpl implements TransitionService {
 
     @Override
     public void create(CreateTransitionRequest request) {
-        if (transitionRepository.existsById(request.id())) {
-            throw new DuplicateResourceException("Transition id already exists");
-        }
         if (transitionRepository.existsByNameIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Transition name already exists");
-        }
-        if (transitionRepository.existsByCodeIgnoreCase(request.code())) {
-            throw new DuplicateResourceException("Transition code already exists");
         }
         Transition transitionMaster = transitionMapper.toEntity(request);
         transitionRepository.save(transitionMaster);
@@ -56,20 +50,11 @@ public class TransitionServiceImpl implements TransitionService {
         Transition transitionMaster = transitionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transition not found"));
 
-        if (!transitionMaster.getId().equals(request.id())
-                && transitionRepository.existsById(request.id())) {
-            throw new DuplicateResourceException("Transition id already exists");
-        }
-
         if (transitionRepository.existsByNameIgnoreCase(request.name())
                 && !transitionMaster.getName().equalsIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Transition name already exists");
         }
 
-        if (transitionRepository.existsByCodeIgnoreCase(request.code())
-                && !transitionMaster.getCode().equalsIgnoreCase(request.code())) {
-            throw new DuplicateResourceException("Transition code already exists");
-        }
         transitionMapper.updateEntity(transitionMaster, request);
         transitionRepository.save(transitionMaster);
     }

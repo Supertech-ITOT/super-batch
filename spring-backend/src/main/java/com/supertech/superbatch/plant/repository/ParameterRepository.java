@@ -7,8 +7,6 @@ import com.supertech.superbatch.plant.entity.Parameter;
 public interface ParameterRepository extends JpaRepository<Parameter, Long> {
     boolean existsByNameIgnoreCase(String name);
 
-    boolean existsByCodeIgnoreCase(String code);
-
     boolean existsById(Long id);
 
 }

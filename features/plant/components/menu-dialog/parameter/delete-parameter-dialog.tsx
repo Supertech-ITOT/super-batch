@@ -26,7 +26,7 @@ export default function DeleteParameterDialog({ open, onClose, parameterId }: Pr
                 <DialogHeader>
                     <DialogTitle>Delete {parameter?.name}</DialogTitle>
                     <DialogDescription>
-                        {`Are you sure you want to delete parameter "${parameter?.name} - ${parameter?.code}"?`}
+                        {`Are you sure you want to delete parameter "${parameter?.name}"?`}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>

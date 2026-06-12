@@ -17,17 +17,12 @@ public class ParameterMapper {
     public ParameterResponse toResponse(Parameter parameter) {
         return new ParameterResponse(
                 parameter.getId(),
-                parameter.getCode(),
                 parameter.getName(),
-                uomMapper.toResponse(parameter.getUom()),
-                parameter.getActive());
+                uomMapper.toResponse(parameter.getUom()));
     }
 
     public Parameter toEntity(CreateParameterRequest request) {
         return Parameter.builder()
-                .id(request.id())
-                .code(request.code())
-                .active(request.active())
                 .name(request.name())
                 .uom(request.uom())
                 .build();
@@ -35,11 +30,8 @@ public class ParameterMapper {
     }
 
     public void updateEntity(Parameter parameterMaster, UpdateParameterRequest request) {
-        parameterMaster.setId(request.id());
         parameterMaster.setName(request.name());
-        parameterMaster.setCode(request.code());
         parameterMaster.setUom(request.uom());
-        parameterMaster.setActive(request.active());
     }
 
 }

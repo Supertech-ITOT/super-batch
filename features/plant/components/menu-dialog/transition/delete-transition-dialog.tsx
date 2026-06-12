@@ -26,7 +26,7 @@ export default function DeleteTransitionDialog({ open, onClose, transitionId }: 
                 <DialogHeader>
                     <DialogTitle>Delete {transition?.name}</DialogTitle>
                     <DialogDescription>
-                        {`Are you sure you want to delete transition "${transition?.name} - ${transition?.code}"?`}
+                        {`Are you sure you want to delete transition "${transition?.name}"?`}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>

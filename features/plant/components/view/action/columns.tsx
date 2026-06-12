@@ -5,9 +5,6 @@ import { ProcessDialogState } from "../process-view";
 import { MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge";
-import { toDisplayText } from "@/lib/format-enum";
-import { StatusBadgeStyles } from "@/features/common/types/status.type";
 
 
 
@@ -23,27 +20,10 @@ export const columns = (
             header: "Name",
         },
         {
-            accessorKey: "code",
-            header: "Code",
-        },
-        {
-            accessorKey: "active",
-            header: "Status",
-            cell: ({ row }) => (
-                <Badge
-                    variant="outline"
-                    className={StatusBadgeStyles[row.original.active ? "ACTIVE" : "INACTIVE"]}
-                >
-                    {toDisplayText(row.original.active ? "ACTIVE" : "INACTIVE")}
-                </Badge>
-
-            )
-        },
-        {
             id: "actions",
             header: "Actions",
             cell: ({ row }) => {
-                const unit = row.original
+                const action = row.original
 
                 return (
                     <DropdownMenu>
@@ -61,7 +41,7 @@ export const columns = (
                                     open: true,
                                     action: "edit",
                                     entity: "action",
-                                    id: row.original.id,
+                                    id: action.id,
                                 });
                             }}>
                                 Edit</DropdownMenuItem>
@@ -71,7 +51,7 @@ export const columns = (
                                     open: true,
                                     action: "delete",
                                     entity: "action",
-                                    id: row.original.id,
+                                    id: action.id,
                                 });
                             }}>
                                 Delete</DropdownMenuItem>

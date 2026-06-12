@@ -9,5 +9,4 @@ public interface ActionRepository extends JpaRepository<Action, Long> {
 
     boolean existsById(Long id);
 
-    boolean existsByCodeIgnoreCase(String code);
 }

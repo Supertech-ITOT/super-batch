@@ -21,29 +21,19 @@ export default function UpdateActionDialog({ open, onClose, actionId }: Props) {
     const { data: action, isLoading: actionIsLoading } = useGetActionById(actionId);
     const { register, handleSubmit, reset, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<ActionSchema>({
         resolver: zodResolver(actionSchema),
-        defaultValues: { id: "", name: "", active: true, code: "" }
+        defaultValues: { name: "" }
     });
 
     useEffect(() => {
         if (!open || !action) return;
-        reset({
-            id: String(action.id),
-            name: action.name,
-            code: action.code,
-            active: action.active,
-        });
+        reset({ name: action.name });
     }, [open, action, reset]);
 
     const loading = isUpdating || isSubmitting || actionIsLoading;
     const onSubmit = async (formData: ActionSchema) => {
         try {
             const res = await updateAction({
-                id: Number(actionId!), data: {
-                    active: formData.active,
-                    code: formData.code,
-                    name: formData.name,
-                    id: Number(formData.id)
-                }
+                id: Number(actionId!), data: formData
             });
             toast.success(res.message ?? "Action updated successfully.");
             handleClose();
@@ -52,7 +42,7 @@ export default function UpdateActionDialog({ open, onClose, actionId }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ id: "", name: "", active: true, code: "" });
+        reset({ name: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<ActionSchema>) => {
@@ -73,17 +63,6 @@ export default function UpdateActionDialog({ open, onClose, actionId }: Props) {
                     <div className="py-4 space-y-4">
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
-                                <Label>Id</Label>
-                            </div>
-                            <Input
-                                type="number"
-                                disabled={loading}
-                                placeholder="Id"
-                                {...register("id")}
-                            />
-                        </div>
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
                                 <Label>Name</Label>
                                 <CharacterProgress value={watch("name")} max={ActionSchemaLimit.name.max} />
                             </div>
@@ -95,29 +74,6 @@ export default function UpdateActionDialog({ open, onClose, actionId }: Props) {
                                 {...register("name")}
                             />
                         </div>
-                        <div className="flex gap-2">
-                            <div className="space-y-2 relative flex-1">
-                                <div className="flex items-center justify-between">
-                                    <Label>Code</Label>
-                                    <CharacterProgress value={watch("code")} max={ActionSchemaLimit.code.max} />
-                                </div>
-                                <Input
-                                    type="text"
-                                    disabled={loading}
-                                    placeholder="CHARGE"
-                                    maxLength={ActionSchemaLimit.code.max}
-                                    {...register("code")}
-                                />
-                            </div>
-                        </div>
-                        <StatusToggle
-                            label="Status"
-                            value={watch("active") ? "ACTIVE" : "INACTIVE"}
-                            options={StatusConfig.filter(
-                                (s) => s.value === "ACTIVE" || s.value === "INACTIVE"
-                            )} onChange={(value) => setValue("active", value === "ACTIVE", { shouldDirty: true, })}
-                        />
-
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>

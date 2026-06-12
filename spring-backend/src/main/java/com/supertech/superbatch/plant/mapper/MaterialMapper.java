@@ -28,7 +28,6 @@ public class MaterialMapper {
 
     public Material toEntity(CreateMaterialRequest request) {
         return Material.builder()
-                .id(request.id())
                 .name(request.name())
                 .code(request.code())
                 .materialType(request.materialType())
@@ -38,7 +37,6 @@ public class MaterialMapper {
     }
 
     public void updateEntity(Material material, UpdateMaterialRequest request) {
-        material.setId(request.id());
         material.setName(request.name());
         material.setCode(request.code());
         material.setDescription(request.description());

@@ -9,5 +9,4 @@ public interface TransitionRepository extends JpaRepository<Transition, Long> {
 
     boolean existsById(Long id);
 
-    boolean existsByCodeIgnoreCase(String code);
 }

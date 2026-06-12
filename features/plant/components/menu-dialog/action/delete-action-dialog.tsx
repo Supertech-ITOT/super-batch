@@ -26,7 +26,7 @@ export default function DeleteActionDialog({ open, onClose, actionId }: Props) {
                 <DialogHeader>
                     <DialogTitle>Delete {action?.name}</DialogTitle>
                     <DialogDescription>
-                        {`Are you sure you want to delete action "${action?.name} - ${action?.code}"?`}
+                        {`Are you sure you want to delete action "${action?.name}"?`}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>

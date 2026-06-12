@@ -38,15 +38,11 @@ public class ParameterServiceImpl implements ParameterService {
 
     @Override
     public void create(CreateParameterRequest request) {
-        if (parameterRepository.existsById(request.id())) {
-            throw new DuplicateResourceException("Parameter id already exists");
-        }
+
         if (parameterRepository.existsByNameIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Parameter name already exists");
         }
-        if (parameterRepository.existsByCodeIgnoreCase(request.code())) {
-            throw new DuplicateResourceException("Parameter code already exists");
-        }
+
         Parameter parameter = parameterMapper.toEntity(request);
         parameterRepository.save(parameter);
     }
@@ -55,19 +51,12 @@ public class ParameterServiceImpl implements ParameterService {
     public void update(Long id, UpdateParameterRequest request) {
         Parameter parameter = parameterRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Parameter not found"));
-        if (!parameter.getId().equals(request.id())
-                && parameterRepository.existsById(request.id())) {
-            throw new DuplicateResourceException("Parameter id already exists");
-        }
+
         if (parameterRepository.existsByNameIgnoreCase(request.name())
                 && !parameter.getName().equalsIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Parameter name already exists");
         }
 
-        if (parameterRepository.existsByCodeIgnoreCase(request.code())
-                && !parameter.getCode().equalsIgnoreCase(request.code())) {
-            throw new DuplicateResourceException("Parameter code already exists");
-        }
         parameterMapper.updateEntity(parameter, request);
         parameterRepository.save(parameter);
     }

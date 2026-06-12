@@ -11,24 +11,17 @@ import { showApiError } from "@/lib/show-api-error";
 import { useCreateAction } from "../../../hooks/use-actions";
 import { actionSchema, ActionSchema, ActionSchemaLimit } from "../../../schemas/action-schema";
 import CharacterProgress from "@/components/form/character-progress";
-import StatusToggle from "@/components/form/status-toggle";
-import { StatusConfig } from "@/features/common/types/status.type";
 type Props = { open: boolean; onClose: () => void; };
 export default function CreateActionDialog({ open, onClose }: Props) {
     const { mutateAsync: createAction, isPending: isCreating } = useCreateAction();
-    const { register, handleSubmit, reset, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<ActionSchema>({
+    const { register, handleSubmit, reset, watch, formState: { isSubmitting, isDirty } } = useForm<ActionSchema>({
         resolver: zodResolver(actionSchema),
-        defaultValues: { id: "", name: "", active: true, code: "" }
+        defaultValues: { name: "" }
     });
     const loading = isCreating || isSubmitting;
     const onSubmit = async (formData: ActionSchema) => {
         try {
-            const res = await createAction({
-                id: Number(formData.id),
-                name: formData.name,
-                active: formData.active,
-                code: formData.code,
-            });
+            const res = await createAction(formData);
             toast.success(res.message ?? "Action created successfully.");
             handleClose();
         } catch (error) {
@@ -36,7 +29,7 @@ export default function CreateActionDialog({ open, onClose }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ id: "", name: "", active: true, code: "" });
+        reset({ name: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<ActionSchema>) => {
@@ -57,17 +50,6 @@ export default function CreateActionDialog({ open, onClose }: Props) {
                     <div className="py-4 space-y-4">
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
-                                <Label>Id</Label>
-                            </div>
-                            <Input
-                                type="number"
-                                disabled={loading}
-                                placeholder="Id"
-                                {...register("id")}
-                            />
-                        </div>
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
                                 <Label>Name</Label>
                                 <CharacterProgress value={watch("name")} max={ActionSchemaLimit.name.max} />
                             </div>
@@ -79,28 +61,6 @@ export default function CreateActionDialog({ open, onClose }: Props) {
                                 {...register("name")}
                             />
                         </div>
-                        <div className="flex gap-2">
-                            <div className="space-y-2 relative flex-1">
-                                <div className="flex items-center justify-between">
-                                    <Label>Code</Label>
-                                    <CharacterProgress value={watch("code")} max={ActionSchemaLimit.code.max} />
-                                </div>
-                                <Input
-                                    type="text"
-                                    disabled={loading}
-                                    placeholder="CHARGE"
-                                    maxLength={ActionSchemaLimit.code.max}
-                                    {...register("code")}
-                                />
-                            </div>
-                        </div>
-                        <StatusToggle
-                            label="Status"
-                            value={watch("active") ? "ACTIVE" : "INACTIVE"}
-                            options={StatusConfig.filter(
-                                (s) => s.value === "ACTIVE" || s.value === "INACTIVE"
-                            )} onChange={(value) => setValue("active", value === "ACTIVE")}
-                        />
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>

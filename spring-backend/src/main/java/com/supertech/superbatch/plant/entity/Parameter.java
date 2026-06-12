@@ -13,13 +13,10 @@ import lombok.*;
 public class Parameter {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
-
-    private String code;
-
-    private Boolean active;
 
     @Enumerated(EnumType.STRING)
     private UomType uom;

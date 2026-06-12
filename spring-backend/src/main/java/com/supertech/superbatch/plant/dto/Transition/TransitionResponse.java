@@ -1,10 +1,6 @@
 package com.supertech.superbatch.plant.dto.Transition;
 
 public record TransitionResponse(
-                Long id,
-                String code,
-                String name,
-                Boolean active
-
-) {
+        Long id,
+        String name) {
 }

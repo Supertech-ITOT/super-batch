@@ -11,7 +11,6 @@ export interface MaterialResponse {
     updatedAt: string;
 }
 export interface CreateMaterialRequest {
-    id: number;
     name: string;
     code: string;
     description: string;
@@ -19,7 +18,6 @@ export interface CreateMaterialRequest {
     materialType: string;
 }
 export interface UpdateMaterialRequest {
-    id: number;
     name: string;
     code: string;
     description: string;

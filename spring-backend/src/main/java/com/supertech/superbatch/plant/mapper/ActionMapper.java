@@ -12,21 +12,15 @@ public class ActionMapper {
     public ActionResponse toResponse(Action transition) {
         return new ActionResponse(
                 transition.getId(),
-                transition.getCode(),
-                transition.getName(),
-                transition.getActive());
+                transition.getName());
     }
 
     public Action toEntity(CreateActionRequest request) {
-        return Action.builder().id(request.id()).code(request.code()).name(request.name())
-                .active(request.active()).build();
+        return Action.builder().name(request.name()).build();
     }
 
     public void updateEntity(Action actionMaster, UpdateActionRequest request) {
-        actionMaster.setId(request.id());
-        actionMaster.setCode(request.code());
         actionMaster.setName(request.name());
-        actionMaster.setActive(request.active());
     }
 
 }

@@ -9,14 +9,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ParameterType {
 
-    TEMPERATURE(1L, "Temperature", UomType.CELSIUS),
-    PRESSURE(2L, "Pressure", UomType.BAR),
-    LEVEL(3L, "Level", UomType.LITER),
-    WEIGHT(4L, "Weight", UomType.KG),
-    SPEED(5L, "Speed", UomType.RPM),
-    FLOW(6L, "Flow Rate", UomType.LITER_PER_MINUTE);
+    TEMPERATURE("Temperature", UomType.CELSIUS),
+    PRESSURE("Pressure", UomType.BAR),
+    LEVEL("Level", UomType.LITER),
+    WEIGHT("Weight", UomType.KG),
+    SPEED("Speed", UomType.RPM),
+    FLOW("Flow Rate", UomType.LITER_PER_MINUTE);
 
-    private final Long id;
     private final String displayName;
     private final UomType defaultUom;
 }

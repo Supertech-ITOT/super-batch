@@ -14,8 +14,6 @@ import { useGetParameterById, useUpdateParameter } from "../../../hooks/use-para
 import { parameterSchema, ParameterSchema, ParameterSchemaLimit } from "../../../schemas/parameter-schema";
 import CharacterProgress from "@/components/form/character-progress";
 import { useEffect } from "react";
-import StatusToggle from "@/components/form/status-toggle";
-import { StatusConfig } from "@/features/common/types/status.type";
 
 type Props = { open: boolean; onClose: () => void; parameterId?: number };
 export default function UpdateParameterDialog({ open, onClose, parameterId }: Props) {
@@ -24,16 +22,13 @@ export default function UpdateParameterDialog({ open, onClose, parameterId }: Pr
     const { data: uomTypes, isLoading: uomTypesIsLoading } = useGetUomTypes(open);
     const { register, handleSubmit, reset, control, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<ParameterSchema>({
         resolver: zodResolver(parameterSchema),
-        defaultValues: { id: "", name: "", active: true, code: "", uom: "" }
+        defaultValues: { name: "", uom: "" }
     });
 
     useEffect(() => {
         if (!open || !parameter) return;
         reset({
-            id: String(parameter.id),
             name: parameter.name,
-            code: parameter.code,
-            active: parameter.active,
             uom: parameter.uom.value,
         });
     }, [open, parameter, reset]);
@@ -42,13 +37,7 @@ export default function UpdateParameterDialog({ open, onClose, parameterId }: Pr
     const onSubmit = async (formData: ParameterSchema) => {
         try {
             const res = await updateParameter({
-                id: parameterId!, data: {
-                    active: formData.active,
-                    code: formData.code,
-                    id: Number(formData.id),
-                    name: formData.name,
-                    uom: formData.uom
-                }
+                id: parameterId!, data: formData
             });
             toast.success(res.message ?? "Parameter updated successfully.");
             handleClose();
@@ -57,7 +46,7 @@ export default function UpdateParameterDialog({ open, onClose, parameterId }: Pr
         }
     };
     const handleClose = () => {
-        reset({ id: "", name: "", active: true, code: "", uom: "" });
+        reset({ name: "", uom: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<ParameterSchema>) => {
@@ -89,53 +78,33 @@ export default function UpdateParameterDialog({ open, onClose, parameterId }: Pr
                                 {...register("name")}
                             />
                         </div>
-                        <div className="flex gap-2">
-                            <div className="space-y-2 relative flex-1">
-                                <div className="flex items-center justify-between">
-                                    <Label>Code</Label>
-                                    <CharacterProgress value={watch("code")} max={ParameterSchemaLimit.code.max} />
-                                </div>
-                                <Input
-                                    type="text"
-                                    disabled={loading}
-                                    placeholder="TT"
-                                    maxLength={ParameterSchemaLimit.code.max}
-                                    {...register("code")}
-                                />
-                            </div>
-                            <div className="flex-1 space-y-2">
-                                <Label>Select Uom Type</Label>
-                                <Controller
-                                    control={control}
-                                    name="uom"
-                                    render={({ field }) => (
-                                        <Select
-                                            disabled={loading}
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Uom Type" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {uomTypes?.map((e) => (
-                                                        <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                            </div>
+                        <div className="space-y-2 relative">
+                            <Label>Select Uom Type</Label>
+                            <Controller
+                                control={control}
+                                name="uom"
+                                render={({ field }) => (
+                                    <Select
+                                        disabled={loading}
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select Uom Type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {uomTypes?.map((e) => (
+                                                    <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
                         </div>
-                        <StatusToggle
-                            label="Status"
-                            value={watch("active") ? "ACTIVE" : "INACTIVE"}
-                            options={StatusConfig.filter(
-                                (s) => s.value === "ACTIVE" || s.value === "INACTIVE"
-                            )} onChange={(value) => setValue("active", value === "ACTIVE", { shouldDirty: true, })}
-                        />
+
+
 
                     </div>
                     <DialogFooter>

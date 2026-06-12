@@ -7,14 +7,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum TransitionType {
 
-    EQ(1L, "Equal"),
-    GE(2L, "Greater Than Equal"),
-    LE(3L, "Less Than Equal"),
-    GT(4L, "Greater Than"),
-    LT(5L, "Less Than"),
-    TIMER(6L, "Timer"),
-    RANGE(7L, "Range");
+    EQ("Equal"),
+    GE("Greater Than Equal"),
+    LE("Less Than Equal"),
+    GT("Greater Than"),
+    LT("Less Than"),
+    TIMER("Timer"),
+    RANGE("Range");
 
-    private final Long id;
     private final String displayName;
 }

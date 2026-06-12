@@ -22,13 +22,12 @@ export default function CreateMaterialDialog({ open, onClose }: Props) {
     const { data: uomTypes, isLoading: uomTypesIsLoading } = useGetUomTypes(open);
     const { register, handleSubmit, reset, control, watch, formState: { isSubmitting, isDirty } } = useForm<MaterialSchema>({
         resolver: zodResolver(materialSchema),
-        defaultValues: { id: "", name: "", materialType: "", description: "", code: "", uom: "" }
+        defaultValues: { name: "", materialType: "", description: "", code: "", uom: "" }
     });
     const loading = isCreating || isSubmitting || materialTypeIsLoading || uomTypesIsLoading;
     const onSubmit = async (formData: MaterialSchema) => {
         try {
             const res = await createMaterial({
-                id: Number(formData.id),
                 name: formData.name,
                 description: formData.description,
                 materialType: formData.materialType,
@@ -42,7 +41,7 @@ export default function CreateMaterialDialog({ open, onClose }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ id: "", name: "", materialType: "", description: "", code: "", uom: "" });
+        reset({ name: "", materialType: "", description: "", code: "", uom: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<MaterialSchema>) => {
@@ -61,17 +60,6 @@ export default function CreateMaterialDialog({ open, onClose }: Props) {
                         <DialogDescription>Create a new material entity.</DialogDescription>
                     </DialogHeader>
                     <div className="py-4 space-y-4">
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Id</Label>
-                            </div>
-                            <Input
-                                type="number"
-                                disabled={loading}
-                                placeholder="Id"
-                                {...register("id")}
-                            />
-                        </div>
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
                                 <Label>Name</Label>

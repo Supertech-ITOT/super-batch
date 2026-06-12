@@ -11,24 +11,17 @@ import { showApiError } from "@/lib/show-api-error";
 import { useCreateTransition } from "../../../hooks/use-transitions";
 import { transitionSchema, TransitionSchema, TransitionSchemaLimit } from "../../../schemas/transition-schema";
 import CharacterProgress from "@/components/form/character-progress";
-import StatusToggle from "@/components/form/status-toggle";
-import { StatusConfig } from "@/features/common/types/status.type";
 type Props = { open: boolean; onClose: () => void; };
 export default function CreateTransitionDialog({ open, onClose }: Props) {
     const { mutateAsync: createTransition, isPending: isCreating } = useCreateTransition();
     const { register, handleSubmit, reset, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<TransitionSchema>({
         resolver: zodResolver(transitionSchema),
-        defaultValues: { id: "", name: "", active: true, code: "" }
+        defaultValues: { name: "" }
     });
     const loading = isCreating || isSubmitting;
     const onSubmit = async (formData: TransitionSchema) => {
         try {
-            const res = await createTransition({
-                id: Number(formData.id),
-                name: formData.name,
-                active: formData.active,
-                code: formData.code,
-            });
+            const res = await createTransition(formData);
             toast.success(res.message ?? "Transition created successfully.");
             handleClose();
         } catch (error) {
@@ -36,7 +29,7 @@ export default function CreateTransitionDialog({ open, onClose }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ id: "", name: "", active: true, code: "" });
+        reset({ name: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<TransitionSchema>) => {
@@ -57,17 +50,6 @@ export default function CreateTransitionDialog({ open, onClose }: Props) {
                     <div className="py-4 space-y-4">
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
-                                <Label>Id</Label>
-                            </div>
-                            <Input
-                                type="number"
-                                disabled={loading}
-                                placeholder="Id"
-                                {...register("id")}
-                            />
-                        </div>
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
                                 <Label>Name</Label>
                                 <CharacterProgress value={watch("name")} max={TransitionSchemaLimit.name.max} />
                             </div>
@@ -79,28 +61,6 @@ export default function CreateTransitionDialog({ open, onClose }: Props) {
                                 {...register("name")}
                             />
                         </div>
-                        <div className="flex gap-2">
-                            <div className="space-y-2 relative flex-1">
-                                <div className="flex items-center justify-between">
-                                    <Label>Transition Code</Label>
-                                    <CharacterProgress value={watch("code")} max={TransitionSchemaLimit.code.max} />
-                                </div>
-                                <Input
-                                    type="text"
-                                    disabled={loading}
-                                    placeholder="EQ"
-                                    maxLength={TransitionSchemaLimit.code.max}
-                                    {...register("code")}
-                                />
-                            </div>
-                        </div>
-                        <StatusToggle
-                            label="Status"
-                            value={watch("active") ? "ACTIVE" : "INACTIVE"}
-                            options={StatusConfig.filter(
-                                (s) => s.value === "ACTIVE" || s.value === "INACTIVE"
-                            )} onChange={(value) => setValue("active", value === "ACTIVE")}
-                        />
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>
