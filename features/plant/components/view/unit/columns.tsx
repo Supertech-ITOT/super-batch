@@ -8,8 +8,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { EquipmentResponse } from "@/features/plant/types/equipment.types";
 import { DialogType } from "@/features/plant/types/plant-hierarchy.types";
 import { toDisplayText } from "@/lib/format-enum";
-import { Badge } from "@/components/ui/badge";
-import { StatusBadgeStyles } from "@/features/common/types/status.type";
 
 type Props = {
     setDialog: React.Dispatch<
@@ -26,40 +24,12 @@ export const columns = ({
             header: "Equipment Name",
         },
         {
-            accessorKey: "equipmentType",
-            header: "Equipment Type",
-            cell: ({ row }) => toDisplayText(row.original.equipmentType),
+            accessorKey: "code",
+            header: "Equipment Code",
         },
         {
-            accessorKey: "uom",
-            header: "Equipment UOM",
-            cell: ({ row }) => row.original.uom.symbol
-        },
-        {
-            accessorKey: "status",
-            header: ({ column }) => {
-                return (
-                    <Button
-                        variant="ghost"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                    >
-                        Status
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                )
-            },
-            cell: ({ row }) => (
-                <Badge
-                    variant="outline"
-                    className={StatusBadgeStyles[row.original.status]}
-                >
-                    {toDisplayText(row.original.status)}
-                </Badge>
-            ),
-        },
-        {
-            accessorKey: "tagName",
-            header: "Tag Name",
+            accessorKey: "capacity",
+            header: "Equipment Capacity",
         },
         {
             id: "actions",

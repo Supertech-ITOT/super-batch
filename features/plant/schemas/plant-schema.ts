@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { StatusType } from "../../common/types/status.type";
 
 export const PlantSchemaLimit = {
     name: { min: 3, max: 100, },
@@ -48,8 +47,6 @@ export const plantSchema = z.object({
             PlantSchemaLimit.location.max,
             `Location cannot exceed ${PlantSchemaLimit.location.max} characters`
         ),
-
-    status: z.enum(StatusType),
 
     plantType: z
         .string()

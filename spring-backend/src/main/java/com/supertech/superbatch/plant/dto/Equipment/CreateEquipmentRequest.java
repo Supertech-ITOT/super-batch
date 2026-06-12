@@ -1,13 +1,6 @@
 package com.supertech.superbatch.plant.dto.Equipment;
 
-import com.supertech.superbatch.common.enums.StatusType;
-import com.supertech.superbatch.common.enums.UomType;
-import com.supertech.superbatch.plant.enums.EquipmentType;
-
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public record CreateEquipmentRequest(
 
@@ -15,15 +8,11 @@ public record CreateEquipmentRequest(
 
         @Size(min = 2, max = 100, message = "Description must be between 2 and 100 characters") String description,
 
-        @NotNull(message = "Status is required") StatusType status,
+        @NotBlank(message = "Equipment code is required") @Size(min = 2, max = 30, message = "Equipment code must be between 2 and 30 characters") @Pattern(regexp = "^[A-Z0-9\\-_]+$", message = "Unit code must contain only uppercase letters, numbers, hyphen, or underscore") String code,
 
-        @NotBlank(message = "Tag name is required") @Size(min = 2, max = 50, message = "Tag name must be between 2 and 50 characters") @Pattern(regexp = "^[A-Z0-9\\-_]+$", message = "Tag name must contain only uppercase letters, numbers, hyphen, or underscore") String tagName,
+        @NotNull(message = "Unit id is required") Long unitId,
 
-        @NotNull(message = "UOM is required") UomType uom,
-
-        @NotNull(message = "Equipment type is required") EquipmentType equipmentType,
-
-        @NotNull(message = "Unit id is required") Long unitId
+        @NotNull(message = "Capacity is required") @Min(value = 1, message = "Capacity must be greater than 0") Integer capacity
 
 ) {
 }

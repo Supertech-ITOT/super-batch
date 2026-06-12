@@ -14,8 +14,6 @@ import { useGetPlants } from "../../../hooks/use-plants";
 import { areaSchema, AreaSchema, AreaSchemaLimit } from "../../../schemas/area-schema";
 import CharacterProgress from "@/components/form/character-progress";
 import { Textarea } from "@/components/ui/textarea";
-import { StatusConfig, StatusType } from "../../../../common/types/status.type";
-import clsx from "clsx";
 
 type Props = { open: boolean; onClose: () => void; areaId?: number };
 export default function UpdateAreaDialog({ open, onClose, areaId }: Props) {
@@ -24,12 +22,12 @@ export default function UpdateAreaDialog({ open, onClose, areaId }: Props) {
     const { data: area, isLoading: areaLoading } = useGetAreaById(areaId);
     const { register, handleSubmit, reset, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<AreaSchema>({
         resolver: zodResolver(areaSchema),
-        defaultValues: { name: "", plantId: undefined, description: "", areaType: "", status: StatusType.ACTIVE }
+        defaultValues: { name: "", plantId: undefined, description: "", areaType: "" }
     });
 
     useEffect(() => {
         if (!open || !area || !plants) return;
-        reset({ name: area.name, plantId: String(area.plantId), areaType: area.areaType, description: area.description, status: area.status });
+        reset({ name: area.name, plantId: String(area.plantId), areaType: area.areaType, description: area.description });
     }, [open, area, plants, reset]);
     const loading = isUpdating || plantsLoading || areaLoading || isSubmitting;
 
@@ -41,7 +39,6 @@ export default function UpdateAreaDialog({ open, onClose, areaId }: Props) {
                     plantId: Number(formData.plantId),
                     areaType: formData.areaType,
                     description: formData.description,
-                    status: formData.status
                 }
             });
             toast.success(res.message ?? "Area updated successfully.");
@@ -52,7 +49,7 @@ export default function UpdateAreaDialog({ open, onClose, areaId }: Props) {
     };
 
     const handleClose = () => {
-        reset({ name: "", plantId: undefined, description: "", areaType: "", status: StatusType.ACTIVE });
+        reset({ name: "", plantId: undefined, description: "", areaType: "" });
         onClose();
     };
 
@@ -119,36 +116,6 @@ export default function UpdateAreaDialog({ open, onClose, areaId }: Props) {
                                     disabled
                                     value={plants?.find((p) => p.id === area?.plantId)?.name ?? ""}
                                 />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Status</Label>
-                            <div className="flex rounded-md border overflow-hidden transition-all duration-200">
-                                {StatusConfig.map((status) => {
-                                    const selected = watch("status") === status.value;
-                                    return (
-                                        <Button
-                                            type="button"
-                                            disabled={loading}
-                                            variant="outline"
-                                            key={status.value}
-                                            onClick={() =>
-                                                setValue("status", status.value as StatusType, {
-                                                    shouldDirty: true,
-                                                    shouldValidate: true,
-                                                })
-                                            }
-                                            className={clsx(
-                                                "relative flex-1 h-8 rounded-none border bg-card py-0.5 flex items-center justify-center gap-3 text-left hover:bg-muted/50",
-                                                selected ? "bg-primary/5" : ""
-                                            )}
-                                        >
-                                            <div className={clsx("h-3 w-3 rounded-full", status.dot)} />
-                                            <span className="font-medium text-xs">{status.label}</span>
-                                            {selected && <div className="absolute bottom-0 h-0.5 w-full bg-primary" />}
-                                        </Button>
-                                    );
-                                })}
                             </div>
                         </div>
                     </div>

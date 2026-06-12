@@ -1,14 +1,14 @@
-import { StatusType } from "../../common/types/status.type";
+import { UomResponse } from "./uom.types";
 
 export interface UnitResponse {
     id: number;
     name: string;
     code: string;
     description: string;
-    status: StatusType;
     areaId: number;
     areaName: string;
-    unitType: string;
+    capacity: number;
+    batchSizeUom: UomResponse;
     totalEquipment: number;
     createdAt: string;
     updatedAt: string;
@@ -17,15 +17,15 @@ export interface CreateUnitRequest {
     name: string;
     code: string;
     description: string;
-    status: StatusType;
-    unitType: string;
+    capacity: number;
+    batchSizeUom: string;
     areaId: number;
 }
 export interface UpdateUnitRequest {
     name: string;
     code: string;
     description: string;
-    status: StatusType;
-    unitType: string;
+    capacity: number;
+    batchSizeUom: string;
     areaId: number;
 }

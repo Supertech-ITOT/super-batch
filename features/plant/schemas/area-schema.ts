@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { StatusType } from "../../common/types/status.type";
 
 export const AreaSchemaLimit = {
     name: { min: 2, max: 100 },
@@ -37,7 +36,6 @@ export const areaSchema = z.object({
         ),
 
 
-    status: z.enum(StatusType),
 
     areaType: z
         .string()

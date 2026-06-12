@@ -7,9 +7,8 @@ import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
 import { AreaResponse } from "@/features/plant/types/area.types";
 import { DialogType } from "@/features/plant/types/plant-hierarchy.types";
-import { Badge } from "@/components/ui/badge";
-import { toDisplayText } from "@/lib/format-enum";
-import { StatusBadgeStyles } from "@/features/common/types/status.type";
+
+
 
 type Props = {
     setDialog: React.Dispatch<
@@ -29,28 +28,6 @@ export const columns = ({
         {
             accessorKey: "areaType",
             header: "Area Type",
-        },
-        {
-            accessorKey: "status",
-            header: ({ column }) => {
-                return (
-                    <Button
-                        variant="ghost"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                    >
-                        Status
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                )
-            },
-            cell: ({ row }) => (
-                <Badge
-                    variant="outline"
-                    className={StatusBadgeStyles[row.original.status]}
-                >
-                    {toDisplayText(row.original.status)}
-                </Badge>
-            ),
         },
         {
             accessorKey: "totalUnit",

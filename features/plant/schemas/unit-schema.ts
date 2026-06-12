@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { StatusType } from "../../common/types/status.type";
 
 export const UnitSchemaLimit = {
     name: { min: 3, max: 100 },
@@ -52,11 +51,11 @@ export const unitSchema = z.object({
             `Description cannot exceed ${UnitSchemaLimit.description.max} characters`
         ),
 
-    status: z.enum(StatusType),
+    batchSizeUom: z.string({ error: "Batch Size Uom is required." }).min(1, "Batch Size Uom is required").trim(),
 
-    unitType: z.string({ error: "Unit Type is required." }).trim(),
+    capacity: z.string({ error: "Capacity is required." }).trim(),
 
-    areaId: z.string({ error: "Area is required." }).trim()
+    areaId: z.string({ error: "Area is required." }).min(1, "Area is required").trim()
 });
 
 export type UnitSchema = z.infer<typeof unitSchema>;

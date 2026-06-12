@@ -9,7 +9,7 @@ import { DialogType } from "../../types/plant-hierarchy.types";
 import TreeDialogs from "../tree-dialogs";
 import { toDisplayText } from "@/lib/format-enum";
 import { Badge } from "@/components/ui/badge";
-import { StatusBadgeStyles } from "@/features/common/types/status.type";
+
 
 
 
@@ -30,15 +30,7 @@ export default function EquipmentView({ id }: { id: number }) {
                         <Cpu className="size-16 text-primary" />
                     </div>
                     <div className="flex flex-col">
-                        <div className="space-x-2 flex">
-                            <span className="text-2xl font-bold">{equipment.name}</span>
-                            <Badge
-                                variant="outline"
-                                className={StatusBadgeStyles[equipment.status]}
-                            >
-                                {toDisplayText(equipment.status)}
-                            </Badge>
-                        </div>
+                        <span className="text-xl font-bold">{equipment.name}</span>
                         <h1 className="text-muted-foreground text-sm ">Description: {" "}
                             <span className="font-semibold text-sm text-foreground">{equipment.description}</span>
                         </h1>
@@ -80,22 +72,7 @@ export default function EquipmentView({ id }: { id: number }) {
                         <p className="text-sm font-semibold">{equipment.name}</p>
                     </div>
 
-                    <div className="rounded-xl border bg-card p-4">
-                        <p className="text-xs text-muted-foreground">Equipment Type</p>
-                        <p className="text-sm font-semibold">
-                            {toDisplayText(equipment.equipmentType)}
-                        </p>
-                    </div>
 
-                    <div className="rounded-xl border bg-card p-4">
-                        <p className="text-xs text-muted-foreground">Status</p>
-                        <Badge
-                            variant="outline"
-                            className={StatusBadgeStyles[equipment.status]}
-                        >
-                            {toDisplayText(equipment.status)}
-                        </Badge>
-                    </div>
 
                     <div className="rounded-xl border bg-card p-4">
                         <p className="text-xs text-muted-foreground">Parent Name</p>
@@ -106,17 +83,18 @@ export default function EquipmentView({ id }: { id: number }) {
                         <p className="text-xs text-muted-foreground">Parent ID</p>
                         <p className="text-sm font-semibold">{equipment.unitId}</p>
                     </div>
-
                     <div className="rounded-xl border bg-card p-4">
-                        <p className="text-xs text-muted-foreground">Tag Name</p>
+                        <p className="text-xs text-muted-foreground">Capacity</p>
                         <p className="text-sm font-semibold">
-                            {equipment.tagName}
+                            {equipment.capacity}
                         </p>
                     </div>
 
                     <div className="rounded-xl border bg-card p-4">
-                        <p className="text-xs text-muted-foreground">UOM</p>
-                        <p className="text-sm font-semibold">{equipment.uom.symbol}</p>
+                        <p className="text-xs text-muted-foreground">Code</p>
+                        <p className="text-sm font-semibold">
+                            {equipment.code}
+                        </p>
                     </div>
 
                     <div className="rounded-xl border bg-card p-4">

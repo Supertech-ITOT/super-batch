@@ -7,8 +7,13 @@ import com.supertech.superbatch.plant.dto.Unit.UpdateUnitRequest;
 import com.supertech.superbatch.plant.entity.Area;
 import com.supertech.superbatch.plant.entity.Unit;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class UnitMapper {
+    private final UomMapper uomMapper;
+
     public UnitResponse toResponse(Unit unit) {
         int totalEquipment = unit.getEquipments() != null
                 ? unit.getEquipments().size()
@@ -18,10 +23,10 @@ public class UnitMapper {
                 unit.getName(),
                 unit.getCode(),
                 unit.getDescription(),
-                unit.getStatus(),
                 unit.getArea().getId(),
                 unit.getArea().getName(),
-                unit.getUnitType(),
+                unit.getCapacity(),
+                uomMapper.toResponse(unit.getBatchSizeUom()),
                 totalEquipment,
                 unit.getCreatedAt(),
                 unit.getUpdatedAt());
@@ -32,8 +37,8 @@ public class UnitMapper {
                 .name(request.name())
                 .code(request.code())
                 .description(request.description())
-                .status(request.status())
-                .unitType(request.unitType())
+                .capacity(request.capacity())
+                .batchSizeUom(request.batchSizeUom())
                 .area(area)
                 .build();
     }
@@ -42,8 +47,8 @@ public class UnitMapper {
         unit.setName(request.name());
         unit.setCode(request.code());
         unit.setDescription(request.description());
-        unit.setStatus(request.status());
-        unit.setUnitType(request.unitType());
+        unit.setCapacity(request.capacity());
+        unit.setBatchSizeUom(request.batchSizeUom());
         unit.setArea(area);
     }
 }

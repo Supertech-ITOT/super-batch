@@ -12,19 +12,15 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class EquipmentMapper {
-    private final UomMapper uomMapper;
-
     public EquipmentResponse toResponse(Equipment equipment) {
         return new EquipmentResponse(
                 equipment.getId(),
                 equipment.getName(),
+                equipment.getCode(),
                 equipment.getDescription(),
-                equipment.getStatus(),
-                equipment.getTagName(),
-                uomMapper.toResponse(equipment.getUom()),
                 equipment.getUnit().getName(),
                 equipment.getUnit().getId(),
-                equipment.getEquipmentType(),
+                equipment.getCapacity(),
                 equipment.getCreatedAt(),
                 equipment.getUpdatedAt()
 
@@ -36,10 +32,8 @@ public class EquipmentMapper {
         return Equipment.builder()
                 .name(request.name())
                 .description(request.description())
-                .status(request.status())
-                .tagName(request.tagName())
-                .uom(request.uom())
-                .equipmentType(request.equipmentType())
+                .code(request.code())
+                .capacity(request.capacity())
                 .unit(unit)
                 .build();
     }
@@ -47,10 +41,8 @@ public class EquipmentMapper {
     public void updateEntity(Equipment equipment, UpdateEquipmentRequest request, Unit unit) {
         equipment.setName(request.name());
         equipment.setDescription(request.description());
-        equipment.setStatus(request.status());
-        equipment.setTagName(request.tagName());
-        equipment.setUom(request.uom());
-        equipment.setEquipmentType(request.equipmentType());
+        equipment.setCode(request.code());
+        equipment.setCapacity(request.capacity());
         equipment.setUnit(unit);
     }
 }

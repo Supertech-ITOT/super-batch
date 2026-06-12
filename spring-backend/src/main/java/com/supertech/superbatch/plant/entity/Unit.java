@@ -7,8 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.supertech.superbatch.common.enums.StatusType;
-import com.supertech.superbatch.plant.enums.UnitType;
+import com.supertech.superbatch.common.enums.UomType;
 
 import jakarta.persistence.*;
 
@@ -32,13 +31,6 @@ public class Unit {
 
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    @Builder.Default
-    private StatusType status = StatusType.ACTIVE;
-
-    @Enumerated(EnumType.STRING)
-    private UnitType unitType;
-
     @ManyToOne
     @JsonIgnore
     private Area area;
@@ -46,6 +38,11 @@ public class Unit {
     @OneToMany(mappedBy = "unit")
     @OrderBy("name ASC")
     private Set<Equipment> equipments;
+
+    private Integer capacity;
+
+    @Enumerated(EnumType.STRING)
+    private UomType batchSizeUom;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

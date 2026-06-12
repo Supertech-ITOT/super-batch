@@ -10,24 +10,22 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { showApiError } from "@/lib/show-api-error";
 import { Textarea } from "@/components/ui/textarea";
-import clsx from "clsx";
 import CharacterProgress from "@/components/form/character-progress";
 import { useGetPlantById, useUpdatePlant } from "@/features/plant/hooks/use-plants";
 import { PlantSchema, plantSchema, PlantSchemaLimit } from "@/features/plant/schemas/plant-schema";
-import { StatusConfig, StatusType } from "@/features/common/types/status.type";
 
 type Props = { open: boolean; onClose: () => void; plantId?: number };
 export default function UpdatePlantDialog({ open, onClose, plantId }: Props) {
     const { mutateAsync: updatePlant, isPending: isUpdating } = useUpdatePlant();
     const { data: plant, isLoading: plantLoading } = useGetPlantById(plantId);
-    const { register, handleSubmit, reset, setValue, watch, formState: { isSubmitting, isDirty } } = useForm<PlantSchema>({
+    const { register, handleSubmit, reset, watch, formState: { isSubmitting, isDirty } } = useForm<PlantSchema>({
         resolver: zodResolver(plantSchema),
-        defaultValues: { name: "", description: "", status: StatusType.ACTIVE, location: "", plantType: "" }
+        defaultValues: { name: "", description: "", location: "", plantType: "" }
     });
 
     useEffect(() => {
         if (!open || !plant) return;
-        reset({ name: plant.name, description: plant.description, location: plant.location, plantType: plant.plantType, status: plant.status });
+        reset({ name: plant.name, description: plant.description, location: plant.location, plantType: plant.plantType });
     }, [open, plant, reset]);
     const loading = isUpdating || plantLoading || isSubmitting;
 
@@ -112,36 +110,6 @@ export default function UpdatePlantDialog({ open, onClose, plantId }: Props) {
                                     placeholder="Manufacturing"
                                     {...register("plantType")}
                                 />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Status</Label>
-                            <div className="flex rounded-md border overflow-hidden transition-all duration-200">
-                                {StatusConfig.map((status) => {
-                                    const selected = watch("status") === status.value;
-                                    return (
-                                        <Button
-                                            type="button"
-                                            disabled={loading}
-                                            variant="outline"
-                                            key={status.value}
-                                            onClick={() =>
-                                                setValue("status", status.value as StatusType, {
-                                                    shouldDirty: true,
-                                                    shouldValidate: true,
-                                                })
-                                            }
-                                            className={clsx(
-                                                "relative flex-1 h-8 rounded-none border bg-card py-0.5 flex items-center justify-center gap-3 text-left hover:bg-muted/50",
-                                                selected ? "bg-primary/5" : ""
-                                            )}
-                                        >
-                                            <div className={clsx("h-3 w-3 rounded-full", status.dot)} />
-                                            <span className="font-medium text-xs">{status.label}</span>
-                                            {selected && <div className="absolute bottom-0 h-0.5 w-full bg-primary" />}
-                                        </Button>
-                                    );
-                                })}
                             </div>
                         </div>
                     </div>

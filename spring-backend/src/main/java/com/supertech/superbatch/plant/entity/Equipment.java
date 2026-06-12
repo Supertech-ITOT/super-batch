@@ -6,9 +6,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.supertech.superbatch.common.enums.StatusType;
-import com.supertech.superbatch.common.enums.UomType;
-import com.supertech.superbatch.plant.enums.EquipmentType;
 
 import jakarta.persistence.*;
 
@@ -28,20 +25,11 @@ public class Equipment {
 
     private String name;
 
+    private String code;
+
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    @Builder.Default
-    private StatusType status = StatusType.ACTIVE;
-
-    @Column(unique = true)
-    private String tagName;
-
-    @Enumerated(EnumType.STRING)
-    private UomType uom;
-
-    @Enumerated(EnumType.STRING)
-    private EquipmentType equipmentType;
+    private Integer capacity;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

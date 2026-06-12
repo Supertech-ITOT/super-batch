@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Gauge, Plus } from "lucide-react";
+import { PackageCheckIcon, Plus } from "lucide-react";
 import { useState } from "react";
 import CreateMaterialDialog from "../../menu-dialog/material/create-material-dialog";
 import DataTable from "./data-table";
@@ -34,7 +34,7 @@ export default function MaterialView() {
             <div className="flex justify-between">
                 <div className="flex gap-4">
                     <div className="size-28 flex items-center justify-center border rounded-md shadow shrink-0">
-                        <Gauge className="size-16 text-primary" />
+                        <PackageCheckIcon className="size-16 text-primary" />
                     </div>
                     <div className="flex flex-col">
                         <h1 className="text-2xl font-bold">Materials</h1>

@@ -38,7 +38,6 @@ public class PlantMapper {
                                 plant.getName(),
                                 plant.getDescription(),
                                 plant.getLocation(),
-                                plant.getStatus(),
                                 plant.getPlantType(),
                                 totalArea,
                                 totalUnit,
@@ -52,7 +51,6 @@ public class PlantMapper {
                                 .name(request.name())
                                 .description(request.description())
                                 .location(request.location())
-                                .status(request.status())
                                 .plantType(request.plantType())
                                 .build();
         }
@@ -61,7 +59,6 @@ public class PlantMapper {
                 plant.setName(request.name());
                 plant.setDescription(request.description());
                 plant.setLocation(request.location());
-                plant.setStatus(request.status());
                 plant.setPlantType(request.plantType());
         }
 }

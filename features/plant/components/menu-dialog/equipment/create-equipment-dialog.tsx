@@ -6,48 +6,40 @@ import { Label } from "@/components/ui/label";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
-import FormError from "@/components/form/form-error";
 import { toast } from "sonner";
 import { showApiError } from "@/lib/show-api-error";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useGetEquipmentTypes, useGetUomTypes } from "@/features/common/hooks/useMetadata";
 import { useEffect } from "react";
 import { useCreateEquipment } from "../../../hooks/use-equipment";
 import { equipmentSchema, EquipmentSchema, EquipmentSchemaLimit } from "../../../schemas/equipment-schema";
 import { useGetUnits } from "../../../hooks/use-units";
 import CharacterProgress from "@/components/form/character-progress";
 import { Textarea } from "@/components/ui/textarea";
-import { StatusConfig, StatusType } from "../../../../common/types/status.type";
-import clsx from "clsx";
 
 type Props = { open: boolean; onClose: () => void; unitId?: number };
 export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) {
     const { mutateAsync: createEquipment, isPending: isCreating } = useCreateEquipment();
     const { data: units, isLoading: unitsLoading } = useGetUnits(open);
-    const { data: equipmentTypes, isLoading: equipmentTypeIsLoading } = useGetEquipmentTypes(open);
-    const { data: uomTypes, isLoading: uomTypesIsLoading } = useGetUomTypes(open);
-    const { register, handleSubmit, reset, control, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<EquipmentSchema>({
+    const { register, handleSubmit, reset, control, watch, formState: { isSubmitting, isDirty } } = useForm<EquipmentSchema>({
         resolver: zodResolver(equipmentSchema),
-        defaultValues: { name: "", unitId: undefined, equipmentType: undefined, description: "", status: StatusType.ACTIVE, tagName: "", uom: undefined }
+        defaultValues: { name: "", unitId: "", capacity: "", description: "", code: "" }
     });
 
     useEffect(() => {
         if (!open || !unitId) return;
 
-        reset({ name: "", unitId: String(unitId), equipmentType: undefined, description: "", status: StatusType.ACTIVE, tagName: "", uom: undefined })
+        reset({ name: "", unitId: String(unitId), capacity: "", description: "", code: "" })
     }, [open, unitId, reset]);
 
-    const loading = isCreating || unitsLoading || isSubmitting || equipmentTypeIsLoading || uomTypesIsLoading;
+    const loading = isCreating || unitsLoading || isSubmitting;
     const onSubmit = async (formData: EquipmentSchema) => {
         try {
             const res = await createEquipment({
                 name: formData.name,
                 description: formData.description,
-                equipmentType: formData.equipmentType,
-                status: formData.status,
-                tagName: formData.tagName,
+                capacity: Number(formData.capacity),
+                code: formData.code,
                 unitId: Number(formData.unitId),
-                uom: formData.uom
             });
             toast.success(res.message ?? "Equipment created successfully.");
             handleClose();
@@ -56,7 +48,7 @@ export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) 
         }
     };
     const handleClose = () => {
-        reset({ name: "", unitId: undefined, equipmentType: undefined, description: "", status: StatusType.ACTIVE, tagName: "", uom: undefined });
+        reset({ name: "", unitId: "", capacity: "", description: "", code: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<EquipmentSchema>) => {
@@ -83,7 +75,7 @@ export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) 
                             <Input
                                 type="text"
                                 disabled={loading}
-                                placeholder="Temperature 101"
+                                placeholder="Tank 101"
                                 maxLength={EquipmentSchemaLimit.name.max}
                                 {...register("name")}
                             />
@@ -91,42 +83,34 @@ export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) 
                         <div className="flex gap-2">
                             <div className="space-y-2 relative flex-1">
                                 <div className="flex items-center justify-between">
-                                    <Label>Tag Name</Label>
-                                    <CharacterProgress value={watch("tagName")} max={EquipmentSchemaLimit.tagName.max} />
+                                    <Label>Code</Label>
+                                    <CharacterProgress value={watch("code")} max={EquipmentSchemaLimit.code.max} />
                                 </div>
                                 <Input
                                     type="text"
                                     disabled={loading}
-                                    placeholder="TT101"
-                                    maxLength={EquipmentSchemaLimit.tagName.max}
-                                    {...register("tagName")}
+                                    placeholder="T101"
+                                    maxLength={EquipmentSchemaLimit.code.max}
+                                    {...register("code")}
                                 />
                             </div>
-                            <div className="flex-1 space-y-2">
-                                <Label>Select Uom Type</Label>
-                                <Controller
-                                    control={control}
-                                    name="uom"
-                                    render={({ field }) => (
-                                        <Select
-                                            disabled={loading}
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Uom Type" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {uomTypes?.map((e) => (
-                                                        <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
+                            <div className="space-y-2 flex-1">
+                                <div className="flex items-center justify-between">
+                                    <Label>Capacity</Label>
+                                </div>
+                                <div className="flex">
+                                    <Input
+                                        type="number"
+                                        placeholder="1000"
+                                        className="rounded-r-none"
+                                        {...register("capacity")}
+                                    />
+                                    <div className="flex items-center px-3 border border-l-0 rounded-r-md bg-muted text-sm">
+                                        kg
+                                    </div>
+                                </div>
                             </div>
+
                         </div>
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
@@ -167,61 +151,6 @@ export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) 
                                         </Select>
                                     )}
                                 />
-                            </div>
-                            <div className="flex-1 space-y-2">
-                                <Label>Select Equipment Type</Label>
-                                <Controller
-                                    control={control}
-                                    name="equipmentType"
-                                    render={({ field }) => (
-                                        <Select
-                                            disabled={loading}
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Equipment Type" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {equipmentTypes?.map((e) => (
-                                                        <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Status</Label>
-                            <div className="flex rounded-md border overflow-hidden transition-all duration-200">
-                                {StatusConfig.map((status) => {
-                                    const selected = watch("status") === status.value;
-                                    return (
-                                        <Button
-                                            type="button"
-                                            disabled={loading}
-                                            variant="outline"
-                                            key={status.value}
-                                            onClick={() =>
-                                                setValue("status", status.value as StatusType, {
-                                                    shouldDirty: true,
-                                                    shouldValidate: true,
-                                                })
-                                            }
-                                            className={clsx(
-                                                "relative flex-1 h-8 rounded-none border bg-card py-0.5 flex items-center justify-center gap-3 text-left hover:bg-muted/50",
-                                                selected ? "bg-primary/5" : ""
-                                            )}
-                                        >
-                                            <div className={clsx("h-3 w-3 rounded-full", status.dot)} />
-                                            <span className="font-medium text-xs">{status.label}</span>
-                                            {selected && <div className="absolute bottom-0 h-0.5 w-full bg-primary" />}
-                                        </Button>
-                                    );
-                                })}
                             </div>
                         </div>
                     </div>

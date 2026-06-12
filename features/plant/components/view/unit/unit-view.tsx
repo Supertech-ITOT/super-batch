@@ -11,9 +11,7 @@ import { DialogType } from "@/features/plant/types/plant-hierarchy.types";
 import { columns } from "./columns";
 import DataTable from "./data-table";
 import TreeDialogs from "../../tree-dialogs";
-import { toDisplayText } from "@/lib/format-enum";
-import { StatusBadgeStyles } from "@/features/common/types/status.type";
-import { Badge } from "@/components/ui/badge";
+
 
 export default function UnitView({ id }: { id: number }) {
     const { data: unit, isLoading: unitIsLoading } = useGetUnitById(id);
@@ -33,24 +31,21 @@ export default function UnitView({ id }: { id: number }) {
                         <Boxes className="size-16 text-primary" />
                     </div>
                     <div className="flex flex-col">
-                        <div className="space-x-2 flex">
-                            <span className="text-2xl font-bold">{unit.name}</span>
-                            <Badge
-                                variant="outline"
-                                className={StatusBadgeStyles[unit.status]}
-                            >
-                                {toDisplayText(unit.status)}
-                            </Badge>
-                        </div>
-                        <h1 className="text-muted-foreground text-sm ">Unit Type: {" "}
-                            <span className="font-semibold text-sm text-foreground">{unit.unitType}</span>
-                        </h1>
+                        <h1 className="font-bold text-xl">{unit.name}</h1>
                         <h1 className="text-muted-foreground text-sm ">Parent: {" "}
                             <span className="font-semibold text-sm text-foreground">{unit.areaName}</span>
                         </h1>
                         <h1 className="text-muted-foreground text-sm ">Description: {" "}
                             <span className="font-semibold text-sm text-foreground">{unit.description}</span>
                         </h1>
+                        <div className="flex gap-2">
+                            <h1 className="text-muted-foreground text-sm ">Code: {" "}
+                                <span className="font-semibold text-sm text-foreground">{unit.code}</span>
+                            </h1>
+                            <h1 className="text-muted-foreground text-sm ">Capacity: {" "}
+                                <span className="font-semibold text-sm text-foreground">{unit.capacity}</span>
+                            </h1>
+                        </div>
                         <div className="flex gap-2">
                             <h1 className="text-muted-foreground text-sm ">Created At: {" "}
                                 <span className="font-semibold text-sm text-foreground">{format(unit.createdAt, "dd MMM yy hh:mm a")}</span>
@@ -83,8 +78,8 @@ export default function UnitView({ id }: { id: number }) {
                 </div>
             </div>
             <Separator />
-            <div className="flex gap-4 my-4 overflow-x-auto overflow-y-hidden scrollbar-none pb-2 w-full">
-                <StatsCards Icon={Cpu} title="Equipment" value={unit.totalEquipment} clr="#fcb765" subtitle="Total Equipment" />
+            <div className="gap-4 my-4 overflow-x-auto overflow-y-hidden scrollbar-none grid md:grid-cols-2 xl:grid-cols-4 ">
+                <StatsCards Icon={Cpu} title="Equipment" value={unit.totalEquipment} clr="#D97706" subtitle="Total Equipment" />
             </div>
             <Separator />
             <div className="flex-1 min-h-0 my-4">

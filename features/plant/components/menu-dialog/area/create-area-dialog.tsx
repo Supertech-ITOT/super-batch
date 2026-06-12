@@ -15,8 +15,6 @@ import { useGetPlants } from "../../../hooks/use-plants";
 import { areaSchema, AreaSchema, AreaSchemaLimit } from "../../../schemas/area-schema";
 import CharacterProgress from "@/components/form/character-progress";
 import { Textarea } from "@/components/ui/textarea";
-import { StatusConfig, StatusType } from "../../../../common/types/status.type";
-import clsx from "clsx";
 
 type Props = { open: boolean; onClose: () => void; plantId?: number };
 export default function CreateAreaDialog({ open, onClose, plantId }: Props) {
@@ -24,18 +22,18 @@ export default function CreateAreaDialog({ open, onClose, plantId }: Props) {
     const { data: plants, isLoading: plantsLoading } = useGetPlants(open);
     const { register, handleSubmit, reset, control, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<AreaSchema>({
         resolver: zodResolver(areaSchema),
-        defaultValues: { name: "", plantId: undefined, description: "", areaType: "", status: StatusType.ACTIVE }
+        defaultValues: { name: "", plantId: undefined, description: "", areaType: "" }
     });
 
     useEffect(() => {
         if (!open || !plantId) return;
-        reset({ name: "", plantId: String(plantId), description: "", areaType: "", status: StatusType.ACTIVE })
+        reset({ name: "", plantId: String(plantId), description: "", areaType: "" })
     }, [open, plantId, reset]);
 
     const loading = isCreating || plantsLoading || isSubmitting;
     const onSubmit = async (formData: AreaSchema) => {
         try {
-            const res = await createArea({ name: formData.name, plantId: Number(formData.plantId), description: formData.description, areaType: formData.areaType, status: formData.status });
+            const res = await createArea({ name: formData.name, plantId: Number(formData.plantId), description: formData.description, areaType: formData.areaType });
             toast.success(res.message ?? "Area created successfully.");
             handleClose();
         } catch (error) {
@@ -43,7 +41,7 @@ export default function CreateAreaDialog({ open, onClose, plantId }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ name: "", plantId: undefined, description: "", areaType: "", status: StatusType.ACTIVE });
+        reset({ name: "", plantId: undefined, description: "", areaType: "" });
         onClose();
     };
 
@@ -127,36 +125,6 @@ export default function CreateAreaDialog({ open, onClose, plantId }: Props) {
                                         </Select>
                                     )}
                                 />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Status</Label>
-                            <div className="flex rounded-md border overflow-hidden transition-all duration-200">
-                                {StatusConfig.map((status) => {
-                                    const selected = watch("status") === status.value;
-                                    return (
-                                        <Button
-                                            type="button"
-                                            disabled={loading}
-                                            variant="outline"
-                                            key={status.value}
-                                            onClick={() =>
-                                                setValue("status", status.value as StatusType, {
-                                                    shouldDirty: true,
-                                                    shouldValidate: true,
-                                                })
-                                            }
-                                            className={clsx(
-                                                "relative flex-1 h-8 rounded-none border bg-card py-0.5 flex items-center justify-center gap-3 text-left hover:bg-muted/50",
-                                                selected ? "bg-primary/5" : ""
-                                            )}
-                                        >
-                                            <div className={clsx("h-3 w-3 rounded-full", status.dot)} />
-                                            <span className="font-medium text-xs">{status.label}</span>
-                                            {selected && <div className="absolute bottom-0 h-0.5 w-full bg-primary" />}
-                                        </Button>
-                                    );
-                                })}
                             </div>
                         </div>
                     </div>

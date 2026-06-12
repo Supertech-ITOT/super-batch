@@ -1,10 +1,9 @@
 import { z } from "zod";
-import { StatusType } from "../../common/types/status.type";
 
 export const EquipmentSchemaLimit = {
     name: { min: 2, max: 100 },
     description: { min: 2, max: 100 },
-    tagName: { min: 2, max: 50 },
+    code: { min: 2, max: 50 },
 } as const;
 
 export const equipmentSchema = z.object({
@@ -36,27 +35,24 @@ export const equipmentSchema = z.object({
             `Description cannot exceed ${EquipmentSchemaLimit.description.max} characters`
         ),
 
-    status: z.enum(StatusType),
-
-    tagName: z
+    code: z
         .string()
         .trim()
         .min(
-            EquipmentSchemaLimit.tagName.min,
-            `Tag name must be at least ${EquipmentSchemaLimit.tagName.min} characters`
+            EquipmentSchemaLimit.code.min,
+            `Code must be at least ${EquipmentSchemaLimit.code.min} characters`
         )
         .max(
-            EquipmentSchemaLimit.tagName.max,
-            `Tag name cannot exceed ${EquipmentSchemaLimit.tagName.max} characters`
+            EquipmentSchemaLimit.code.max,
+            `Code cannot exceed ${EquipmentSchemaLimit.code.max} characters`
         )
         .regex(
             /^[A-Z0-9\-_]+$/,
-            "Tag name must contain only uppercase letters, numbers, hyphen, or underscore"
+            "Code must contain only uppercase letters, numbers, hyphen, or underscore"
         ),
 
-    uom: z.string({ error: "Uom type is required." }).trim(),
 
-    equipmentType: z.string({ error: "Equipment type is required." }).trim(),
+    capacity: z.string({ error: "Capacity is required." }).trim(),
 
     unitId: z.string({ error: "Unit is required." }).trim()
 });

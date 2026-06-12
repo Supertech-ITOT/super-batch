@@ -7,7 +7,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.supertech.superbatch.common.enums.StatusType;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,10 +34,6 @@ public class Area {
     private Set<Unit> units;
 
     private String description;
-
-    @Enumerated(EnumType.STRING)
-    @Builder.Default
-    private StatusType status = StatusType.ACTIVE;
 
     private String areaType;
 

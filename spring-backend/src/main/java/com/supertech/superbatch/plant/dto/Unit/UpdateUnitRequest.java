@@ -1,12 +1,8 @@
 package com.supertech.superbatch.plant.dto.Unit;
 
-import com.supertech.superbatch.common.enums.StatusType;
-import com.supertech.superbatch.plant.enums.UnitType;
+import com.supertech.superbatch.common.enums.UomType;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public record UpdateUnitRequest(
 
@@ -16,10 +12,10 @@ public record UpdateUnitRequest(
 
         @Size(min = 2, max = 100, message = "Description must be between 2 and 100 characters") String description,
 
-        @NotNull(message = "Status is required") StatusType status,
+        @NotNull(message = "Area id is required") Long areaId,
 
-        @NotNull(message = "Unit type is required") UnitType unitType,
+        @NotNull(message = "UOM is required") UomType batchSizeUom,
 
-        @NotNull(message = "Area id is required") Long areaId) {
+        @NotNull(message = "Capacity is required") @Min(value = 1, message = "Capacity must be greater than 0") Integer capacity) {
 
 }

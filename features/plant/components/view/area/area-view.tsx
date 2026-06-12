@@ -11,9 +11,6 @@ import { DialogType } from "@/features/plant/types/plant-hierarchy.types";
 import DataTable from "./data-table";
 import TreeDialogs from "../../tree-dialogs";
 import { columns } from "./columns";
-import { StatusBadgeStyles } from "@/features/common/types/status.type";
-import { Badge } from "@/components/ui/badge";
-import { toDisplayText } from "@/lib/format-enum";
 
 
 
@@ -35,15 +32,7 @@ export default function AreaView({ id }: { id: number }) {
                         <Building className="size-16 text-primary" />
                     </div>
                     <div className="flex flex-col">
-                        <div className="space-x-2 flex">
-                            <span className="text-2xl font-bold">{area.name}</span>
-                            <Badge
-                                variant="outline"
-                                className={StatusBadgeStyles[area.status]}
-                            >
-                                {toDisplayText(area.status)}
-                            </Badge>
-                        </div>
+                        <h1 className="font-bold text-xl">{area.name}</h1>
                         <h1 className="text-muted-foreground text-sm ">Area Type: {" "}
                             <span className="font-semibold text-sm text-foreground">{area.areaType}</span>
                         </h1>
@@ -85,9 +74,9 @@ export default function AreaView({ id }: { id: number }) {
                 </div>
             </div>
             <Separator />
-            <div className="flex gap-4 my-4 overflow-x-auto overflow-y-hidden scrollbar-none pb-2 w-full">
+            <div className="gap-4 my-4 overflow-x-auto overflow-y-hidden scrollbar-none grid md:grid-cols-2 xl:grid-cols-4 ">
                 <StatsCards Icon={Boxes} title="Unit" value={area.totalUnit} clr="#2a922e" subtitle="Total Unit" />
-                <StatsCards Icon={Cpu} title="Equipment" value={area.totalEquipment} clr="#fcb765" subtitle="Total Equipment" />
+                <StatsCards Icon={Cpu} title="Equipment" value={area.totalEquipment} clr="#D97706" subtitle="Total Equipment" />
             </div>
             <Separator />
             <div className="flex-1 min-h-0 my-4">

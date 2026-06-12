@@ -2,20 +2,14 @@ package com.supertech.superbatch.plant.dto.Equipment;
 
 import java.time.LocalDateTime;
 
-import com.supertech.superbatch.common.enums.StatusType;
-import com.supertech.superbatch.plant.dto.UOM.UomResponse;
-import com.supertech.superbatch.plant.enums.EquipmentType;
-
 public record EquipmentResponse(
                 Long id,
                 String name,
+                String code,
                 String description,
-                StatusType status,
-                String tagName,
-                UomResponse uom,
                 String unitName,
                 Long unitId,
-                EquipmentType equipmentType,
+                Integer capacity,
                 LocalDateTime createdAt,
                 LocalDateTime updatedAt
 

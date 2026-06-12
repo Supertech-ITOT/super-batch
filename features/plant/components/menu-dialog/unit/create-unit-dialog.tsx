@@ -12,38 +12,36 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { useGetAreas } from "../../../hooks/use-areas";
 import { useCreateUnit } from "../../../hooks/use-units";
 import { UnitSchema, unitSchema, UnitSchemaLimit } from "../../../schemas/unit-schema";
-import { useGetUnitTypes } from "@/features/common/hooks/useMetadata";
+import { useGetUomTypes } from "@/features/common/hooks/useMetadata";
 import { useEffect } from "react";
 import CharacterProgress from "@/components/form/character-progress";
 import { Textarea } from "@/components/ui/textarea";
-import { StatusConfig, StatusType } from "../../../../common/types/status.type";
-import clsx from "clsx";
 
 type Props = { open: boolean; onClose: () => void; areaId?: number };
 export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
     const { mutateAsync: createUnit, isPending: isCreating } = useCreateUnit();
+    const { data: uomTypes, isLoading: uomTypesIsLoading } = useGetUomTypes(open);
     const { data: areas, isLoading: areasLoading } = useGetAreas(open);
-    const { data: unitTypes, isLoading: unitTypeIsLoading } = useGetUnitTypes(open);
-    const { register, handleSubmit, reset, control, watch, setValue, formState: { errors, isSubmitting, isDirty } } = useForm<UnitSchema>({
+    const { register, handleSubmit, reset, control, watch, formState: { isSubmitting, isDirty } } = useForm<UnitSchema>({
         resolver: zodResolver(unitSchema),
-        defaultValues: { name: "", areaId: undefined, unitType: undefined, code: "", description: "", status: StatusType.ACTIVE }
+        defaultValues: { name: "", areaId: "", batchSizeUom: "", capacity: "", code: "", description: "" }
     });
 
     useEffect(() => {
         if (!open || !areaId) return;
-        reset({ name: "", areaId: String(areaId), unitType: undefined, code: "", description: "", status: StatusType.ACTIVE })
+        reset({ name: "", areaId: String(areaId), batchSizeUom: "", code: "", description: "" })
     }, [open, areaId, reset]);
 
-    const loading = isCreating || areasLoading || isSubmitting || unitTypeIsLoading;
+    const loading = isCreating || areasLoading || isSubmitting || uomTypesIsLoading;
     const onSubmit = async (formData: UnitSchema) => {
         try {
             const res = await createUnit({
                 areaId: Number(formData.areaId),
+                name: formData.name,
                 code: formData.code,
                 description: formData.description,
-                name: formData.name,
-                status: formData.status,
-                unitType: formData.unitType
+                batchSizeUom: formData.batchSizeUom,
+                capacity: Number(formData.capacity)
             });
             toast.success(res.message ?? "Unit created successfully.");
             handleClose();
@@ -52,7 +50,7 @@ export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ name: "", areaId: undefined, unitType: "", code: "", description: "", status: StatusType.ACTIVE });
+        reset({ name: "", areaId: "", batchSizeUom: "", capacity: "", code: "", description: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<UnitSchema>) => {
@@ -84,18 +82,36 @@ export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
                                 {...register("name")}
                             />
                         </div>
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Unit Code</Label>
-                                <CharacterProgress value={watch("code")} max={UnitSchemaLimit.code.max} />
+                        <div className="flex gap-2">
+                            <div className="space-y-2 flex-1 relative">
+                                <div className="flex items-center justify-between">
+                                    <Label>Code</Label>
+                                    <CharacterProgress value={watch("code")} max={UnitSchemaLimit.code.max} />
+                                </div>
+                                <Input
+                                    type="text"
+                                    disabled={loading}
+                                    placeholder="R101"
+                                    maxLength={UnitSchemaLimit.code.max}
+                                    {...register("code")}
+                                />
                             </div>
-                            <Input
-                                type="text"
-                                disabled={loading}
-                                placeholder="R101"
-                                maxLength={UnitSchemaLimit.code.max}
-                                {...register("code")}
-                            />
+                            <div className="space-y-2 flex-1">
+                                <div className="flex items-center justify-between">
+                                    <Label>Capacity</Label>
+                                </div>
+                                <div className="flex">
+                                    <Input
+                                        type="number"
+                                        placeholder="1000"
+                                        className="rounded-r-none"
+                                        {...register("capacity")}
+                                    />
+                                    <div className="flex items-center px-3 border border-l-0 rounded-r-md bg-muted text-sm">
+                                        kg
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
@@ -136,11 +152,11 @@ export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
                                     )}
                                 />
                             </div>
-                            <div className="flex-1 space-y-2">
-                                <Label>Select Unit Type</Label>
+                            <div className="space-y-2 flex-1">
+                                <Label>Batch Size Uom</Label>
                                 <Controller
                                     control={control}
-                                    name="unitType"
+                                    name="batchSizeUom"
                                     render={({ field }) => (
                                         <Select
                                             disabled={loading}
@@ -148,50 +164,18 @@ export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
                                             onValueChange={field.onChange}
                                         >
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Unit Type" />
+                                                <SelectValue placeholder="Select Batch Size Uom" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    {unitTypes?.map((p) => (
-                                                        <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                                                    {uomTypes?.filter(f => f.value == "KG" || f.value == "PERCENT").map((e) => (
+                                                        <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
                                                     ))}
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
                                     )}
                                 />
-
-                            </div>
-
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Status</Label>
-                            <div className="flex rounded-md border overflow-hidden transition-all duration-200">
-                                {StatusConfig.map((status) => {
-                                    const selected = watch("status") === status.value;
-                                    return (
-                                        <Button
-                                            type="button"
-                                            disabled={loading}
-                                            variant="outline"
-                                            key={status.value}
-                                            onClick={() =>
-                                                setValue("status", status.value as StatusType, {
-                                                    shouldDirty: true,
-                                                    shouldValidate: true,
-                                                })
-                                            }
-                                            className={clsx(
-                                                "relative flex-1 h-8 rounded-none border bg-card py-0.5 flex items-center justify-center gap-3 text-left hover:bg-muted/50",
-                                                selected ? "bg-primary/5" : ""
-                                            )}
-                                        >
-                                            <div className={clsx("h-3 w-3 rounded-full", status.dot)} />
-                                            <span className="font-medium text-xs">{status.label}</span>
-                                            {selected && <div className="absolute bottom-0 h-0.5 w-full bg-primary" />}
-                                        </Button>
-                                    );
-                                })}
                             </div>
                         </div>
                     </div>

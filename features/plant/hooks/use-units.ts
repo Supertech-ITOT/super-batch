@@ -16,7 +16,7 @@ export const useGetUnits = (enabled = true) => {
 
 export const useGetUnitById = (id?: number) => {
     return useQuery({
-        queryKey: id ? queryKeys.area(id) : [],
+        queryKey: id ? queryKeys.unit(id) : [],
         queryFn: async () => {
             const res = await getUnitById(id!);
             return res.data;
