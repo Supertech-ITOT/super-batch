@@ -11,6 +11,7 @@ import com.supertech.superbatch.manager.dto.LoginResponse;
 import com.supertech.superbatch.manager.entity.Users;
 import com.supertech.superbatch.manager.repository.UsersRepository;
 import com.supertech.superbatch.manager.service.AuthService;
+import com.supertech.superbatch.manager.service.JwtService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthServiceImpl implements AuthService {
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Override
     public LoginResponse login(LoginRequest request) {
@@ -33,13 +35,14 @@ public class AuthServiceImpl implements AuthService {
 
         user.setLastLoginAt(LocalDateTime.now());
         usersRepository.save(user);
+        String token = jwtService.generateToken(user);
 
         LoginResponse loginResponse = LoginResponse.builder()
                 .userId(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
                 .role(user.getRole().getName())
-                .accessToken(null)
+                .accessToken(token)
                 .build();
 
         return loginResponse;

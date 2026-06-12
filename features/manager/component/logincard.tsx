@@ -8,20 +8,28 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginSchema, loginSchema } from "../schemas/login-schema";
-import FormError from "@/components/form/form-error";
+import { LoginSchema, loginSchema } from "../../manager/schemas/login-schema";
 import Image from "next/image";
+import { useLogin } from "../hooks/useAuth";
+import { showApiError } from "@/lib/show-api-error";
 
 export default function LoginCard() {
     const [showPassword, setShowPassword] = useState(false);
+    const { mutateAsync, isPending } = useLogin();
     const router = useRouter();
     const { handleSubmit, register, formState: { errors, isDirty, isSubmitting } } = useForm<LoginSchema>({
         resolver: zodResolver(loginSchema),
-        defaultValues: { username: "", password: "" }
+        defaultValues: { email: "", password: "" }
     });
-    const loading = isSubmitting;
-    const onSubmit = (data: LoginSchema) => {
-        router.replace("/PlantModel");
+    const loading = isSubmitting || isPending;
+    const onSubmit = async (data: LoginSchema) => {
+        try {
+            const res = await mutateAsync(data);
+            toast.success(res.message ?? "Login Successfully");
+            router.replace("/PlantModel");
+        } catch (error) {
+            showApiError(error);
+        }
     }
     return (
         <div className="flex w-full max-w-md flex-col rounded-2xl border bg-card/60 p-10 shadow-2xl backdrop-blur-xl">
@@ -51,13 +59,12 @@ export default function LoginCard() {
                     <User className="w-4 h-4 absolute left-2 top-1/2 -translate-y-1/2" />
                     <Input
                         disabled={loading}
-                        placeholder="Username"
-                        type="text"
-                        {...register("username")}
+                        placeholder="abc@gmail.com"
+                        type="email"
+                        {...register("email")}
                         className="pl-8 bg-background h-12"
                     />
                 </div>
-                <FormError msg={errors.username?.message} />
                 <div className="relative">
                     <Lock className="w-4 h-4 absolute left-2 top-1/2 -translate-y-1/2" />
                     <Input
@@ -76,7 +83,7 @@ export default function LoginCard() {
                         {showPassword ? (<EyeOff className="w-4 h-4 " />) : (<Eye className="w-4 h-4" />)}
                     </Button>
                 </div>
-                <FormError msg={errors.password?.message} />
+
                 <Button className="text-primary place-self-end"
                     disabled={loading}
                     variant="link"
