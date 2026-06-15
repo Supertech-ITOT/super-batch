@@ -31,7 +31,7 @@ export default function RoleView() {
     ];
 
     return (
-        <div className="bg-card h-full border rounded-lg flex flex-col p-6">
+        <div className="bg-card h-full border rounded-lg flex flex-col p-6 ">
             <RoleStat />
 
             <div className="flex-1 min-h-0 my-4">

@@ -1,6 +1,10 @@
 import StatsCards from "@/components/stats-card";
 import { Users } from "lucide-react";
-
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+} from "@/components/ui/carousel";
 export default function UserStat() {
     const stats = [
         {
@@ -12,10 +16,23 @@ export default function UserStat() {
         }
     ]
     return (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {stats.map((item) => (
-                <StatsCards key={item.title} Icon={item.Icon} clr={item.clr} subtitle={item.subtitle} title={item.title} value={item.value} />
-            ))}
-        </div>
+        <Carousel opts={{ align: "start", dragFree: true, }} className="w-full">
+            <CarouselContent>
+                {stats.map((item) => (
+                    <CarouselItem
+                        key={item.title}
+                        className="basis-full sm:basis-1/2 lg:basis-1/4"
+                    >
+                        <StatsCards
+                            Icon={item.Icon}
+                            clr={item.clr}
+                            subtitle={item.subtitle}
+                            title={item.title}
+                            value={item.value}
+                        />
+                    </CarouselItem>
+                ))}
+            </CarouselContent>
+        </Carousel>
     )
 }
