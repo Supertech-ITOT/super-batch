@@ -9,3 +9,13 @@ export interface LoginResponse {
     role: string;
     accessToken: string;
 }
+
+export const getUser = (): LoginResponse | null => {
+    const user = localStorage.getItem("user");
+
+    if (!user) {
+        return null;
+    }
+
+    return JSON.parse(user);
+};

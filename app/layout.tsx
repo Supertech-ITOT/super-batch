@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 import QueryProvider from "@/providers/query-provider";
 import ThemeProvider from "@/providers/theme-provider";
+import AuthGuard from "@/components/auth-guard";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -19,7 +20,9 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
         <ThemeProvider>
           <QueryProvider>
             <main className="min-h-screen">
-              {children}
+              <AuthGuard>
+                {children}
+              </AuthGuard>
             </main>
             <Toaster richColors position="top-center" />
           </QueryProvider>

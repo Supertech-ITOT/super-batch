@@ -1,5 +1,5 @@
 "use client";
-import { FileText, CalendarClock, BookOpenText, Factory, Users, ShieldCheck, ClipboardList, Settings, ChevronUp, Home, LogOut, LucideIcon, PanelLeftOpen } from "lucide-react";
+import { FileText, CalendarClock, BookOpenText, Factory, Users, ShieldCheck, ClipboardList, Settings, ChevronUp, Home, LogOut, LucideIcon, PanelLeftOpen, Loader } from "lucide-react";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import Link from "next/link";
@@ -10,6 +10,7 @@ import Image from "next/image";
 import { useLogout } from "@/features/manager/hooks/useAuth";
 import { toast } from "sonner";
 import { showApiError } from "@/lib/show-api-error";
+import { getUser } from "@/features/manager/types/auth.types";
 
 type RouteType = {
     label: string;
@@ -73,8 +74,13 @@ export default function SideBar() {
     const router = useRouter();
     const { mutateAsync: logout, isPending } = useLogout();
     const [open, setOpen] = useState<boolean>(true);
-    const user = { name: "Manav Pande", role: "Administrator", };
-    const initials = user.name.split(" ").map((word) => word[0]).join("").toUpperCase();
+    const user = getUser();
+    const initials =
+        user?.name
+            ?.split(" ")
+            .map((word) => word[0])
+            .join("")
+            .toUpperCase() ?? "U";
     const onLogout = async () => {
         try {
             const res = await logout();
@@ -191,8 +197,8 @@ export default function SideBar() {
                                     </div>
                                     {/* User Info */}
                                     {open && <div className="flex flex-col text-left">
-                                        <span className="text-sm font-medium text-foreground">{user.name}</span>
-                                        <span className="text-xs text-muted-foreground">{user.role}</span>
+                                        <span className="text-sm font-medium text-foreground">{user?.name ?? "-"}</span>
+                                        <span className="text-xs text-muted-foreground">{user?.role ?? "-"}</span>
                                     </div>}
                                 </div>
                                 {open && <ChevronUp className="w-4 h-4 text-muted-foreground" />}
@@ -200,8 +206,16 @@ export default function SideBar() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent side="top" align="end" className="min-w-fit!">
                             <DropdownMenuItem onClick={onLogout} className="cursor-pointer text-destructive justify-center">
-                                <LogOut className="w-4 h-4 mr-2" />
-                                {open && <span>Logout</span>}
+                                {isPending
+                                    ? <Loader className="animate-spin size-4" />
+                                    :
+                                    <>
+                                        <LogOut className="w-4 h-4 mr-2" />
+                                        {open && <span>Logout</span>}
+                                    </>
+
+                                }
+
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
