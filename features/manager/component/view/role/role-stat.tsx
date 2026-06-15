@@ -43,7 +43,7 @@ export default function RoleStat() {
                 {stats.map((item) => (
                     <CarouselItem
                         key={item.title}
-                        className="basis-full sm:basis-1/2 lg:basis-1/4"
+                        className="basis-auto"
                     >
                         <StatsCards
                             Icon={item.Icon}

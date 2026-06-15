@@ -9,12 +9,12 @@ type Prop = {
 }
 export default function StatsCards({ title, value, subtitle, clr, Icon }: Prop) {
     return (
-        <div className="rounded-xl border bg-card p-6 shadow-sm min-h-30">
+        <div className="rounded-xl border bg-card p-6 shadow-sm min-h-30 min-w-[320px] shrink-0 overflow-hidden">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <div
                         style={{ backgroundColor: clr }}
-                        className="flex h-16 w-16 items-center justify-center rounded-xl"
+                        className="flex h-16 w-16 items-center justify-center rounded-xl shrink-0"
                     >
                         <Icon className="h-8 w-8 text-white" />
                     </div>

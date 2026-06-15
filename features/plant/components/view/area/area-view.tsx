@@ -11,8 +11,11 @@ import { DialogType } from "@/features/plant/types/plant-hierarchy.types";
 import DataTable from "./data-table";
 import TreeDialogs from "../../tree-dialogs";
 import { columns } from "./columns";
-
-
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+} from "@/components/ui/carousel";
 
 export default function AreaView({ id }: { id: number }) {
     const { data: area, isLoading: areaIsLoading } = useGetAreaById(id);
@@ -24,6 +27,26 @@ export default function AreaView({ id }: { id: number }) {
             <Skeleton className="h-full" />
         );
     }
+
+    const stats = [
+
+        {
+            title: "Unit",
+            subtitle: "Total Unit",
+            value: area.totalUnit ?? 0,
+            Icon: Boxes,
+            clr: "#2a922e",
+        },
+        {
+            title: "Equipment",
+            subtitle: "Total Equipment",
+            value: area.totalEquipment ?? 0,
+            Icon: Cpu,
+            clr: "#D97706",
+        }
+
+    ]
+
     return (
         <div className=" flex justify-between flex-col h-full w-full bg-card p-4 overflow-y-auto scrollbar-none">
             <div className="flex justify-between flex-wrap gap-2 my-4">
@@ -73,12 +96,27 @@ export default function AreaView({ id }: { id: number }) {
                     <TreeDialogs dialog={dialog} redirect={dialog.redirect} onClose={() => setDialog({ type: null, mode: null, node: null, redirect: false })} />
                 </div>
             </div>
-            <Separator />
-            <div className="gap-4 my-4 overflow-x-auto overflow-y-hidden scrollbar-none grid md:grid-cols-2 xl:grid-cols-4 ">
-                <StatsCards Icon={Boxes} title="Unit" value={area.totalUnit} clr="#2a922e" subtitle="Total Unit" />
-                <StatsCards Icon={Cpu} title="Equipment" value={area.totalEquipment} clr="#D97706" subtitle="Total Equipment" />
-            </div>
-            <Separator />
+            <Separator className="my-4" />
+            <Carousel opts={{ align: "start", dragFree: true, }} className="w-full">
+                <CarouselContent>
+                    {stats.map((item) => (
+                        <CarouselItem
+                            key={item.title}
+                            className="basis-auto"
+                        >
+                            <StatsCards
+                                Icon={item.Icon}
+                                clr={item.clr}
+                                subtitle={item.subtitle}
+                                title={item.title}
+                                value={item.value}
+                            />
+                        </CarouselItem>
+                    ))}
+                </CarouselContent>
+            </Carousel>
+            <Separator className="my-4" />
+
             <div className="flex-1 min-h-0 my-4">
                 <DataTable
                     columns={columns({ setDialog })}

@@ -17,6 +17,7 @@ export default function LoginCard() {
     const [showPassword, setShowPassword] = useState(false);
     const { mutateAsync, isPending } = useLogin();
     const router = useRouter();
+
     const { handleSubmit, register, formState: { errors, isDirty, isSubmitting } } = useForm<LoginSchema>({
         resolver: zodResolver(loginSchema),
         defaultValues: { email: "", password: "" }

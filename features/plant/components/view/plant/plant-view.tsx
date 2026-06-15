@@ -13,6 +13,11 @@ import { useGetPlantById } from "@/features/plant/hooks/use-plants";
 import { useGetAreasByPlantId } from "@/features/plant/hooks/use-areas";
 import { DialogType } from "@/features/plant/types/plant-hierarchy.types";
 import TreeDialogs from "../../tree-dialogs";
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+} from "@/components/ui/carousel";
 
 
 export default function PlantView({ id }: { id: number }) {
@@ -25,6 +30,31 @@ export default function PlantView({ id }: { id: number }) {
             <Skeleton className="h-full" />
         );
     }
+
+    const stats = [
+        {
+            title: "Area",
+            subtitle: "Total Area",
+            value: plant.totalArea ?? 0,
+            Icon: Building,
+            clr: "#3882fa",
+        },
+        {
+            title: "Unit",
+            subtitle: "Total Unit",
+            value: plant.totalUnit ?? 0,
+            Icon: Boxes,
+            clr: "#2a922e",
+        },
+        {
+            title: "Equipment",
+            subtitle: "Total Equipment",
+            value: plant.totalEquipment ?? 0,
+            Icon: Cpu,
+            clr: "#D97706",
+        }
+
+    ]
 
     return (
         <div className="flex justify-between flex-col h-full w-full bg-card p-4 overflow-y-auto scrollbar-none">
@@ -77,14 +107,29 @@ export default function PlantView({ id }: { id: number }) {
                     <TreeDialogs dialog={dialog} redirect={dialog.redirect} onClose={() => setDialog({ type: null, mode: null, node: null, redirect: false })} />
                 </div>
             </div>
-            <Separator />
-            <div className="gap-4 my-4 overflow-x-auto overflow-y-hidden scrollbar-none grid md:grid-cols-2 xl:grid-cols-4 ">
-                <StatsCards Icon={Building} title="Area" value={plant.totalArea} clr="#3882fa" subtitle="Total Area " />
-                <StatsCards Icon={Boxes} title="Unit" value={plant.totalUnit} clr="#2a922e" subtitle="Total Unit" />
-                <StatsCards Icon={Cpu} title="Equipment" value={plant.totalEquipment} clr="#D97706" subtitle="Total Equipment" />
-            </div>
-            <Separator />
-            <div className="flex-1 min-h-0 my-4">
+            <Separator className="my-4" />
+            <Carousel opts={{ align: "start", dragFree: true, }} className="w-full">
+                <CarouselContent>
+                    {stats.map((item) => (
+                        <CarouselItem
+                            key={item.title}
+                            className="basis-auto"
+                        >
+                            <StatsCards
+                                Icon={item.Icon}
+                                clr={item.clr}
+                                subtitle={item.subtitle}
+                                title={item.title}
+                                value={item.value}
+                            />
+                        </CarouselItem>
+                    ))}
+                </CarouselContent>
+            </Carousel>
+            <Separator className="my-4" />
+
+
+            <div className="flex-1 min-h-0 ">
                 <DataTable
                     columns={columns({ setDialog })}
                     data={areas}
