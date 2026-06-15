@@ -1,9 +1,9 @@
 "use client"
 
 import { ColumnDef, ColumnFiltersState, SortingState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable, } from "@tanstack/react-table"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/common/components/ui/table"
+import { Button } from "@/common/components/ui/button"
+import { Input } from "@/common/components/ui/input"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 interface DataTableProps<

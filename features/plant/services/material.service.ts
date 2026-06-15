@@ -1,5 +1,5 @@
-import api from "@/lib/axios";
-import { ApiResponse } from "@/types/api.types";
+import api from "@/common/lib/axios";
+import { ApiResponse } from "@/common/types/api.types";
 import { CreateMaterialRequest, MaterialResponse, UpdateMaterialRequest } from "../types/material.types";
 
 

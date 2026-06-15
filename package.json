@@ -2,7 +2,7 @@
   "name": "super-batch",
   "version": "1.0.0",
   "description": "SuperBatch Desktop App - Electron + Next.js + Java Spring",
-  "main": "electron-dist/main.js",
+  "main": "electron/dist/main.js",
   "private": true,
   "scripts": {
     "dev": "concurrently --kill-others-on-fail \"npm run dev:next\" \"npm run dev:spring\" \"npm run dev:electron\"",

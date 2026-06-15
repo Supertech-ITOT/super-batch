@@ -3,7 +3,7 @@
 import { LayoutGrid, Package, Workflow } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { cn } from "@/common/lib/utils";
 
 export default function PlantTab() {
     const pathname = usePathname();

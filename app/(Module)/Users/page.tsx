@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import UserView from "@/features/manager/component/view/user/user-view";
 import { Plus, UsersIcon } from "lucide-react";
 

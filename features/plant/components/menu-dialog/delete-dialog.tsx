@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/common/components/ui/button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
 import { Loader } from "lucide-react";
 import { PlantHierarchyResponse } from "../../types/plant-hierarchy.types";
-import { showApiError } from "@/lib/show-api-error";
+import { showApiError } from "@/common/lib/show-api-error";
 import { useDeleteArea } from "../../hooks/use-areas";
 import { useDeletePlant } from "../../hooks/use-plants";
 import { useDeleteUnit } from "../../hooks/use-units";

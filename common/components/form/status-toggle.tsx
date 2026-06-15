@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/common/components/ui/button";
+import { Label } from "@/common/components/ui/label";
 import clsx from "clsx";
 
 export type StatusOption<T extends string> = {

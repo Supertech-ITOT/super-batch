@@ -1,6 +1,6 @@
 "use client"
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/common/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/common/components/ui/radio-group";
 import { useTheme } from "next-themes";
 
 export default function AppThemeCard() {

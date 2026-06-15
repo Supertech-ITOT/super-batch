@@ -1,19 +1,19 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/common/components/ui/button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
+import { Input } from "@/common/components/ui/input";
+import { Label } from "@/common/components/ui/label";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
-import { showApiError } from "@/lib/show-api-error";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { showApiError } from "@/common/lib/show-api-error";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/common/components/ui/select";
 import { useGetMaterialTypes, useGetUomTypes } from "@/features/common/hooks/useMetadata";
 import { useGetMaterialById, useUpdateMaterial } from "../../../hooks/use-materials";
 import { materialSchema, MaterialSchema, MaterialSchemaLimit } from "../../../schemas/material-schema";
-import CharacterProgress from "@/components/form/character-progress";
-import { Textarea } from "@/components/ui/textarea";
+import CharacterProgress from "@/common/components/form/character-progress";
+import { Textarea } from "@/common/components/ui/textarea";
 import { useEffect } from "react";
 
 type Props = { open: boolean; onClose: () => void; materialId?: number };

@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import RoleView from "@/features/manager/component/view/role/role-view";
 
 import { Plus, Shield, } from "lucide-react";

@@ -1,8 +1,8 @@
 "use client";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@/common/components/ui/separator";
 import { ArrowLeftRightIcon, Gauge, LucideIcon, Play, Plus } from "lucide-react";
 import { useGetParameters } from "@/features/plant/hooks/use-parameters";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/common/components/ui/skeleton";
 import ParameterDataTable from "./parameter/data-table";
 import TransitionDataTable from "./transition/data-table";
 import ActionDataTable from "./action/data-table";
@@ -12,7 +12,7 @@ import ActionColumns from "./action/columns";
 import { useGetTransitions } from "../../hooks/use-transitions";
 import { useGetActions } from "../../hooks/use-actions";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import ProcessDialogs from "./process-dialog";
 
 type ProcessCardConfig = {

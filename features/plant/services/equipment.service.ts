@@ -1,5 +1,5 @@
-import api from "@/lib/axios"
-import { ApiResponse } from "@/types/api.types"
+import api from "@/common/lib/axios"
+import { ApiResponse } from "@/common/types/api.types"
 import { CreateEquipmentRequest, EquipmentResponse, UpdateEquipmentRequest } from "../types/equipment.types";
 import { PlantHierarchyResponse } from "../types/plant-hierarchy.types";
 

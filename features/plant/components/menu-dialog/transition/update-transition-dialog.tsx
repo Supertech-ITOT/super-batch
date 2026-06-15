@@ -1,16 +1,16 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/common/components/ui/button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
+import { Input } from "@/common/components/ui/input";
+import { Label } from "@/common/components/ui/label";
 import { FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
-import { showApiError } from "@/lib/show-api-error";
+import { showApiError } from "@/common/lib/show-api-error";
 import { useGetTransitionById, useUpdateTransition } from "../../../hooks/use-transitions";
 import { transitionSchema, TransitionSchema, TransitionSchemaLimit } from "../../../schemas/transition-schema";
-import CharacterProgress from "@/components/form/character-progress";
+import CharacterProgress from "@/common/components/form/character-progress";
 import { useEffect } from "react";
 
 type Props = { open: boolean; onClose: () => void; transitionId?: number };

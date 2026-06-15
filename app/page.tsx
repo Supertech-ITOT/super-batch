@@ -1,5 +1,5 @@
-import FeatureCard from "@/components/featurecard";
-import FooterCard from "@/components/footercard";
+import FeatureCard from "@/common/components/featurecard";
+import FooterCard from "@/common/components/footercard";
 import LoginCard from "@/features/manager/component/logincard";
 
 import { Activity, BadgeCheck, FileText, Layers3, ShieldCheck } from "lucide-react";

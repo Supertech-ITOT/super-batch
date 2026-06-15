@@ -1,5 +1,5 @@
-import SideBar from "@/components/sidebar";
-import { SidebarProvider } from "@/components/sidebar-provider";
+import SideBar from "@/common/components/sidebar";
+import { SidebarProvider } from "@/common/components/sidebar-provider";
 
 export default function ModuleLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
     return (

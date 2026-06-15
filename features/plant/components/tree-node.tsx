@@ -1,11 +1,11 @@
 "use client";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import { memo, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import { ActionType, PlantHierarchyResponse } from "@/features/plant/types/plant-hierarchy.types";
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuSeparator, ContextMenuTrigger } from "@/components/ui/context-menu";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuSeparator, ContextMenuTrigger } from "@/common/components/ui/context-menu";
 import { TREE_CONFIG } from "@/features/plant/constants/tree-config";
-import { cn } from "@/lib/utils";
+import { cn } from "@/common/lib/utils";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 type Props = {

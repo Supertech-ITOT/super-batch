@@ -9,7 +9,7 @@ const ROUTE = {
     protected: ["/PlantModel", "/Recipe", "/Roles", "/Users"],
 };
 
-export default function AuthGuard({
+export default function AuthGuardProvider({
     children,
 }: {
     children: React.ReactNode;

@@ -2,8 +2,8 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ParameterResponse } from "@/features/plant/types/parameter.types";
 import { ProcessDialogState } from "../process-view";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/common/components/ui/dropdown-menu"
+import { Button } from "@/common/components/ui/button"
 import { MoreHorizontal } from "lucide-react"
 export const columns = (
     setDialog: React.Dispatch<React.SetStateAction<ProcessDialogState>>

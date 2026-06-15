@@ -1,8 +1,8 @@
-import StatsCards from "@/components/stats-card";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import StatsCards from "@/common/components/stats-card";
+import { Button } from "@/common/components/ui/button";
+import { Separator } from "@/common/components/ui/separator";
 import { Boxes, Building, Cpu, PenLineIcon, Trash2 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/common/components/ui/skeleton";
 import { format } from "date-fns";
 import { useState } from "react";
 import { useGetAreaById } from "@/features/plant/hooks/use-areas";
@@ -15,7 +15,7 @@ import {
     Carousel,
     CarouselContent,
     CarouselItem,
-} from "@/components/ui/carousel";
+} from "@/common/components/ui/carousel";
 
 export default function AreaView({ id }: { id: number }) {
     const { data: area, isLoading: areaIsLoading } = useGetAreaById(id);

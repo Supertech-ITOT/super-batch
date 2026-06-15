@@ -1,16 +1,16 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/common/components/ui/button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
+import { Input } from "@/common/components/ui/input";
+import { Label } from "@/common/components/ui/label";
 import { FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { showApiError } from "@/lib/show-api-error";
-import { Textarea } from "@/components/ui/textarea";
-import CharacterProgress from "@/components/form/character-progress";
+import { showApiError } from "@/common/lib/show-api-error";
+import { Textarea } from "@/common/components/ui/textarea";
+import CharacterProgress from "@/common/components/form/character-progress";
 import { useGetPlantById, useUpdatePlant } from "@/features/plant/hooks/use-plants";
 import { PlantSchema, plantSchema, PlantSchemaLimit } from "@/features/plant/schemas/plant-schema";
 

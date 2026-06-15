@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { useDebounce } from "use-debounce";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/common/components/ui/input";
 
 type Props = {
     onSearch: (value: string) => void;

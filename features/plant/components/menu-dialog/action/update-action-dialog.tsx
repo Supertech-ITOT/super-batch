@@ -1,18 +1,18 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/common/components/ui/button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
+import { Input } from "@/common/components/ui/input";
+import { Label } from "@/common/components/ui/label";
 import { FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
-import { showApiError } from "@/lib/show-api-error";
+import { showApiError } from "@/common/lib/show-api-error";
 import { useGetActionById, useUpdateAction } from "../../../hooks/use-actions";
 import { actionSchema, ActionSchema, ActionSchemaLimit } from "../../../schemas/action-schema";
-import CharacterProgress from "@/components/form/character-progress";
+import CharacterProgress from "@/common/components/form/character-progress";
 import { useEffect } from "react";
-import StatusToggle from "@/components/form/status-toggle";
+import StatusToggle from "@/common/components/form/status-toggle";
 import { StatusConfig } from "@/features/common/types/status.type";
 
 type Props = { open: boolean; onClose: () => void; actionId?: number };

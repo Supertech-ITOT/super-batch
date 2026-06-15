@@ -1,6 +1,6 @@
-import api from "@/lib/axios";
+import api from "@/common/lib/axios";
 import { CreatePlantRequest, PlantResponse, UpdatePlantRequest } from "../types/plant.types";
-import { ApiResponse } from "@/types/api.types";
+import { ApiResponse } from "@/common/types/api.types";
 
 export const getPlants = async () => {
     const res = await api.get<ApiResponse<PlantResponse[]>>("/plants");

@@ -1,5 +1,5 @@
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/common/components/ui/input";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/common/components/ui/select";
 import { Search } from "lucide-react";
 
 const status = ["All Status", "Published", "Draft", "Review", "Closed"];

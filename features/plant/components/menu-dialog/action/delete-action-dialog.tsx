@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/common/components/ui/button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
 import { useDeleteAction, useGetActionById } from "@/features/plant/hooks/use-actions";
-import { showApiError } from "@/lib/show-api-error";
+import { showApiError } from "@/common/lib/show-api-error";
 
 type Props = { open: boolean; onClose: () => void; actionId?: number };
 export default function DeleteActionDialog({ open, onClose, actionId }: Props) {

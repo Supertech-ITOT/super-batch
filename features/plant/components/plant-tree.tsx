@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ActionType, addParentIds, DialogType, PlantHierarchyResponse } from "../types/plant-hierarchy.types";
 import { usePlantHierarchy } from "../hooks/use-plant-hierarchy";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/common/components/ui/skeleton";
 import TreeDialogs from "./tree-dialogs";
 import TreeNode from "./tree-node";
 import TreeSearch from "./tree-search";

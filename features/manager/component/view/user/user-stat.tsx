@@ -1,10 +1,10 @@
-import StatsCards from "@/components/stats-card";
+import StatsCards from "@/common/components/stats-card";
 import { Users } from "lucide-react";
 import {
     Carousel,
     CarouselContent,
     CarouselItem,
-} from "@/components/ui/carousel";
+} from "@/common/components/ui/carousel";
 export default function UserStat() {
     const stats = [
         {

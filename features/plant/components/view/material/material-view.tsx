@@ -1,6 +1,6 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "@/common/components/ui/button";
+import { Separator } from "@/common/components/ui/separator";
 import { PackageCheckIcon, Plus } from "lucide-react";
 import { useState } from "react";
 import CreateMaterialDialog from "../../menu-dialog/material/create-material-dialog";
@@ -8,7 +8,7 @@ import DataTable from "./data-table";
 import { useGetMaterials } from "@/features/plant/hooks/use-materials";
 import { columns } from "./columns";
 import UpdateMaterialDialog from "../../menu-dialog/material/update-material-dialog";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/common/components/ui/skeleton";
 import DeleteMaterialDialog from "../../menu-dialog/material/delete-material-dialog";
 
 type MaterialAction = "create" | "edit" | "delete";

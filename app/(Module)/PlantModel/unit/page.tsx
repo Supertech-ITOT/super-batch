@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import UnitView from "@/features/plant/components/view/unit/unit-view";
 import { ChevronLeft, Factory } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";

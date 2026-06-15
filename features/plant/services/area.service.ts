@@ -1,6 +1,6 @@
-import api from "@/lib/axios";
+import api from "@/common/lib/axios";
 import { CreateAreaRequest, AreaResponse, UpdateAreaRequest } from "../types/area.types";
-import { ApiResponse } from "@/types/api.types";
+import { ApiResponse } from "@/common/types/api.types";
 import { PlantHierarchyResponse } from "../types/plant-hierarchy.types";
 
 export const getAreas = async () => {

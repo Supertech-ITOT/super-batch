@@ -9,7 +9,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useLogout } from "@/features/manager/hooks/useAuth";
 import { toast } from "sonner";
-import { showApiError } from "@/lib/show-api-error";
+import { showApiError } from "@/common/lib/show-api-error";
 import { getUser } from "@/features/manager/types/auth.types";
 
 type RouteType = {

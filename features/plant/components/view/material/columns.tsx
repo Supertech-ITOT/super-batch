@@ -3,12 +3,12 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react"
 import { MoreHorizontal } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
+import { Button } from "@/common/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/common/components/ui/dropdown-menu"
 import { MaterialResponse, MaterialTypeBadgeStyles } from "@/features/plant/types/material.types";
-import { toDisplayText } from "@/lib/format-enum";
+import { toDisplayText } from "@/common/lib/format-enum";
 import { MaterialDialogState } from "./material-view";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/common/components/ui/badge";
 
 
 

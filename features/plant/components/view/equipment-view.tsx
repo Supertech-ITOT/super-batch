@@ -1,14 +1,14 @@
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "@/common/components/ui/button";
+import { Separator } from "@/common/components/ui/separator";
 import { Cpu, PenLineIcon, Trash2 } from "lucide-react";
 import { useGetEquipmentById } from "../../hooks/use-equipment";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/common/components/ui/skeleton";
 import { format } from "date-fns";
 import { useState } from "react";
 import { DialogType } from "../../types/plant-hierarchy.types";
 import TreeDialogs from "../tree-dialogs";
-import { toDisplayText } from "@/lib/format-enum";
-import { Badge } from "@/components/ui/badge";
+import { toDisplayText } from "@/common/lib/format-enum";
+import { Badge } from "@/common/components/ui/badge";
 
 
 

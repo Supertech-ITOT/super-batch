@@ -1,10 +1,10 @@
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/common/components/ui/button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useDeleteMaterial, useGetMaterialById } from "@/features/plant/hooks/use-materials";
-import { showApiError } from "@/lib/show-api-error";
+import { showApiError } from "@/common/lib/show-api-error";
 
 type Props = { open: boolean; onClose: () => void; materialId?: number };
 export default function DeleteMaterialDialog({ open, onClose, materialId }: Props) {

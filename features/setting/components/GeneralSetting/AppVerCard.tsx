@@ -1,4 +1,4 @@
-import { Input } from "@/components/ui/input";
+import { Input } from "@/common/components/ui/input";
 
 export default function AppVerCard() {
     return (

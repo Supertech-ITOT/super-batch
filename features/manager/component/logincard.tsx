@@ -1,8 +1,8 @@
 "use client";
 
 import { Eye, EyeOff, Lock, ShieldCheck, User } from "lucide-react";
-import { Input } from "../../../components/ui/input";
-import { Button } from "../../../components/ui/button";
+import { Input } from "../../../common/components/ui/input";
+import { Button } from "../../../common/components/ui/button";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema, loginSchema } from "../../manager/schemas/login-schema";
 import Image from "next/image";
 import { useLogin } from "../hooks/useAuth";
-import { showApiError } from "@/lib/show-api-error";
+import { showApiError } from "@/common/lib/show-api-error";
 
 export default function LoginCard() {
     const [showPassword, setShowPassword] = useState(false);

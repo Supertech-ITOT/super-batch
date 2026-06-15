@@ -1,6 +1,6 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "@/common/components/ui/button";
+import { cn } from "@/common/lib/utils";
 import { LucideIcon, Monitor, Settings } from "lucide-react";
 import { useState } from "react";
 import GeneralSetting from "./GeneralSetting/GeneralSetting";

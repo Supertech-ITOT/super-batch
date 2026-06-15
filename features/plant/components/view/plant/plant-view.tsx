@@ -1,13 +1,13 @@
 "use client"
 
-import StatsCards from "@/components/stats-card";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import StatsCards from "@/common/components/stats-card";
+import { Button } from "@/common/components/ui/button";
+import { Separator } from "@/common/components/ui/separator";
 import { Boxes, Building, Cpu, Factory, PenLineIcon, Trash2 } from "lucide-react";
 import { columns } from "./columns";
 import DataTable from "./data-table";
 import { format } from "date-fns";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/common/components/ui/skeleton";
 import { useState } from "react";
 import { useGetPlantById } from "@/features/plant/hooks/use-plants";
 import { useGetAreasByPlantId } from "@/features/plant/hooks/use-areas";
@@ -17,7 +17,7 @@ import {
     Carousel,
     CarouselContent,
     CarouselItem,
-} from "@/components/ui/carousel";
+} from "@/common/components/ui/carousel";
 
 
 export default function PlantView({ id }: { id: number }) {

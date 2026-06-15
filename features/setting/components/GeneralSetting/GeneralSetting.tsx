@@ -1,4 +1,4 @@
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@/common/components/ui/separator";
 import AppNameCard from "./AppNameCard";
 import AppVerCard from "./AppVerCard";
 import AppThemeCard from "./AppThemeCard";

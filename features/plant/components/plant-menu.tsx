@@ -1,6 +1,6 @@
 "use client"
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Button } from "@/common/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/common/components/ui/dropdown-menu";
 import { Boxes, Building, Cpu, Factory, Plus } from "lucide-react";
 import { useState } from "react";
 import { DialogType } from "../types/plant-hierarchy.types";

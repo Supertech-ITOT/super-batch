@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import RecipeFilter from "./recipe-filter";
 import { PlusIcon } from "lucide-react";
 
