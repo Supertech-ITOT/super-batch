@@ -6,12 +6,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.common.security.JwtService;
 import com.supertech.superbatch.manager.dto.LoginRequest;
 import com.supertech.superbatch.manager.dto.LoginResponse;
 import com.supertech.superbatch.manager.entity.Users;
 import com.supertech.superbatch.manager.repository.UsersRepository;
 import com.supertech.superbatch.manager.service.AuthService;
-import com.supertech.superbatch.manager.service.JwtService;
 
 import lombok.RequiredArgsConstructor;
 

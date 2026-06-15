@@ -1,4 +1,4 @@
-package com.supertech.superbatch.manager.service.impl;
+package com.supertech.superbatch.common.security.impl;
 
 import java.util.Date;
 
@@ -7,8 +7,8 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.supertech.superbatch.common.security.JwtService;
 import com.supertech.superbatch.manager.entity.Users;
-import com.supertech.superbatch.manager.service.JwtService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -43,16 +43,18 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String extractUsername(String token) {
-        return extractAllClaims(token).getSubject();
+    public Long extractUserId(String token) {
+        return extractAllClaims(token).get("userId", Long.class);
     }
 
     @Override
-    public boolean isTokenValid(String token, Users user) {
-        String email = extractUsername(token);
-
-        return email.equals(user.getEmail())
-                && !extractAllClaims(token).getExpiration().before(new Date());
+    public boolean validateToken(String token) {
+        try {
+            Claims claims = extractAllClaims(token);
+            return !claims.getExpiration().before(new Date());
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private Claims extractAllClaims(String token) {
