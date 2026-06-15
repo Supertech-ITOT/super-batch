@@ -1,4 +1,4 @@
-package com.supertech.superbatch.filter;
+package com.supertech.superbatch.common.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

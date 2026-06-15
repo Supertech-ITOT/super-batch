@@ -1,9 +1,11 @@
 package com.supertech.superbatch.common.exception;
 
+import org.springframework.http.HttpStatus;
+
 public class BadRequestException
-        extends RuntimeException {
+        extends ApplicationException {
 
     public BadRequestException(String message) {
-        super(message);
+        super(message, HttpStatus.BAD_REQUEST);
     }
 }
