@@ -7,3 +7,8 @@ export const login = async (request: LoginRequest) => {
     return response.data;
 }
 
+export const logout = async () => {
+    const response = await api.post<ApiResponse<null>>("/auth/logout");
+    return response.data;
+}
+

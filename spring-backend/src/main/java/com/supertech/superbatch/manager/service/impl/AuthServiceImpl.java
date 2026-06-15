@@ -48,4 +48,8 @@ public class AuthServiceImpl implements AuthService {
         return loginResponse;
     }
 
+    @Override
+    public void logout() {
+    }
+
 }

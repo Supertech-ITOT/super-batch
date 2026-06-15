@@ -7,6 +7,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { useState } from "react";
 import Image from "next/image";
+import { useLogout } from "@/features/manager/hooks/useAuth";
+import { toast } from "sonner";
+import { showApiError } from "@/lib/show-api-error";
 
 type RouteType = {
     label: string;
@@ -68,9 +71,20 @@ const AdminRoutes: RouteType[] = [
 export default function SideBar() {
     const pathname = usePathname();
     const router = useRouter();
+    const { mutateAsync: logout, isPending } = useLogout();
     const [open, setOpen] = useState<boolean>(true);
     const user = { name: "Manav Pande", role: "Administrator", };
     const initials = user.name.split(" ").map((word) => word[0]).join("").toUpperCase();
+    const onLogout = async () => {
+        try {
+            const res = await logout();
+            toast.success(res.message ?? "LogOut Success");
+            router.replace("/");
+        }
+        catch (error) {
+            showApiError(error);
+        }
+    }
     return (
         <>
             {/* Outside Toggle Button */}
@@ -185,7 +199,7 @@ export default function SideBar() {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent side="top" align="end" className="min-w-fit!">
-                            <DropdownMenuItem onClick={() => router.replace("/")} className="cursor-pointer text-destructive justify-center">
+                            <DropdownMenuItem onClick={onLogout} className="cursor-pointer text-destructive justify-center">
                                 <LogOut className="w-4 h-4 mr-2" />
                                 {open && <span>Logout</span>}
                             </DropdownMenuItem>

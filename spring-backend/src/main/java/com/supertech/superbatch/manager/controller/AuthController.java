@@ -22,4 +22,10 @@ public class AuthController {
         LoginResponse res = authService.login(request);
         return ResponseEntity.ok(ApiResponse.success("Login Success", res));
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout() {
+        authService.logout();
+        return ResponseEntity.ok(ApiResponse.success("Logout Success", null));
+    }
 }

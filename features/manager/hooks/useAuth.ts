@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { login } from "../services/auth.service";
+import { login, logout } from "../services/auth.service";
 
 export const useLogin = () => {
     return useMutation({
@@ -12,3 +12,14 @@ export const useLogin = () => {
         }
     });
 };
+
+
+export const useLogout = () => {
+    return useMutation({
+        mutationFn: logout,
+        onSuccess: () => {
+            localStorage.removeItem("user");
+        }
+    });
+};
+
