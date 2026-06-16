@@ -40,8 +40,7 @@ public class PermissionServiceImpl implements PermissionService {
 
                 Permission permission = permissionRepository
                                 .findByRoleIdAndModuleId(user.getRole().getId(), module.getId())
-                                .orElseThrow(() -> new AccessDeniedException(
-                                                "Permission not found"));
+                                .orElseThrow(() -> new AccessDeniedException("Permission not found"));
 
                 if (!permission.isCanRead()) {
                         throw new AccessDeniedException("Read access denied");
