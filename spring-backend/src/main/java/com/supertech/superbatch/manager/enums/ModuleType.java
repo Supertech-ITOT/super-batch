@@ -20,12 +20,4 @@ public enum ModuleType {
         return id;
     }
 
-    public static ModuleType fromId(Long id) {
-        for (ModuleType module : values()) {
-            if (module.id.equals(id)) {
-                return module;
-            }
-        }
-        throw new IllegalArgumentException("Unknown module id: " + id);
-    }
 }

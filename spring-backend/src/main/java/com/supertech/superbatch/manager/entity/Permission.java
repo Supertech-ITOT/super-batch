@@ -1,7 +1,5 @@
 package com.supertech.superbatch.manager.entity;
 
-import com.supertech.superbatch.manager.enums.ModuleType;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,8 +21,9 @@ public class Permission {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    @Column(name = "module_id", nullable = false)
-    private ModuleType module;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "module_id", nullable = false)
+    private Module module;
 
     @Builder.Default
     private boolean canRead = false;

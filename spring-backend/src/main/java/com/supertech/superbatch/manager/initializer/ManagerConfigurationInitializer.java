@@ -5,10 +5,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.entity.Module;
 import com.supertech.superbatch.manager.entity.Permission;
 import com.supertech.superbatch.manager.entity.Role;
 import com.supertech.superbatch.manager.entity.Users;
 import com.supertech.superbatch.manager.enums.ModuleType;
+import com.supertech.superbatch.manager.repository.ModuleRepository;
 import com.supertech.superbatch.manager.repository.PermissionRepository;
 import com.supertech.superbatch.manager.repository.RoleRepository;
 import com.supertech.superbatch.manager.repository.UsersRepository;
@@ -20,14 +22,29 @@ import lombok.RequiredArgsConstructor;
 public class ManagerConfigurationInitializer implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
+    private final ModuleRepository moduleRepository;
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) {
+        seedModule();
         seedRole();
         seedPermission();
         seedUser();
+    }
+
+    private void seedModule() {
+        for (ModuleType type : ModuleType.values()) {
+            if (!moduleRepository.existsById(type.getId())) {
+                Module module = Module.builder()
+                        .id(type.getId())
+                        .name(type.name())
+                        .build();
+
+                moduleRepository.save(module);
+            }
+        }
     }
 
     private void seedRole() {
@@ -44,7 +61,9 @@ public class ManagerConfigurationInitializer implements CommandLineRunner {
     private void seedPermission() {
         Role role = roleRepository.findByName("Administrator")
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found."));
-        for (ModuleType module : ModuleType.values()) {
+        for (ModuleType type : ModuleType.values()) {
+            Module module = moduleRepository.findById(type.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Module not found."));
             if (!permissionRepository.existsByRoleIdAndModuleId(role.getId(), module.getId())) {
                 Permission permission = Permission.builder()
                         .module(module)
