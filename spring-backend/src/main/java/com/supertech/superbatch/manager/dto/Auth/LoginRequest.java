@@ -1,4 +1,4 @@
-package com.supertech.superbatch.manager.dto;
+package com.supertech.superbatch.manager.dto.Auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

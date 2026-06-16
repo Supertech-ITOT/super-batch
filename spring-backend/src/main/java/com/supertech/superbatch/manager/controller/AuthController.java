@@ -5,8 +5,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.supertech.superbatch.common.dto.ApiResponse;
-import com.supertech.superbatch.manager.dto.LoginRequest;
-import com.supertech.superbatch.manager.dto.LoginResponse;
+import com.supertech.superbatch.manager.dto.Auth.LoginRequest;
+import com.supertech.superbatch.manager.dto.Auth.LoginResponse;
 import com.supertech.superbatch.manager.service.AuthService;
 import lombok.RequiredArgsConstructor;
 
