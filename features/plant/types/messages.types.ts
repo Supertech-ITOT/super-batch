@@ -1,10 +1,10 @@
-export interface MessagesResponse {
-    id: Number,
-    name: String
+export interface MessageResponse {
+    id: number,
+    name: string
 }
-export interface CreateMessagesRequest {
+export interface CreateMessageRequest {
     name: string;
 }
-export interface UpdateMessagesRequest {
+export interface UpdateMessageRequest {
     name: string;
 }

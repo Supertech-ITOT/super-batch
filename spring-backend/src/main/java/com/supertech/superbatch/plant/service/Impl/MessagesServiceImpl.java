@@ -53,4 +53,11 @@ public class MessagesServiceImpl implements MessagesService {
         messagesRepository.delete(messages);
     }
 
+    @Override
+    public MessagesResponse getById(Long id) {
+        Messages messages = messagesRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Message Not Found"));
+        return messagesMapper.toResponse(messages);
+    }
+
 }

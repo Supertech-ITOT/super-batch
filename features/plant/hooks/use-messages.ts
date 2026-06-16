@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { queryKeys } from "./query-keys"
-import { createMessages, deleteMessages, getMessages, updateMessages } from "../services/messages.service"
+import { createMessage, deleteMessage, getMessageById, getMessages, updateMessage } from "../services/messages.service"
 
 export const useGetMessages = (enabled = true) => {
     return useQuery({
@@ -13,10 +13,21 @@ export const useGetMessages = (enabled = true) => {
     })
 }
 
-export const useUpdateMessages = () => {
+export const useGetMessageById = (id?: number) => {
+    return useQuery({
+        queryKey: id ? queryKeys.message(id) : [],
+        queryFn: async () => {
+            const res = await getMessageById(id!);
+            return res.data;
+        },
+        enabled: !!id,
+    });
+};
+
+export const useUpdateMessage = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: updateMessages,
+        mutationFn: updateMessage,
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
                 queryKey: queryKeys.messages,
@@ -25,10 +36,10 @@ export const useUpdateMessages = () => {
     });
 };
 
-export const useCreateMessages = () => {
+export const useCreateMessage = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: createMessages,
+        mutationFn: createMessage,
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
                 queryKey: queryKeys.messages,
@@ -37,10 +48,10 @@ export const useCreateMessages = () => {
     });
 };
 
-export const useDeleteMessages = () => {
+export const useDeleteMessage = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: deleteMessages,
+        mutationFn: deleteMessage,
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
                 queryKey: queryKeys.messages,

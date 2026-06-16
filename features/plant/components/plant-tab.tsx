@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutGrid, Package, Workflow } from "lucide-react";
+import { LayoutGrid, MessageSquareQuoteIcon, Package, Workflow } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/common/lib/utils";
@@ -22,6 +22,11 @@ export default function PlantTab() {
             label: "Process Configuration",
             path: "/PlantModel/process/",
             icon: Workflow,
+        },
+        {
+            label: "Predefined Message",
+            path: "/PlantModel/message/",
+            icon: MessageSquareQuoteIcon,
         },
     ];
 

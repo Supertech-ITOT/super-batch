@@ -15,4 +15,6 @@ public interface MessagesService {
 
     List<MessagesResponse> getAll();
 
+    MessagesResponse getById(Long id);
+
 }
