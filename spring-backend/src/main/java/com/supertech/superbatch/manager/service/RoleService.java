@@ -8,6 +8,8 @@ import com.supertech.superbatch.manager.dto.Role.RoleResponse;
 public interface RoleService {
     List<RoleResponse> getAll();
 
+    RoleResponse getById(Long id);
+
     void create(RoleRequest request);
 
     void update(Long id, RoleRequest request);

@@ -25,7 +25,7 @@ public class RoleServiceImpl implements RoleService {
     private final RoleMapper roleMapper;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional()
     public List<RoleResponse> getAll() {
         return roleRepository.findAll()
                 .stream()
@@ -65,5 +65,11 @@ public class RoleServiceImpl implements RoleService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Role not found."));
         roleRepository.delete(role);
+    }
+
+    @Override
+    public RoleResponse getById(Long id) {
+        Role role = roleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Role not found."));
+        return roleMapper.toResponse(role);
     }
 }

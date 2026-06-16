@@ -17,12 +17,12 @@ export const createPermission = async (data: PermissionRequest) => {
     return res.data;
 };
 
-export const updatePermission = async (id: number, data: PermissionRequest) => {
+export const updatePermission = async ({ id, data }: { id: number, data: PermissionRequest }) => {
     const res = await api.put<ApiResponse<void>>(`/permissions/${id}`, data);
     return res.data;
 };
 
-export const deletePermission = async (id: number) => {
+export const deletePermission = async ({ id }: { id: number }) => {
     const res = await api.delete<ApiResponse<void>>(`/permissions/${id}`);
     return res.data;
 };

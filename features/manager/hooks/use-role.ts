@@ -1,24 +1,33 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import {
-    createRole,
-    deleteRole,
-    getAllRole,
-    updateRole,
-} from "../services/role.service";
-
-import { RoleRequest } from "../types/role.types";
+import { createRole, deleteRole, getAllRole, getRoleById, updateRole, } from "../services/role.service";
 import { queryKeys } from "./query-keys";
 
-export const useRoles = () =>
-    useQuery({
+export const useGetRoles = () => {
+    return useQuery({
         queryKey: queryKeys.roles,
-        queryFn: getAllRole,
+        queryFn: async () => {
+            const res = await getAllRole();
+            return res.data;
+        },
     });
+}
+
+export const useGetRolesById = (id?: number) => {
+    return useQuery({
+        queryKey: id ? queryKeys.role(id) : [],
+        queryFn: async () => {
+            const res = await getRoleById(id!);
+            return res.data;
+        },
+        enabled: !!id,
+    })
+}
+
+
 
 export const useCreateRole = () => {
     const queryClient = useQueryClient();
-
     return useMutation({
         mutationFn: createRole,
         onSuccess: () => {
@@ -31,7 +40,6 @@ export const useCreateRole = () => {
 
 export const useUpdateRole = () => {
     const queryClient = useQueryClient();
-
     return useMutation({
         mutationFn: updateRole,
         onSuccess: () => {
@@ -44,9 +52,8 @@ export const useUpdateRole = () => {
 
 export const useDeleteRole = () => {
     const queryClient = useQueryClient();
-
     return useMutation({
-        mutationFn: (id: number) => deleteRole(id),
+        mutationFn: deleteRole,
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: queryKeys.roles,

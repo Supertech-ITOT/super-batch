@@ -9,6 +9,8 @@ public interface UserService {
 
     List<UserResponse> getAll();
 
+    UserResponse getById(Long id);
+
     void create(UserRequest request);
 
     void update(Long id, UserRequest request);

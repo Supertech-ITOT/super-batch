@@ -20,45 +20,55 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin("*")
 public class RoleController {
 
-    private final RoleService roleService;
+        private final RoleService roleService;
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<RoleResponse>>> getAll() {
+        @GetMapping
+        public ResponseEntity<ApiResponse<List<RoleResponse>>> getAll() {
 
-        List<RoleResponse> roles = roleService.getAll();
+                List<RoleResponse> roles = roleService.getAll();
 
-        return ResponseEntity.ok(
-                ApiResponse.success("Roles fetched successfully", roles));
-    }
+                return ResponseEntity.ok(
+                                ApiResponse.success("Roles fetched successfully", roles));
+        }
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<Void>> create(
-            @Validated @RequestBody RoleRequest request) {
+        @GetMapping("/{id")
+        public ResponseEntity<ApiResponse<RoleResponse>> getById(
+                        @PathVariable Long id) {
 
-        roleService.create(request);
+                return ResponseEntity.ok(
+                                ApiResponse.success(
+                                                "Role fetched successfully",
+                                                roleService.getById(id)));
+        }
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Role created successfully", null));
-    }
+        @PostMapping
+        public ResponseEntity<ApiResponse<Void>> create(
+                        @Validated @RequestBody RoleRequest request) {
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> update(
-            @PathVariable Long id,
-            @Validated @RequestBody RoleRequest request) {
+                roleService.create(request);
 
-        roleService.update(id, request);
+                return ResponseEntity.status(HttpStatus.CREATED)
+                                .body(ApiResponse.success("Role created successfully", null));
+        }
 
-        return ResponseEntity.ok(
-                ApiResponse.success("Role updated successfully", null));
-    }
+        @PutMapping("/{id}")
+        public ResponseEntity<ApiResponse<Void>> update(
+                        @PathVariable Long id,
+                        @Validated @RequestBody RoleRequest request) {
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> delete(
-            @PathVariable Long id) {
+                roleService.update(id, request);
 
-        roleService.delete(id);
+                return ResponseEntity.ok(
+                                ApiResponse.success("Role updated successfully", null));
+        }
 
-        return ResponseEntity.ok(
-                ApiResponse.success("Role deleted successfully", null));
-    }
+        @DeleteMapping("/{id}")
+        public ResponseEntity<ApiResponse<Void>> delete(
+                        @PathVariable Long id) {
+
+                roleService.delete(id);
+
+                return ResponseEntity.ok(
+                                ApiResponse.success("Role deleted successfully", null));
+        }
 }

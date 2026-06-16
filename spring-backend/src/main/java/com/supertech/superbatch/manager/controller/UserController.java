@@ -19,50 +19,60 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin("*")
 public class UserController {
 
-    private final UserService userService;
+        private final UserService userService;
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<UserResponse>>> getAll() {
+        @GetMapping
+        public ResponseEntity<ApiResponse<List<UserResponse>>> getAll() {
 
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "Users fetched successfully",
-                        userService.getAll()));
-    }
+                return ResponseEntity.ok(
+                                ApiResponse.success(
+                                                "Users fetched successfully",
+                                                userService.getAll()));
+        }
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<Void>> create(
-            @Validated @RequestBody UserRequest request) {
+        @GetMapping("/{id}")
+        public ResponseEntity<ApiResponse<UserResponse>> getById(
+                        @PathVariable Long id) {
 
-        userService.create(request);
+                return ResponseEntity.ok(
+                                ApiResponse.success(
+                                                "User fetched successfully",
+                                                userService.getById(id)));
+        }
 
-        return ResponseEntity.ok(ApiResponse.success(
-                "User created successfully",
-                null));
-    }
+        @PostMapping
+        public ResponseEntity<ApiResponse<Void>> create(
+                        @Validated @RequestBody UserRequest request) {
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> update(
-            @PathVariable Long id,
-            @Validated @RequestBody UserRequest request) {
+                userService.create(request);
 
-        userService.update(id, request);
+                return ResponseEntity.ok(ApiResponse.success(
+                                "User created successfully",
+                                null));
+        }
 
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "User updated successfully",
-                        null));
-    }
+        @PutMapping("/{id}")
+        public ResponseEntity<ApiResponse<Void>> update(
+                        @PathVariable Long id,
+                        @Validated @RequestBody UserRequest request) {
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> delete(
-            @PathVariable Long id) {
+                userService.update(id, request);
 
-        userService.delete(id);
+                return ResponseEntity.ok(
+                                ApiResponse.success(
+                                                "User updated successfully",
+                                                null));
+        }
 
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "User deleted successfully",
-                        null));
-    }
+        @DeleteMapping("/{id}")
+        public ResponseEntity<ApiResponse<Void>> delete(
+                        @PathVariable Long id) {
+
+                userService.delete(id);
+
+                return ResponseEntity.ok(
+                                ApiResponse.success(
+                                                "User deleted successfully",
+                                                null));
+        }
 }

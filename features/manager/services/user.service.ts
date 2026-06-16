@@ -7,17 +7,22 @@ export const getAllUsers = async () => {
     return res.data;
 };
 
+export const getUserById = async (id: number) => {
+    const res = await api.get<ApiResponse<UserResponse>>(`/users/${id}`);
+    return res.data;
+}
+
 export const createUser = async (data: UserRequest) => {
     const res = await api.post<ApiResponse<void>>("/users", data);
     return res.data;
 };
 
-export const updateUser = async (id: number, data: UserRequest) => {
+export const updateUser = async ({ id, data }: { id: number, data: UserRequest }) => {
     const res = await api.put<ApiResponse<void>>(`/users/${id}`, data);
     return res.data;
 };
 
-export const deleteUser = async (id: number) => {
+export const deleteUser = async ({ id }: { id: number }) => {
     const res = await api.delete<ApiResponse<void>>(`/users/${id}`);
     return res.data;
 };
