@@ -35,11 +35,17 @@ public class MessageController {
         return ResponseEntity.ok(ApiResponse.success("Messages fetched successfully", messages));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<MessagesResponse>> getById(@PathVariable Long id) {
+        MessagesResponse message = messagesService.getById(id);
+        return ResponseEntity.ok(ApiResponse.success("Message fetched successfully", message));
+    }
+
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> create(
             @Valid @RequestBody CreateMessagesRequest request) {
         messagesService.create(request);
-        return ResponseEntity.ok(ApiResponse.success("Messages created successfully", null));
+        return ResponseEntity.ok(ApiResponse.success("Message created successfully", null));
     }
 
     @PutMapping("/{id}")
@@ -47,14 +53,14 @@ public class MessageController {
             @PathVariable Long id,
             @Valid @RequestBody UpdateMessagesRequest request) {
         messagesService.update(id, request);
-        return ResponseEntity.ok(ApiResponse.success("Messages updated successfully", null));
+        return ResponseEntity.ok(ApiResponse.success("Message updated successfully", null));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(
             @PathVariable Long id) {
         messagesService.delete(id);
-        return ResponseEntity.ok(ApiResponse.success("Messages deleted successfully", null));
+        return ResponseEntity.ok(ApiResponse.success("Message deleted successfully", null));
     }
 
 }
