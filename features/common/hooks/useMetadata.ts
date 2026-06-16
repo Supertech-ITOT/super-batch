@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { getMaterialTypes, getUomTypes } from "../services/metadata.service"
+import { getMaterialTypes, getUnitTypes, getUomTypes } from "../services/metadata.service"
 
 
 export const useGetUomTypes = (enabled = true) => {
@@ -7,6 +7,17 @@ export const useGetUomTypes = (enabled = true) => {
         queryKey: ["uom-types"],
         queryFn: async () => {
             const res = await getUomTypes();
+            return res.data;
+        },
+        enabled
+    })
+}
+
+export const useGetUnitTypes = (enabled = true) => {
+    return useQuery({
+        queryKey: ["unit-types"],
+        queryFn: async () => {
+            const res = await getUnitTypes();
             return res.data;
         },
         enabled

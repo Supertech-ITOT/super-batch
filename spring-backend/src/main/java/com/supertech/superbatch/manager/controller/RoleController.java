@@ -31,7 +31,7 @@ public class RoleController {
                                 ApiResponse.success("Roles fetched successfully", roles));
         }
 
-        @GetMapping("/{id")
+        @GetMapping("/{id}")
         public ResponseEntity<ApiResponse<RoleResponse>> getById(
                         @PathVariable Long id) {
 

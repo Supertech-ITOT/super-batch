@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.supertech.superbatch.plant.dto.Unit.CreateUnitRequest;
 import com.supertech.superbatch.plant.dto.Unit.UpdateUnitRequest;
+import com.supertech.superbatch.plant.entity.Unit;
 import com.supertech.superbatch.plant.dto.Unit.UnitResponse;
 
 public interface UnitService {
@@ -12,6 +13,8 @@ public interface UnitService {
     List<UnitResponse> getAll();
 
     UnitResponse getById(Long id);
+
+    Unit getUnitById(Long id);
 
     List<UnitResponse> getByAreaId(Long areaId);
 

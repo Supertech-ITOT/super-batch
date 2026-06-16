@@ -1,6 +1,9 @@
 import { app, BrowserWindow, Menu, screen } from 'electron';
 import path from 'path';
+import dotenv from "dotenv";
 
+dotenv.config();
+const HOST_IP = process.env.HOST_IP || "localhost";
 const isDev = !app.isPackaged;
 
 function createWindow(): void {
@@ -30,7 +33,7 @@ function createWindow(): void {
     Menu.setApplicationMenu(null);
 
     if (isDev) {
-        win.loadURL('http://localhost:3000');
+        win.loadURL(`http://${HOST_IP}:3000`);
         win.webContents.on("before-input-event", (_, input) => {
             if (input.control && input.shift && input.key.toLowerCase() === "i") {
                 win.webContents.toggleDevTools();
