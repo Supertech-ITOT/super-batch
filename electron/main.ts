@@ -11,7 +11,7 @@ function createWindow(): void {
         alwaysOnTop: true,
         webPreferences: { nodeIntegration: false, },
     });
-    splash.loadFile(path.join(__dirname, '..', 'public', 'splash.html'));
+    splash.loadFile(path.join(__dirname, '..', '..', 'public', 'splash.html'));
 
     const win = new BrowserWindow({
         width: 1280,
@@ -19,7 +19,6 @@ function createWindow(): void {
         minWidth: 1024,
         minHeight: 600,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
             nodeIntegration: false,
             sandbox: false,
@@ -38,7 +37,7 @@ function createWindow(): void {
             }
         });
     } else {
-        win.loadFile(path.join(__dirname, '..', 'out', 'index.html'));
+        win.loadFile(path.join(__dirname, '..', '..', 'out', 'index.html'));
     }
 
     win.once('ready-to-show', () => {
