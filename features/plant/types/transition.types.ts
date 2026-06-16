@@ -8,3 +8,6 @@ export interface TransitionResponse {
 export interface CreateTransitionRequest {
     name: string;
 }
+export interface UpdateTransitionRequest {
+    name: string;
+}

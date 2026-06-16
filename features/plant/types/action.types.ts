@@ -6,3 +6,6 @@ export interface ActionResponse {
 export interface CreateActionRequest {
     name: string;
 }
+export interface UpdateActionRequest {
+    name: string;
+}

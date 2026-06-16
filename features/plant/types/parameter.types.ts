@@ -11,3 +11,7 @@ export interface CreateParameterRequest {
     name: string;
     uom: string;
 }
+export interface UpdateParameterRequest {
+    name: string;
+    uom: string;
+}
