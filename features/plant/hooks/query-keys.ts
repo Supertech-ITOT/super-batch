@@ -26,5 +26,8 @@ export const queryKeys = {
     transitions: ["transitions"] as const,
     transition: (id: number) => ["transitions", id] as const,
 
+    messages: ["messages"] as const,
+    message: (id: number) => ["messages", id] as const,
+
     plantHierarchy: ["plant-hierarchy"] as const,
 };
