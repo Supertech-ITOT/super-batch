@@ -48,6 +48,11 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
+    public String extractRole(String token) {
+        return extractAllClaims(token).get("role", String.class);
+    }
+
+    @Override
     public boolean validateToken(String token) {
         try {
             Claims claims = extractAllClaims(token);

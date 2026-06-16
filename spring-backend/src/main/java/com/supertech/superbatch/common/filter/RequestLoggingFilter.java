@@ -10,26 +10,29 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@Slf4j
 @Component
+@Slf4j
 public class RequestLoggingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
+            FilterChain filterChain)
+            throws ServletException, IOException {
 
         long start = System.currentTimeMillis();
 
-        filterChain.doFilter(request, response);
+        try {
+            filterChain.doFilter(request, response);
+        } finally {
+            long duration = System.currentTimeMillis() - start;
 
-        long duration = System.currentTimeMillis() - start;
-
-        log.info("{} {} -> {} ({} ms)",
-                request.getMethod(),
-                request.getRequestURI(),
-                response.getStatus(),
-                duration);
+            log.info("{} {} {} in {}ms",
+                    request.getMethod(),
+                    request.getRequestURI(),
+                    response.getStatus(),
+                    duration);
+        }
     }
 }
