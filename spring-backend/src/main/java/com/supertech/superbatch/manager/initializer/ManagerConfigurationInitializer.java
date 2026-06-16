@@ -52,7 +52,6 @@ public class ManagerConfigurationInitializer implements CommandLineRunner {
             Role role = Role.builder()
                     .name("Administrator")
                     .description("Full system access")
-                    .active(true)
                     .build();
             roleRepository.save(role);
         }

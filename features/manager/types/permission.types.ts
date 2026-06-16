@@ -1,7 +1,6 @@
-import { ModuleType } from "./module.types";
 
 export interface PermissionResponse {
-    module: ModuleType;
+    module: string;
     canRead: boolean;
     canWrite: boolean;
 }

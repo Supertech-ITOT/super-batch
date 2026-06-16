@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.supertech.superbatch.manager.dto.PermissionResponse;
+import com.supertech.superbatch.manager.dto.Permission.PermissionResponse;
 import com.supertech.superbatch.manager.entity.Permission;
+import com.supertech.superbatch.manager.entity.Role;
+import com.supertech.superbatch.manager.entity.Module;
 
 @Component
 public class PermissionMapper {
@@ -21,6 +23,20 @@ public class PermissionMapper {
         return permissions.stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    public Permission toEntity(Role role, Module module, boolean canRead, boolean canWrite) {
+        return Permission.builder()
+                .role(role)
+                .module(module)
+                .canRead(canRead)
+                .canWrite(canWrite)
+                .build();
+    }
+
+    public void updateEntity(Permission permission, boolean canRead, boolean canWrite) {
+        permission.setCanRead(canRead);
+        permission.setCanWrite(canWrite);
     }
 
 }
