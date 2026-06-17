@@ -30,4 +30,7 @@ export const queryKeys = {
     message: (id: number) => ["messages", id] as const,
 
     plantHierarchy: ["plant-hierarchy"] as const,
+
+    unitConnections: ["unit-connections"] as const,
+    unitConnection: (id: number) => ["unit-connections", id] as const,
 };

@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ["192.168.120.1"],
+  allowedDevOrigins: [process.env.HOST_IP!],
   devIndicators: false,
   output: 'export',
   distDir: 'out',

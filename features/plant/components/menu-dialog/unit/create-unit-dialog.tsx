@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { useGetAreas } from "../../../hooks/use-areas";
 import { useCreateUnit } from "../../../hooks/use-units";
 import { UnitSchema, unitSchema, UnitSchemaLimit } from "../../../schemas/unit-schema";
-import { useGetUomTypes } from "@/features/common/hooks/useMetadata";
+import { useGetUnitTypes, useGetUomTypes } from "@/features/common/hooks/useMetadata";
 import { useEffect } from "react";
 import CharacterProgress from "@/common/components/form/character-progress";
 import { Textarea } from "@/common/components/ui/textarea";
@@ -21,24 +21,26 @@ type Props = { open: boolean; onClose: () => void; areaId?: number };
 export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
     const { mutateAsync: createUnit, isPending: isCreating } = useCreateUnit();
     const { data: uomTypes, isLoading: uomTypesIsLoading } = useGetUomTypes(open);
+    const { data: unitTypes, isLoading: unitTypesIsLoading } = useGetUnitTypes(open);
     const { data: areas, isLoading: areasLoading } = useGetAreas(open);
     const { register, handleSubmit, reset, control, watch, formState: { isSubmitting, isDirty } } = useForm<UnitSchema>({
         resolver: zodResolver(unitSchema),
-        defaultValues: { name: "", areaId: "", batchSizeUom: "", capacity: "", code: "", description: "" }
+        defaultValues: { name: "", areaId: "", batchSizeUom: "", capacity: "", code: "", description: "", unitType: "" }
     });
 
     useEffect(() => {
         if (!open || !areaId) return;
-        reset({ name: "", areaId: String(areaId), batchSizeUom: "", code: "", description: "" })
+        reset({ name: "", areaId: String(areaId), batchSizeUom: "", code: "", description: "", unitType: "" })
     }, [open, areaId, reset]);
 
-    const loading = isCreating || areasLoading || isSubmitting || uomTypesIsLoading;
+    const loading = isCreating || areasLoading || isSubmitting || uomTypesIsLoading || unitTypesIsLoading;
     const onSubmit = async (formData: UnitSchema) => {
         try {
             const res = await createUnit({
                 areaId: Number(formData.areaId),
                 name: formData.name,
                 code: formData.code,
+                unitType: formData.unitType,
                 description: formData.description,
                 batchSizeUom: formData.batchSizeUom,
                 capacity: Number(formData.capacity)
@@ -50,7 +52,7 @@ export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ name: "", areaId: "", batchSizeUom: "", capacity: "", code: "", description: "" });
+        reset({ name: "", areaId: "", batchSizeUom: "", capacity: "", code: "", description: "", unitType: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<UnitSchema>) => {
@@ -153,10 +155,10 @@ export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
                                 />
                             </div>
                             <div className="space-y-2 flex-1">
-                                <Label>Batch Size Uom</Label>
+                                <Label>Unit Type</Label>
                                 <Controller
                                     control={control}
-                                    name="batchSizeUom"
+                                    name="unitType"
                                     render={({ field }) => (
                                         <Select
                                             disabled={loading}
@@ -168,7 +170,7 @@ export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    {uomTypes?.filter(f => f.value == "KG" || f.value == "PERCENT").map((e) => (
+                                                    {unitTypes?.map((e) => (
                                                         <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
                                                     ))}
                                                 </SelectGroup>
@@ -177,6 +179,31 @@ export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
                                     )}
                                 />
                             </div>
+                        </div>
+                        <div className="space-y-2 relative">
+                            <Label>Batch Size Uom</Label>
+                            <Controller
+                                control={control}
+                                name="batchSizeUom"
+                                render={({ field }) => (
+                                    <Select
+                                        disabled={loading}
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select Batch Size Uom" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {uomTypes?.filter(f => f.value == "KG" || f.value == "PERCENT").map((e) => (
+                                                    <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
                         </div>
                     </div>
                     <DialogFooter>

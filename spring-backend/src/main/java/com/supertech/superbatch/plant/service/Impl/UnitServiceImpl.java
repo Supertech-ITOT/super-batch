@@ -82,4 +82,10 @@ public class UnitServiceImpl implements UnitService {
         unitRepository.delete(unit);
     }
 
+    @Override
+    public Unit getUnitById(Long id) {
+        Unit unit = unitRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Unit not found."));
+        return unit;
+    }
+
 }

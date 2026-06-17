@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "dev": "dotenv -e .env -- concurrently --kill-others-on-fail \"npm run dev:next\" \"npm run dev:spring\" \"npm run dev:electron\"",
-    "dev:next": "next dev -p 3000",
+    "dev:next": "next dev -H %HOST_IP% -p 3000",
     "dev:spring": "dotenv -e .env -- cmd /c \"cd spring-backend && mvnw.cmd spring-boot:run\"",
     "dev:electron": "tsc -p tsconfig.electron.json && npx electron .",
     "build": "npm run build:next && npm run build:electron",

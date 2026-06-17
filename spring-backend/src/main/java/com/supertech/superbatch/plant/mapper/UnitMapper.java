@@ -27,6 +27,7 @@ public class UnitMapper {
                 unit.getArea().getName(),
                 unit.getCapacity(),
                 uomMapper.toResponse(unit.getBatchSizeUom()),
+                unit.getUnitType(),
                 totalEquipment,
                 unit.getCreatedAt(),
                 unit.getUpdatedAt());
@@ -40,6 +41,7 @@ public class UnitMapper {
                 .capacity(request.capacity())
                 .batchSizeUom(request.batchSizeUom())
                 .area(area)
+                .unitType(request.unitType())
                 .build();
     }
 
@@ -49,6 +51,7 @@ public class UnitMapper {
         unit.setDescription(request.description());
         unit.setCapacity(request.capacity());
         unit.setBatchSizeUom(request.batchSizeUom());
+        unit.setUnitType(request.unitType());
         unit.setArea(area);
     }
 }
