@@ -5,8 +5,8 @@ export interface EquipmentResponse {
     id: number;
     name: string;
     description: string;
-    code: string;
-    capacity: number;
+    tagName: string;
+    equipmentType: string;
     unitId: number;
     unitName: string;
     createdAt: string;
@@ -16,14 +16,14 @@ export interface EquipmentResponse {
 export interface CreateEquipmentRequest {
     name: string;
     description: string;
-    code: string;
-    capacity: number;
+    tagName: string;
+    equipmentType: string;
     unitId: number;
 }
 export interface UpdateEquipmentRequest {
     name: string;
     description: string;
-    code: string;
-    capacity: number;
+    tagName: string;
+    equipmentType: string;
     unitId: number;
 }

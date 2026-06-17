@@ -3,7 +3,7 @@ import { z } from "zod";
 export const EquipmentSchemaLimit = {
     name: { min: 2, max: 100 },
     description: { min: 2, max: 100 },
-    code: { min: 2, max: 50 },
+    tagName: { min: 2, max: 50 },
 } as const;
 
 export const equipmentSchema = z.object({
@@ -35,24 +35,24 @@ export const equipmentSchema = z.object({
             `Description cannot exceed ${EquipmentSchemaLimit.description.max} characters`
         ),
 
-    code: z
+    tagName: z
         .string()
         .trim()
         .min(
-            EquipmentSchemaLimit.code.min,
-            `Code must be at least ${EquipmentSchemaLimit.code.min} characters`
+            EquipmentSchemaLimit.tagName.min,
+            `tagName must be at least ${EquipmentSchemaLimit.tagName.min} characters`
         )
         .max(
-            EquipmentSchemaLimit.code.max,
-            `Code cannot exceed ${EquipmentSchemaLimit.code.max} characters`
+            EquipmentSchemaLimit.tagName.max,
+            `tagName cannot exceed ${EquipmentSchemaLimit.tagName.max} characters`
         )
         .regex(
             /^[A-Z0-9\-_]+$/,
-            "Code must contain only uppercase letters, numbers, hyphen, or underscore"
+            "tagName must contain only uppercase letters, numbers, hyphen, or underscore"
         ),
 
 
-    capacity: z.string({ error: "Capacity is required." }).trim(),
+    equipmentType: z.string({ error: "equipmentType is required." }).trim(),
 
     unitId: z.string({ error: "Unit is required." }).trim()
 });

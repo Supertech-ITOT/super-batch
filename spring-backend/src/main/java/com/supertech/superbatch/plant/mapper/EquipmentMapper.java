@@ -16,11 +16,11 @@ public class EquipmentMapper {
         return new EquipmentResponse(
                 equipment.getId(),
                 equipment.getName(),
-                equipment.getCode(),
+                equipment.getTagName(),
                 equipment.getDescription(),
                 equipment.getUnit().getName(),
                 equipment.getUnit().getId(),
-                equipment.getCapacity(),
+                equipment.getEquipmentType(),
                 equipment.getCreatedAt(),
                 equipment.getUpdatedAt()
 
@@ -32,8 +32,8 @@ public class EquipmentMapper {
         return Equipment.builder()
                 .name(request.name())
                 .description(request.description())
-                .code(request.code())
-                .capacity(request.capacity())
+                .tagName(request.tagName())
+                .equipmentType(request.equipmentType())
                 .unit(unit)
                 .build();
     }
@@ -41,8 +41,8 @@ public class EquipmentMapper {
     public void updateEntity(Equipment equipment, UpdateEquipmentRequest request, Unit unit) {
         equipment.setName(request.name());
         equipment.setDescription(request.description());
-        equipment.setCode(request.code());
-        equipment.setCapacity(request.capacity());
+        equipment.setTagName(request.tagName());
+        equipment.setEquipmentType(request.equipmentType());
         equipment.setUnit(unit);
     }
 }

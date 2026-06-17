@@ -4,6 +4,7 @@ import com.supertech.superbatch.common.dto.ApiResponse;
 import com.supertech.superbatch.common.dto.OptionDto;
 import com.supertech.superbatch.common.enums.UomType;
 import com.supertech.superbatch.common.util.EnumUtil;
+import com.supertech.superbatch.plant.enums.EquipmentType;
 import com.supertech.superbatch.plant.enums.MaterialType;
 import com.supertech.superbatch.plant.enums.UnitType;
 
@@ -37,6 +38,16 @@ public class MetadataController {
                 type.name()))
                 .toList();
         return ResponseEntity.ok(ApiResponse.success("Unit types fetched successfully", data));
+
+    }
+
+    @GetMapping("/equipment-types")
+    public ResponseEntity<ApiResponse<List<OptionDto>>> getEquipmentTypes() {
+        List<OptionDto> data = Arrays.stream(EquipmentType.values()).map(type -> new OptionDto(
+                EnumUtil.formatLabel(type.name()),
+                type.name()))
+                .toList();
+        return ResponseEntity.ok(ApiResponse.success("Equipment types fetched successfully", data));
 
     }
 

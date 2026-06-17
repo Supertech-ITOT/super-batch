@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.supertech.superbatch.plant.enums.EquipmentType;
 
 import jakarta.persistence.*;
 
@@ -25,11 +26,9 @@ public class Equipment {
 
     private String name;
 
-    private String code;
+    private String tagName;
 
     private String description;
-
-    private Integer capacity;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -40,4 +39,7 @@ public class Equipment {
     @ManyToOne
     @JsonIgnore
     private Unit unit;
+
+    @Enumerated(EnumType.STRING)
+    private EquipmentType equipmentType;
 }
