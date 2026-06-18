@@ -2,6 +2,7 @@ package com.supertech.superbatch.manager.mapper;
 
 import org.springframework.stereotype.Component;
 
+import com.supertech.superbatch.manager.dto.User.UpdateUserRequest;
 import com.supertech.superbatch.manager.dto.User.UserRequest;
 import com.supertech.superbatch.manager.dto.User.UserResponse;
 import com.supertech.superbatch.manager.entity.Role;
@@ -43,7 +44,7 @@ public class UserMapper {
                 .build();
     }
 
-    public void updateEntity(Users user, UserRequest request, Role role) {
+    public void updateEntity(Users user, UpdateUserRequest request, Role role) {
         user.setName(request.name());
         user.setEmail(request.email());
         user.setRole(role);

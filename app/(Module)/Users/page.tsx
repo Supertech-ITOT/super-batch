@@ -18,13 +18,6 @@ export default function Users() {
                     <p className="text-sm text-muted-foreground">
                         Create, manage and configure system users.
                     </p>
-
-                    <div className="flex justify-end mt-0 ">
-                        <Button className="-mt-7 hover:bg-primary text-white">
-                            <Plus className="h-5 w-5 mr-2 " />
-                            Add User
-                        </Button>
-                    </div>
                 </div>
             </div>
             {/* content */}

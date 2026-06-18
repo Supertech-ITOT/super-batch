@@ -1,6 +1,6 @@
 import api from "@/common/lib/axios";
 import { ApiResponse } from "@/common/types/api.types";
-import { UserRequest, UserResponse } from "../types/user.types";
+import { UpdateUserRequest, UserRequest, UserResponse } from "../types/user.types";
 
 export const getAllUsers = async () => {
     const res = await api.get<ApiResponse<UserResponse[]>>("/users");
@@ -17,7 +17,7 @@ export const createUser = async (data: UserRequest) => {
     return res.data;
 };
 
-export const updateUser = async ({ id, data }: { id: number, data: UserRequest }) => {
+export const updateUser = async ({ id, data }: { id: number, data: UpdateUserRequest }) => {
     const res = await api.put<ApiResponse<void>>(`/users/${id}`, data);
     return res.data;
 };

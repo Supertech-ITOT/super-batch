@@ -5,15 +5,10 @@ import { Button } from "@/common/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/common/components/ui/dropdown-menu"
 import { DialogProp } from "./user-view";
 import ColorfullBadge from "@/common/components/colorfull-badge";
+import { UserResponse } from "@/features/manager/types/user.types";
+import { format } from "date-fns";
 
-export type UserResponse = {
-    id: number;
-    name: string;
-    email: string;
-    role: string;
-    lastLogin: string;
-    updatedAt: string;
-};
+
 
 export const columns = (
     setDialog: React.Dispatch<React.SetStateAction<DialogProp>>
@@ -52,16 +47,30 @@ export const columns = (
             accessorKey: "role",
             header: "Role",
             cell: ({ row }) => (
-                <ColorfullBadge value={row.original.role} />
+                <ColorfullBadge value={row.original.roleName} />
             ),
         },
         {
             accessorKey: "lastLogin",
-            header: "LastLogin",
+            header: "Last Login",
+            cell: ({ row }) => {
+                const value = row.original.lastLoginAt;
+
+                if (!value || new Date(value).getTime() === 0) {
+                    return "-";
+                }
+
+                return format(new Date(value), "dd MMM yyyy hh:mm a");
+            }
         },
         {
             accessorKey: "updatedAt",
             header: "Last Updated",
+            cell: ({ row }) => {
+                const value = row.original.updatedAt;
+
+                return format(new Date(value), "dd MMM yyyy hh:mm a");
+            }
         },
         {
             id: "actions",
@@ -81,18 +90,12 @@ export const columns = (
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem onClick={(e) => {
-                                e.stopPropagation(); setDialog({
-                                    action: "edit",
-                                    id: user.id,
-                                });
+                                e.stopPropagation(); setDialog({ action: "edit", id: user.id, open: true });;
                             }}>
                                 Edit</DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem variant="destructive" onClick={(e) => {
-                                e.stopPropagation(); setDialog({
-                                    action: "delete",
-                                    id: user.id,
-                                });
+                                e.stopPropagation(); setDialog({ action: "delete", id: user.id, open: true });
                             }}>
                                 Delete</DropdownMenuItem>
                         </DropdownMenuContent>

@@ -5,16 +5,22 @@ import {
     CarouselContent,
     CarouselItem,
 } from "@/common/components/ui/carousel";
-export default function UserStat() {
+import { UserResponse } from "@/features/manager/types/user.types";
+export default function UserStat({ data, isLoading }: { data: UserResponse[]; isLoading: boolean }) {
+
     const stats = [
         {
             title: "Total Users",
-            subtitle: "Assigned to roles",
-            value: 24,
+            subtitle: "Assigned the role",
+            value: data?.length ?? 0,
             Icon: Users,
             clr: "#1D4ED8",
         }
-    ]
+    ];
+    if (isLoading) {
+        return <div>Loading...</div>
+    }
+
     return (
         <Carousel opts={{ align: "start", dragFree: true, }} className="w-full">
             <CarouselContent>

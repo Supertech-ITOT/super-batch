@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.dto.User.UpdateUserRequest;
 import com.supertech.superbatch.manager.dto.User.UserRequest;
 import com.supertech.superbatch.manager.dto.User.UserResponse;
 import com.supertech.superbatch.manager.entity.Role;
@@ -56,7 +57,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(Long id, UserRequest request) {
+    public void update(Long id, UpdateUserRequest request) {
 
         Users user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));

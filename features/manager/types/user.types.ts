@@ -2,7 +2,6 @@ export interface UserResponse {
     id: number,
     name: string,
     email: string,
-    enabled: boolean,
     roleId: number,
     roleName: string,
     createdById: number,
@@ -17,5 +16,10 @@ export interface UserRequest {
     email: string,
     password: string,
     roleId: number,
-    enabled: boolean
+}
+
+export interface UpdateUserRequest {
+    name: string,
+    email: string,
+    roleId: number,
 }

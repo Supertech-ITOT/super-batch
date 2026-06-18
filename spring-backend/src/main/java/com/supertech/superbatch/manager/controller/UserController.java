@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.supertech.superbatch.common.dto.ApiResponse;
+import com.supertech.superbatch.manager.dto.User.UpdateUserRequest;
 import com.supertech.superbatch.manager.dto.User.UserRequest;
 import com.supertech.superbatch.manager.dto.User.UserResponse;
 import com.supertech.superbatch.manager.service.UserService;
@@ -54,7 +55,7 @@ public class UserController {
         @PutMapping("/{id}")
         public ResponseEntity<ApiResponse<Void>> update(
                         @PathVariable Long id,
-                        @Validated @RequestBody UserRequest request) {
+                        @Validated @RequestBody UpdateUserRequest request) {
 
                 userService.update(id, request);
 
