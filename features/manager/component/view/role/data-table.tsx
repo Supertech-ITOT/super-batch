@@ -5,15 +5,20 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "
 import { Button } from "@/common/components/ui/button"
 import { Input } from "@/common/components/ui/input"
 import { useState } from "react"
+import { Plus } from "lucide-react"
+import { DialogProp } from "./role-view"
 interface DataTableProps<
     TData extends { id: number },
     TValue
 > {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
+    setDialog: React.Dispatch<
+        React.SetStateAction<DialogProp>
+    >;
 }
 
-const DataTable = <TData extends { id: number }, TValue>({ columns, data }: DataTableProps<TData, TValue>) => {
+const DataTable = <TData extends { id: number }, TValue>({ columns, data, setDialog }: DataTableProps<TData, TValue>) => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const table = useReactTable({
@@ -40,6 +45,12 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data }: Data
                     }
                     className="max-w-sm"
                 />
+                <div className="flex mt-0 self-end ml-auto">
+                    <Button className="-mt-7 hover:bg-primary text-white" onClick={() => setDialog({ action: "create", id: null, open: true })} >
+                        <Plus className="h-5 w-5 mr-2 " />
+                        Add Role
+                    </Button>
+                </div>
             </div>
             <div className="rounded-md border h-142 overflow-auto">
                 <Table>

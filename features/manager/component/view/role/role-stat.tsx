@@ -1,42 +1,39 @@
 import StatsCards from "@/common/components/stats-card";
-import { KeyRound, LayoutGrid, Shield, User } from "lucide-react";
+import { KeyRound, LayoutGrid, ShieldCheck } from "lucide-react";
 import {
     Carousel,
     CarouselContent,
     CarouselItem,
 } from "@/common/components/ui/carousel";
-export default function RoleStat() {
+import { RoleResponse } from "@/features/manager/types/role.types";
+export default function RoleStat({ data, isLoading }: { data: RoleResponse[], isLoading: boolean }) {
     const stats = [
         {
             title: "Total Roles",
             subtitle: "Active roles",
-            value: 7,
-            Icon: Shield,
+            value: data?.length ?? 0,
+            Icon: ShieldCheck,
             clr: "#15803D",
-        },
-        {
-            title: "Total Users",
-            subtitle: "Assigned to roles",
-            value: 24,
-            Icon: User,
-            clr: "#1D4ED8",
         },
         {
             title: "Total Modules",
             subtitle: "System modules",
-            value: 22,
+            value: data?.length ?? 0,
             Icon: LayoutGrid,
             clr: "#BE185D",
         },
         {
             title: "Total Permissions",
             subtitle: "Granted permissions",
-            value: 88,
+            value: data?.length ?? 0,
             Icon: KeyRound,
             clr: "#D97706",
         },
 
     ]
+    if (isLoading) {
+        return <div>Loading...</div>
+    }
     return (
         <Carousel opts={{ align: "start", dragFree: true, }} className="w-full">
             <CarouselContent>
