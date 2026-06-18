@@ -4,8 +4,9 @@ import com.supertech.superbatch.common.dto.ApiResponse;
 import com.supertech.superbatch.common.dto.OptionDto;
 import com.supertech.superbatch.common.enums.UomType;
 import com.supertech.superbatch.common.util.EnumUtil;
-import com.supertech.superbatch.plant.enums.EquipmentType;
-import com.supertech.superbatch.plant.enums.MaterialType;
+import com.supertech.superbatch.plant.equipment.enums.EquipmentType;
+import com.supertech.superbatch.plant.material.enums.MaterialType;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;

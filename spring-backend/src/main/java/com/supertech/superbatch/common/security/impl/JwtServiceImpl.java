@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.supertech.superbatch.common.exception.UnauthorizedException;
 import com.supertech.superbatch.common.security.JwtService;
-import com.supertech.superbatch.manager.entity.Users;
+import com.supertech.superbatch.manager.user.entity.Users;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

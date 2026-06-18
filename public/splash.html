@@ -7,11 +7,15 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-user-drag: none;
+
         }
 
         body {
-            width: 1280px;
-            height: 720px;
+            width: 100%;
+            height: 100%;
             overflow: hidden;
             display: block;
         }
@@ -31,11 +35,12 @@
 
         .progress-bar {
             position: absolute;
-            bottom: 0;
+            bottom: 10;
             left: 0;
             width: 100%;
             height: 4px;
             background: rgba(255, 255, 255, 0.1);
+            z-index: 9999;
         }
 
         .progress-fill {
@@ -59,7 +64,7 @@
 
 <body>
     <div class="banner">
-        <img src="./logo.png" alt="" />
+        <img src="./logo.png" alt="Super Batch Splash" draggable="false" />
         <div class="progress-bar">
             <div class="progress-fill"></div>
         </div>

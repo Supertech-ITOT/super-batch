@@ -1,6 +1,6 @@
 package com.supertech.superbatch.common.security;
 
-import com.supertech.superbatch.manager.entity.Users;
+import com.supertech.superbatch.manager.user.entity.Users;
 
 public interface JwtService {
     String generateToken(Users user);

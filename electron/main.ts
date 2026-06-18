@@ -12,6 +12,11 @@ function createWindow(): void {
         height: 720,
         frame: false,
         alwaysOnTop: true,
+        resizable: false,
+        maximizable: false,
+        minimizable: false,
+        movable: false,
+        closable: false,
         webPreferences: { nodeIntegration: false, },
     });
     splash.loadFile(path.join(__dirname, '..', '..', 'public', 'splash.html'));
