@@ -53,8 +53,6 @@ export const unitSchema = z.object({
 
     batchSizeUom: z.string({ error: "Batch Size Uom is required." }).min(1, "Batch Size Uom is required").trim(),
 
-    unitType: z.string({ error: "Unit Type is required." }).min(1, "Unit Type is required").trim(),
-
     capacity: z.string({ error: "Capacity is required." }).trim(),
 
     areaId: z.string({ error: "Area is required." }).min(1, "Area is required").trim()

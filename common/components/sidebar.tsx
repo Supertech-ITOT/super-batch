@@ -5,7 +5,7 @@ import { Separator } from "./ui/separator";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import { useLogout } from "@/features/manager/hooks/useAuth";
 import { toast } from "sonner";
@@ -74,7 +74,7 @@ export default function SideBar() {
     const router = useRouter();
     const { mutateAsync: logout, isPending } = useLogout();
     const [open, setOpen] = useState<boolean>(true);
-    const user = getUser();
+    const user = useMemo(() => getUser(), []);
     const initials =
         user?.name
             ?.split(" ")

@@ -30,7 +30,7 @@ export default function MessageView() {
         );
     }
     return (
-        <div className="flex-1 rounded-lg border bg-card p-4 flex-col">
+        <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none flex-col">
             <div className="flex justify-between">
                 <div className="flex gap-4">
                     <div className="size-28 flex items-center justify-center border rounded-md shadow shrink-0">

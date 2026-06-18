@@ -96,7 +96,7 @@ export default function ProcessView() {
         },
     ];
     return (
-        <div className="flex-1 rounded-xl border bg-card p-4 overflow-y-auto">
+        <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none">
             <div className="grid grid-cols-1 gap-4 2xl:grid-cols-3 2xl:h-full ">
                 {cards.map((p) => {
                     const Icon = p.icon;

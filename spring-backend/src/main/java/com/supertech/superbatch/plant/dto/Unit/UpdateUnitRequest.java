@@ -1,7 +1,6 @@
 package com.supertech.superbatch.plant.dto.Unit;
 
 import com.supertech.superbatch.common.enums.UomType;
-import com.supertech.superbatch.plant.enums.UnitType;
 
 import jakarta.validation.constraints.*;
 
@@ -16,8 +15,6 @@ public record UpdateUnitRequest(
                 @NotNull(message = "Area id is required") Long areaId,
 
                 @NotNull(message = "UOM is required") UomType batchSizeUom,
-
-                @NotNull(message = "Unit Type is required") UnitType unitType,
 
                 @NotNull(message = "Capacity is required") @Min(value = 1, message = "Capacity must be greater than 0") Integer capacity) {
 

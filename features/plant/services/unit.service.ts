@@ -1,7 +1,6 @@
 import api from "@/common/lib/axios"
 import { ApiResponse } from "@/common/types/api.types"
 import { CreateUnitRequest, UnitResponse, UpdateUnitRequest } from "../types/unit.types"
-import { PlantHierarchyResponse } from "../types/plant-hierarchy.types";
 
 export const getUnits = async () => {
     const res = await api.get<ApiResponse<UnitResponse[]>>("/units");

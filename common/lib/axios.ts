@@ -7,19 +7,37 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-    try {
-        const user = getUser();
-        if (user) {
-            if (user?.accessToken) {
-                config.headers.Authorization =
-                    `Bearer ${user.accessToken}`;
-            }
-        }
-    } catch {
-        localStorage.removeItem("user");
+    const user = getUser();
+
+    if (user?.accessToken) {
+        config.headers.Authorization =
+            `Bearer ${user.accessToken}`;
     }
 
     return config;
 });
+
+
+    api.interceptors.response.use(
+        (response) => response,
+        (error) => {
+
+            const message = error.response?.data?.message;
+            const status = error.response?.status;
+
+            if (
+                status === 401 &&
+                (
+                    message === "TOKEN_EXPIRED" ||
+                    message === "INVALID_TOKEN"
+                )
+            ) {
+                localStorage.removeItem("user");
+                window.location.href = "/";
+            }
+
+            return Promise.reject(error);
+        }
+    );
 
 export default api;

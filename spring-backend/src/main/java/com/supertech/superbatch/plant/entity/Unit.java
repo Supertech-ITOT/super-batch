@@ -8,8 +8,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.supertech.superbatch.common.enums.UomType;
-import com.supertech.superbatch.plant.enums.UnitType;
-
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -43,16 +41,7 @@ public class Unit {
     private Integer capacity;
 
     @Enumerated(EnumType.STRING)
-    private UnitType unitType;
-
-    @Enumerated(EnumType.STRING)
     private UomType batchSizeUom;
-
-    @OneToMany(mappedBy = "sourceUnit")
-    private Set<UnitConnection> outgoingConnections;
-
-    @OneToMany(mappedBy = "destinationUnit")
-    private Set<UnitConnection> incomingConnections;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

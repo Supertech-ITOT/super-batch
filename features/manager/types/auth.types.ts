@@ -11,11 +11,12 @@ export interface LoginResponse {
 }
 
 export const getUser = (): LoginResponse | null => {
-    const user = localStorage.getItem("user");
+    try {
+        if (typeof window === "undefined") return null;
 
-    if (!user) {
+        const user = localStorage.getItem("user");
+        return user ? JSON.parse(user) : null;
+    } catch {
         return null;
     }
-
-    return JSON.parse(user);
 };

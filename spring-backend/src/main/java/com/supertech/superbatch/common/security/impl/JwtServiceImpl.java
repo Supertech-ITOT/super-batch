@@ -7,6 +7,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.supertech.superbatch.common.exception.UnauthorizedException;
 import com.supertech.superbatch.common.security.JwtService;
 import com.supertech.superbatch.manager.entity.Users;
 
@@ -56,9 +57,17 @@ public class JwtServiceImpl implements JwtService {
     public boolean validateToken(String token) {
         try {
             Claims claims = extractAllClaims(token);
-            return !claims.getExpiration().before(new Date());
+
+            if (claims.getExpiration().before(new Date())) {
+                throw new UnauthorizedException("TOKEN_EXPIRED");
+            }
+
+            return true;
+
+        } catch (UnauthorizedException e) {
+            throw e;
         } catch (Exception e) {
-            return false;
+            throw new UnauthorizedException("INVALID_TOKEN");
         }
     }
 

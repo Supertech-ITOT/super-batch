@@ -12,46 +12,46 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class UnitMapper {
-    private final UomMapper uomMapper;
+        private final UomMapper uomMapper;
 
-    public UnitResponse toResponse(Unit unit) {
-        int totalEquipment = unit.getEquipments() != null
-                ? unit.getEquipments().size()
-                : 0;
-        return new UnitResponse(
-                unit.getId(),
-                unit.getName(),
-                unit.getCode(),
-                unit.getDescription(),
-                unit.getArea().getId(),
-                unit.getArea().getName(),
-                unit.getCapacity(),
-                uomMapper.toResponse(unit.getBatchSizeUom()),
-                unit.getUnitType(),
-                totalEquipment,
-                unit.getCreatedAt(),
-                unit.getUpdatedAt());
-    }
+        public UnitResponse toResponse(Unit unit) {
 
-    public Unit toEntity(CreateUnitRequest request, Area area) {
-        return Unit.builder()
-                .name(request.name())
-                .code(request.code())
-                .description(request.description())
-                .capacity(request.capacity())
-                .batchSizeUom(request.batchSizeUom())
-                .area(area)
-                .unitType(request.unitType())
-                .build();
-    }
+                int totalEquipment = unit.getEquipments() != null
+                                ? unit.getEquipments().size()
+                                : 0;
 
-    public void updateEntity(Unit unit, UpdateUnitRequest request, Area area) {
-        unit.setName(request.name());
-        unit.setCode(request.code());
-        unit.setDescription(request.description());
-        unit.setCapacity(request.capacity());
-        unit.setBatchSizeUom(request.batchSizeUom());
-        unit.setUnitType(request.unitType());
-        unit.setArea(area);
-    }
+                return UnitResponse.builder()
+                                .id(unit.getId())
+                                .name(unit.getName())
+                                .code(unit.getCode())
+                                .description(unit.getDescription())
+                                .areaId(unit.getArea().getId())
+                                .areaName(unit.getArea().getName())
+                                .capacity(unit.getCapacity())
+                                .batchSizeUom(uomMapper.toResponse(unit.getBatchSizeUom()))
+                                .totalEquipment(totalEquipment)
+                                .createdAt(unit.getCreatedAt())
+                                .updatedAt(unit.getUpdatedAt())
+                                .build();
+        }
+
+        public Unit toEntity(CreateUnitRequest request, Area area) {
+                return Unit.builder()
+                                .name(request.name())
+                                .code(request.code())
+                                .description(request.description())
+                                .capacity(request.capacity())
+                                .batchSizeUom(request.batchSizeUom())
+                                .area(area)
+                                .build();
+        }
+
+        public void updateEntity(Unit unit, UpdateUnitRequest request, Area area) {
+                unit.setName(request.name());
+                unit.setCode(request.code());
+                unit.setDescription(request.description());
+                unit.setCapacity(request.capacity());
+                unit.setBatchSizeUom(request.batchSizeUom());
+                unit.setArea(area);
+        }
 }

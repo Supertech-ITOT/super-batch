@@ -57,7 +57,7 @@ export default function PlantView({ id }: { id: number }) {
     ]
 
     return (
-        <div className="flex justify-between flex-col h-full w-full bg-card p-4 overflow-y-auto scrollbar-none">
+        <div className="flex justify-between rounded-lg shadow hover:shadow-lg border flex-col h-full w-full bg-card p-4 overflow-y-auto scrollbar-none">
             <div className="flex justify-between flex-wrap gap-2 my-4">
                 <div className="flex gap-3 ">
                     <div className="size-28 flex items-center justify-center border rounded-md shadow shrink-0">
