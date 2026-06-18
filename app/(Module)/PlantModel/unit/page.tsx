@@ -1,5 +1,5 @@
 "use client";
-import UnitView from "@/features/plant/components/view/unit/unit-view";
+import UnitView from "@/features/plant/unit/components/unit-view";
 import { useSearchParams } from "next/navigation";
 
 export default function UnitPage() {

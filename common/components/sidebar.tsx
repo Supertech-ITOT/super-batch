@@ -7,10 +7,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import { useLogout } from "@/features/manager/hooks/useAuth";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
-import { getUser } from "@/features/manager/types/auth.types";
+import { getUser } from "@/features/manager/auth/types/auth.types";
+import { useLogout } from "@/features/manager/auth/hooks/use-auth";
 
 type RouteType = {
     label: string;
@@ -49,12 +49,12 @@ const OperationRoutes: RouteType[] = [
 const AdminRoutes: RouteType[] = [
     {
         label: "Users",
-        path: "/Users",
+        path: "/Manager/users",
         icon: Users,
     },
     {
         label: "Roles",
-        path: "/Roles",
+        path: "/Manager/roles",
         icon: ShieldCheck,
     },
     {

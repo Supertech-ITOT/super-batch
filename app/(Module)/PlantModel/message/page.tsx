@@ -1,5 +1,5 @@
-import PlantTab from "@/features/plant/components/plant-tab";
-import MessageView from "@/features/plant/components/view/message/message-view";
+import PlantTab from "@/features/plant/common/components/plant-tab";
+import MessageView from "@/features/plant/message/components/message-view";
 
 
 export default function MessagePage() {

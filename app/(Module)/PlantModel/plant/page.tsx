@@ -1,5 +1,5 @@
 "use client";
-import PlantView from "@/features/plant/components/view/plant/plant-view";
+import PlantView from "@/features/plant/plant/components/plant-view";
 import { useSearchParams } from "next/navigation";
 
 export default function PlantPage() {

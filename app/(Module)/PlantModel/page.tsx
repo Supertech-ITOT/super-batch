@@ -1,6 +1,6 @@
-import PlantMenu from "@/features/plant/components/plant-menu";
-import PlantTab from "@/features/plant/components/plant-tab";
-import PlantTree from "@/features/plant/components/plant-tree";
+import PlantMenu from "@/features/plant/common/components/plant-menu";
+import PlantTab from "@/features/plant/common/components/plant-tab";
+import PlantTree from "@/features/plant/common/components/plant-tree";
 import { Boxes } from "lucide-react";
 
 

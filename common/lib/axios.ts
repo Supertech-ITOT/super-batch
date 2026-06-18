@@ -1,4 +1,4 @@
-import { getUser } from "@/features/manager/types/auth.types";
+import { getUser } from "@/features/manager/auth/types/auth.types";
 import axios from "axios";
 
 const api = axios.create({
@@ -18,26 +18,26 @@ api.interceptors.request.use((config) => {
 });
 
 
-    api.interceptors.response.use(
-        (response) => response,
-        (error) => {
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
 
-            const message = error.response?.data?.message;
-            const status = error.response?.status;
+        const message = error.response?.data?.message;
+        const status = error.response?.status;
 
-            if (
-                status === 401 &&
-                (
-                    message === "TOKEN_EXPIRED" ||
-                    message === "INVALID_TOKEN"
-                )
-            ) {
-                localStorage.removeItem("user");
-                window.location.href = "/";
-            }
-
-            return Promise.reject(error);
+        if (
+            status === 401 &&
+            (
+                message === "TOKEN_EXPIRED" ||
+                message === "INVALID_TOKEN"
+            )
+        ) {
+            localStorage.removeItem("user");
+            window.location.href = "/";
         }
-    );
+
+        return Promise.reject(error);
+    }
+);
 
 export default api;

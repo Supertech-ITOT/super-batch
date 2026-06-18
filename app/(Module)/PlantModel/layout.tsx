@@ -1,4 +1,4 @@
-import PlantNav from "@/features/plant/components/plant-nav";
+import PlantNav from "@/features/plant/common/components/plant-nav";
 
 export default function PlantModelLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
     return (

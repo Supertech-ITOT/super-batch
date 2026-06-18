@@ -1,5 +1,5 @@
 "use client";
-import EquipmentView from "@/features/plant/components/view/equipment-view";
+import EquipmentView from "@/features/plant/equipment/components/equipment-view";
 import { useSearchParams } from "next/navigation";
 
 export default function EquipmentPage() {

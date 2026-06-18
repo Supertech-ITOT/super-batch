@@ -1,5 +1,5 @@
 "use client";
-import AreaView from "@/features/plant/components/view/area/area-view";
+import AreaView from "@/features/plant/area/components/area-view";
 import { useSearchParams } from "next/navigation";
 
 export default function AreaPage() {

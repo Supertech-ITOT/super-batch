@@ -1,5 +1,5 @@
-import PlantTab from "@/features/plant/components/plant-tab";
-import ParameterView from "@/features/plant/components/view/process-view";
+import PlantTab from "@/features/plant/common/components/plant-tab";
+import ParameterView from "@/features/plant/common/components/process-view";
 export default function ParametersPage() {
     return (
         <div className="flex h-full flex-col overflow-hidden p-4 space-y-2">
