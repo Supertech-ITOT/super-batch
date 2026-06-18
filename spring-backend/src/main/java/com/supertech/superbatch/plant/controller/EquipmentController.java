@@ -5,8 +5,10 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.supertech.superbatch.common.dto.ApiResponse;
+import com.supertech.superbatch.plant.dto.Equipment.AssignEquipmentRequest;
 import com.supertech.superbatch.plant.dto.Equipment.CreateEquipmentRequest;
 import com.supertech.superbatch.plant.dto.Equipment.EquipmentResponse;
+import com.supertech.superbatch.plant.dto.Equipment.UnAssignEquipmentRequest;
 import com.supertech.superbatch.plant.dto.Equipment.UpdateEquipmentRequest;
 import com.supertech.superbatch.plant.service.EquipmentService;
 
@@ -61,5 +63,29 @@ public class EquipmentController {
         equipmentService.delete(id);
         return ResponseEntity.ok(
                 ApiResponse.success("Equipment deleted successfully", null));
+    }
+
+    @PostMapping("/assign")
+    public ResponseEntity<ApiResponse<Void>> assign(
+            @Valid @RequestBody AssignEquipmentRequest request) {
+
+        equipmentService.assign(request);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Equipment assigned successfully",
+                        null));
+    }
+
+    @PostMapping("/unassign")
+    public ResponseEntity<ApiResponse<Void>> unassign(
+            @Valid @RequestBody UnAssignEquipmentRequest request) {
+
+        equipmentService.unassign(request);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Equipment unassigned successfully",
+                        null));
     }
 }

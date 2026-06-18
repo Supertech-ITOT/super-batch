@@ -1,12 +1,13 @@
 package com.supertech.superbatch.plant.entity;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.supertech.superbatch.plant.enums.EquipmentType;
 
 import jakarta.persistence.*;
 
@@ -26,9 +27,11 @@ public class Equipment {
 
     private String name;
 
-    private String tagName;
+    private String code;
 
     private String description;
+
+    private Integer capacity;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -36,10 +39,9 @@ public class Equipment {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @ManyToOne
+    @Builder.Default
+    @ManyToMany
+    @JoinTable(name = "equipment_unit", joinColumns = @JoinColumn(name = "equipment_id"), inverseJoinColumns = @JoinColumn(name = "unit_id"))
     @JsonIgnore
-    private Unit unit;
-
-    @Enumerated(EnumType.STRING)
-    private EquipmentType equipmentType;
+    private Set<Unit> units = new HashSet<>();
 }

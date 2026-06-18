@@ -1,20 +1,19 @@
 package com.supertech.superbatch.plant.dto.Equipment;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-import com.supertech.superbatch.plant.enums.EquipmentType;
+import com.supertech.superbatch.plant.dto.Unit.UnitSummaryResponse;
+import lombok.Builder;
 
+@Builder
 public record EquipmentResponse(
-                Long id,
-                String name,
-                String tagName,
-                String description,
-                String unitName,
-                Long unitId,
-                EquipmentType equipmentType,
-                LocalDateTime createdAt,
-                LocalDateTime updatedAt
-
-) {
-
+        Long id,
+        String name,
+        String code,
+        String description,
+        List<UnitSummaryResponse> units,
+        Integer capacity,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt) {
 }

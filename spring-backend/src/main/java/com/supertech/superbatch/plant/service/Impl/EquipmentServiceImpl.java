@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.plant.dto.Equipment.AssignEquipmentRequest;
 import com.supertech.superbatch.plant.dto.Equipment.CreateEquipmentRequest;
 import com.supertech.superbatch.plant.dto.Equipment.EquipmentResponse;
+import com.supertech.superbatch.plant.dto.Equipment.UnAssignEquipmentRequest;
 import com.supertech.superbatch.plant.dto.Equipment.UpdateEquipmentRequest;
 import com.supertech.superbatch.plant.entity.Equipment;
 import com.supertech.superbatch.plant.entity.Unit;
@@ -27,7 +29,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     public void create(CreateEquipmentRequest request) {
-        if (equipmentRepository.existsByNameIgnoreCaseAndUnitId(request.name(), request.unitId())) {
+        if (equipmentRepository.existsByNameIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Equipment already exists");
         }
         Unit unit = unitRepository.findById(request.unitId())
@@ -38,12 +40,12 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     public List<EquipmentResponse> getAll() {
-        return equipmentRepository.findAll().stream().map(equipmentMapper::toResponse).toList();
+        return equipmentRepository.findAllWithUnits().stream().map(equipmentMapper::toResponse).toList();
     }
 
     @Override
     public EquipmentResponse getById(Long id) {
-        Equipment equipment = equipmentRepository.findById(id)
+        Equipment equipment = equipmentRepository.findByIdWithUnits(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
         return equipmentMapper.toResponse(equipment);
     }
@@ -55,17 +57,17 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     public void update(Long id, UpdateEquipmentRequest request) {
+
         Equipment equipment = equipmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
-        Unit unit = unitRepository.findById(request.unitId())
-                .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
 
-        if (equipmentRepository.existsByNameIgnoreCaseAndUnitId(request.name(), equipment.getUnit().getId())
-                && !equipment.getName().equalsIgnoreCase(request.name())) {
+        if (!equipment.getName().equalsIgnoreCase(request.name())
+                && equipmentRepository.existsByNameIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Equipment already exists");
         }
 
-        equipmentMapper.updateEntity(equipment, request, unit);
+        equipmentMapper.updateEntity(equipment, request);
+
         equipmentRepository.save(equipment);
     }
 
@@ -74,6 +76,45 @@ public class EquipmentServiceImpl implements EquipmentService {
         Equipment equipment = equipmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
         equipmentRepository.delete(equipment);
+    }
+
+    @Override
+    public void assign(AssignEquipmentRequest request) {
+
+        Equipment equipment = equipmentRepository.findByIdWithUnits(request.equipmentId())
+                .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
+
+        Unit unit = unitRepository.findById(request.unitId())
+                .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
+
+        boolean alreadyAssigned = equipment.getUnits()
+                .stream()
+                .anyMatch(u -> u.getId().equals(unit.getId()));
+
+        if (alreadyAssigned) {
+            throw new DuplicateResourceException("Equipment already assigned");
+        }
+
+        equipment.getUnits().add(unit);
+
+        equipmentRepository.save(equipment);
+    }
+
+    @Override
+    public void unassign(UnAssignEquipmentRequest request) {
+
+        Equipment equipment = equipmentRepository.findByIdWithUnits(request.equipmentId())
+                .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
+
+        boolean removed = equipment.getUnits()
+                .removeIf(unit -> unit.getId().equals(request.unitId()));
+
+        if (!removed) {
+            throw new ResourceNotFoundException(
+                    "Equipment is not assigned to the specified unit");
+        }
+
+        equipmentRepository.save(equipment);
     }
 
 }

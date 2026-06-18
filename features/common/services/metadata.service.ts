@@ -8,11 +8,6 @@ export const getUomTypes = async () => {
 }
 
 
-export const getEquipmentTypes = async () => {
-    const res = await api.get<ApiResponse<OptionResponse[]>>("/metadata/equipment-types");
-    return res.data;
-}
-
 export const getMaterialTypes = async () => {
     const res = await api.get<ApiResponse<OptionResponse[]>>("/metadata/material-types");
     return res.data;

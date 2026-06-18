@@ -74,6 +74,16 @@ function TreeNode({ node, level = 0, onSelect, onAction, selectedNodeKey }: Prop
                     <ContextMenuContent>
                         <ContextMenuLabel>Action</ContextMenuLabel>
                         {config.addLabel && (<ContextMenuItem onClick={() => onAction("create", node)}>{config.addLabel}</ContextMenuItem>)}
+                        {node.type === "unit" && (
+                            <>
+                                <ContextMenuItem onClick={() => onAction("assign", node)}>
+                                    Assign Equipment
+                                </ContextMenuItem>
+                                <ContextMenuItem onClick={() => onAction("unassign", node)}>
+                                    Unassign Equipment
+                                </ContextMenuItem>
+                            </>
+                        )}
                         <ContextMenuItem onClick={() => onAction("edit", node)}>Edit</ContextMenuItem>
                         <ContextMenuSeparator />
                         <ContextMenuItem onClick={() => onAction("delete", node)} variant="destructive">Delete</ContextMenuItem>

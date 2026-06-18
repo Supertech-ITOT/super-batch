@@ -15,32 +15,30 @@ import { equipmentSchema, EquipmentSchema, EquipmentSchemaLimit } from "../../..
 import { useGetUnits } from "../../../hooks/use-units";
 import CharacterProgress from "@/common/components/form/character-progress";
 import { Textarea } from "@/common/components/ui/textarea";
-import { useGetEquipmentTypes } from "@/features/common/hooks/useMetadata";
 
 type Props = { open: boolean; onClose: () => void; unitId?: number };
 export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) {
     const { mutateAsync: createEquipment, isPending: isCreating } = useCreateEquipment();
-    const { data: equipments, isLoading: equipmentsLoading } = useGetEquipmentTypes();
     const { data: units, isLoading: unitsLoading } = useGetUnits(open);
     const { register, handleSubmit, reset, control, watch, formState: { isSubmitting, isDirty } } = useForm<EquipmentSchema>({
         resolver: zodResolver(equipmentSchema),
-        defaultValues: { name: "", unitId: "", equipmentType: "", description: "", tagName: "" }
+        defaultValues: { name: "", unitId: "", capacity: "", description: "", code: "" }
     });
 
     useEffect(() => {
         if (!open || !unitId) return;
 
-        reset({ name: "", unitId: String(unitId), equipmentType: "", description: "", tagName: "" })
+        reset({ name: "", unitId: String(unitId), capacity: "", description: "", code: "" })
     }, [open, unitId, reset]);
 
-    const loading = isCreating || unitsLoading || isSubmitting || equipmentsLoading;
+    const loading = isCreating || unitsLoading || isSubmitting;
     const onSubmit = async (formData: EquipmentSchema) => {
         try {
             const res = await createEquipment({
                 name: formData.name,
                 description: formData.description,
-                equipmentType: formData.equipmentType,
-                tagName: formData.tagName,
+                capacity: Number(formData.capacity),
+                code: formData.code,
                 unitId: Number(formData.unitId),
             });
             toast.success(res.message ?? "Equipment created successfully.");
@@ -50,7 +48,7 @@ export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) 
         }
     };
     const handleClose = () => {
-        reset({ name: "", unitId: "", equipmentType: "", description: "", tagName: "" });
+        reset({ name: "", unitId: "", capacity: "", description: "", code: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<EquipmentSchema>) => {
@@ -77,7 +75,7 @@ export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) 
                             <Input
                                 type="text"
                                 disabled={loading}
-                                placeholder="Temperature 101"
+                                placeholder="Tank 101"
                                 maxLength={EquipmentSchemaLimit.name.max}
                                 {...register("name")}
                             />
@@ -85,41 +83,32 @@ export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) 
                         <div className="flex gap-2">
                             <div className="space-y-2 relative flex-1">
                                 <div className="flex items-center justify-between">
-                                    <Label>TagName</Label>
-                                    <CharacterProgress value={watch("tagName")} max={EquipmentSchemaLimit.tagName.max} />
+                                    <Label>Code</Label>
+                                    <CharacterProgress value={watch("code")} max={EquipmentSchemaLimit.code.max} />
                                 </div>
                                 <Input
                                     type="text"
                                     disabled={loading}
-                                    placeholder="TT101"
-                                    maxLength={EquipmentSchemaLimit.tagName.max}
-                                    {...register("tagName")}
+                                    placeholder="T101"
+                                    maxLength={EquipmentSchemaLimit.code.max}
+                                    {...register("code")}
                                 />
                             </div>
-                            <div className="space-y-2 relative flex-1">
-                                <Label>Equipment Type</Label>
-                                <Controller
-                                    control={control}
-                                    name="equipmentType"
-                                    render={({ field }) => (
-                                        <Select
-                                            disabled={loading}
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Equipment Type" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {equipments?.map((e) => (
-                                                        <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
+                            <div className="space-y-2 flex-1">
+                                <div className="flex items-center justify-between">
+                                    <Label>Capacity</Label>
+                                </div>
+                                <div className="flex">
+                                    <Input
+                                        type="number"
+                                        placeholder="1000"
+                                        className="rounded-r-none"
+                                        {...register("capacity")}
+                                    />
+                                    <div className="flex items-center px-3 border border-l-0 rounded-r-md bg-muted text-sm">
+                                        kg
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
@@ -137,7 +126,6 @@ export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) 
                             />
                         </div>
                         <div className="flex gap-2">
-
                             <div className="space-y-2 flex-1">
                                 <Label>Select Unit</Label>
                                 <Controller

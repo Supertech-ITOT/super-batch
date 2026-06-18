@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createEquipment, deleteEquipment, getByUnitId, getEquipmentById, getEquipments, updateEquipment } from "../services/equipment.service";
+import { assignEquipment, createEquipment, deleteEquipment, getByUnitId, getEquipmentById, getEquipments, unAssignEquipment, updateEquipment } from "../services/equipment.service";
 import { queryKeys } from "./query-keys";
 
 export const useGetEquipment = () => {
@@ -86,3 +86,37 @@ export const useGetEquipmentsByUnitId = (unitId?: number) => {
 
 };
 
+
+export const useAssignEquipment = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: assignEquipment,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.equipments,
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.plantHierarchy,
+            });
+        },
+    });
+};
+
+export const useUnAssignEquipment = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: unAssignEquipment,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.equipments,
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.plantHierarchy,
+            });
+        },
+    });
+};

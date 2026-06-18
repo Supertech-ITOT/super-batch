@@ -3,6 +3,7 @@ package com.supertech.superbatch.plant.mapper;
 import org.springframework.stereotype.Component;
 import com.supertech.superbatch.plant.dto.Unit.CreateUnitRequest;
 import com.supertech.superbatch.plant.dto.Unit.UnitResponse;
+import com.supertech.superbatch.plant.dto.Unit.UnitSummaryResponse;
 import com.supertech.superbatch.plant.dto.Unit.UpdateUnitRequest;
 import com.supertech.superbatch.plant.entity.Area;
 import com.supertech.superbatch.plant.entity.Unit;
@@ -53,5 +54,12 @@ public class UnitMapper {
                 unit.setCapacity(request.capacity());
                 unit.setBatchSizeUom(request.batchSizeUom());
                 unit.setArea(area);
+        }
+
+        public UnitSummaryResponse toUnitSummaryResponse(Unit unit) {
+                return UnitSummaryResponse.builder()
+                                .id(unit.getId())
+                                .name(unit.getName())
+                                .build();
         }
 }
