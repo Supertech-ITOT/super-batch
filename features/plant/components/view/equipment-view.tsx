@@ -59,7 +59,7 @@ export default function EquipmentView({ id }: { id: number }) {
                 </div>
             </div>
             <Separator />
-            <div className="flex-1 min-h-0 my-4 border rounded-md p-4">
+            <div className="flex-1  my-4 border rounded-md p-4">
                 <h1 className="text-md font-semibold">Equipment Detail</h1>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div className="rounded-xl border bg-card p-4">

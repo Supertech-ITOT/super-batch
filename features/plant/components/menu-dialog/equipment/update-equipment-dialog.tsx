@@ -9,42 +9,38 @@ import { Loader } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
-import { useGetUnits } from "../../../hooks/use-units";
 import { useGetEquipmentById, useUpdateEquipment } from "../../../hooks/use-equipment";
-import { equipmentSchema, EquipmentSchema, EquipmentSchemaLimit } from "../../../schemas/equipment-schema";
+import { EquipmentSchemaLimit, updateEquipmentSchema, UpdateEquipmentSchema } from "../../../schemas/equipment-schema";
 import CharacterProgress from "@/common/components/form/character-progress";
 import { Textarea } from "@/common/components/ui/textarea";
 
 type Props = { open: boolean; onClose: () => void; equipmentId?: number };
 export default function UpdateEquipmentDialog({ open, onClose, equipmentId }: Props) {
     const { mutateAsync: updateEquipment, isPending: isUpdating } = useUpdateEquipment();
-    const { data: units, isLoading: unitsLoading } = useGetUnits(open);
     const { data: equipment, isLoading: equipmentLoading } = useGetEquipmentById(equipmentId);
-    const { register, handleSubmit, reset, watch, formState: { isSubmitting, isDirty } } = useForm<EquipmentSchema>({
-        resolver: zodResolver(equipmentSchema),
-        defaultValues: { name: "", unitId: "", capacity: "", description: "", code: "" }
+    const { register, handleSubmit, reset, watch, formState: { isSubmitting, isDirty } } = useForm<UpdateEquipmentSchema>({
+        resolver: zodResolver(updateEquipmentSchema),
+        defaultValues: { name: "", capacity: "", description: "", code: "" }
     });
 
     useEffect(() => {
-        if (!open || !equipment || !units) return;
+        if (!open || !equipment) return;
         reset({
             name: equipment.name,
-            unitId: String(equipment.unitId),
             capacity: String(equipment.capacity),
             description: equipment.description,
             code: equipment.code,
         });
 
-    }, [open, equipment, units, reset]);
-    const loading = isUpdating || unitsLoading || equipmentLoading || isSubmitting;
+    }, [open, equipment, reset]);
+    const loading = isUpdating || equipmentLoading || isSubmitting;
 
-    const onSubmit = async (formData: EquipmentSchema) => {
+    const onSubmit = async (formData: UpdateEquipmentSchema) => {
         try {
             const res = await updateEquipment({
                 id: equipmentId!, data: {
                     name: formData.name,
                     capacity: Number(formData.capacity),
-                    unitId: Number(formData.unitId),
                     description: formData.description,
                     code: formData.code,
                 }
@@ -57,11 +53,11 @@ export default function UpdateEquipmentDialog({ open, onClose, equipmentId }: Pr
     };
 
     const handleClose = () => {
-        reset({ name: "", unitId: "", capacity: "", description: "", code: "" });
+        reset({ name: "", capacity: "", description: "", code: "" });
         onClose();
     };
 
-    const onInvalid = (errors: FieldErrors<EquipmentSchema>) => {
+    const onInvalid = (errors: FieldErrors<UpdateEquipmentSchema>) => {
         const firstError = Object.values(errors)[0];
         if (firstError?.message) {
             toast.error(firstError.message.toString());
@@ -132,14 +128,6 @@ export default function UpdateEquipmentDialog({ open, onClose, equipmentId }: Pr
                                 className="min-h-30 w-full resize-none break-all overflow-hidden"
                                 maxLength={EquipmentSchemaLimit.description.max}
                                 {...register("description")}
-                            />
-                        </div>
-                        <div className="space-y-2 flex-1">
-                            <Label>Unit</Label>
-                            <Input
-                                type="text"
-                                disabled
-                                value={units?.find((u) => u.id === equipment?.unitId)?.name ?? ""}
                             />
                         </div>
                     </div>

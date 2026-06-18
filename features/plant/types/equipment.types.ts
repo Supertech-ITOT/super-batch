@@ -35,5 +35,4 @@ export interface UpdateEquipmentRequest {
     description: string;
     code: string;
     capacity: number;
-    unitId: number;
 }

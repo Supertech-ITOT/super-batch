@@ -13,6 +13,7 @@ import com.supertech.superbatch.plant.dto.Equipment.UnAssignEquipmentRequest;
 import com.supertech.superbatch.plant.dto.Equipment.UpdateEquipmentRequest;
 import com.supertech.superbatch.plant.entity.Equipment;
 import com.supertech.superbatch.plant.entity.Unit;
+import com.supertech.superbatch.plant.enums.EquipmentType;
 import com.supertech.superbatch.plant.mapper.EquipmentMapper;
 import com.supertech.superbatch.plant.repository.EquipmentRepository;
 import com.supertech.superbatch.plant.repository.UnitRepository;
@@ -34,7 +35,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         }
         Unit unit = unitRepository.findById(request.unitId())
                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
-        Equipment equipment = equipmentMapper.toEntity(request, unit);
+        Equipment equipment = equipmentMapper.toEntity(request, unit, EquipmentType.SUB_EQUIPMENT);
         equipmentRepository.save(equipment);
     }
 

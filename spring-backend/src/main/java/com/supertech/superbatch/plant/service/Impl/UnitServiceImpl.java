@@ -7,17 +7,22 @@ import org.springframework.stereotype.Service;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.plant.dto.Equipment.CreateEquipmentRequest;
 import com.supertech.superbatch.plant.dto.Unit.CreateUnitRequest;
 import com.supertech.superbatch.plant.dto.Unit.UnitResponse;
 import com.supertech.superbatch.plant.dto.Unit.UpdateUnitRequest;
 import com.supertech.superbatch.plant.entity.Area;
+import com.supertech.superbatch.plant.entity.Equipment;
 import com.supertech.superbatch.plant.entity.Unit;
+import com.supertech.superbatch.plant.enums.EquipmentType;
+import com.supertech.superbatch.plant.mapper.EquipmentMapper;
 import com.supertech.superbatch.plant.mapper.UnitMapper;
 import com.supertech.superbatch.plant.repository.AreaRepository;
 import com.supertech.superbatch.plant.repository.EquipmentRepository;
 import com.supertech.superbatch.plant.repository.UnitRepository;
 import com.supertech.superbatch.plant.service.UnitService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -27,8 +32,10 @@ public class UnitServiceImpl implements UnitService {
     private final AreaRepository areaRepository;
     private final EquipmentRepository equipmentRepository;
     private final UnitMapper unitMapper;
+    private final EquipmentMapper equipmentMapper;
 
     @Override
+    @Transactional
     public void create(CreateUnitRequest request) {
 
         if (unitRepository.existsByNameIgnoreCaseAndAreaId(request.name(), request.areaId())) {
@@ -39,6 +46,17 @@ public class UnitServiceImpl implements UnitService {
                 .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
         Unit unit = unitMapper.toEntity(request, area);
         unitRepository.save(unit);
+
+        CreateEquipmentRequest createEquipmentRequest = CreateEquipmentRequest.builder()
+                .name(request.name())
+                .code(request.code())
+                .capacity(request.capacity())
+                .description(request.description())
+                .unitId(unit.getId())
+                .build();
+
+        Equipment equipment = equipmentMapper.toEntity(createEquipmentRequest, unit, EquipmentType.MAIN_EQUIPMENT);
+        equipmentRepository.save(equipment);
     }
 
     @Override

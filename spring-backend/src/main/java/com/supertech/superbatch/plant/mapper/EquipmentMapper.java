@@ -6,6 +6,7 @@ import com.supertech.superbatch.plant.dto.Equipment.EquipmentResponse;
 import com.supertech.superbatch.plant.dto.Equipment.UpdateEquipmentRequest;
 import com.supertech.superbatch.plant.entity.Equipment;
 import com.supertech.superbatch.plant.entity.Unit;
+import com.supertech.superbatch.plant.enums.EquipmentType;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,12 +31,13 @@ public class EquipmentMapper {
                 .build();
     }
 
-    public Equipment toEntity(CreateEquipmentRequest request, Unit unit) {
+    public Equipment toEntity(CreateEquipmentRequest request, Unit unit, EquipmentType equipmentType) {
         Equipment equipment = Equipment.builder()
                 .name(request.name())
                 .code(request.code())
                 .description(request.description())
                 .capacity(request.capacity())
+                .equipmentType(equipmentType)
                 .build();
 
         equipment.getUnits().add(unit);

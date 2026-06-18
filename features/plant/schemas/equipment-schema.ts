@@ -60,6 +60,15 @@ export const equipmentSchema = z.object({
 export type EquipmentSchema = z.infer<typeof equipmentSchema>;
 
 
+export const updateEquipmentSchema = equipmentSchema.omit({
+    unitId: true,
+});
+
+export type UpdateEquipmentSchema = z.infer<
+    typeof updateEquipmentSchema
+>;
+
+
 export const equipmentAssignmentSchema = z.object({
     equipmentId: z.string({ error: "Equipment is required." }).trim(),
     unitId: z.string({ error: "Unit is required." }).trim(),

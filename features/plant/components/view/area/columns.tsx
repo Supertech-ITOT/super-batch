@@ -24,8 +24,12 @@ export const columns = ({
             header: "Unit Name",
         },
         {
-            accessorKey: "unitType",
-            header: "Unit Type",
+            accessorKey: "code",
+            header: "Unit Code",
+        },
+        {
+            accessorKey: "capacity",
+            header: "Unit Capacity",
         },
         {
             accessorKey: "totalEquipment",
