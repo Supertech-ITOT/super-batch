@@ -1,6 +1,7 @@
 package com.supertech.superbatch.plant.entity;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -34,9 +35,10 @@ public class Unit {
     @JsonIgnore
     private Area area;
 
-    @OneToMany(mappedBy = "unit")
+    @Builder.Default
+    @ManyToMany(mappedBy = "units")
     @OrderBy("name ASC")
-    private Set<Equipment> equipments;
+    private Set<Equipment> equipments = new HashSet<>();
 
     private Integer capacity;
 

@@ -11,7 +11,7 @@ export type PlantHierarchyResponse = {
     unitId?: number;
 };
 
-export type ActionType = "create" | "edit" | "delete" | null;
+export type ActionType = "create" | "edit" | "delete" | "assign" | "unassign" | null;
 
 export type DialogType = {
     type: PlantNodeType | null;

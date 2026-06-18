@@ -1,7 +1,6 @@
 import api from "@/common/lib/axios"
 import { ApiResponse } from "@/common/types/api.types"
-import { CreateEquipmentRequest, EquipmentResponse, UpdateEquipmentRequest } from "../types/equipment.types";
-import { PlantHierarchyResponse } from "../types/plant-hierarchy.types";
+import { AssignEquipmentRequest, CreateEquipmentRequest, EquipmentResponse, UnAssignEquipmentRequest, UpdateEquipmentRequest } from "../types/equipment.types";
 
 export const getEquipments = async () => {
     const res = await api.get<ApiResponse<EquipmentResponse[]>>("/equipments");
@@ -14,7 +13,7 @@ export const getEquipmentById = async (id: number) => {
 };
 
 export const createEquipment = async (data: CreateEquipmentRequest) => {
-    const res = await api.post<ApiResponse<EquipmentResponse>>("/equipments", data);
+    const res = await api.post<ApiResponse<null>>("/equipments", data);
     return res.data;
 }
 
@@ -31,4 +30,14 @@ export const deleteEquipment = async ({ id }: { id: number }) => {
 export const getByUnitId = async (unitId: number) => {
     const res = await api.get<ApiResponse<EquipmentResponse[]>>(`/equipments/by-unit/${unitId}`);
     return res.data;
-}; 
+};
+
+export const assignEquipment = async (data: AssignEquipmentRequest) => {
+    const res = await api.post<ApiResponse<null>>("/equipments/assign", data);
+    return res.data;
+}
+
+export const unAssignEquipment = async (data: UnAssignEquipmentRequest) => {
+    const res = await api.post<ApiResponse<null>>("/equipments/unassign", data);
+    return res.data;
+}

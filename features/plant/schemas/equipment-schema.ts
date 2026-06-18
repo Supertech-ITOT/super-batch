@@ -3,7 +3,7 @@ import { z } from "zod";
 export const EquipmentSchemaLimit = {
     name: { min: 2, max: 100 },
     description: { min: 2, max: 100 },
-    tagName: { min: 2, max: 50 },
+    code: { min: 2, max: 50 },
 } as const;
 
 export const equipmentSchema = z.object({
@@ -35,26 +35,37 @@ export const equipmentSchema = z.object({
             `Description cannot exceed ${EquipmentSchemaLimit.description.max} characters`
         ),
 
-    tagName: z
+    code: z
         .string()
         .trim()
         .min(
-            EquipmentSchemaLimit.tagName.min,
-            `tagName must be at least ${EquipmentSchemaLimit.tagName.min} characters`
+            EquipmentSchemaLimit.code.min,
+            `code must be at least ${EquipmentSchemaLimit.code.min} characters`
         )
         .max(
-            EquipmentSchemaLimit.tagName.max,
-            `tagName cannot exceed ${EquipmentSchemaLimit.tagName.max} characters`
+            EquipmentSchemaLimit.code.max,
+            `code cannot exceed ${EquipmentSchemaLimit.code.max} characters`
         )
         .regex(
             /^[A-Z0-9\-_]+$/,
-            "tagName must contain only uppercase letters, numbers, hyphen, or underscore"
+            "code must contain only uppercase letters, numbers, hyphen, or underscore"
         ),
 
 
-    equipmentType: z.string({ error: "equipmentType is required." }).trim(),
+    capacity: z.string({ error: "Capacity is required." }).trim(),
 
     unitId: z.string({ error: "Unit is required." }).trim()
 });
 
 export type EquipmentSchema = z.infer<typeof equipmentSchema>;
+
+
+export const equipmentAssignmentSchema = z.object({
+    equipmentId: z.string({ error: "Equipment is required." }).trim(),
+    unitId: z.string({ error: "Unit is required." }).trim(),
+});
+
+export type EquipmentAssignmentSchema = z.infer<typeof equipmentAssignmentSchema>;
+
+export type AssignEquipmentSchema = EquipmentAssignmentSchema;
+export type UnAssignEquipmentSchema = EquipmentAssignmentSchema;

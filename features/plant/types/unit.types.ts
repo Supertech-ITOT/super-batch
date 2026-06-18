@@ -1,7 +1,9 @@
-import { UnitConnectionResponse } from "./unit-connection.types";
 import { UomResponse } from "./uom.types";
 
-
+export interface UnitSummaryResponse {
+    id: number;
+    name: string;
+}
 
 export interface UnitResponse {
     id: number;

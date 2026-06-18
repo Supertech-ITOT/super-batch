@@ -1,14 +1,24 @@
-import { UomResponse } from "./uom.types";
+import { UnitSummaryResponse } from "./unit.types";
 
+
+
+export interface AssignEquipmentRequest {
+    unitId: number;
+    equipmentId: number;
+}
+
+export interface UnAssignEquipmentRequest {
+    unitId: number;
+    equipmentId: number;
+}
 
 export interface EquipmentResponse {
     id: number;
     name: string;
+    code: string;
     description: string;
-    tagName: string;
-    equipmentType: string;
-    unitId: number;
-    unitName: string;
+    capacity: number;
+    units: UnitSummaryResponse[];
     createdAt: string;
     updatedAt: string;
 }
@@ -16,14 +26,14 @@ export interface EquipmentResponse {
 export interface CreateEquipmentRequest {
     name: string;
     description: string;
-    tagName: string;
-    equipmentType: string;
+    code: string;
+    capacity: number;
     unitId: number;
 }
 export interface UpdateEquipmentRequest {
     name: string;
     description: string;
-    tagName: string;
-    equipmentType: string;
+    code: string;
+    capacity: number;
     unitId: number;
 }

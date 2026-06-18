@@ -12,37 +12,41 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class EquipmentMapper {
+    private final UnitMapper unitMapper;
+
     public EquipmentResponse toResponse(Equipment equipment) {
-        return new EquipmentResponse(
-                equipment.getId(),
-                equipment.getName(),
-                equipment.getTagName(),
-                equipment.getDescription(),
-                equipment.getUnit().getName(),
-                equipment.getUnit().getId(),
-                equipment.getEquipmentType(),
-                equipment.getCreatedAt(),
-                equipment.getUpdatedAt()
-
-        );
-    }
-
-    public Equipment toEntity(CreateEquipmentRequest request, Unit unit) {
-
-        return Equipment.builder()
-                .name(request.name())
-                .description(request.description())
-                .tagName(request.tagName())
-                .equipmentType(request.equipmentType())
-                .unit(unit)
+        return EquipmentResponse.builder()
+                .id(equipment.getId())
+                .name(equipment.getName())
+                .code(equipment.getCode())
+                .description(equipment.getDescription())
+                .capacity(equipment.getCapacity())
+                .units(equipment.getUnits()
+                        .stream()
+                        .map(unitMapper::toUnitSummaryResponse)
+                        .toList())
+                .createdAt(equipment.getCreatedAt())
+                .updatedAt(equipment.getUpdatedAt())
                 .build();
     }
 
-    public void updateEntity(Equipment equipment, UpdateEquipmentRequest request, Unit unit) {
+    public Equipment toEntity(CreateEquipmentRequest request, Unit unit) {
+        Equipment equipment = Equipment.builder()
+                .name(request.name())
+                .code(request.code())
+                .description(request.description())
+                .capacity(request.capacity())
+                .build();
+
+        equipment.getUnits().add(unit);
+
+        return equipment;
+    }
+
+    public void updateEntity(Equipment equipment, UpdateEquipmentRequest request) {
         equipment.setName(request.name());
         equipment.setDescription(request.description());
-        equipment.setTagName(request.tagName());
-        equipment.setEquipmentType(request.equipmentType());
-        equipment.setUnit(unit);
+        equipment.setCode(request.code());
+        equipment.setCapacity(request.capacity());
     }
 }

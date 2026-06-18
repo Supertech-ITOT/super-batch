@@ -9,6 +9,8 @@ import UpdateAreaDialog from "./menu-dialog/area/update-area-dialog";
 import CreateEquipmentDialog from "./menu-dialog/equipment/create-equipment-dialog";
 import UpdateEquipmentDialog from "./menu-dialog/equipment/update-equipment-dialog";
 import { DialogType } from "../types/plant-hierarchy.types";
+import AssignEquipmentDialog from "./menu-dialog/equipment/assign-equipment-dialog";
+import UnAssignEquipmentDialog from "./menu-dialog/equipment/unassign-equipment-dialog copy";
 
 type Props = { dialog: DialogType, onClose: () => void; redirect?: boolean };
 export default function TreeDialogs({ dialog, onClose, redirect }: Props) {
@@ -33,9 +35,48 @@ export default function TreeDialogs({ dialog, onClose, redirect }: Props) {
 
 
         case "unit":
-            return dialog.mode === "create"
-                ? <CreateUnitDialog open onClose={onClose} areaId={node?.id} />
-                : <UpdateUnitDialog open onClose={onClose} unitId={node?.id} />
+
+            if (dialog.mode === "create") {
+                return (
+                    <CreateUnitDialog
+                        open
+                        onClose={onClose}
+                        areaId={node?.id}
+                    />
+                );
+            }
+
+            if (dialog.mode === "edit") {
+                return (
+                    <UpdateUnitDialog
+                        open
+                        onClose={onClose}
+                        unitId={node?.id}
+                    />
+                );
+            }
+
+            if (dialog.mode === "assign") {
+                return (
+                    <AssignEquipmentDialog
+                        open
+                        onClose={onClose}
+                        unitId={node?.id!}
+                    />
+                );
+            }
+
+            if (dialog.mode === "unassign") {
+                return (
+                    <UnAssignEquipmentDialog
+                        open
+                        onClose={onClose}
+                        unitId={node?.id!}
+                    />
+                );
+            }
+
+            return null;
 
 
         case "equipment":

@@ -75,14 +75,15 @@ export default function EquipmentView({ id }: { id: number }) {
 
 
                     <div className="rounded-xl border bg-card p-4">
-                        <p className="text-xs text-muted-foreground">Parent Name</p>
-                        <p className="text-sm font-semibold">{equipment.unitName}</p>
+                        <p className="text-xs text-muted-foreground">
+                            Assigned Units
+                        </p>
+                        <p className="text-sm font-semibold">
+                            {equipment.units?.length ?? 0}
+                        </p>
                     </div>
 
-                    <div className="rounded-xl border bg-card p-4">
-                        <p className="text-xs text-muted-foreground">Parent ID</p>
-                        <p className="text-sm font-semibold">{equipment.unitId}</p>
-                    </div>
+
                     <div className="rounded-xl border bg-card p-4">
                         <p className="text-xs text-muted-foreground">Capacity</p>
                         <p className="text-sm font-semibold">

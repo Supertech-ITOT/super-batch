@@ -3,7 +3,7 @@ import { Button } from "@/common/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
 import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
-import { Controller, FieldErrors, useForm } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import { useEffect } from "react";
@@ -14,18 +14,15 @@ import { useGetEquipmentById, useUpdateEquipment } from "../../../hooks/use-equi
 import { equipmentSchema, EquipmentSchema, EquipmentSchemaLimit } from "../../../schemas/equipment-schema";
 import CharacterProgress from "@/common/components/form/character-progress";
 import { Textarea } from "@/common/components/ui/textarea";
-import { useGetEquipmentTypes } from "@/features/common/hooks/useMetadata";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/common/components/ui/select";
 
 type Props = { open: boolean; onClose: () => void; equipmentId?: number };
 export default function UpdateEquipmentDialog({ open, onClose, equipmentId }: Props) {
     const { mutateAsync: updateEquipment, isPending: isUpdating } = useUpdateEquipment();
-    const { data: equipments, isLoading: equipmentsLoading } = useGetEquipmentTypes();
     const { data: units, isLoading: unitsLoading } = useGetUnits(open);
     const { data: equipment, isLoading: equipmentLoading } = useGetEquipmentById(equipmentId);
-    const { register, handleSubmit, reset, control, watch, formState: { isSubmitting, isDirty } } = useForm<EquipmentSchema>({
+    const { register, handleSubmit, reset, watch, formState: { isSubmitting, isDirty } } = useForm<EquipmentSchema>({
         resolver: zodResolver(equipmentSchema),
-        defaultValues: { name: "", unitId: "", equipmentType: "", description: "", tagName: "" }
+        defaultValues: { name: "", unitId: "", capacity: "", description: "", code: "" }
     });
 
     useEffect(() => {
@@ -33,23 +30,23 @@ export default function UpdateEquipmentDialog({ open, onClose, equipmentId }: Pr
         reset({
             name: equipment.name,
             unitId: String(equipment.unitId),
-            equipmentType: equipment.equipmentType,
+            capacity: String(equipment.capacity),
             description: equipment.description,
-            tagName: equipment.tagName,
+            code: equipment.code,
         });
 
     }, [open, equipment, units, reset]);
-    const loading = isUpdating || unitsLoading || equipmentLoading || isSubmitting || equipmentsLoading;
+    const loading = isUpdating || unitsLoading || equipmentLoading || isSubmitting;
 
     const onSubmit = async (formData: EquipmentSchema) => {
         try {
             const res = await updateEquipment({
                 id: equipmentId!, data: {
                     name: formData.name,
-                    equipmentType: formData.equipmentType,
+                    capacity: Number(formData.capacity),
                     unitId: Number(formData.unitId),
                     description: formData.description,
-                    tagName: formData.tagName,
+                    code: formData.code,
                 }
             });
             toast.success(res.message ?? "Equipment updated successfully.");
@@ -60,7 +57,7 @@ export default function UpdateEquipmentDialog({ open, onClose, equipmentId }: Pr
     };
 
     const handleClose = () => {
-        reset({ name: "", unitId: "", equipmentType: "", description: "", tagName: "" });
+        reset({ name: "", unitId: "", capacity: "", description: "", code: "" });
         onClose();
     };
 
@@ -96,43 +93,33 @@ export default function UpdateEquipmentDialog({ open, onClose, equipmentId }: Pr
                         <div className="flex gap-2">
                             <div className="space-y-2 relative flex-1">
                                 <div className="flex items-center justify-between">
-                                    <Label>Tag Name</Label>
-                                    <CharacterProgress value={watch("tagName")} max={EquipmentSchemaLimit.tagName.max} />
+                                    <Label>Code</Label>
+                                    <CharacterProgress value={watch("code")} max={EquipmentSchemaLimit.code.max} />
                                 </div>
                                 <Input
                                     type="text"
                                     disabled={loading}
-                                    placeholder="TT101"
-                                    maxLength={EquipmentSchemaLimit.tagName.max}
-                                    {...register("tagName")}
+                                    placeholder="T101"
+                                    maxLength={EquipmentSchemaLimit.code.max}
+                                    {...register("code")}
                                 />
                             </div>
-                            <div className="space-y-2 relative flex-1">
-                                <Label>Equipment Type</Label>
-                                <Controller
-                                    control={control}
-                                    name="equipmentType"
-                                    render={({ field }) => (
-                                        <Select
-                                            disabled={loading}
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Equipment Type" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {equipments?.map((e) => (
-                                                        <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
+                            <div className="space-y-2 flex-1">
+                                <div className="flex items-center justify-between">
+                                    <Label>Capacity</Label>
+                                </div>
+                                <div className="flex">
+                                    <Input
+                                        type="number"
+                                        placeholder="1000"
+                                        className="rounded-r-none"
+                                        {...register("capacity")}
+                                    />
+                                    <div className="flex items-center px-3 border border-l-0 rounded-r-md bg-muted text-sm">
+                                        kg
+                                    </div>
+                                </div>
                             </div>
-
                         </div>
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
