@@ -1,7 +1,10 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { login, logout } from "../services/auth.service";
+import { queryKeys } from "./query-keys";
 
 export const useLogin = () => {
+    const queryClient = useQueryClient();
+
     return useMutation({
         mutationFn: login,
         onSuccess: (res) => {
@@ -9,6 +12,9 @@ export const useLogin = () => {
                 "user",
                 JSON.stringify(res.data)
             );
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.users,
+            });
         }
     });
 };
