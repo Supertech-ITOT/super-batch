@@ -1,16 +1,15 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import { ActionResponse } from "@/features/plant/types/action.types"; import { MoreHorizontal } from "lucide-react"
+import { MoreHorizontal } from "lucide-react"
 import { Button } from "@/common/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/common/components/ui/dropdown-menu"
 import { DialogProp } from "./role-view";
-
-
-
+import { format } from "date-fns";
+import { RoleResponse } from "@/features/manager/types/role.types";
 
 export const columns = (
     setDialog: React.Dispatch<React.SetStateAction<DialogProp>>
-): ColumnDef<ActionResponse>[] => [
+): ColumnDef<RoleResponse>[] => [
         {
             id: "srNo",
             header: "Sr. No.",
@@ -35,6 +34,11 @@ export const columns = (
         {
             accessorKey: "createdAt",
             header: "CreatedAt",
+            cell: ({ row }) => {
+                const value = row.original.createdAt;
+
+                return format(new Date(value), "dd MMM yyyy hh:mm a");
+            }
         },
         {
             id: "actions",
@@ -57,6 +61,7 @@ export const columns = (
                                 e.stopPropagation(); setDialog({
                                     action: "edit",
                                     id: role.id,
+                                    open: true
                                 });
                             }}>
                                 Edit</DropdownMenuItem>
@@ -65,6 +70,7 @@ export const columns = (
                                 e.stopPropagation(); setDialog({
                                     action: "delete",
                                     id: role.id,
+                                    open: true
                                 });
                             }}>
                                 Delete</DropdownMenuItem>

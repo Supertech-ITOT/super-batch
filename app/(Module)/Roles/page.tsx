@@ -1,7 +1,7 @@
 import { Button } from "@/common/components/ui/button";
 import RoleView from "@/features/manager/component/view/role/role-view";
 
-import { Plus, Shield, } from "lucide-react";
+import { ShieldCheck, } from "lucide-react";
 
 export default function RolePage() {
     return (
@@ -10,7 +10,7 @@ export default function RolePage() {
             <div>
                 <div className="shrink-0 border-b p-6">
                     <div className="flex gap-2 items-center">
-                        <Shield className="w-6 h-6" />
+                        <ShieldCheck className="w-6 h-6" />
                         <h1 className="text-xl font-bold">
                             Role Management
                         </h1>
@@ -19,13 +19,6 @@ export default function RolePage() {
                     <p className="text-sm text-muted-foreground">
                         Create, manage and configure roles and their permissions.
                     </p>
-
-                    <div className="flex justify-end mt-0 ">
-                        <Button className="-mt-7 hover:bg-primary text-white">
-                            <Plus className="h-5 w-5 mr-2 " />
-                            Add Role
-                        </Button>
-                    </div>
                 </div>
             </div>
             {/* content */}
