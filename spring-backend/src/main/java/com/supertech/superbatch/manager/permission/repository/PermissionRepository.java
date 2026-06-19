@@ -9,13 +9,15 @@ import com.supertech.superbatch.manager.permission.entity.Permission;
 
 public interface PermissionRepository extends JpaRepository<Permission, Long> {
 
-    List<Permission> findByRoleId(Long roleId);
+        List<Permission> findByRoleId(Long roleId);
 
-    boolean existsByRoleIdAndModuleId(
-            Long roleId,
-            Long moduleId);
+        boolean existsByRoleIdAndModuleId(
+                        Long roleId,
+                        Long moduleId);
 
-    Optional<Permission> findByRoleIdAndModuleId(
-            Long roleId,
-            Long moduleId);
+        Optional<Permission> findByRoleIdAndModuleId(
+                        Long roleId,
+                        Long moduleId);
+
+        void deleteByRoleId(Long roleId);
 }

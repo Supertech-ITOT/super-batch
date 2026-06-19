@@ -8,15 +8,13 @@ import lombok.Builder;
 @Builder
 public record UserRequest(
 
-        @NotBlank(message = "Name is required") String name,
+                @NotBlank(message = "Name is required") String name,
 
-        @NotBlank(message = "Email is required") @Email(message = "Invalid email format") String email,
+                @NotBlank(message = "Email is required") @Email(message = "Invalid email format") String email,
 
-        @NotBlank(message = "Password is required") String password,
+                @NotBlank(message = "Password is required") String password,
 
-        @NotNull(message = "Role is required") Long roleId,
-
-        Boolean enabled
+                @NotNull(message = "Role is required") Long roleId
 
 ) {
 }

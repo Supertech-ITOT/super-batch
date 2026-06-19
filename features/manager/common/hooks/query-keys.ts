@@ -1,4 +1,6 @@
 export const queryKeys = {
+    modules: ["modules"] as const,
+
     permissions: ["permissions"] as const,
 
     roles: ["roles"] as const,

@@ -2,14 +2,14 @@ package com.supertech.superbatch.manager.role.controller;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.supertech.superbatch.common.dto.ApiResponse;
-import com.supertech.superbatch.manager.role.dto.RoleRequest;
+import com.supertech.superbatch.manager.role.dto.RoleCreateRequest;
 import com.supertech.superbatch.manager.role.dto.RoleResponse;
+import com.supertech.superbatch.manager.role.dto.RoleUpdateRequest;
 import com.supertech.superbatch.manager.role.service.RoleService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,10 +25,10 @@ public class RoleController {
         @GetMapping
         public ResponseEntity<ApiResponse<List<RoleResponse>>> getAll() {
 
-                List<RoleResponse> roles = roleService.getAll();
-
                 return ResponseEntity.ok(
-                                ApiResponse.success("Roles fetched successfully", roles));
+                                ApiResponse.success(
+                                                "Roles fetched successfully",
+                                                roleService.getAll()));
         }
 
         @GetMapping("/{id}")
@@ -43,23 +43,26 @@ public class RoleController {
 
         @PostMapping
         public ResponseEntity<ApiResponse<Void>> create(
-                        @Validated @RequestBody RoleRequest request) {
+                        @Validated @RequestBody RoleCreateRequest request) {
 
                 roleService.create(request);
 
-                return ResponseEntity.status(HttpStatus.CREATED)
-                                .body(ApiResponse.success("Role created successfully", null));
+                return ResponseEntity.ok(ApiResponse.success(
+                                "Role created successfully",
+                                null));
         }
 
         @PutMapping("/{id}")
         public ResponseEntity<ApiResponse<Void>> update(
                         @PathVariable Long id,
-                        @Validated @RequestBody RoleRequest request) {
+                        @Validated @RequestBody RoleUpdateRequest request) {
 
                 roleService.update(id, request);
 
                 return ResponseEntity.ok(
-                                ApiResponse.success("Role updated successfully", null));
+                                ApiResponse.success(
+                                                "Role updated successfully",
+                                                null));
         }
 
         @DeleteMapping("/{id}")
@@ -69,6 +72,8 @@ public class RoleController {
                 roleService.delete(id);
 
                 return ResponseEntity.ok(
-                                ApiResponse.success("Role deleted successfully", null));
+                                ApiResponse.success(
+                                                "Role deleted successfully",
+                                                null));
         }
 }

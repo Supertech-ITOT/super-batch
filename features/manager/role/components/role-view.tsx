@@ -11,6 +11,7 @@ import DeleteRoleDialog from "./delete-role-dialog";
 import CreateRoleDialog from "./create-role-dialog";
 import { Separator } from "@/common/components/ui/separator";
 import { Skeleton } from "@/common/components/ui/skeleton";
+import { useGetModules } from "../../module/hooks/use-module";
 
 export type DialogProp = {
     action: "create" | "edit" | "delete" | null;
@@ -18,10 +19,12 @@ export type DialogProp = {
     open: boolean
 }
 export default function RoleView() {
-    const { data: roles, isLoading } = useGetRoles();
+    const { data: roles, isLoading: rolesIsLoading } = useGetRoles();
+    const { data: modules, isLoading: modulesIsLoading } = useGetModules();
     const [dialog, setDialog] = useState<DialogProp>({ action: null, id: null, open: false });
     const closeDialog = () => setDialog({ open: false, id: null, action: null })
-    if (!roles || isLoading) {
+    const loading = !roles || !modules || rolesIsLoading || modulesIsLoading;
+    if (loading) {
         return (
             <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none flex flex-col">
                 {/* Stats Cards */}
@@ -45,7 +48,7 @@ export default function RoleView() {
     }
     return (
         <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none flex-col">
-            <RoleStat data={roles} isLoading={isLoading} />
+            <RoleStat totalRole={roles.length} totalModule={modules.length} />
             <Separator className="my-4" />
             <div className="flex-1 min-h-0 ">
                 <DataTable

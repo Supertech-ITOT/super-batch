@@ -13,7 +13,8 @@ import com.supertech.superbatch.manager.role.entity.Role;
 public class PermissionMapper {
     public PermissionResponse toResponse(Permission permission) {
         return PermissionResponse.builder()
-                .module(permission.getModule().getName())
+                .moduleId(permission.getModule().getId())
+                .moduleName(permission.getModule().getName())
                 .canRead(permission.isCanRead())
                 .canWrite(permission.isCanWrite())
                 .build();

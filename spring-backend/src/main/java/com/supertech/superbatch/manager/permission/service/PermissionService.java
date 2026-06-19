@@ -4,7 +4,8 @@ import java.util.List;
 
 import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.permission.dto.PermissionRequest;
-import com.supertech.superbatch.manager.permission.dto.PermissionResponse;
+import com.supertech.superbatch.manager.permission.entity.Permission;
+import com.supertech.superbatch.manager.role.entity.Role;
 
 public interface PermissionService {
 
@@ -12,14 +13,10 @@ public interface PermissionService {
 
     void checkWritePermission(Long userId, ModuleType module);
 
-    List<PermissionResponse> getUserPermissions(Long userId);
+    void savePermissions(Role role, List<PermissionRequest> requests);
 
-    List<PermissionResponse> getAll();
+    void deletePermissions(Long roleId);
 
-    void create(PermissionRequest request);
-
-    void update(Long id, PermissionRequest request);
-
-    void delete(Long id);
+    List<Permission> getByRoleId(Long roleId);
 
 }

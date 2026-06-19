@@ -1,19 +1,28 @@
 package com.supertech.superbatch.manager.role.mapper;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
+import com.supertech.superbatch.manager.permission.entity.Permission;
+import com.supertech.superbatch.manager.permission.mapper.PermissionMapper;
 import com.supertech.superbatch.manager.role.dto.RoleRequest;
 import com.supertech.superbatch.manager.role.dto.RoleResponse;
 import com.supertech.superbatch.manager.role.entity.Role;
 
-@Component
-public class RoleMapper {
+import lombok.RequiredArgsConstructor;
 
-    public RoleResponse toResponse(Role role) {
+@Component
+@RequiredArgsConstructor
+public class RoleMapper {
+    private final PermissionMapper permissionMapper;
+
+    public RoleResponse toResponse(Role role, List<Permission> permissions) {
         return RoleResponse.builder()
                 .id(role.getId())
                 .name(role.getName())
                 .description(role.getDescription())
+                .permissions(permissionMapper.toResponseList(permissions))
                 .createdAt(role.getCreatedAt())
                 .updatdeAt(role.getUpdatedAt())
                 .build();

@@ -1,15 +1,12 @@
 export interface PermissionRequest {
-    roleId: number;
-    module: string;
+    moduleId: number;
     canRead: boolean;
     canWrite: boolean;
 }
 
 export interface PermissionResponse {
-    id: number;
-    roleId: number;
-    roleName: string;
-    module: string;
+    moduleId: number;
+    moduleName: string;
     canRead: boolean;
     canWrite: boolean;
 }

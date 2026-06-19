@@ -6,3 +6,8 @@ export enum ModuleType {
     RECIPE = "RECIPE",
     SCHEDULER = "SCHEDULER"
 }
+
+export interface ModuleResponse {
+    id: number;
+    name: string;
+}

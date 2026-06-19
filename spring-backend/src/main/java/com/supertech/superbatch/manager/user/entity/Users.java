@@ -29,9 +29,6 @@ public class Users {
     @Column(nullable = false)
     private String password;
 
-    @Builder.Default
-    private boolean enabled = true;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;

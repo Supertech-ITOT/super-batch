@@ -7,6 +7,8 @@ import { DialogProp } from "./role-view";
 import { format } from "date-fns";
 import { RoleResponse } from "@/features/manager/role/types/role.types";
 
+
+
 export const columns = (
     setDialog: React.Dispatch<React.SetStateAction<DialogProp>>
 ): ColumnDef<RoleResponse>[] => [
@@ -24,19 +26,31 @@ export const columns = (
             header: "Description",
         },
         {
-            accessorKey: "users",
-            header: "Users",
-        },
-        {
-            accessorKey: "permission",
+            id: "permission",
             header: "Permission",
+            cell: ({ row }) => {
+                const permissions = row.original.permissions;
+                const assigned = permissions.reduce(
+                    (count, p) => count + (p.canRead ? 1 : 0) + (p.canWrite ? 1 : 0), 0
+                );
+                const total = permissions.length * 2;
+                return `${assigned}/${total}`;
+            },
         },
         {
             accessorKey: "createdAt",
-            header: "CreatedAt",
+            header: "Created At",
             cell: ({ row }) => {
                 const value = row.original.createdAt;
 
+                return format(new Date(value), "dd MMM yyyy hh:mm a");
+            }
+        },
+        {
+            accessorKey: "updatedAt",
+            header: "Last Updated",
+            cell: ({ row }) => {
+                const value = row.original.updatdeAt;
                 return format(new Date(value), "dd MMM yyyy hh:mm a");
             }
         },

@@ -6,13 +6,11 @@ import lombok.Builder;
 @Builder
 public record PermissionRequest(
 
-                @NotNull(message = "Role is required") Long roleId,
+        @NotNull(message = "Module is required") Long moduleId,
 
-                @NotNull(message = "Module is required") Long moduleId,
+        boolean canRead,
 
-                boolean canRead,
-
-                boolean canWrite
+        boolean canWrite
 
 ) {
 }

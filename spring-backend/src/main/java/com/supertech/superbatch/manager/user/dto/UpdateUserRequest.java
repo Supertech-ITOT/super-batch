@@ -6,13 +6,11 @@ import jakarta.validation.constraints.NotNull;
 
 public record UpdateUserRequest(
 
-        @NotBlank(message = "Name is required") String name,
+                @NotBlank(message = "Name is required") String name,
 
-        @NotBlank(message = "Email is required") @Email(message = "Invalid email format") String email,
+                @NotBlank(message = "Email is required") @Email(message = "Invalid email format") String email,
 
-        @NotNull(message = "Role is required") Long roleId,
-
-        Boolean enabled
+                @NotNull(message = "Role is required") Long roleId
 
 ) {
 }

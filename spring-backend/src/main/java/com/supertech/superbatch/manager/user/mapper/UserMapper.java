@@ -16,7 +16,6 @@ public class UserMapper {
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
-                .enabled(user.isEnabled())
                 .roleId(user.getRole().getId())
                 .roleName(user.getRole().getName())
                 .createdById(
@@ -38,7 +37,6 @@ public class UserMapper {
                 .name(request.name())
                 .email(request.email())
                 .password(encodedPassword)
-                .enabled(request.enabled() == null ? true : request.enabled())
                 .role(role)
                 .createdBy(createdBy)
                 .build();
@@ -48,8 +46,5 @@ public class UserMapper {
         user.setName(request.name());
         user.setEmail(request.email());
         user.setRole(role);
-        if (request.enabled() != null) {
-            user.setEnabled(request.enabled());
-        }
     }
 }
