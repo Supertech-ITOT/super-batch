@@ -45,8 +45,8 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, setDia
                     }
                     className="max-w-sm"
                 />
-                <div className="flex justify-end mt-0 ">
-                    <Button className="-mt-7 hover:bg-primary text-white" onClick={() => setDialog({ action: "create", id: null, open: true })}>
+                <div className="flex mt-0 self-end ml-auto">
+                    <Button className="-mt-7 hover:bg-primary  text-white" onClick={() => setDialog({ action: "create", id: null, open: true })}>
                         <Plus className="h-5 w-5 mr-2 " />
                         Add User
                     </Button>

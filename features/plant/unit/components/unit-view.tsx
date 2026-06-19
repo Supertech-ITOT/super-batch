@@ -24,7 +24,46 @@ export default function UnitView({ id }: { id: number }) {
     const loading = unitIsLoading || equipmentsIsLoading || !unit || !equipments
     if (loading) {
         return (
-            <Skeleton className="h-full" />
+            <div className="flex justify-between rounded-lg shadow border flex-col h-full w-full bg-card p-4 overflow-y-auto scrollbar-none">
+                {/* Header */}
+                <div className="flex justify-between flex-wrap gap-2 my-4">
+                    <div className="flex gap-3">
+                        <Skeleton className="size-28 rounded-md shrink-0" />
+
+                        <div className="flex flex-col gap-2">
+                            <Skeleton className="h-6 w-48" />
+                            <Skeleton className="h-4 w-40" />
+                            <Skeleton className="h-4 w-56" />
+                            <Skeleton className="h-4 w-72" />
+                            <Skeleton className="h-4 w-80" />
+                        </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                        <Skeleton className="h-10 w-28" />
+                        <Skeleton className="h-10 w-28" />
+                    </div>
+                </div>
+
+                <Separator className="my-4" />
+
+                {/* Stats */}
+                <div className="flex gap-4 overflow-hidden">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                        <Skeleton
+                            key={index}
+                            className="h-28 w-72 rounded-lg shrink-0"
+                        />
+                    ))}
+                </div>
+
+                <Separator className="my-4" />
+
+                {/* Table */}
+                <div className="flex-1 min-h-0">
+                    <Skeleton className="h-full w-full rounded-lg" />
+                </div>
+            </div>
         );
     }
 

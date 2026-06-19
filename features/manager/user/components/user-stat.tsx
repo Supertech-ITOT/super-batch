@@ -6,7 +6,7 @@ import {
     CarouselItem,
 } from "@/common/components/ui/carousel";
 import { UserResponse } from "@/features/manager/user/types/user.types";
-export default function UserStat({ data, isLoading }: { data: UserResponse[]; isLoading: boolean }) {
+export default function UserStat({ data }: { data: UserResponse[]; }) {
 
     const stats = [
         {
@@ -17,9 +17,6 @@ export default function UserStat({ data, isLoading }: { data: UserResponse[]; is
             clr: "#1D4ED8",
         }
     ];
-    if (isLoading) {
-        return <div>Loading...</div>
-    }
 
     return (
         <Carousel opts={{ align: "start", dragFree: true, }} className="w-full">

@@ -47,7 +47,32 @@ export default function ProcessView() {
     const loading = parametersLoading || transitionsLoading || actionsLoading || !parameters || !transitions || !actions;
     if (loading) {
         return (
-            <Skeleton className="h-full" />
+            <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none">
+                <div className="grid grid-cols-1 gap-4 2xl:grid-cols-3 2xl:h-full ">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                        <div
+                            key={index}
+                            className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none flex-col"
+                        >
+                            <div className="flex justify-between">
+                                <div className="flex gap-4">
+                                    <Skeleton className="size-28 flex items-center justify-center border rounded-md shadow shrink-0" />
+                                    <div className="flex flex-col gap-2">
+                                        <Skeleton className="h-6 w-40" />
+                                        <Skeleton className="h-6 w-70" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Separator className="my-4" />
+
+                            <Skeleton className="h-full" />
+                        </div>
+                    ))}
+
+                </div>
+            </div>
+
         );
     }
 

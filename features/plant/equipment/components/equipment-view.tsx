@@ -19,7 +19,43 @@ export default function EquipmentView({ id }: { id: number }) {
     const loading = equipmentIsLoading || !equipment
     if (loading) {
         return (
-            <Skeleton className="h-full" />
+            <div className="flex justify-between rounded-lg shadow border flex-col h-full w-full bg-card p-4 overflow-y-auto scrollbar-none">
+                {/* Header */}
+                <div className="flex justify-between flex-wrap gap-2 my-4">
+                    <div className="flex gap-3">
+                        <Skeleton className="size-28 rounded-md shrink-0" />
+
+                        <div className="flex flex-col gap-2">
+                            <Skeleton className="h-7 w-48" />
+                            <Skeleton className="h-4 w-80" />
+                        </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                        <Skeleton className="h-10 w-28" />
+                        <Skeleton className="h-10 w-28" />
+                    </div>
+                </div>
+
+                <Separator />
+
+                {/* Equipment Detail Section */}
+                <div className="flex-1 my-4 border rounded-md p-4">
+                    <Skeleton className="h-6 w-40 mb-4" />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {Array.from({ length: 7 }).map((_, index) => (
+                            <div
+                                key={index}
+                                className="rounded-xl border p-4"
+                            >
+                                <Skeleton className="h-3 w-20 mb-2" />
+                                <Skeleton className="h-5 w-32" />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
         );
     }
     return (

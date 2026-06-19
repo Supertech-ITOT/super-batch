@@ -23,12 +23,29 @@ export default function UserView() {
         setDialog({ open: false, action: null, id: null, });
     if (!users || isLoading) {
         return (
-            <Skeleton />
-        )
+            <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none flex flex-col">
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                    {Array.from({ length: 4 }).map((_, index) => (
+                        <Skeleton
+                            key={index}
+                            className="h-28 rounded-lg"
+                        />
+                    ))}
+                </div>
+
+                <Separator className="my-4" />
+
+                {/* Full Table Skeleton */}
+                <div className="flex-1 min-h-0">
+                    <Skeleton className="h-full w-full rounded-lg" />
+                </div>
+            </div>
+        );
     }
     return (
         <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none flex-col">
-            <UserStat isLoading={isLoading} data={users} />
+            <UserStat data={users} />
             <Separator className="my-4" />
             <div className="flex-1 min-h-0 my-4">
                 <DataTable
