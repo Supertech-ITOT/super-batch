@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
 import CharacterProgress from "@/common/components/form/character-progress";
 import { userSchema, UserSchema, UserSchemaLimit } from "@/features/manager/user/schemas/user-schema";
-import { useCreateUser, useGetUsersById } from "@/features/manager/user/hooks/use-user";
+import { useCreateUser } from "@/features/manager/user/hooks/use-user";
 import { useState } from "react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/common/components/ui/select";
 import { useGetRoles } from "@/features/manager/role/hooks/use-role";
