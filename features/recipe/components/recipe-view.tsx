@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import DataTable from "./data-table";
-import { recipeColumns } from "./recipe-columns";
 import { useGetRecipes } from "../hooks/use-recipe";
 import { Skeleton } from "@/common/components/ui/skeleton";
 import { Separator } from "@/common/components/ui/separator";
 import CreateRecipeDialog from "./create-recipe-dialog";
 import UpdateRecipeDialog from "./update-recipe";
 import DeleteRecipeDialog from "./delete-recipe-dialog";
+import { recipeColumns } from "./recipe-columns";
 
 export type DialogProp = {
     action: "create" | "edit" | "delete" | null;
@@ -45,7 +45,7 @@ export default function RecipeView() {
         <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none flex-col">
             <div className="flex-1 min-h-0 my-4">
                 <DataTable
-                    columns={recipeColumns}
+                    columns={recipeColumns(setDialog)}
                     data={recipes}
                     setDialog={setDialog}
                 />

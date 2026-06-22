@@ -6,8 +6,8 @@ export interface RecipeResponse {
     status: string;
     batchSize: number;
     batchSizeUom: string;
-    createdBy: string;
-    lastModified: string
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface CreateRecipeRequest {
