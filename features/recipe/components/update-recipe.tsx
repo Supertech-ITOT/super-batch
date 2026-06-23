@@ -107,7 +107,7 @@ export default function UpdateRecipeDialog({ open, onClose, recipeId }: Props) {
                                         value={field.value}
                                         onValueChange={field.onChange}
                                     >
-                                        <SelectTrigger>
+                                        <SelectTrigger className="h-10 w-full">
                                             <SelectValue placeholder="Select UOM" />
                                         </SelectTrigger>
 
