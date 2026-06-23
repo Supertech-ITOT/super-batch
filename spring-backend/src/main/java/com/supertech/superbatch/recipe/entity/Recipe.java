@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.supertech.superbatch.common.enums.UomType;
+import com.supertech.superbatch.recipe.enums.RecipeStatus;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -36,15 +37,15 @@ public class Recipe {
 
     private Integer version;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private RecipeStatus status;
 
     private Double batchSize;
 
     @Enumerated(EnumType.STRING)
     private UomType batchSizeUom;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+    private String createdBy;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;

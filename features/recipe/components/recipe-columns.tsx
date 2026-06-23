@@ -33,17 +33,8 @@ export const recipeColumns = (
             header: "Version",
         },
         {
-            accessorKey: "createdAt",
-            header: "Created At",
-            cell: ({ row }) => {
-                const value = row.original.createdAt;
-
-                if (!value || new Date(value).getTime() === 0) {
-                    return "-";
-                }
-
-                return format(new Date(value), "dd MMM yyyy hh:mm a");
-            }
+            accessorKey: "createdBy",
+            header: "Created By",
         },
         {
             accessorKey: "updatedAt",

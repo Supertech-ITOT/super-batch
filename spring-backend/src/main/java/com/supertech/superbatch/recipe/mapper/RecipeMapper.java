@@ -18,7 +18,7 @@ public class RecipeMapper {
     }
 
     public RecipeResponse toResponse(Recipe recipe) {
-        return RecipeResponse.builder() 
+        return RecipeResponse.builder()
                 .id(recipe.getId())
                 .name(recipe.getName())
                 .description(recipe.getDescription())
@@ -26,7 +26,7 @@ public class RecipeMapper {
                 .status(recipe.getStatus())
                 .batchSize(recipe.getBatchSize())
                 .batchSizeUom(recipe.getBatchSizeUom())
-                .createdAt(recipe.getCreatedAt())
+                .createdBy(recipe.getCreatedBy())
                 .updatedAt(recipe.getUpdatedAt())
                 .build();
     }

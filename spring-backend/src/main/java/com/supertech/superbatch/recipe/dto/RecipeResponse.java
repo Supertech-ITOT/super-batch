@@ -3,6 +3,7 @@ package com.supertech.superbatch.recipe.dto;
 import java.time.LocalDateTime;
 
 import com.supertech.superbatch.common.enums.UomType;
+import com.supertech.superbatch.recipe.enums.RecipeStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,13 +26,13 @@ public class RecipeResponse {
 
     private Integer version;
 
-    private String status;
+    private RecipeStatus status;
 
     private Double batchSize;
 
     private UomType batchSizeUom;
 
-    private LocalDateTime createdAt;
+    private String createdBy;
 
     private LocalDateTime updatedAt;
 }

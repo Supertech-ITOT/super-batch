@@ -6,7 +6,7 @@ export interface RecipeResponse {
     status: string;
     batchSize: number;
     batchSizeUom: string;
-    createdAt: string;
+    createdBy: string;
     updatedAt: string;
 }
 
