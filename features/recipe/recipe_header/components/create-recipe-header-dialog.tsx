@@ -12,23 +12,30 @@ import { Textarea } from "@/common/components/ui/textarea";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/common/components/ui/select";
 import { Button } from "@/common/components/ui/button";
 import { Loader } from "lucide-react";
+import { useGetMaterials } from "@/features/plant/material/hooks/use-materials";
+import { useGetUnits } from "@/features/plant/unit/hooks/use-units";
 
 type Props = { open: boolean; onClose: () => void; };
 export default function CreateRecipeHeaderDialog({ open, onClose }: Props) {
     const { mutateAsync: createRecipe, isPending: isCreating } = useCreateRecipeHeader();
+    const { data: units, isLoading: isLoadingUnits } = useGetUnits();
+    const { data: materials, isLoading: isLoadingMaterials } = useGetMaterials();
     const { register, handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty } } = useForm<RecipeSchema>({
         resolver: zodResolver(recipeHeaderSchema),
-        defaultValues: { name: "", description: "", batchSize: 0, batchSizeUom: "", }
+        defaultValues: { name: "", description: "", batchSize: "", materialId: "", unitId: "", status: "" }
     });
-    const loading = isSubmitting || isCreating;
+    const loading = isSubmitting || isCreating || isLoadingMaterials || isLoadingUnits;
 
     const onSubmit = async (formData: RecipeSchema) => {
         try {
             const res = await createRecipe({
                 name: formData.name,
                 description: formData.description,
-                batchSize: formData.batchSize,
-                batchSizeUom: formData.batchSizeUom,
+                batchSize: Number(formData.batchSize),
+                materialId: Number(formData.materialId),
+                unitId: Number(formData.unitId),
+                status: formData.status,
+
 
             });
             toast.success(res.message ?? "Recipe created successfully.");
@@ -38,7 +45,7 @@ export default function CreateRecipeHeaderDialog({ open, onClose }: Props) {
         }
     }
     const handleClose = () => {
-        reset({ name: "", description: "", batchSize: 0, batchSizeUom: "", });
+        reset({ name: "", description: "", batchSize: "", materialId: "", unitId: "", status: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<RecipeSchema>) => {
@@ -95,11 +102,42 @@ export default function CreateRecipeHeaderDialog({ open, onClose }: Props) {
                             />
                         </div>
                         <div className="relative space-y-2">
-                            <Label>Batch Size UOM</Label>
+                            <Label>Material</Label>
+                            <Controller
+                                control={control}
+                                name="materialId"
+                                render={({ field }) => (
+                                    <Select
+                                        disabled={loading || isLoadingMaterials}
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select Material" />
+                                        </SelectTrigger>
+
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {materials?.map((material) => (
+                                                    <SelectItem
+                                                        key={material.id}
+                                                        value={String(material.id)}
+                                                    >
+                                                        {material.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+                        </div>
+                        <div className="relative space-y-2">
+                            <Label>Unit</Label>
 
                             <Controller
                                 control={control}
-                                name="batchSizeUom"
+                                name="unitId"
                                 render={({ field }) => (
                                     <Select
                                         disabled={loading}
@@ -107,17 +145,49 @@ export default function CreateRecipeHeaderDialog({ open, onClose }: Props) {
                                         onValueChange={field.onChange}
                                     >
                                         <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select UOM" />
+                                            <SelectValue placeholder="Select Unit" />
                                         </SelectTrigger>
 
                                         <SelectContent>
                                             <SelectGroup>
-                                                <SelectItem value="KG">
-                                                    KG
+                                                {units?.map((unit) => (
+                                                    <SelectItem
+                                                        key={unit.id}
+                                                        value={String(unit.id)}
+                                                    >
+                                                        {unit.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+                        </div>
+                        <div className="relative space-y-2">
+                            <Label>Status</Label>
+
+                            <Controller
+                                control={control}
+                                name="status"
+                                render={({ field }) => (
+                                    <Select
+                                        disabled={loading}
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select Status" />
+                                        </SelectTrigger>
+
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectItem value="ACTIVE">
+                                                    Active
                                                 </SelectItem>
 
-                                                <SelectItem value="PERCENT">
-                                                    %
+                                                <SelectItem value="INACTIVE">
+                                                    Inactive
                                                 </SelectItem>
                                             </SelectGroup>
                                         </SelectContent>

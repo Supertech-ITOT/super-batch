@@ -33,13 +33,24 @@ export const recipeHeaderSchema = z.object({
             `Description cannot exceed ${RecipeHeaderSchemaLimit.description.max} characters`
         ),
 
-    batchSize: z.number()
-        .positive("Batch size must be greater than 0"),
+    batchSize: z.string()
+        .trim()
+        .min(1, "Batch size must be greater than 0"),
 
-    batchSizeUom: z
+    materialId: z
         .string()
         .trim()
-        .min(1, "Batch size UOM is required"),
+        .min(1, `MaterialId must is required`),
+
+    unitId: z
+        .string()
+        .trim()
+        .min(1, `UnitId must is required`),
+
+    status: z
+        .string()
+        .trim()
+        .min(1, `Status must is required`)
 });
 
 export type RecipeSchema = z.infer<typeof recipeHeaderSchema>;
