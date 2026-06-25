@@ -1,4 +1,4 @@
-import RecipeView from "@/features/recipe/components/recipe-view";
+import RecipeView from "@/features/recipe/recipe_header/components/recipe-header-view";
 import { BookOpenText } from "lucide-react";
 
 export default function Recipe() {
