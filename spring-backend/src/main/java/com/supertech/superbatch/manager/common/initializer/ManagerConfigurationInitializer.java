@@ -48,9 +48,9 @@ public class ManagerConfigurationInitializer implements CommandLineRunner {
     }
 
     private void seedRole() {
-        if (!roleRepository.existsByName("Administrator")) {
+        if (!roleRepository.existsByName("System")) {
             Role role = Role.builder()
-                    .name("Administrator")
+                    .name("System")
                     .description("Full system access")
                     .build();
             roleRepository.save(role);
@@ -58,7 +58,7 @@ public class ManagerConfigurationInitializer implements CommandLineRunner {
     }
 
     private void seedPermission() {
-        Role role = roleRepository.findByName("Administrator")
+        Role role = roleRepository.findByName("System")
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found."));
         for (ModuleType type : ModuleType.values()) {
             Module module = moduleRepository.findById(type.getId())
@@ -77,7 +77,7 @@ public class ManagerConfigurationInitializer implements CommandLineRunner {
 
     private void seedUser() {
         if (!usersRepository.existsByName("Super Admin")) {
-            Role role = roleRepository.findByName("Administrator")
+            Role role = roleRepository.findByName("System")
                     .orElseThrow(() -> new ResourceNotFoundException("Role not found."));
             Users users = Users.builder()
                     .name("Super Admin")
