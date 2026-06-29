@@ -42,7 +42,8 @@ public class UserController {
 
         @PostMapping
         public ResponseEntity<ApiResponse<Void>> create(@Validated @RequestBody UserRequest request) {
-                userService.create(request);
+                Long userId = userContextService.getCurrentUserId();
+                userService.create(request, userId);
                 return ResponseEntity.ok(ApiResponse.success("User created successfully", null));
         }
 

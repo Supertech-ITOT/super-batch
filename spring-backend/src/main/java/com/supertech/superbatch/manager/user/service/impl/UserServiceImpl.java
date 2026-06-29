@@ -49,18 +49,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void create(UserRequest request) {
+    public void create(UserRequest request, Long userId) {
         if (userRepository.existsByEmail(request.email())) {
             throw new DuplicateResourceException("Email already exists.");
         }
 
         Role role = roleRepository.findById(request.roleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found."));
+        Users createdBy = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
         Users user = userMapper.toEntity(
                 request,
                 role,
-                null,
+                createdBy,
                 passwordEncoder.encode(request.password()));
 
         userRepository.save(user);

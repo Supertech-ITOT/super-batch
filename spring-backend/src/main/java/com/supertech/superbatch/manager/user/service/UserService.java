@@ -12,7 +12,7 @@ public interface UserService {
 
     UserResponse getById(Long id);
 
-    void create(UserRequest request);
+    void create(UserRequest request, Long userId);
 
     void update(Long id, UpdateUserRequest request);
 
