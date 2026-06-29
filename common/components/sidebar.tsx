@@ -5,17 +5,19 @@ import { Separator } from "./ui/separator";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
-import { getUser } from "@/features/manager/auth/types/auth.types";
 import { useLogout } from "@/features/manager/auth/hooks/use-auth";
+import { useGetCurrentUser } from "@/features/manager/user/hooks/use-user";
+import { ModuleType } from "@/features/manager/module/types/module.types";
 
 type RouteType = {
     label: string;
     path: string;
     icon: LucideIcon;
+    module?: ModuleType;
 }
 
 const OperationRoutes: RouteType[] = [
@@ -33,16 +35,19 @@ const OperationRoutes: RouteType[] = [
         label: "Scheduler",
         path: "/Scheduler",
         icon: CalendarClock,
+        module: ModuleType.SCHEDULER
     },
     {
         label: "Recipe",
         path: "/Recipe",
         icon: BookOpenText,
+        module: ModuleType.RECIPE
     },
     {
         label: "PlantModel",
         path: "/PlantModel",
         icon: Factory,
+        module: ModuleType.PLANT_MODEL
     },
 ];
 
@@ -51,16 +56,19 @@ const AdminRoutes: RouteType[] = [
         label: "Users",
         path: "/Manager/users",
         icon: Users,
+        module: ModuleType.USER
     },
     {
         label: "Roles",
         path: "/Manager/roles",
         icon: ShieldCheck,
+        module: ModuleType.ROLE
     },
     {
         label: "Audit",
         path: "/Audit",
         icon: ClipboardList,
+        module: ModuleType.AUDIT
     },
     {
         label: "Setting",
@@ -74,13 +82,17 @@ export default function SideBar() {
     const router = useRouter();
     const { mutateAsync: logout, isPending } = useLogout();
     const [open, setOpen] = useState<boolean>(true);
-    const user = useMemo(() => getUser(), []);
-    const initials =
-        user?.name
-            ?.split(" ")
-            .map((word) => word[0])
-            .join("")
-            .toUpperCase() ?? "U";
+    const { data: user, isLoading: userIsLoading } = useGetCurrentUser();
+    const loading = !user || userIsLoading;
+    const initials = user?.name?.split(" ").map((word) => word[0]).join("").toUpperCase() ?? "U";
+    const hasReadPermission = (module?: ModuleType) => {
+        if (!module) return true;
+        return user?.permissions?.some(
+            (permission) =>
+                permission.moduleName === module && permission.canRead
+        );
+    };
+
     const onLogout = async () => {
         try {
             const res = await logout();
@@ -149,39 +161,43 @@ export default function SideBar() {
                     <h1 className="text-muted-foreground text-sm uppercase">Plant Operation</h1>
                 </div>}
                 <div className="flex flex-col space-y-2 mt-2">
-                    {OperationRoutes.map((el) => {
-                        const active = pathname.startsWith(el.path);
-                        const Icon = el.icon;
-                        return (
-                            <Link
-                                key={el.label}
-                                href={el.path}
-                                className={`flex flex-row gap-2 rounded-sm items-end  text-muted-foreground px-2 py-2 text-sm transition-all duration-300  ${active ? "bg-primary text-white" : "hover:bg-background hover:shadow"}`}>
-                                <Icon className="w-5 h-5" />
-                                {open && <span>{el.label}</span>}
-                            </Link>
-                        )
-                    })}
+                    {OperationRoutes
+                        .filter(route => hasReadPermission(route.module))
+                        .map((el) => {
+                            const active = pathname.startsWith(el.path);
+                            const Icon = el.icon;
+                            return (
+                                <Link
+                                    key={el.label}
+                                    href={el.path}
+                                    className={`flex flex-row gap-2 rounded-sm items-end  text-muted-foreground px-2 py-2 text-sm transition-all duration-300  ${active ? "bg-primary text-white" : "hover:bg-background hover:shadow"}`}>
+                                    <Icon className="w-5 h-5" />
+                                    {open && <span>{el.label}</span>}
+                                </Link>
+                            )
+                        })}
                 </div>
-                {/* Administration */}
+                {/* Configuration */}
                 {open && <div className="mt-10 ">
-                    <h1 className="text-muted-foreground text-sm uppercase">Administration</h1>
+                    <h1 className="text-muted-foreground text-sm uppercase">Configuration</h1>
                 </div>
                 }
                 <div className="flex flex-col space-y-2 mt-2">
-                    {AdminRoutes.map((el) => {
-                        const active = pathname.startsWith(el.path);
-                        const Icon = el.icon;
-                        return (
-                            <Link
-                                key={el.label}
-                                href={el.path}
-                                className={`flex flex-row gap-2 rounded-sm items-end  text-muted-foreground px-2 py-2 text-sm transition-all duration-300  ${active ? "bg-primary text-white" : "hover:bg-background hover:shadow"}`}>
-                                <Icon className="w-5 h-5" />
-                                {open && <span>{el.label}</span>}
-                            </Link>
-                        )
-                    })}
+                    {AdminRoutes
+                        .filter(route => hasReadPermission(route.module))
+                        .map((el) => {
+                            const active = pathname.startsWith(el.path);
+                            const Icon = el.icon;
+                            return (
+                                <Link
+                                    key={el.label}
+                                    href={el.path}
+                                    className={`flex flex-row gap-2 rounded-sm items-end  text-muted-foreground px-2 py-2 text-sm transition-all duration-300  ${active ? "bg-primary text-white" : "hover:bg-background hover:shadow"}`}>
+                                    <Icon className="w-5 h-5" />
+                                    {open && <span>{el.label}</span>}
+                                </Link>
+                            )
+                        })}
                 </div>
 
                 {/* User Section */}
@@ -198,7 +214,7 @@ export default function SideBar() {
                                     {/* User Info */}
                                     {open && <div className="flex flex-col text-left">
                                         <span className="text-sm font-medium text-foreground">{user?.name ?? "-"}</span>
-                                        <span className="text-xs text-muted-foreground">{user?.role ?? "-"}</span>
+                                        <span className="text-xs text-muted-foreground">{user?.roleName ?? "-"}</span>
                                     </div>}
                                 </div>
                                 {open && <ChevronUp className="w-4 h-4 text-muted-foreground" />}

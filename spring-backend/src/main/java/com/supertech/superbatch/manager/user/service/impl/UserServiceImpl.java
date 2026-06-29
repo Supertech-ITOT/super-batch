@@ -1,6 +1,9 @@
 package com.supertech.superbatch.manager.user.service.impl;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -8,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.permission.entity.Permission;
+import com.supertech.superbatch.manager.permission.service.PermissionService;
 import com.supertech.superbatch.manager.role.entity.Role;
 import com.supertech.superbatch.manager.role.repository.RoleRepository;
 import com.supertech.superbatch.manager.user.dto.UpdateUserRequest;
@@ -28,13 +33,18 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final PermissionService permissionService;
 
     @Override
-    @Transactional()
     public List<UserResponse> getAll() {
-        return userRepository.findAllWithRoleAndCreatedBy()
-                .stream()
-                .map(userMapper::toResponse)
+        List<Users> users = userRepository.findAllWithRoleAndCreatedBy();
+        Map<Long, List<Permission>> permissionMap = users.stream()
+                .map(user -> user.getRole().getId())
+                .distinct()
+                .collect(Collectors.toMap(Function.identity(), permissionService::getByRoleId));
+
+        return users.stream()
+                .map(user -> userMapper.toResponse(user, permissionMap.get(user.getRole().getId())))
                 .toList();
     }
 
@@ -85,8 +95,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getById(Long id) {
-        Users user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found."));
-        return userMapper.toResponse(user);
+        Users user = userRepository.findByIdWithRoleAndCreatedBy(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+        List<Permission> permissions = permissionService.getByRoleId(user.getRole().getId());
+        return userMapper.toResponse(user, permissions);
 
     }
 }

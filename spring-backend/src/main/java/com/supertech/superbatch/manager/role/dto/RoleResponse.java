@@ -9,11 +9,11 @@ import lombok.Builder;
 
 @Builder
 public record RoleResponse(
-                Long id,
-                String name,
-                String description,
-                List<PermissionResponse> permissions,
-                LocalDateTime createdAt,
-                LocalDateTime updatdeAt) {
+        Long id,
+        String name,
+        String description,
+        List<PermissionResponse> permissions,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt) {
 
 }

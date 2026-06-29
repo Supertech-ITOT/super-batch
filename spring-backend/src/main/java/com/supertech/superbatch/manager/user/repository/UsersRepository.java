@@ -33,4 +33,13 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
                         """)
         List<Users> findAllWithRoleAndCreatedBy();
 
+        @Query("""
+                        SELECT DISTINCT u
+                        FROM Users u
+                        LEFT JOIN FETCH u.role
+                        LEFT JOIN FETCH u.createdBy
+                        WHERE u.id = :id
+                        """)
+        Optional<Users> findByIdWithRoleAndCreatedBy(Long id);
+
 }

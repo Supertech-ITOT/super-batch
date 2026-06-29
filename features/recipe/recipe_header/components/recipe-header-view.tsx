@@ -9,6 +9,7 @@ import CreateRecipeHeaderDialog from "./create-recipe-header-dialog";
 import UpdateRecipeHeaderDialog from "./update-recipe-header-dialog";
 import DeleteRecipeHeaderDialog from "./delete-recipe-header-dialog";
 import RecipeHeaderColumns from "./columns";
+import { useRouter } from "next/navigation";
 
 export type DialogProp = {
     action: "create" | "edit" | "delete" | null;
@@ -16,10 +17,11 @@ export type DialogProp = {
     open: boolean;
 };
 
-export default function RecipeView() {
+export default function RecipeHeaderView() {
     const [dialog, setDialog] = useState<DialogProp>({ action: null, id: null, open: false, });
     const closeDialog = () => setDialog({ open: false, action: null, id: null, });
     const { data: recipeHeaders, isLoading } = useGetRecipeHeaders();
+    const router = useRouter();
 
     if (!recipeHeaders || isLoading) {
         return (
@@ -43,7 +45,7 @@ export default function RecipeView() {
         <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none flex-col">
             <div className="flex-1 min-h-0 my-4">
                 <DataTable
-                    columns={RecipeHeaderColumns(setDialog)}
+                    columns={RecipeHeaderColumns(setDialog, router)}
                     data={recipeHeaders}
                     setDialog={setDialog}
                 />

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { queryKeys } from "../../common/hooks/query-keys"
-import { createUser, deleteUser, getAllUsers, getUserById, updateUser } from "../services/user.service"
+import { createUser, deleteUser, getAllUsers, getCurrentUser, getUserById, updateUser } from "../services/user.service"
 
 export const useGetUser = () => {
     return useQuery({
@@ -20,6 +20,15 @@ export const useGetUsersById = (id?: number) => {
             return res.data;
         },
         enabled: !!id,
+    })
+}
+export const useGetCurrentUser = () => {
+    return useQuery({
+        queryKey: queryKeys.currentUser,
+        queryFn: async () => {
+            const res = await getCurrentUser();
+            return res.data;
+        }
     })
 }
 

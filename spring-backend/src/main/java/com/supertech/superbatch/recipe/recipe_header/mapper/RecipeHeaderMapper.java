@@ -55,6 +55,7 @@ public class RecipeHeaderMapper {
         recipeHeader.setDescription(request.description());
         recipeHeader.setBatchSize(request.batchSize());
         recipeHeader.setMaterial(material);
+        recipeHeader.setStatus(request.status());
         recipeHeader.setUnit(unit);
     }
 

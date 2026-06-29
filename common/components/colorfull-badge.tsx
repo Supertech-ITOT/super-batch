@@ -33,7 +33,7 @@ export default function ColorfullBadge({ value }: Props) {
     return (
         <Badge
             variant="outline"
-            className={`${color} rounded-full px-3 py-0.5 font-medium border`}
+            className={`${color} px-3 py-0.5 font-medium border`}
         >
             {value}
         </Badge>

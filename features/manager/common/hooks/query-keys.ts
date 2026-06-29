@@ -8,5 +8,6 @@ export const queryKeys = {
 
     users: ["users"] as const,
     user: (id: number) => ["users", id] as const,
+    currentUser: ["users", "me"] as const,
 };
 

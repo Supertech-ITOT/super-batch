@@ -21,7 +21,10 @@ export const columns = (
             accessorKey: "name",
             header: "Message",
             cell: ({ row }) => (
-                <div className="whitespace-normal wrap-break-word text-sm">
+                <div
+                    className="wrap-break-word whitespace-normal line-clamp-2"
+                    title={row.original.name}
+                >
                     {row.original.name}
                 </div>
             ),

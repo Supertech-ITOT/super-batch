@@ -24,7 +24,7 @@ public class RoleMapper {
                 .description(role.getDescription())
                 .permissions(permissionMapper.toResponseList(permissions))
                 .createdAt(role.getCreatedAt())
-                .updatdeAt(role.getUpdatedAt())
+                .updatedAt(role.getUpdatedAt())
                 .build();
     }
 

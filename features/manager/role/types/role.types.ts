@@ -6,7 +6,7 @@ export interface RoleResponse {
     description: string,
     permissions: PermissionResponse[],
     createdAt: string,
-    updatdeAt: string
+    updatedAt: string
 }
 
 export interface RoleRequest {

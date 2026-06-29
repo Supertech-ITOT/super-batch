@@ -19,23 +19,22 @@ export const columns = (
             cell: ({ row }) => row.index + 1,
         },
         {
-            accessorKey: "name",
+            id: "name",
             header: "Name",
             cell: ({ row }) => {
                 const user = row.original;
-
+                if (!user) return "-";
+                const initials = user.name?.split(" ").map(word => word[0]).join("").substring(0, 2).toUpperCase();
                 return (
                     <div className="flex items-center gap-3">
-                        <div className="h-12 w-12 rounded-full bg-background flex items-center justify-center shadow">
-                            <User className="fill-gray-500 size-6! shrink-0 stroke-none" />
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-semibold">
+                            {initials}
                         </div>
-
                         <div className="flex flex-col">
                             <span className="font-medium">
                                 {user.name}
                             </span>
-
-                            <span className="text-sm text-muted-foreground">
+                            <span className="text-xs text-muted-foreground">
                                 {user.email}
                             </span>
                         </div>
@@ -64,13 +63,17 @@ export const columns = (
             }
         },
         {
-            accessorKey: "updatedAt",
-            header: "Last Updated",
+            id: "lastModified",
+            header: "Last Modified",
             cell: ({ row }) => {
-                const value = row.original.updatedAt;
+                const value = row.original.updatedAt || row.original.createdAt;
+
+                if (!value || new Date(value).getTime() === 0) {
+                    return "-";
+                }
 
                 return format(new Date(value), "dd MMM yyyy hh:mm a");
-            }
+            },
         },
         {
             id: "actions",

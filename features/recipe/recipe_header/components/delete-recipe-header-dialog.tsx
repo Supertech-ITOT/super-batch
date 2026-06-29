@@ -24,9 +24,9 @@ export default function DeleteRecipeHeaderDialog({ open, onClose, recipeHeaderId
         <Dialog open={open} onOpenChange={(value) => { if (!value) onClose() }}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Delete {recipe?.name}</DialogTitle>
+                    <DialogTitle>Delete</DialogTitle>
                     <DialogDescription>
-                        {`Are you sure you want to delete user "${recipe?.name} - [${recipe?.description}]"?`}
+                        {`Are you sure you want to delete user "${recipe?.name}"?`}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>

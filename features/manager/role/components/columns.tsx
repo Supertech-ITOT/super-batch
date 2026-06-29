@@ -24,6 +24,14 @@ export const columns = (
         {
             accessorKey: "description",
             header: "Description",
+            cell: ({ row }) => (
+                <div
+                    className="max-w-sm wrap-break-word whitespace-normal line-clamp-2"
+                    title={row.original.description}
+                >
+                    {row.original.description}
+                </div>
+            ),
         },
         {
             id: "permission",
@@ -38,21 +46,17 @@ export const columns = (
             },
         },
         {
-            accessorKey: "createdAt",
-            header: "Created At",
+            id: "lastModified",
+            header: "Last Modified",
             cell: ({ row }) => {
-                const value = row.original.createdAt;
+                const value = row.original.updatedAt || row.original.createdAt;
+
+                if (!value || new Date(value).getTime() === 0) {
+                    return "-";
+                }
 
                 return format(new Date(value), "dd MMM yyyy hh:mm a");
-            }
-        },
-        {
-            accessorKey: "updatedAt",
-            header: "Last Updated",
-            cell: ({ row }) => {
-                const value = row.original.updatdeAt;
-                return format(new Date(value), "dd MMM yyyy hh:mm a");
-            }
+            },
         },
         {
             id: "actions",

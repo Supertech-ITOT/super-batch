@@ -12,3 +12,9 @@ export const getMaterialTypes = async () => {
     const res = await api.get<ApiResponse<OptionResponse[]>>("/metadata/material-types");
     return res.data;
 }
+
+
+export const getRecipeHeaderStatusTypes = async () => {
+    const res = await api.get<ApiResponse<OptionResponse[]>>("/metadata/recipe-header-status-types");
+    return res.data;
+}

@@ -14,19 +14,29 @@ import { Button } from "@/common/components/ui/button";
 import { Loader } from "lucide-react";
 import { useGetMaterials } from "@/features/plant/material/hooks/use-materials";
 import { useGetUnits } from "@/features/plant/unit/hooks/use-units";
+import { useGetRecipeHeaderStatusTypes } from "@/features/common/hooks/useMetadata";
+import { MaterialType } from "@/features/plant/material/types/material.types";
 
 type Props = { open: boolean; onClose: () => void; };
 export default function CreateRecipeHeaderDialog({ open, onClose }: Props) {
     const { mutateAsync: createRecipe, isPending: isCreating } = useCreateRecipeHeader();
     const { data: units, isLoading: isLoadingUnits } = useGetUnits();
     const { data: materials, isLoading: isLoadingMaterials } = useGetMaterials();
+    const { data: recipeHeaderStatus, isLoading: isLoadingRecipeHeaderStatus } = useGetRecipeHeaderStatusTypes();
     const { register, handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty } } = useForm<RecipeSchema>({
         resolver: zodResolver(recipeHeaderSchema),
         defaultValues: { name: "", description: "", batchSize: "", materialId: "", unitId: "", status: "" }
     });
-    const loading = isSubmitting || isCreating || isLoadingMaterials || isLoadingUnits;
+    const loading = isSubmitting || isCreating || isLoadingMaterials || isLoadingUnits || isLoadingRecipeHeaderStatus;
+    const selectedUnitId = watch("unitId");
+    const selectedUnitMaxRange = units?.find((unit) => unit.id === Number(selectedUnitId))?.capacity;
 
     const onSubmit = async (formData: RecipeSchema) => {
+        if (!selectedUnitMaxRange) return;
+        if (Number(formData.batchSize) > selectedUnitMaxRange) {
+            toast.error(`Batch size must be under unit capacity - ${selectedUnitMaxRange}kg`)
+            return;
+        }
         try {
             const res = await createRecipe({
                 name: formData.name,
@@ -82,125 +92,132 @@ export default function CreateRecipeHeaderDialog({ open, onClose }: Props) {
                                 <CharacterProgress value={watch("description")} max={RecipeHeaderSchemaLimit.description.max} />
                             </div>
                             <Textarea
-                                placeholder="Brief role overview"
+                                placeholder="Brief recipe overview"
                                 className="min-h-28 resize-none"
                                 maxLength={RecipeHeaderSchemaLimit.description.max}
                                 disabled={loading}
                                 {...register("description")}
                             />
                         </div>
-                        <div className="space-y-2 relative">
-                            <Label>Batch Size</Label>
+                        <div className="flex gap-2">
+                            <div className="relative flex-1 space-y-2">
+                                <Label>Unit</Label>
+                                <Controller
+                                    control={control}
+                                    name="unitId"
+                                    render={({ field }) => (
+                                        <Select
+                                            disabled={loading}
+                                            value={field.value}
+                                            onValueChange={field.onChange}
+                                        >
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Select Unit" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    {units?.map((unit) => (
+                                                        <SelectItem key={unit.id} value={String(unit.id)}>
+                                                            {unit.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
+                            </div>
+                            <div className="space-y-2 relative flex-1">
+                                <div className="flex items-center justify-between">
+                                    <Label>Batch Size</Label>
+                                </div>
+                                <div className="flex">
+                                    <Input
+                                        type="number"
+                                        placeholder={selectedUnitMaxRange ? `0 - ${selectedUnitMaxRange}` : "0"}
+                                        className="rounded-r-none"
+                                        {...register("batchSize")}
+                                    />
+                                    <div className="flex items-center justify-center w-12 border border-l-0 rounded-r-md bg-muted text-sm">
+                                        kg
+                                    </div>
+                                </div>
+                            </div>
 
-                            <Input
-                                type="number"
-                                disabled={loading}
-                                placeholder="1000"
-                                {...register("batchSize", {
-                                    valueAsNumber: true,
-                                })}
-                            />
                         </div>
-                        <div className="relative space-y-2">
-                            <Label>Material</Label>
-                            <Controller
-                                control={control}
-                                name="materialId"
-                                render={({ field }) => (
-                                    <Select
-                                        disabled={loading || isLoadingMaterials}
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                    >
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select Material" />
-                                        </SelectTrigger>
+                        <div className="flex gap-2">
 
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {materials?.map((material) => (
-                                                    <SelectItem
-                                                        key={material.id}
-                                                        value={String(material.id)}
-                                                    >
-                                                        {material.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
-                        </div>
-                        <div className="relative space-y-2">
-                            <Label>Unit</Label>
+                            <div className="relative flex-1 space-y-2">
+                                <Label>Product</Label>
+                                <Controller
+                                    control={control}
+                                    name="materialId"
+                                    render={({ field }) => (
+                                        <Select
+                                            disabled={loading || isLoadingMaterials}
+                                            value={field.value}
+                                            onValueChange={field.onChange}
+                                        >
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Select Product" />
+                                            </SelectTrigger>
 
-                            <Controller
-                                control={control}
-                                name="unitId"
-                                render={({ field }) => (
-                                    <Select
-                                        disabled={loading}
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                    >
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select Unit" />
-                                        </SelectTrigger>
-
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {units?.map((unit) => (
-                                                    <SelectItem
-                                                        key={unit.id}
-                                                        value={String(unit.id)}
-                                                    >
-                                                        {unit.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
-                        </div>
-                        <div className="relative space-y-2">
-                            <Label>Status</Label>
-
-                            <Controller
-                                control={control}
-                                name="status"
-                                render={({ field }) => (
-                                    <Select
-                                        disabled={loading}
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                    >
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select Status" />
-                                        </SelectTrigger>
-
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectItem value="ACTIVE">
-                                                    Active
-                                                </SelectItem>
-
-                                                <SelectItem value="INACTIVE">
-                                                    Inactive
-                                                </SelectItem>
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    {materials?.filter((f) => f.materialType === MaterialType.FINISHED_PRODUCT).map((material) => (
+                                                        <SelectItem key={material.id} value={String(material.id)}>
+                                                            {material.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
+                            </div>
+                            <div className="relative flex-1 space-y-2">
+                                <Label>Status</Label>
+                                <Controller
+                                    control={control}
+                                    name="status"
+                                    render={({ field }) => (
+                                        <Select
+                                            disabled={loading}
+                                            value={field.value}
+                                            onValueChange={field.onChange}
+                                        >
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Select Status" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    {recipeHeaderStatus?.map((recipeHeaderStatus) => (
+                                                        <SelectItem
+                                                            key={recipeHeaderStatus.value}
+                                                            value={String(recipeHeaderStatus.value)}
+                                                        >
+                                                            <div
+                                                                className={`h-2 w-2 rounded-full ${recipeHeaderStatus.value === "RELEASED"
+                                                                    ? "bg-green-500"
+                                                                    : "bg-gray-500"
+                                                                    }`}
+                                                            />
+                                                            {recipeHeaderStatus.label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
+                            </div>
                         </div>
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>
                             <Button disabled={loading} type="button" variant="outline" onClick={handleClose}>Cancel</Button>
                         </DialogClose>
-                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Create Recipe"}</Button>
+                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Create"}</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

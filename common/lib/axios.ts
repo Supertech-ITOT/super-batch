@@ -1,4 +1,3 @@
-import { getUser } from "@/features/manager/auth/types/auth.types";
 import axios from "axios";
 
 const api = axios.create({
@@ -7,11 +6,12 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-    const user = getUser();
+    if (typeof window !== "undefined") {
+        const user = JSON.parse(localStorage.getItem("user") ?? "null");
 
-    if (user?.accessToken) {
-        config.headers.Authorization =
-            `Bearer ${user.accessToken}`;
+        if (user?.accessToken) {
+            config.headers.Authorization = `Bearer ${user.accessToken}`;
+        }
     }
 
     return config;

@@ -3,6 +3,7 @@ package com.supertech.superbatch.recipe.recipe_header.service.impl;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
+import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.manager.user.entity.Users;
 import com.supertech.superbatch.manager.user.repository.UsersRepository;
@@ -23,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 
-public class RecipeServiceImpl implements RecipeHeaderService {
+public class RecipeHeaderServiceImpl implements RecipeHeaderService {
         private final RecipeHeaderRepository recipeHeaderRepository;
         private final MaterialRepository materialRepository;
         private final UnitRepository unitRepository;
@@ -39,25 +40,30 @@ public class RecipeServiceImpl implements RecipeHeaderService {
 
         @Override
         public void create(CreateRecipeHeaderRequest request, Long userId) {
+                if (recipeHeaderRepository.existsByNameIgnoreCase(request.name())) {
+                        throw new DuplicateResourceException("Recipe already exists.");
+                }
                 Material material = materialRepository.findById(request.materialId())
-                                .orElseThrow(() -> new ResourceNotFoundException("Material not found."));
+                                .orElseThrow(() -> new ResourceNotFoundException("Product not found."));
 
                 Unit unit = unitRepository.findByIdWithHierarchy(request.unitId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
                 Users users = usersRepository.findById(userId)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
                 RecipeHeader recipeHeader = recipeHeaderMapper.toEntity(request, material, users, unit);
                 recipeHeaderRepository.save(recipeHeader);
         }
 
         @Override
         public List<RecipeHeaderResponse> getAll() {
-                return recipeHeaderRepository.findAll().stream().map(recipeHeaderMapper::toResponse).toList();
+                return recipeHeaderRepository.findAllWithRelations().stream().map(recipeHeaderMapper::toResponse)
+                                .toList();
         }
 
         @Override
         public RecipeHeaderResponse getById(Long id) {
-                RecipeHeader recipeHeader = recipeHeaderRepository.findById(id)
+                RecipeHeader recipeHeader = recipeHeaderRepository.findByIdWithRelations(id)
                                 .orElseThrow(() -> new RuntimeException("Recipe header not found."));
                 return recipeHeaderMapper.toResponse(recipeHeader);
         }
@@ -70,6 +76,10 @@ public class RecipeServiceImpl implements RecipeHeaderService {
                                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
                 RecipeHeader recipeHeader = recipeHeaderRepository.findById(id)
                                 .orElseThrow(() -> new RuntimeException("Recipe header not found."));
+                if (recipeHeaderRepository.existsByNameIgnoreCase(request.name()) &&
+                                !recipeHeader.getName().equalsIgnoreCase(request.name())) {
+                        throw new DuplicateResourceException("Recipe already exists.");
+                }
                 recipeHeaderMapper.updateEntity(recipeHeader, request, material, unit);
                 recipeHeaderRepository.save(recipeHeader);
         }

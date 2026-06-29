@@ -1,9 +1,12 @@
+import { PermissionResponse } from "../../permission/types/permission.types"
+
 export interface UserResponse {
     id: number,
     name: string,
     email: string,
     roleId: number,
     roleName: string,
+    permissions: PermissionResponse[]
     createdById: number,
     createdByName: string,
     lastLoginAt: string,

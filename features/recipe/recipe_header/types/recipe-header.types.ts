@@ -11,7 +11,6 @@ export interface RecipeHeaderResponse {
     userRecipeHeaderResponse: UserRecipeHeaderResponse,
     createdAt: string;
     updatedAt: string;
-
 }
 
 
