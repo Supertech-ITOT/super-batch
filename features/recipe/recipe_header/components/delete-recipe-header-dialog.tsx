@@ -4,18 +4,24 @@ import { showApiError } from "@/common/lib/show-api-error";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
 import { Button } from "@/common/components/ui/button";
 import { Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-type Props = { open: boolean; onClose: () => void; recipeHeaderId?: number };
-export default function DeleteRecipeHeaderDialog({ open, onClose, recipeHeaderId }: Props) {
+type Props = { open: boolean; onClose: () => void; recipeHeaderId?: number; redirect?: boolean };
+export default function DeleteRecipeHeaderDialog({ open, onClose, recipeHeaderId, redirect }: Props) {
     const { mutateAsync: deleteRecipe, isPending: deleteRecipeIsPending } = useDeleteRecipeHeader();
     const { data: recipe, isLoading: recipeIsLoading } = useGetRecipeHeaderById(recipeHeaderId);
+    const router = useRouter();
     const loading = deleteRecipeIsPending || recipeIsLoading || !recipe;
     const handleDelete = async () => {
         if (!recipe || !recipeHeaderId) return;
         try {
             const res = await deleteRecipe(recipeHeaderId);
             toast.success(res.message ?? `${recipe.name} deleted successfully.`);
-            onClose();
+            if (redirect) {
+                router.push("/Recipe");
+            } else {
+                onClose();
+            }
         } catch (error) {
             showApiError(error);
         }

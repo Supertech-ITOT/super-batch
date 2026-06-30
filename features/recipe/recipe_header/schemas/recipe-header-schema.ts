@@ -53,4 +53,4 @@ export const recipeHeaderSchema = z.object({
         .min(1, `Status must is required`)
 });
 
-export type RecipeSchema = z.infer<typeof recipeHeaderSchema>;
+export type RecipeHeaderSchema = z.infer<typeof recipeHeaderSchema>;

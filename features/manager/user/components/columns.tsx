@@ -1,12 +1,14 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, User } from "lucide-react"
+import { Circle, MoreHorizontal, User } from "lucide-react"
 import { Button } from "@/common/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/common/components/ui/dropdown-menu"
 import { DialogProp } from "./user-view";
 import ColorfullBadge from "@/common/components/colorfull-badge";
 import { UserResponse } from "@/features/manager/user/types/user.types";
 import { format } from "date-fns";
+import { getColorByText } from "@/common/utils/color.util";
+import { Badge } from "@/common/components/ui/badge";
 
 
 
@@ -27,7 +29,7 @@ export const columns = (
                 const initials = user.name?.split(" ").map(word => word[0]).join("").substring(0, 2).toUpperCase();
                 return (
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-semibold">
+                        <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold ${getColorByText(user.name)}`}>
                             {initials}
                         </div>
                         <div className="flex flex-col">
@@ -46,7 +48,10 @@ export const columns = (
             accessorKey: "role",
             header: "Role",
             cell: ({ row }) => (
-                <ColorfullBadge value={row.original.roleName} />
+                <Badge variant={"outline"} className={getColorByText(row.original.roleName)}>
+                    <Circle className="size-2.5 fill-current" />
+                    {row.original.roleName}
+                </Badge>
             ),
         },
         {

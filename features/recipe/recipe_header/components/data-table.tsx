@@ -1,41 +1,20 @@
 "use client";
 
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/common/components/ui/table";
+import { ColumnDef, ColumnFiltersState, SortingState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable, } from "@tanstack/react-table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/common/components/ui/table";
 import { Button } from "@/common/components/ui/button";
 import { Input } from "@/common/components/ui/input";
 import { useState } from "react";
-
 import { Plus } from "lucide-react";
 import { DialogProp } from "./recipe-header-view";
+
 interface DataTableProps<TData extends { id: number }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   setDialog: React.Dispatch<React.SetStateAction<DialogProp>>;
 }
 
-const DataTable = <TData extends { id: number }, TValue>({
-  columns,
-  data,
-  setDialog,
-}: DataTableProps<TData, TValue>) => {
+const DataTable = <TData extends { id: number }, TValue>({ columns, data, setDialog, }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const table = useReactTable({
@@ -63,12 +42,7 @@ const DataTable = <TData extends { id: number }, TValue>({
           className="max-w-sm"
         />
         <div className="flex mt-0 self-end ml-auto">
-          <Button
-            className="-mt-7 hover:bg-primary  text-white"
-            onClick={() =>
-              setDialog({ action: "create", id: null, open: true })
-            }
-          >
+          <Button className="-mt-7 hover:bg-primary  text-white" onClick={() => setDialog({ action: "create", id: null, open: true })}>
             <Plus className="h-5 w-5 mr-2 " />
             Add Recipe
           </Button>
@@ -81,20 +55,8 @@ const DataTable = <TData extends { id: number }, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead
-                      key={header.id}
-                      className={`font-semibold border-r border-muted-foreground/20 last:border-r-0 ${
-                        header.column.id === "description"
-                          ? "text-left"
-                          : "text-center"
-                      }`}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                    <TableHead key={header.id} className="font-semibold border-r border-muted-foreground/20 last:border-r-0 text-center">
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext(),)}
                     </TableHead>
                   );
                 })}
@@ -112,22 +74,16 @@ const DataTable = <TData extends { id: number }, TValue>({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className="border-r border-muted-foreground/20"
+                      className={`border-r border-muted-foreground/20 ${cell.column.id === "description" || cell.column.id === "name" ? "text-left" : "text-center"}`}
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
@@ -142,21 +98,10 @@ const DataTable = <TData extends { id: number }, TValue>({
         </div>
 
         <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
+          <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()} >
             Previous
           </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
+          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()} >
             Next
           </Button>
         </div>

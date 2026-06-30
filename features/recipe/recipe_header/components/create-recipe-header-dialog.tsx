@@ -1,7 +1,7 @@
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { recipeHeaderSchema, RecipeSchema, RecipeHeaderSchemaLimit } from "../schemas/recipe-header-schema";
+import { recipeHeaderSchema, RecipeHeaderSchemaLimit, RecipeHeaderSchema } from "../schemas/recipe-header-schema";
 import { useCreateRecipeHeader } from "../hooks/use-recipe-header";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
@@ -23,7 +23,7 @@ export default function CreateRecipeHeaderDialog({ open, onClose }: Props) {
     const { data: units, isLoading: isLoadingUnits } = useGetUnits();
     const { data: materials, isLoading: isLoadingMaterials } = useGetMaterials();
     const { data: recipeHeaderStatus, isLoading: isLoadingRecipeHeaderStatus } = useGetRecipeHeaderStatusTypes();
-    const { register, handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty } } = useForm<RecipeSchema>({
+    const { register, handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty } } = useForm<RecipeHeaderSchema>({
         resolver: zodResolver(recipeHeaderSchema),
         defaultValues: { name: "", description: "", batchSize: "", materialId: "", unitId: "", status: "" }
     });
@@ -31,7 +31,7 @@ export default function CreateRecipeHeaderDialog({ open, onClose }: Props) {
     const selectedUnitId = watch("unitId");
     const selectedUnitMaxRange = units?.find((unit) => unit.id === Number(selectedUnitId))?.capacity;
 
-    const onSubmit = async (formData: RecipeSchema) => {
+    const onSubmit = async (formData: RecipeHeaderSchema) => {
         if (!selectedUnitMaxRange) return;
         if (Number(formData.batchSize) > selectedUnitMaxRange) {
             toast.error(`Batch size must be under unit capacity - ${selectedUnitMaxRange}kg`)
@@ -58,7 +58,7 @@ export default function CreateRecipeHeaderDialog({ open, onClose }: Props) {
         reset({ name: "", description: "", batchSize: "", materialId: "", unitId: "", status: "" });
         onClose();
     };
-    const onInvalid = (errors: FieldErrors<RecipeSchema>) => {
+    const onInvalid = (errors: FieldErrors<RecipeHeaderSchema>) => {
         const firstError = Object.values(errors)[0];
         if (firstError?.message) {
             toast.error(firstError.message.toString());

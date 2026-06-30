@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "sonner";
 
 const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -27,13 +28,13 @@ api.interceptors.response.use(
 
         if (
             status === 401 &&
-            (
-                message === "TOKEN_EXPIRED" ||
-                message === "INVALID_TOKEN"
-            )
+            (message === "TOKEN_EXPIRED" || message === "INVALID_TOKEN")
         ) {
             localStorage.removeItem("user");
-            window.location.href = "/";
+            toast.error("Session expired. Please login again to continue.");
+            setTimeout(() => {
+                window.location.replace("/");
+            }, 1500);
         }
 
         return Promise.reject(error);

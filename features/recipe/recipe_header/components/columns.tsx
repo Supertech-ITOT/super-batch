@@ -1,11 +1,12 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { RecipeHeaderResponse } from "../types/recipe-header.types";
+import { RecipeHeaderResponse, RecipeHeaderStatus, RecipeHeaderStatusBadgeStyles } from "../types/recipe-header.types";
 import { Button } from "@/common/components/ui/button";
 import { DialogProp } from "./recipe-header-view";
-import { Eye, PencilLine, Trash2 } from "lucide-react";
+import { Circle, Eye, PencilLine, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/common/components/ui/badge";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { getColorByText } from "@/common/utils/color.util";
 
 export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogProp>>, router: AppRouterInstance): ColumnDef<RecipeHeaderResponse>[] => [
     {
@@ -39,18 +40,8 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogPro
         cell: ({ row }) => {
             const status = row.original.status;
             return (
-                <Badge
-                    className={`flex items-center gap-2 border font-semibold ${status === "RELEASED"
-                        ? "text-green-700 bg-green-100 border-green-200 dark:text-green-400 dark:bg-green-950 dark:border-green-800"
-                        : "text-gray-700 bg-gray-100 border-gray-200 dark:text-gray-300 dark:bg-gray-900 dark:border-gray-700"
-                        }`}
-                >
-                    <div
-                        className={`h-2 w-2 rounded-full ${status === "RELEASED"
-                            ? "bg-green-500"
-                            : "bg-gray-500"
-                            }`}
-                    />
+                <Badge className={RecipeHeaderStatusBadgeStyles[status as keyof typeof RecipeHeaderStatusBadgeStyles]}>
+                    <Circle className="size-2.5! fill-current" />
                     {status === "RELEASED" ? "Released" : "Unreleased"}
                 </Badge>
             );
@@ -75,13 +66,11 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogPro
             const initials = user.name?.split(" ").map(word => word[0]).join("").substring(0, 2).toUpperCase();
             return (
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-semibold">
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold ${getColorByText(user.name)}`}>
                         {initials}
                     </div>
-                    <div className="flex flex-col">
-                        <span className="font-medium">
-                            {user.name}
-                        </span>
+                    <div className="flex flex-col items-start">
+                        <span className="font-medium">{user.name}</span>
                         <span className="text-xs text-muted-foreground">
                             {user.email}
                         </span>
@@ -111,7 +100,7 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogPro
             const recipe = row.original;
 
             return (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center gap-2">
                     <Button variant="ghost" size="icon" onClick={() => router.push(`/Recipe/edit?id=${recipe.id}`)}>
                         <Eye className="size-5!" />
                     </Button>
