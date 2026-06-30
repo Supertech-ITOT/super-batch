@@ -15,6 +15,7 @@ public interface RecipeHeaderRepository extends JpaRepository<RecipeHeader, Long
                 LEFT JOIN FETCH rh.material
                 LEFT JOIN FETCH rh.unit u
                 LEFT JOIN FETCH rh.createdBy
+                ORDER BY rh.id
             """)
     List<RecipeHeader> findAllWithRelations();
 
@@ -25,6 +26,7 @@ public interface RecipeHeaderRepository extends JpaRepository<RecipeHeader, Long
                 LEFT JOIN FETCH rh.unit u
                 LEFT JOIN FETCH rh.createdBy
                 WHERE rh.id = :id
+
             """)
     Optional<RecipeHeader> findByIdWithRelations(Long id);
 

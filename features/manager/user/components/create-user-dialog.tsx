@@ -86,7 +86,7 @@ export default function CreateUserDialog({ open, onClose }: Props) {
                                 {...register("email")}
                             />
                         </div>
-                        <div className="space-y-2 relative">
+                        <div className="relative space-y-2">
                             <div className="flex items-center justify-between">
                                 <Label>Password</Label>
                                 <CharacterProgress
@@ -95,7 +95,7 @@ export default function CreateUserDialog({ open, onClose }: Props) {
                                 />
                             </div>
 
-                            <div className="relative">
+                            <div className="sapce-y-2 relative">
                                 <Lock className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4" />
                                 <Input
                                     disabled={loading}
@@ -103,7 +103,7 @@ export default function CreateUserDialog({ open, onClose }: Props) {
                                     type={showPassword ? "text" : "password"}
                                     maxLength={UserSchemaLimit.password.max}
                                     {...register("password")}
-                                    className="pl-8 pr-10 h-12"
+                                    className="pl-8 pr-10"
                                 />
 
                                 <Button
@@ -138,7 +138,7 @@ export default function CreateUserDialog({ open, onClose }: Props) {
                                     placeholder="Confirm Password"
                                     type={showConfirmPassword ? "text" : "password"}
                                     {...register("confirmPassword")}
-                                    className="pl-8 pr-10 h-12"
+                                    className="pl-8 pr-10"
                                 />
 
                                 <Button
