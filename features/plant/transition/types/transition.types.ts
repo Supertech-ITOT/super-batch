@@ -11,3 +11,15 @@ export interface CreateTransitionRequest {
 export interface UpdateTransitionRequest {
     name: string;
 }
+
+export const TransitionType = {
+  MANUAL_CONFIRMATION: "Manual Confirmation",
+  AUTO_MATERIAL_CHARGE: "Auto Material Charge",
+  MANUAL_MATERIAL_CHARGE: "Manual Material Charge",
+  TIME: "Time",
+  EVENT: "Event",
+  SAMPLE_CHECK: "Sample Check",
+  TRANSFER: "Transfer",
+  TRANSFER_AND_RELEASE: "Transfer and Release",
+  RELEASE_EQUIPMENT: "Release Equipment",
+} as const;
