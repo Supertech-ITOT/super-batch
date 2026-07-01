@@ -38,6 +38,7 @@ public class ProcessConfigurationInitializer implements CommandLineRunner {
         for (ActionType type : ActionType.values()) {
             Action action = new Action();
             action.setName(type.getDisplayName());
+            action.setCanDelete(false);
             actionRepository.save(action);
         }
 
@@ -50,6 +51,7 @@ public class ProcessConfigurationInitializer implements CommandLineRunner {
         for (TransitionType type : TransitionType.values()) {
             Transition transition = new Transition();
             transition.setName(type.getDisplayName());
+            transition.setCanDelete(false);
             transitionRepository.save(transition);
         }
 

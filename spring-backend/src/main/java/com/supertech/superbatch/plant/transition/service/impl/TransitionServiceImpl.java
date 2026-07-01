@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.plant.transition.dto.CreateTransitionRequest;
@@ -63,6 +64,9 @@ public class TransitionServiceImpl implements TransitionService {
     public void delete(Long id) {
         Transition transitionMaster = transitionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transition not found."));
+        if (!transitionMaster.getCanDelete()) {
+            throw new BadRequestException("Cannot delete standard transition.");
+        }
         transitionRepository.delete(transitionMaster);
     }
 

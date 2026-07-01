@@ -6,15 +6,12 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ActionType {
-    CHARGE("Charge"),
+    PRECHECKS("Prechecks"),
     DISCHARGE("Discharge"),
-    HEAT("Heat"),
-    COOL("Cool"),
-    MIX("Mix"),
-    DOSE("Dose"),
+    OPERATOR_ACTION("Operator Action"),
     TRANSFER("Transfer"),
-    WAIT("Wait"),
-    MANUAL("Manual");
+    TRANSFER_AND_RELEASE("Transfer and Release"),
+    STIRRING("Stirring");
 
     private final String displayName;
 }

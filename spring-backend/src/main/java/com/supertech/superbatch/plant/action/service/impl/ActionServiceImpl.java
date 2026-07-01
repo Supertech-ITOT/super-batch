@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.plant.action.dto.ActionResponse;
@@ -62,6 +63,9 @@ public class ActionServiceImpl implements ActionService {
     public void delete(Long id) {
         Action actionMaster = actionMasterRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Action not found."));
+        if (!actionMaster.getCanDelete()) {
+            throw new BadRequestException("Cannot delete standard action");
+        }
         actionMasterRepository.delete(actionMaster);
     }
 

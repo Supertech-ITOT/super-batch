@@ -18,4 +18,6 @@ public class Transition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @Builder.Default
+    private Boolean canDelete = true;
 }
