@@ -24,7 +24,7 @@ function TextareaAutocomplete({ value, onChange, options, placeholder, disabled,
     const [open, setOpen] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
-    const search = value.trim().toLowerCase();
+    const search = value?.trim().toLowerCase();
 
     const filteredOptions = useMemo(() => {
         if (!search) return [];
