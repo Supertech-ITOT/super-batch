@@ -1,6 +1,7 @@
-package com.supertech.superbatch.recipe.recipe.entity;
+package com.supertech.superbatch.recipe.recipe_parameter.entity;
 
 import com.supertech.superbatch.plant.parameter.entity.Parameter;
+import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 
 import jakarta.persistence.*;
 import lombok.*;
