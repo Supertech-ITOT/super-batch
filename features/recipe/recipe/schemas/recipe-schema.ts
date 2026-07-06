@@ -1,7 +1,6 @@
 import { z } from "zod"
 
 export const RecipeSchemaLimit = {
-    stepNo: { min: 1 },
     stdTime: { min: 1 },
     message: { min: 2, max: 255 },
     actionId: { min: 1 },
@@ -19,7 +18,6 @@ const recipeParameterSchema = z.object({
 });
 
 export const recipeSchema = z.object({
-    stepNo: z.number({ error: `Step No is required.` }).int("Step No must be a whole number.").min(1, "Step No must be greater than 0."),
     stdTime: z.string().trim().min(RecipeSchemaLimit.stdTime.min, `Standard Time is required.`).refine(
         value => value !== "00:00:00",
         "Standard Time is required"

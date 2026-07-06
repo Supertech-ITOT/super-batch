@@ -21,7 +21,7 @@ export default function RecipeView({ id }: { id: number }) {
 
                 {/* Dialog */}
                 <div className="min-w-1/4 min-h-200 xl:h-full border shadow hover:shadow-lg rounded-lg overflow-hidden">
-                    <RecipeDialog />
+                    <RecipeDialog action="create" recipeHeaderId={id} />
                 </div>
             </div>
         </div>

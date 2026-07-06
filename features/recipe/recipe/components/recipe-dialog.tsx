@@ -20,8 +20,14 @@ import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { recipeSchema, RecipeSchema, RecipeSchemaLimit, } from "../schemas/recipe-schema";
 import { TransitionType } from "@/features/plant/transition/types/transition.types";
-
-export default function RecipeCard({ recipeId }: { recipeId?: number }) {
+type recipeActionType = "create" | "insert-below" | "insert-above" | "edit";
+export type RecipeDialogType = {
+  recipeId?: number;
+  recipeHeaderId: number;
+  stepNo?: number;
+  action: recipeActionType;
+}
+export default function RecipeDialog({ recipeId, recipeHeaderId, action, stepNo }: RecipeDialogType) {
   const isEdit = !!recipeId;
   const { data: transitions, isLoading: transitionsIsLoading } = useGetTransitions();
   const { data: actions, isLoading: actionsIsLoading } = useGetActions();
@@ -32,7 +38,6 @@ export default function RecipeCard({ recipeId }: { recipeId?: number }) {
   const loading = !transitions || transitionsIsLoading || !actions || actionsIsLoading || !messages || messagesIsLoading || !materials || materialsIsLoading || !parameters || parametersIsLoading;
   const { register, handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty }, } = useForm<RecipeSchema>({
     resolver: zodResolver(recipeSchema), defaultValues: {
-      stepNo: undefined,
       stdTime: "",
       actionId: 0,
       transitionId: 0,
@@ -46,7 +51,6 @@ export default function RecipeCard({ recipeId }: { recipeId?: number }) {
   const selectedTransition = transitions?.find((t) => t.id === selectedTransitionId);
   const autoMaterialStep = selectedTransition?.name === TransitionType.AUTO_MATERIAL_CHARGE;
   const manualMaterialStep = selectedTransition?.name === TransitionType.MANUAL_MATERIAL_CHARGE;
-  const materialTabLock = !(autoMaterialStep || manualMaterialStep);
 
   const onSubmit = async (formData: RecipeSchema) => {
     toast.success("Step created.");
@@ -101,7 +105,8 @@ export default function RecipeCard({ recipeId }: { recipeId?: number }) {
                 placeholder="..."
                 type="number"
                 disabled={loading}
-                {...register("stepNo", { valueAsNumber: true })}
+                readOnly
+                value={stepNo ?? 1}
               />
             </div>
 
@@ -200,6 +205,8 @@ export default function RecipeCard({ recipeId }: { recipeId?: number }) {
                 label="Materials"
                 placeholder="Search Material..."
                 valueLabel="Std Qty"
+                disabled={!(autoMaterialStep || manualMaterialStep)}
+                limit={autoMaterialStep ? 1 : undefined}
                 options={materials
                   .filter(
                     (f) => f.materialType !== MaterialType.FINISHED_PRODUCT,

@@ -15,6 +15,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/common/components/ui/command";
+import { toast } from "sonner";
 
 export interface PickerOption {
   id: number;
@@ -34,6 +35,8 @@ interface ValuePickerProps {
   options: PickerOption[];
   value: PickerValue[];
   isAdd?: boolean;
+  disabled?: boolean;
+  limit?: number;
   onChange: (value: PickerValue[]) => void;
 }
 
@@ -44,6 +47,8 @@ function ValuePicker({
   options,
   value,
   isAdd = true,
+  disabled = false,
+  limit,
   onChange,
 }: ValuePickerProps) {
   const [open, setOpen] = useState(false);
@@ -54,6 +59,12 @@ function ValuePicker({
   );
 
   function add(option: PickerOption) {
+    if (limit !== undefined && selectedIds.size >= limit) {
+      toast.warning(
+        `You cannot add more than ${limit} item${limit > 1 ? "s" : ""}.`
+      );
+      return;
+    }
     onChange([...value, { id: option.id, value: 0 }]);
     setOpen(false);
   }
@@ -78,16 +89,16 @@ function ValuePicker({
 
   const displayItems = isAdd
     ? value.map((item) => ({
-        item,
-        option: options.find((o) => o.id === item.id),
-      }))
+      item,
+      option: options.find((o) => o.id === item.id),
+    }))
     : options.map((option) => ({
-        option,
-        item: value.find((v) => v.id === option.id) ?? {
-          id: option.id,
-          value: 0,
-        },
-      }));
+      option,
+      item: value.find((v) => v.id === option.id) ?? {
+        id: option.id,
+        value: 0,
+      },
+    }));
 
   useEffect(() => {
     if (!isAdd && value.length === 0 && options.length > 0) {
@@ -107,7 +118,7 @@ function ValuePicker({
         {isAdd && (
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-              <Button size="sm" variant="outline" className="w-24">
+              <Button size="sm" variant="outline" className="w-24" disabled={disabled || (limit !== undefined && value.length >= limit)}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add
               </Button>
