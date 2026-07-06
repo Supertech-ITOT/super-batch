@@ -18,12 +18,10 @@ public class RecipeParameter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "recipe_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Recipe recipe;
 
-    @ManyToOne
-    @JoinColumn(name = "parameter_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Parameter parameter;
 
     private Double stdValue;

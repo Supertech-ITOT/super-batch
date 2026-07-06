@@ -1,9 +1,17 @@
 package com.supertech.superbatch.recipe.recipe.service;
 
+import java.util.List;
+
 import com.supertech.superbatch.recipe.recipe.dto.CreateRecipeRequest;
+import com.supertech.superbatch.recipe.recipe.dto.RecipeResponse;
 import com.supertech.superbatch.recipe.recipe.dto.UpdateRecipeRequest;
 
 public interface RecipeService {
+
+    RecipeResponse getById(Long id);
+
+    List<RecipeResponse> getAll(Long recipeHeaderId);
+
     void create(CreateRecipeRequest request);
 
     void update(UpdateRecipeRequest request);

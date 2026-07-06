@@ -23,13 +23,13 @@ public class Recipe {
 
     private Double stdTime;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private RecipeHeader recipeHeader;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Transition transition;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Action action;
 
     private String message;

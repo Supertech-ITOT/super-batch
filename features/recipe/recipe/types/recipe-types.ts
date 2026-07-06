@@ -1,6 +1,5 @@
 export interface CreateRecipeRequest {
     recipeHeaderId: number;
-    stepNo: number;
     message: string;
     stdTime: number;
     transitionId: number;
@@ -11,7 +10,6 @@ export interface CreateRecipeRequest {
 
 export interface UpdateRecipeRequest {
     recipeHeaderId: number;
-    stepNo: number;
     message: string;
     stdTime: number;
     transitionId: number;

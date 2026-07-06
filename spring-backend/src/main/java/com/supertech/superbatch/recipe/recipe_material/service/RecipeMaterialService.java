@@ -5,8 +5,12 @@ import java.util.List;
 import com.supertech.superbatch.plant.transition.entity.Transition;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 import com.supertech.superbatch.recipe.recipe_material.dto.RecipeMaterialRequest;
+import com.supertech.superbatch.recipe.recipe_material.dto.RecipeMaterialResponse;
 
 public interface RecipeMaterialService {
+
+    List<RecipeMaterialResponse> getAllByRecipe(Recipe recipe);
+
     void create(Recipe recipe, List<RecipeMaterialRequest> materials);
 
     void update(Recipe recipe, List<RecipeMaterialRequest> materials);
