@@ -9,4 +9,12 @@ public interface RecipeService {
     void update(UpdateRecipeRequest request);
 
     void delete(Long id);
+
+    void moveUp(Long recipeId);
+
+    void moveDown(Long recipeId);
+
+    void insertAbove(Long recipeId, CreateRecipeRequest request);
+
+    void insertBelow(Long recipeId, CreateRecipeRequest request);
 }

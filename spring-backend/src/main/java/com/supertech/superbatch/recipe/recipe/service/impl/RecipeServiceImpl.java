@@ -3,6 +3,7 @@ package com.supertech.superbatch.recipe.recipe.service.impl;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
@@ -61,17 +62,123 @@ public class RecipeServiceImpl implements RecipeService {
         recipeRepository.save(recipe);
     }
 
+    @Transactional
     @Override
     public void update(UpdateRecipeRequest request) {
+        Recipe recipe = recipeRepository.findById(request.id())
+                .orElseThrow(() -> new ResourceNotFoundException("Step not found"));
+        Action action = actionRepository.findById(request.actionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Action not found"));
+        Transition transition = transitionRepository.findById(request.transitionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Transition not found"));
+        recipeMaterialService.validate(transition, request.materials());
+        recipeMapper.updateEntity(request, recipe, action, transition);
 
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+        recipeParameterService.update(recipe, request.parameters());
+        recipeMaterialService.update(recipe, request.materials());
+        recipeRepository.save(recipe);
     }
 
     @Override
     public void delete(Long id) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
+        recipeParameterService.deleteByRecipe(recipe);
+        recipeMaterialService.deleteByRecipe(recipe);
         recipeRepository.delete(recipe);
+        recipeRepository.decrementStepNumbers(
+                recipe.getRecipeHeader().getId(),
+                recipe.getStepNo());
     }
 
+    @Transactional
+    @Override
+    public void moveUp(Long recipeId) {
+
+        Recipe current = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
+
+        if (current.getStepNo() == 1) {
+            return; // already first
+        }
+
+        Recipe previous = recipeRepository.findByRecipeHeaderIdAndStepNo(
+                current.getRecipeHeader().getId(),
+                current.getStepNo() - 1)
+                .orElseThrow(() -> new ResourceNotFoundException("Previous step not found."));
+
+        int temp = current.getStepNo();
+        current.setStepNo(previous.getStepNo());
+        previous.setStepNo(temp);
+
+        recipeRepository.save(current);
+        recipeRepository.save(previous);
+    }
+
+    @Transactional
+    @Override
+    public void moveDown(Long recipeId) {
+
+        Recipe current = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
+
+        Recipe next = recipeRepository.findByRecipeHeaderIdAndStepNo(
+                current.getRecipeHeader().getId(),
+                current.getStepNo() + 1)
+                .orElseThrow(() -> new ResourceNotFoundException("Next step not found."));
+
+        int temp = current.getStepNo();
+        current.setStepNo(next.getStepNo());
+        next.setStepNo(temp);
+
+        recipeRepository.save(current);
+        recipeRepository.save(next);
+    }
+
+    @Transactional
+    public void insertBelow(Long recipeId, CreateRecipeRequest request) {
+        Recipe current = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
+        Action action = actionRepository.findById(request.actionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Action not found."));
+        Transition transition = transitionRepository.findById(request.transitionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Transition not found."));
+
+        recipeRepository.incrementStepNumbersAfter(
+                current.getRecipeHeader().getId(),
+                current.getStepNo());
+
+        Recipe recipe = recipeMapper.toEntity(
+                request,
+                current.getStepNo() + 1,
+                current.getRecipeHeader(),
+                action,
+                transition);
+
+        recipeRepository.save(recipe);
+    }
+
+    @Transactional
+    public void insertAbove(Long recipeId, CreateRecipeRequest request) {
+
+        Recipe current = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
+        Action action = actionRepository.findById(request.actionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Action not found."));
+        Transition transition = transitionRepository.findById(request.transitionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Transition not found."));
+
+        recipeRepository.incrementStepNumbersFrom(
+                current.getRecipeHeader().getId(),
+                current.getStepNo());
+
+        Recipe recipe = recipeMapper.toEntity(
+                request,
+                current.getStepNo(),
+                current.getRecipeHeader(),
+                action,
+                transition);
+
+        recipeRepository.save(recipe);
+    }
 }

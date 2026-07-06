@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/recipe-headers")
 @RequiredArgsConstructor
 @CrossOrigin("*")
-public class RecipeController {
+public class RecipeHeaderController {
         private final RecipeHeaderService recipeHeaderService;
         private final UserContextService userContextService;
 
