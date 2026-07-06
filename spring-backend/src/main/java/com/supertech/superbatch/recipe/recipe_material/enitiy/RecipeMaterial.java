@@ -18,12 +18,10 @@ public class RecipeMaterial {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "recipe_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Recipe recipe;
 
-    @ManyToOne
-    @JoinColumn(name = "material_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Material material;
 
     private Double stdQty;

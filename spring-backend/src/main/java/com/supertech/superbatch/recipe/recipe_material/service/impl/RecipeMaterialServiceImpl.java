@@ -16,6 +16,7 @@ import com.supertech.superbatch.recipe.recipe_material.service.RecipeMaterialSer
 import lombok.RequiredArgsConstructor;
 
 import com.supertech.superbatch.recipe.recipe_material.dto.RecipeMaterialRequest;
+import com.supertech.superbatch.recipe.recipe_material.dto.RecipeMaterialResponse;
 import com.supertech.superbatch.recipe.recipe_material.enitiy.RecipeMaterial;
 import com.supertech.superbatch.recipe.recipe_material.mapper.RecipeMaterialMapper;
 import com.supertech.superbatch.recipe.recipe_material.repository.RecipeMaterialRepository;
@@ -26,6 +27,12 @@ public class RecipeMaterialServiceImpl implements RecipeMaterialService {
     private final RecipeMaterialRepository recipeMaterialRepository;
     private final MaterialRepository materialRepository;
     private final RecipeMaterialMapper recipeMaterialMapper;
+
+    @Override
+    public List<RecipeMaterialResponse> getAllByRecipe(Recipe recipe) {
+        List<RecipeMaterial> recipeMaterials = recipeMaterialRepository.findAllByRecipe(recipe);
+        return recipeMaterialMapper.toResponseList(recipeMaterials);
+    }
 
     @Override
     public void create(Recipe recipe, List<RecipeMaterialRequest> materials) {
