@@ -73,9 +73,10 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
       }
 
     }
+    handleClear()
   };
 
-  const handleClose = () => {
+  const handleClear = () => {
     reset({});
   };
 
@@ -279,8 +280,8 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
 
         {/* Footer */}
         <CardFooter className="sticky bottom-0 border-t bg-background justify-end gap-2 p-4!">
-          <Button variant="outline" className="min-w-22" type="button" onClick={handleClose}>
-            Cancel
+          <Button type="reset" variant="outline" className="min-w-22" onClick={handleClear}>
+            Clear
           </Button>
           <Button type="submit" className="min-w-32">
             {loading ? (

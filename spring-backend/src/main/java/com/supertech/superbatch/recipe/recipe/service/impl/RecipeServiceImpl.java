@@ -101,16 +101,17 @@ public class RecipeServiceImpl implements RecipeService {
                 recipeRepository.save(recipe);
         }
 
+        @Transactional
         @Override
         public void delete(Long id) {
                 Recipe recipe = recipeRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
                 recipeParameterService.deleteByRecipe(recipe);
                 recipeMaterialService.deleteByRecipe(recipe);
-                recipeRepository.delete(recipe);
                 recipeRepository.decrementStepNumbers(
                                 recipe.getRecipeHeader().getId(),
                                 recipe.getStepNo());
+                recipeRepository.delete(recipe);
         }
 
         @Transactional

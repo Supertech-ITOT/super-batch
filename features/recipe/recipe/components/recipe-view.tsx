@@ -1,22 +1,25 @@
-import { useState } from "react";
-import { useDeleteRecipe, useGetRecipeByHeaderId, useMoveDownRecipe, useMoveUpRecipe } from "../hooks/use-recipe";
+import { useEffect, useState } from "react";
+import { useGetRecipeByHeaderId, useMoveDownRecipe, useMoveUpRecipe } from "../hooks/use-recipe";
 import columns from "./columns";
 import DataTable from "./data-table";
 import RecipeDialog, { recipeActionType, RecipeDialogType } from "./recipe-dialog";
 import RecipeInfo from "./recipe-info";
 import { RecipeResponse } from "../types/recipe-types";
 import { toast } from "sonner";
+import RecipeDeleteDialog from "./recipe-delete-dialog";
 
 export default function RecipeView({ id }: { id: number }) {
     const { data, isLoading } = useGetRecipeByHeaderId(id);
     const { mutateAsync: moveUp } = useMoveUpRecipe();
     const { mutateAsync: moveDown } = useMoveDownRecipe();
-    const { mutateAsync: deleteRecipe } = useDeleteRecipe();
-    const [dialog, setDialog] = useState<RecipeDialogType>({
-        recipeHeaderId: id,
-        action: "create",
-        stepNo: (data?.length ?? 0) + 1,
-    });
+    const nextStepNo = (data?.length ?? 0) + 1;
+    const [dialog, setDialog] = useState<RecipeDialogType>({ recipeHeaderId: id, action: "create", stepNo: nextStepNo });
+    useEffect(() => {
+        setDialog((prev) => ({ ...prev, recipeHeaderId: id, stepNo: nextStepNo, }));
+    }, [id, nextStepNo]);
+    const handleClose = () => {
+        setDialog({ recipeHeaderId: id, action: "create", stepNo: nextStepNo, });
+    }
     const handleAction = async (action: recipeActionType, row: RecipeResponse,) => {
         switch (action) {
             case "move-up": {
@@ -28,12 +31,6 @@ export default function RecipeView({ id }: { id: number }) {
             case "move-down": {
                 const res = await moveDown({ id: row.id, recipeHeaderId: id, });
                 toast.success(res.message ?? "Moved down successfully.");
-                return;
-            }
-
-            case "delete": {
-                const res = await deleteRecipe({ id: row.id, recipeHeaderId: id, });
-                toast.success(res.message ?? "Deleted successfully.");
                 return;
             }
 
@@ -63,6 +60,11 @@ export default function RecipeView({ id }: { id: number }) {
                 {/* Dialog */}
                 <div className="min-w-1/4 min-h-200 xl:h-full border shadow hover:shadow-lg rounded-lg overflow-hidden">
                     <RecipeDialog action={dialog.action} recipeHeaderId={id} stepNo={dialog.stepNo} recipeId={dialog.recipeId} />
+                    {dialog.action === "delete" && dialog.recipeId &&
+                        (
+                            <RecipeDeleteDialog open id={dialog.recipeId} recipeHeaderId={dialog.recipeHeaderId} onClose={handleClose} />
+                        )
+                    }
                 </div>
             </div>
         </div>
