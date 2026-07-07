@@ -9,6 +9,7 @@ export interface CreateRecipeRequest {
 }
 
 export interface UpdateRecipeRequest {
+    id:number;
     recipeHeaderId: number;
     message: string;
     stdTime: number;
@@ -33,7 +34,7 @@ export interface RecipeResponse {
 }
 
 export type RecipeMaterialRequest = {
-    id: number;
+    materialId: number;
     stdQty: number;
 };
 export type RecipeMaterialResponse = {
@@ -45,7 +46,7 @@ export type RecipeMaterialResponse = {
 
 
 export type RecipeParameterRequest = {
-    id: number;
+    parameterId: number;
     stdValue: number;
 };
 export type RecipeParameterResponse = {

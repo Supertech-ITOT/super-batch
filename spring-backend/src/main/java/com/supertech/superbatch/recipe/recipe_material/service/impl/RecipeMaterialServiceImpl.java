@@ -41,7 +41,7 @@ public class RecipeMaterialServiceImpl implements RecipeMaterialService {
         }
         List<RecipeMaterial> recipeMaterials = materials.stream()
                 .map(request -> {
-                    Material material = materialRepository.findById(request.id())
+                    Material material = materialRepository.findById(request.materialId())
                             .orElseThrow(() -> new ResourceNotFoundException("Material not found."));
                     return recipeMaterialMapper.toEntity(recipe, material, request);
                 })

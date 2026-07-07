@@ -8,12 +8,12 @@ export const RecipeSchemaLimit = {
 } as const
 
 const recipeMaterialSchema = z.object({
-    id: z.number().min(1, "Material is required."),
+    materialId: z.number().min(1, "Material is required."),
     stdQty: z.number().nonnegative("Standard Quantity cannot be negative."),
 });
 
 const recipeParameterSchema = z.object({
-    id: z.number().min(1, "Parameter is required."),
+    parameterId: z.number().min(1, "Parameter is required."),
     stdValue: z.number().nonnegative("Standard Value cannot be negative."),
 });
 

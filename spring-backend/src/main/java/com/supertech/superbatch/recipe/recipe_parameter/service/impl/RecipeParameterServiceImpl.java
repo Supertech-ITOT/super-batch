@@ -39,7 +39,7 @@ public class RecipeParameterServiceImpl implements RecipeParameterService {
         }
         List<RecipeParameter> recipeParameters = parameters.stream()
                 .map(request -> {
-                    Parameter parameter = parameterRepository.findById(request.id())
+                    Parameter parameter = parameterRepository.findById(request.parameterId())
                             .orElseThrow(() -> new ResourceNotFoundException("Parameter not found."));
                     return recipeParameterMapper.toEntity(recipe, parameter, request);
                 })
