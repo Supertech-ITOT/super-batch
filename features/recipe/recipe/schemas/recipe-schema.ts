@@ -18,7 +18,7 @@ const recipeParameterSchema = z.object({
 });
 
 export const recipeSchema = z.object({
-    stdTime: z.string().trim().min(RecipeSchemaLimit.stdTime.min, `Standard Time is required.`).refine(
+    stdTime: z.string({ error: "Standard time is required." }).trim().min(RecipeSchemaLimit.stdTime.min, `Standard Time is required.`).refine(
         value => value !== "00:00:00",
         "Standard Time is required"
     ),

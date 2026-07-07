@@ -31,7 +31,6 @@ export type RecipeDialogType = {
   action: recipeActionType;
 }
 export default function RecipeDialog({ recipeId, recipeHeaderId, action = "create", stepNo }: RecipeDialogType) {
-
   const { data: transitions, isLoading: transitionsIsLoading } = useGetTransitions();
   const { data: actions, isLoading: actionsIsLoading } = useGetActions();
   const { data: messages, isLoading: messagesIsLoading } = useGetMessages();
@@ -44,13 +43,7 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
   const { mutateAsync: insertAbove, isPending: insertAboveIsPending } = useInsertAboveRecipe();
   const { mutateAsync: update, isPending: updateIsPending } = useUpdateRecipe();
 
-  const loading = !transitions || transitionsIsLoading ||
-    !actions || actionsIsLoading ||
-    !messages || messagesIsLoading ||
-    !materials || materialsIsLoading ||
-    !parameters || parametersIsLoading ||
-    createIsPending || insertBelowIsPending || insertAboveIsPending || updateIsPending || recipeIsLoading;
-  const { register, handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty }, } = useForm<RecipeSchema>({
+  const { handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty }, } = useForm<RecipeSchema>({
     resolver: zodResolver(recipeSchema), defaultValues: {
       stdTime: "",
       actionId: 0,
@@ -60,6 +53,13 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
       parameters: [],
     },
   });
+
+  const loading = isSubmitting || !transitions || transitionsIsLoading ||
+    !actions || actionsIsLoading ||
+    !messages || messagesIsLoading ||
+    !materials || materialsIsLoading ||
+    !parameters || parametersIsLoading ||
+    createIsPending || insertBelowIsPending || insertAboveIsPending || updateIsPending || recipeIsLoading;
 
   useEffect(() => {
     if (action !== "edit" || !recipe) return;
@@ -337,7 +337,7 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
           <Button type="reset" variant="outline" className="min-w-22" onClick={handleClear}>
             Clear
           </Button>
-          <Button type="submit" className="min-w-32">
+          <Button type="submit" className="min-w-32" disabled={loading || !isDirty}>
             {loading ? (
               <Loader2 className="size-4 animate-spin" />
             ) : action === "edit" ? (
