@@ -20,9 +20,9 @@ import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { recipeSchema, RecipeSchema, RecipeSchemaLimit, } from "../schemas/recipe-schema";
 import { TransitionType } from "@/features/plant/transition/types/transition.types";
-import { useCreateRecipe } from "../hooks/use-recipe";
+import { useCreateRecipe, useMoveUpRecipe } from "../hooks/use-recipe";
 import { durationToMinutes } from "@/common/utils/duration.util";
-type recipeActionType = "create" | "insert-below" | "insert-above" | "edit";
+export type recipeActionType = "create" | "insert-below" | "insert-above" | "edit" | "move-up" | "move-down" | "delete";
 export type RecipeDialogType = {
   recipeId?: number;
   recipeHeaderId: number;
@@ -61,13 +61,20 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
   const manualMaterialStep = selectedTransition?.name === TransitionType.MANUAL_MATERIAL_CHARGE;
 
   const onSubmit = async (formData: RecipeSchema) => {
-    const res = await create({
-      ...formData,
-      recipeHeaderId: recipeHeaderId,
-      stdTime: durationToMinutes(formData.stdTime)
-    });
-    toast.success(res.message ?? "Step created.");
+    switch (action) {
+      case "create": {
+        const res = await create({
+          ...formData,
+          recipeHeaderId,
+          stdTime: durationToMinutes(formData.stdTime),
+        });
+        toast.success(res.message ?? "Step created.");
+        break;
+      }
+
+    }
   };
+
   const handleClose = () => {
     reset({});
   };
@@ -109,7 +116,7 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
         </CardHeader>
 
         {/* Body */}
-        <CardContent className="min-h-0 h-full flex-1 overflow-y-auto scrollbar-none p-4 space-y-4">
+        <CardContent className="min-h-0 h-full flex-1 overflow-y-auto scrollbar-none p-4 space-y-4 ">
           <div className="flex gap-2">
             <div className="flex-1 space-y-2">
               <Label>Step No</Label>
@@ -137,7 +144,7 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
               />
             </div>
           </div>
-          <div className="space-y-2 relative">
+          <div className="space-y-2 relative ">
             <div className="flex items-center justify-between">
               <Label>Message</Label>
               <CharacterProgress
@@ -159,7 +166,7 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
                   placeholder="Brief message overview"
                   disabled={loading}
                   maxLength={RecipeSchemaLimit.message.max}
-                  className="min-h-28 resize-none"
+                  className="w-full min-w-0 max-w-full min-h-28 resize-none wrap-break-word"
                 />
               )}
             />
@@ -263,7 +270,7 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
                     items.map((i) => ({ id: i.id, stdValue: i.value })),
                   )
                 }
-                isAdd={false}
+
               />
             )}
           />

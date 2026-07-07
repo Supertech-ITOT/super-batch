@@ -1,11 +1,47 @@
-import { useGetRecipeByHeaderId } from "../hooks/use-recipe";
+import { useState } from "react";
+import { useDeleteRecipe, useGetRecipeByHeaderId, useMoveDownRecipe, useMoveUpRecipe } from "../hooks/use-recipe";
 import columns from "./columns";
 import DataTable from "./data-table";
-import RecipeDialog from "./recipe-dialog";
+import RecipeDialog, { recipeActionType, RecipeDialogType } from "./recipe-dialog";
 import RecipeInfo from "./recipe-info";
+import { RecipeResponse } from "../types/recipe-types";
+import { toast } from "sonner";
 
 export default function RecipeView({ id }: { id: number }) {
     const { data, isLoading } = useGetRecipeByHeaderId(id);
+    const { mutateAsync: moveUp } = useMoveUpRecipe();
+    const { mutateAsync: moveDown } = useMoveDownRecipe();
+    const { mutateAsync: deleteRecipe } = useDeleteRecipe();
+    const [dialog, setDialog] = useState<RecipeDialogType>({
+        recipeHeaderId: id,
+        action: "create",
+        stepNo: (data?.length ?? 0) + 1,
+    });
+    const handleAction = async (action: recipeActionType, row: RecipeResponse,) => {
+        switch (action) {
+            case "move-up": {
+                const res = await moveUp({ id: row.id, recipeHeaderId: id, });
+                toast.success(res.message ?? "Moved up successfully.");
+                return;
+            }
+
+            case "move-down": {
+                const res = await moveDown({ id: row.id, recipeHeaderId: id, });
+                toast.success(res.message ?? "Moved down successfully.");
+                return;
+            }
+
+            case "delete": {
+                const res = await deleteRecipe({ id: row.id, recipeHeaderId: id, });
+                toast.success(res.message ?? "Deleted successfully.");
+                return;
+            }
+
+            default: {
+                setDialog({ recipeId: row.id, recipeHeaderId: id, stepNo: row.stepNo, action, });
+            }
+        }
+    };
     if (!data || isLoading)
         return;
     return (
@@ -14,8 +50,8 @@ export default function RecipeView({ id }: { id: number }) {
             <div className="flex flex-1 min-h-0 flex-col gap-4 xl:flex-row">
                 <div className="flex w-full flex-col gap-4">
                     {/* Table */}
-                    <div className="xl:h-3/5 h-132 border shadow hover:shadow-lg rounded-lg overflow-hidden">
-                        <DataTable columns={columns} data={data} />
+                    <div className="xl:h-6/5 h-132 border shadow hover:shadow-lg rounded-lg overflow-hidden">
+                        <DataTable columns={columns} data={data} onAction={handleAction} />
                     </div>
 
                     {/* Summary */}
@@ -26,7 +62,7 @@ export default function RecipeView({ id }: { id: number }) {
 
                 {/* Dialog */}
                 <div className="min-w-1/4 min-h-200 xl:h-full border shadow hover:shadow-lg rounded-lg overflow-hidden">
-                    <RecipeDialog action="create" recipeHeaderId={id} stepNo={data.length + 1} />
+                    <RecipeDialog action={dialog.action} recipeHeaderId={id} stepNo={dialog.stepNo} recipeId={dialog.recipeId} />
                 </div>
             </div>
         </div>

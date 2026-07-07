@@ -9,6 +9,11 @@ export const columns: ColumnDef<RecipeResponse>[] = [
     {
         accessorKey: "stepNo",
         header: "Step No.",
+        cell: ({ row }) => (
+            <div className="size-8 bg-primary/10 rounded-full flex justify-center items-center place-self-center p-0.5 shadow" >
+                <h1 className="text-primary font-black">{row.original.stepNo}</h1>
+            </div>
+        )
     },
     {
         accessorKey: "message",
@@ -65,12 +70,38 @@ export const columns: ColumnDef<RecipeResponse>[] = [
                     {
                         header: "Name",
                         cellClassName: "text-left",
-                        render: (parameter) => parameter.parameterName,
+                        render: (i) => i.parameterName,
                     },
                     {
                         header: "Standard Value",
                         cellClassName: "text-right",
-                        render: (parameter) => parameter.stdValue,
+                        render: (i) => i.stdValue,
+                    },
+                ]}
+            />
+        ),
+    },
+    {
+        accessorKey: "materials",
+        header: "Materials",
+        cell: ({ row }) => (
+            <CollapsibleDataTable
+                title="Material(s)"
+                data={row.original.materials}
+                columns={[
+                    {
+                        header: "Sr.",
+                        render: (_, index) => index + 1,
+                    },
+                    {
+                        header: "Name",
+                        cellClassName: "text-left",
+                        render: (i) => i.materialName,
+                    },
+                    {
+                        header: "Standard Qty",
+                        cellClassName: "text-right",
+                        render: (i) => i.stdQty,
                     },
                 ]}
             />

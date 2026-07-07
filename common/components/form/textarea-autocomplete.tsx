@@ -115,13 +115,17 @@ function TextareaAutocomplete({ value, onChange, options, placeholder, disabled,
     );
 
     return (
-        <div className="relative">
+        <div className="relative w-full min-w-0">
             <Textarea
                 value={value}
                 placeholder={placeholder}
                 disabled={disabled}
                 maxLength={maxLength}
-                className={cn(className)}
+                className={cn(
+                    "w-full min-w-0 max-w-full resize-none break-all wrap-anywhere",
+                    className
+                )}
+                wrap="hard"
                 onChange={handleChange}
                 onFocus={handleFocus}
                 onBlur={handleBlur}

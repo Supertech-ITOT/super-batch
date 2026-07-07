@@ -3,18 +3,32 @@
 import { ColumnDef, ColumnFiltersState, SortingState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable, } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/common/components/ui/table";
 import { Button } from "@/common/components/ui/button";
-import { Input } from "@/common/components/ui/input";
 import { useState } from "react";
-import { Plus } from "lucide-react";
-import { DialogProp } from "../../recipe_header/components/recipe-header-view";
+import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, ContextMenuLabel, ContextMenuTrigger } from "@/common/components/ui/context-menu";
+import { ChevronsDown, ChevronsUp, CornerLeftDown, CornerLeftUp, LucideIcon, SquarePen, Trash } from "lucide-react";
+import { recipeActionType } from "./recipe-dialog";
 
 interface DataTableProps<TData extends { id: number }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  onAction: (action: recipeActionType, row: TData) => void;
 
 }
-
-const DataTable = <TData extends { id: number }, TValue>({ columns, data }: DataTableProps<TData, TValue>) => {
+type menuItemType = {
+  label: string;
+  icon: LucideIcon;
+  variant?: "default" | "destructive";
+  action: recipeActionType;
+}
+const menuItem: menuItemType[] = [
+  { label: "Insert Below", icon: CornerLeftDown, variant: "default", action: "insert-below" },
+  { label: "Insert Above", icon: CornerLeftUp, variant: "default", action: "insert-above" },
+  { label: "Move Up", icon: ChevronsUp, variant: "default", action: "move-up" },
+  { label: "Move Down", icon: ChevronsDown, variant: "default", action: "move-down" },
+  { label: "Edit", icon: SquarePen, variant: "default", action: "edit" },
+  { label: "Delete", icon: Trash, variant: "destructive", action: "delete" }
+];
+const DataTable = <TData extends { id: number }, TValue>({ columns, data, onAction }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const table = useReactTable({
@@ -26,13 +40,13 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data }: Data
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
-    initialState: { pagination: { pageSize: 8 } },
+    initialState: { pagination: { pageSize: 10 } },
     state: { sorting, columnFilters },
   });
 
   return (
     <div className="flex flex-col h-full">
-      <div className="min-h-114">
+      <div className="h-6/5 overflow-y-auto scrollbar-none">
         <Table>
           <TableHeader className="bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -50,20 +64,36 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data }: Data
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="border-muted-foreground/20 border-b h-20"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={`border-r border-muted-foreground/20 ${cell.column.id === "message" || cell.column.id === "name" ? "text-left" : "text-center"}`}
+                <ContextMenu key={row.id}>
+                  <ContextMenuTrigger asChild>
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className="border-muted-foreground/20 border-b h-12"
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          className={`  ${cell.column.id === "parameters" || cell.column.id === "materials" ? "align-top" : ""} border-r border-muted-foreground/20  ${cell.column.id === "message" ? "text-left" : "text-center"}`}
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent>
+                    <ContextMenuLabel>Action</ContextMenuLabel>
+                    {menuItem.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <ContextMenuItem variant={item.variant} key={item.label} onClick={() => onAction(item.action, row.original)}>
+                          <Icon className="size-4" />
+                          {item.label}
+                        </ContextMenuItem>
+                      )
+                    })}
+                  </ContextMenuContent>
+                </ContextMenu>
               ))
             ) : (
               <TableRow>
@@ -75,7 +105,7 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data }: Data
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between p-2">
+      <div className="flex items-center justify-between p-4">
         <div className="text-sm text-muted-foreground">
           Page {table.getState().pagination.pageIndex + 1} of{" "}
           {table.getPageCount()}

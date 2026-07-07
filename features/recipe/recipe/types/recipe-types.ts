@@ -5,7 +5,7 @@ export interface CreateRecipeRequest {
     transitionId: number;
     actionId: number
     materials?: RecipeMaterialRequest[];
-    parameters: RecipeParameterRequest[];
+    parameters?: RecipeParameterRequest[];
 }
 
 export interface UpdateRecipeRequest {
