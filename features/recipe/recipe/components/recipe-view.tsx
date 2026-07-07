@@ -7,6 +7,7 @@ import RecipeInfo from "./recipe-info";
 import { RecipeResponse } from "../types/recipe-types";
 import { toast } from "sonner";
 import RecipeDeleteDialog from "./recipe-delete-dialog";
+import { showApiError } from "@/common/lib/show-api-error";
 
 export default function RecipeView({ id }: { id: number }) {
     const { data, isLoading } = useGetRecipeByHeaderId(id);
@@ -23,19 +24,38 @@ export default function RecipeView({ id }: { id: number }) {
     const handleAction = async (action: recipeActionType, row: RecipeResponse,) => {
         switch (action) {
             case "move-up": {
-                const res = await moveUp({ id: row.id, recipeHeaderId: id, });
-                toast.success(res.message ?? "Moved up successfully.");
-                return;
+                try {
+                    const res = await moveUp({ id: row.id, recipeHeaderId: id, });
+                    toast.success(res.message ?? "Moved up successfully.");
+                }
+                catch (err) {
+                    showApiError(err);
+                }
+                finally {
+                    return;
+                }
             }
-
             case "move-down": {
-                const res = await moveDown({ id: row.id, recipeHeaderId: id, });
-                toast.success(res.message ?? "Moved down successfully.");
+                try {
+                    const res = await moveDown({ id: row.id, recipeHeaderId: id, });
+                    toast.success(res.message ?? "Moved down successfully.");
+                } catch (err) {
+                    showApiError(err);
+                } finally {
+                    return;
+                }
+            }
+            case "create": {
+                setDialog({ action, stepNo: nextStepNo, recipeHeaderId: id });
                 return;
             }
-
+            case "insert-below": {
+                setDialog({ recipeHeaderId: id, stepNo: row.stepNo + 1, action, recipeId: row.id });
+                return;
+            }
             default: {
                 setDialog({ recipeId: row.id, recipeHeaderId: id, stepNo: row.stepNo, action, });
+                return;
             }
         }
     };

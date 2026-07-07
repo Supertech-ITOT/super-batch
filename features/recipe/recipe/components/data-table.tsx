@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "
 import { Button } from "@/common/components/ui/button";
 import { useState } from "react";
 import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, ContextMenuLabel, ContextMenuTrigger } from "@/common/components/ui/context-menu";
-import { ChevronsDown, ChevronsUp, CornerLeftDown, CornerLeftUp, LucideIcon, SquarePen, Trash } from "lucide-react";
+import { ChevronsDown, ChevronsUp, CornerLeftDown, CornerLeftUp, LucideIcon, Plus, SquarePen, Trash } from "lucide-react";
 import { recipeActionType } from "./recipe-dialog";
 
 interface DataTableProps<TData extends { id: number }, TValue> {
@@ -21,8 +21,9 @@ type menuItemType = {
   action: recipeActionType;
 }
 const menuItem: menuItemType[] = [
-  { label: "Insert Below", icon: CornerLeftDown, variant: "default", action: "insert-below" },
+  { label: "Add", icon: Plus, variant: "default", action: "create" },
   { label: "Insert Above", icon: CornerLeftUp, variant: "default", action: "insert-above" },
+  { label: "Insert Below", icon: CornerLeftDown, variant: "default", action: "insert-below" },
   { label: "Move Up", icon: ChevronsUp, variant: "default", action: "move-up" },
   { label: "Move Down", icon: ChevronsDown, variant: "default", action: "move-down" },
   { label: "Edit", icon: SquarePen, variant: "default", action: "edit" },

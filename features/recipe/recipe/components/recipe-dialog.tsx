@@ -23,6 +23,7 @@ import { TransitionType } from "@/features/plant/transition/types/transition.typ
 import { useCreateRecipe, useGetRecipeById, useInsertAboveRecipe, useInsertBelowRecipe, useMoveUpRecipe, useUpdateRecipe } from "../hooks/use-recipe";
 import { durationToMinutes, minutesToDuration } from "@/common/utils/duration.util";
 import { useEffect } from "react";
+import { showApiError } from "@/common/lib/show-api-error";
 export type recipeActionType = "create" | "insert-below" | "insert-above" | "edit" | "move-up" | "move-down" | "delete";
 export type RecipeDialogType = {
   recipeId?: number;
@@ -62,15 +63,19 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
     createIsPending || insertBelowIsPending || insertAboveIsPending || updateIsPending || recipeIsLoading;
 
   useEffect(() => {
-    if (action !== "edit" || !recipe) return;
-    reset({
-      actionId: recipe?.actionId,
-      materials: recipe?.materials,
-      message: recipe?.message,
-      parameters: recipe?.parameters,
-      stdTime: minutesToDuration(recipe?.stdTime ?? 0),
-      transitionId: recipe?.transitionId
-    })
+    if (action === "edit" || recipe) {
+      reset({
+        actionId: recipe?.actionId,
+        materials: recipe?.materials,
+        message: recipe?.message,
+        parameters: recipe?.parameters,
+        stdTime: minutesToDuration(recipe?.stdTime ?? 0),
+        transitionId: recipe?.transitionId
+      })
+    }
+    else {
+      handleClear();
+    }
   }, [reset, recipe]);
 
 
@@ -81,53 +86,34 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
 
   const onSubmit = async (formData: RecipeSchema) => {
     let res;
-    switch (action) {
-      case "create": {
-        res = await create({
-          ...formData,
-          recipeHeaderId,
-          stdTime: durationToMinutes(formData.stdTime),
-        });
-        break;
-      }
-      case "insert-below": {
-        if (!recipeId) return;
-        res = await insertBelow({
-          id: recipeId, data: {
-            ...formData,
-            recipeHeaderId,
-            stdTime: durationToMinutes(formData.stdTime),
-          }
-        });
-        break;
-      }
-      case "insert-above": {
-        if (!recipeId) return;
-        res = await insertAbove({
-          id: recipeId, data: {
-            ...formData,
-            recipeHeaderId,
-            stdTime: durationToMinutes(formData.stdTime),
-          }
-        });
-        break;
-      }
-      case "edit": {
-        if (!recipeId) return;
-        res = await update({
-          ...formData,
-          recipeHeaderId: recipeHeaderId,
-          id: recipeId,
-          stdTime: durationToMinutes(formData.stdTime),
-          materials: formData.materials ?? [],
-          parameters: formData.parameters ?? [],
+    try {
+      switch (action) {
+        case "create": {
+          res = await create({ ...formData, recipeHeaderId, stdTime: durationToMinutes(formData.stdTime), });
+          break;
         }
-        );
-        break;
+        case "insert-below": {
+          if (!recipeId) return;
+          res = await insertBelow({ id: recipeId, data: { ...formData, recipeHeaderId, stdTime: durationToMinutes(formData.stdTime), } });
+          break;
+        }
+        case "insert-above": {
+          if (!recipeId) return;
+          res = await insertAbove({ id: recipeId, data: { ...formData, recipeHeaderId, stdTime: durationToMinutes(formData.stdTime), } });
+          break;
+        }
+        case "edit": {
+          if (!recipeId) return;
+          res = await update({ ...formData, recipeHeaderId: recipeHeaderId, id: recipeId, stdTime: durationToMinutes(formData.stdTime), materials: formData.materials ?? [], parameters: formData.parameters ?? [], });
+          break;
+        }
       }
+      toast.success(res?.message ?? "Step created.");
+      handleClear()
     }
-    toast.success(res?.message ?? "Step created.");
-    handleClear()
+    catch (err) {
+      showApiError(err);
+    }
   };
 
   const handleClear = () => {
@@ -135,6 +121,7 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
   };
 
   const onInvalid = (errors: FieldErrors<RecipeSchema>) => {
+    console.log(errors);
     const firstError = Object.values(errors)[0];
     if (firstError?.message) {
       toast.error(firstError.message.toString());
@@ -180,7 +167,7 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
                 type="number"
                 disabled={loading}
                 readOnly
-                value={stepNo ?? 1}
+                value={stepNo ?? 0}
               />
             </div>
 

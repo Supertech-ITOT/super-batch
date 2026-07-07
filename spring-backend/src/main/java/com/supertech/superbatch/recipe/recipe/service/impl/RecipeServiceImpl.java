@@ -1,5 +1,6 @@
 package com.supertech.superbatch.recipe.recipe.service.impl;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -10,7 +11,6 @@ import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.plant.action.entity.Action;
 import com.supertech.superbatch.plant.action.repository.ActionRepository;
 import com.supertech.superbatch.plant.transition.entity.Transition;
-import com.supertech.superbatch.plant.transition.enums.TransitionType;
 import com.supertech.superbatch.plant.transition.repository.TransitionRepository;
 import com.supertech.superbatch.recipe.recipe.dto.CreateRecipeRequest;
 import com.supertech.superbatch.recipe.recipe.dto.RecipeResponse;
@@ -51,10 +51,12 @@ public class RecipeServiceImpl implements RecipeService {
         @Override
         public List<RecipeResponse> getAllByRecipeHeaderId(Long recipeHeaderId) {
                 List<Recipe> recipes = recipeRepository.findWithRelationsByRecipeHeaderId(recipeHeaderId);
-                return recipes.stream().map(
-                                recipe -> recipeMapper.toResponse(recipe,
-                                                recipeMaterialService.getAllByRecipe(recipe),
-                                                recipeParameterService.getAllByRecipe(recipe)))
+                return recipes.stream()
+                                .sorted(Comparator.comparing(Recipe::getStepNo))
+                                .map(
+                                                recipe -> recipeMapper.toResponse(recipe,
+                                                                recipeMaterialService.getAllByRecipe(recipe),
+                                                                recipeParameterService.getAllByRecipe(recipe)))
                                 .toList();
         }
 
@@ -69,14 +71,6 @@ public class RecipeServiceImpl implements RecipeService {
                 Transition transition = transitionRepository.findById(request.transitionId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Transition not found."));
 
-                if (transition.getName().equals(TransitionType.AUTO_MATERIAL_CHARGE.getDisplayName())
-                                && request.materials().size() != 1) {
-                        throw new BadRequestException("Material must be one in auto material charging step.");
-                }
-                if (transition.getName().equals(TransitionType.MANUAL_MATERIAL_CHARGE.getDisplayName())
-                                && request.materials().size() == 0) {
-                        throw new BadRequestException("Material must be added in manual material charging step.");
-                }
                 recipeMaterialService.validate(transition, request.materials());
                 Recipe recipe = recipeMapper.toEntity(request, stepNo, recipeHeader, action, transition);
                 recipeRepository.save(recipe);
@@ -95,7 +89,6 @@ public class RecipeServiceImpl implements RecipeService {
                                 .orElseThrow(() -> new ResourceNotFoundException("Transition not found"));
                 recipeMaterialService.validate(transition, request.materials());
                 recipeMapper.updateEntity(request, recipe, action, transition);
-
                 recipeParameterService.update(recipe, request.parameters());
                 recipeMaterialService.update(recipe, request.materials());
                 recipeRepository.save(recipe);
@@ -122,7 +115,7 @@ public class RecipeServiceImpl implements RecipeService {
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
 
                 if (current.getStepNo() == 1) {
-                        return; // already first
+                        throw new BadRequestException("Step 1 cannot be moved up.");
                 }
 
                 Recipe previous = recipeRepository.findByRecipeHeaderIdAndStepNo(
@@ -167,17 +160,10 @@ public class RecipeServiceImpl implements RecipeService {
                 Transition transition = transitionRepository.findById(request.transitionId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Transition not found."));
 
-                recipeRepository.incrementStepNumbersAfter(
-                                current.getRecipeHeader().getId(),
-                                current.getStepNo());
-
-                Recipe recipe = recipeMapper.toEntity(
-                                request,
-                                current.getStepNo() + 1,
-                                current.getRecipeHeader(),
-                                action,
-                                transition);
-
+                recipeMaterialService.validate(transition, request.materials());
+                recipeRepository.incrementStepNumbersAfter(current.getRecipeHeader().getId(), current.getStepNo());
+                Recipe recipe = recipeMapper.toEntity(request, current.getStepNo() + 1, current.getRecipeHeader(),
+                                action, transition);
                 recipeRepository.save(recipe);
         }
 
@@ -190,18 +176,11 @@ public class RecipeServiceImpl implements RecipeService {
                                 .orElseThrow(() -> new ResourceNotFoundException("Action not found."));
                 Transition transition = transitionRepository.findById(request.transitionId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Transition not found."));
+                recipeMaterialService.validate(transition, request.materials());
 
-                recipeRepository.incrementStepNumbersFrom(
-                                current.getRecipeHeader().getId(),
-                                current.getStepNo());
-
-                Recipe recipe = recipeMapper.toEntity(
-                                request,
-                                current.getStepNo(),
-                                current.getRecipeHeader(),
-                                action,
+                recipeRepository.incrementStepNumbersFrom(current.getRecipeHeader().getId(), current.getStepNo());
+                Recipe recipe = recipeMapper.toEntity(request, current.getStepNo(), current.getRecipeHeader(), action,
                                 transition);
-
                 recipeRepository.save(recipe);
         }
 }
