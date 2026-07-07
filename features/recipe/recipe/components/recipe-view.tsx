@@ -62,17 +62,17 @@ export default function RecipeView({ id }: { id: number }) {
     if (!data || isLoading)
         return;
     return (
-        <div className="flex-1 gap-4 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none flex flex-col">
+        <div className="flex-1 gap-4 rounded-lg border shadow h-full p-4 overflow-y-auto scrollbar-none flex flex-col bg-card">
             <RecipeInfo id={id} />
-            <div className="flex flex-1 min-h-0 flex-col gap-4 xl:flex-row">
-                <div className="flex w-full flex-col gap-4">
+            <div className="flex   flex-col gap-4 xl:flex-row">
+                <div className="flex w-full flex-col gap-4 h-full">
                     {/* Table */}
-                    <div className="xl:h-6/5 h-132 border shadow hover:shadow-lg rounded-lg overflow-hidden">
+                    <div className="xl:h-6/5 h-132 bg-card border shadow hover:shadow-lg rounded-lg overflow-hidden">
                         <DataTable columns={columns} data={data} onAction={handleAction} />
                     </div>
 
                     {/* Summary */}
-                    <div className="xl:h-2/5 h-100 border shadow hover:shadow-lg rounded-lg overflow-hidden">
+                    <div className="xl:h-2/5 h-100 border bg-card shadow hover:shadow-lg rounded-lg overflow-hidden">
                         <div className="w-full min-h-30"></div>
                     </div>
                 </div>
