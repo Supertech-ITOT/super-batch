@@ -31,13 +31,13 @@ export type RecipeDialogType = {
   action: recipeActionType;
 }
 export default function RecipeDialog({ recipeId, recipeHeaderId, action = "create", stepNo }: RecipeDialogType) {
-  const isEdit = !!recipeId || action === "edit";
+
   const { data: transitions, isLoading: transitionsIsLoading } = useGetTransitions();
   const { data: actions, isLoading: actionsIsLoading } = useGetActions();
   const { data: messages, isLoading: messagesIsLoading } = useGetMessages();
   const { data: materials, isLoading: materialsIsLoading } = useGetMaterials();
   const { data: parameters, isLoading: parametersIsLoading } = useGetParameters();
-  const { data: recipe, isLoading: recipeIsLoading } = useGetRecipeById(recipeId);
+  const { data: recipe, isLoading: recipeIsLoading } = useGetRecipeById(action === "edit" ? recipeId : undefined);
 
   const { mutateAsync: create, isPending: createIsPending } = useCreateRecipe();
   const { mutateAsync: insertBelow, isPending: insertBelowIsPending } = useInsertBelowRecipe();
@@ -62,7 +62,7 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
   });
 
   useEffect(() => {
-    if (!isEdit || !recipe) return;
+    if (action !== "edit" || !recipe) return;
     reset({
       actionId: recipe?.actionId,
       materials: recipe?.materials,
@@ -160,9 +160,9 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
               <GitBranch className="size-6 text-primary" />
             </div>
             <div>
-              <CardTitle>{isEdit ? "Edit Step" : "Create Step"}</CardTitle>
+              <CardTitle>{action === "edit" ? "Edit Step" : "Create Step"}</CardTitle>
               <CardDescription>
-                {isEdit
+                {action === "edit"
                   ? "Update the step information."
                   : "Create a new process step."}
               </CardDescription>
@@ -340,7 +340,7 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
           <Button type="submit" className="min-w-32">
             {loading ? (
               <Loader2 className="size-4 animate-spin" />
-            ) : isEdit ? (
+            ) : action === "edit" ? (
               "Update"
             ) : (
               "Add"
