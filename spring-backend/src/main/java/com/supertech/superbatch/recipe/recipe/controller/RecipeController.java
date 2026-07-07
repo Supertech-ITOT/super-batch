@@ -1,10 +1,13 @@
 package com.supertech.superbatch.recipe.recipe.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.supertech.superbatch.common.dto.ApiResponse;
 import com.supertech.superbatch.recipe.recipe.dto.CreateRecipeRequest;
+import com.supertech.superbatch.recipe.recipe.dto.RecipeResponse;
 import com.supertech.superbatch.recipe.recipe.dto.UpdateRecipeRequest;
 import com.supertech.superbatch.recipe.recipe.service.RecipeService;
 
@@ -18,6 +21,19 @@ import lombok.RequiredArgsConstructor;
 public class RecipeController {
 
     private final RecipeService recipeService;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<RecipeResponse>> getById(@PathVariable Long id) {
+        RecipeResponse response = recipeService.getById(id);
+        return ResponseEntity.ok(ApiResponse.success("Step fetched successfully", response));
+    }
+
+    @GetMapping("/header/{recipeHeaderId}")
+    public ResponseEntity<ApiResponse<List<RecipeResponse>>> getAllByRecipeHeaderId(@PathVariable Long recipeHeaderId) {
+        List<RecipeResponse> response = recipeService.getAllByRecipeHeaderId(recipeHeaderId);
+        return ResponseEntity.ok(ApiResponse.success("Step fetched successfully", response));
+
+    }
 
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> create(

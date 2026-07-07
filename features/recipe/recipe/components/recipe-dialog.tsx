@@ -20,6 +20,8 @@ import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { recipeSchema, RecipeSchema, RecipeSchemaLimit, } from "../schemas/recipe-schema";
 import { TransitionType } from "@/features/plant/transition/types/transition.types";
+import { useCreateRecipe } from "../hooks/use-recipe";
+import { durationToMinutes } from "@/common/utils/duration.util";
 type recipeActionType = "create" | "insert-below" | "insert-above" | "edit";
 export type RecipeDialogType = {
   recipeId?: number;
@@ -27,15 +29,21 @@ export type RecipeDialogType = {
   stepNo?: number;
   action: recipeActionType;
 }
-export default function RecipeDialog({ recipeId, recipeHeaderId, action, stepNo }: RecipeDialogType) {
+export default function RecipeDialog({ recipeId, recipeHeaderId, action = "create", stepNo }: RecipeDialogType) {
   const isEdit = !!recipeId;
   const { data: transitions, isLoading: transitionsIsLoading } = useGetTransitions();
   const { data: actions, isLoading: actionsIsLoading } = useGetActions();
   const { data: messages, isLoading: messagesIsLoading } = useGetMessages();
   const { data: materials, isLoading: materialsIsLoading } = useGetMaterials();
-  const { data: parameters, isLoading: parametersIsLoading } =
-    useGetParameters();
-  const loading = !transitions || transitionsIsLoading || !actions || actionsIsLoading || !messages || messagesIsLoading || !materials || materialsIsLoading || !parameters || parametersIsLoading;
+  const { data: parameters, isLoading: parametersIsLoading } = useGetParameters();
+
+  const { mutateAsync: create, isPending: createIsPending } = useCreateRecipe();
+  const loading = !transitions || transitionsIsLoading ||
+    !actions || actionsIsLoading ||
+    !messages || messagesIsLoading ||
+    !materials || materialsIsLoading ||
+    !parameters || parametersIsLoading ||
+    createIsPending;
   const { register, handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty }, } = useForm<RecipeSchema>({
     resolver: zodResolver(recipeSchema), defaultValues: {
       stdTime: "",
@@ -53,8 +61,12 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action, stepNo 
   const manualMaterialStep = selectedTransition?.name === TransitionType.MANUAL_MATERIAL_CHARGE;
 
   const onSubmit = async (formData: RecipeSchema) => {
-    toast.success("Step created.");
-    console.log({ formData });
+    const res = await create({
+      ...formData,
+      recipeHeaderId: recipeHeaderId,
+      stdTime: durationToMinutes(formData.stdTime)
+    });
+    toast.success(res.message ?? "Step created.");
   };
   const handleClose = () => {
     reset({});

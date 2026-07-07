@@ -49,7 +49,7 @@ public class RecipeServiceImpl implements RecipeService {
         }
 
         @Override
-        public List<RecipeResponse> getAll(Long recipeHeaderId) {
+        public List<RecipeResponse> getAllByRecipeHeaderId(Long recipeHeaderId) {
                 List<Recipe> recipes = recipeRepository.findWithRelationsByRecipeHeaderId(recipeHeaderId);
                 return recipes.stream().map(
                                 recipe -> recipeMapper.toResponse(recipe,
@@ -79,9 +79,9 @@ public class RecipeServiceImpl implements RecipeService {
                 }
                 recipeMaterialService.validate(transition, request.materials());
                 Recipe recipe = recipeMapper.toEntity(request, stepNo, recipeHeader, action, transition);
+                recipeRepository.save(recipe);
                 recipeParameterService.create(recipe, request.parameters());
                 recipeMaterialService.create(recipe, request.materials());
-                recipeRepository.save(recipe);
         }
 
         @Transactional

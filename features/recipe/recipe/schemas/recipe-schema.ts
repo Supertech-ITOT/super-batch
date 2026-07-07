@@ -26,7 +26,7 @@ export const recipeSchema = z.object({
     actionId: z.number({ error: `Action is required.` }).min(1, "Action is required"),
     transitionId: z.number({ error: `Transition is required.` }).min(1, "Transition is required"),
     materials: z.array(recipeMaterialSchema).optional(),
-    parameters: z.array(recipeParameterSchema).optional(),
+    parameters: z.array(recipeParameterSchema),
 });
 
 export type RecipeSchema = z.infer<typeof recipeSchema>;

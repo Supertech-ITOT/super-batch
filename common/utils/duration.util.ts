@@ -1,18 +1,21 @@
 /**
  * HH:MM:SS -> Minutes
  *
- * 01:00:00 -> "60.00"
- * 01:30:00 -> "90.00"
- * 00:01:30 -> "1.50"
+ * 01:00:00 -> 60
+ * 01:30:00 -> 90
+ * 00:01:30 -> 1.5
  */
-export const durationToMinutes = (duration: string): string => {
-    if (!duration) return "0.00";
+export const durationToMinutes = (duration: string): number => {
+    if (!duration) return 0;
+
     const [hh = "0", mm = "0", ss = "0"] = duration.split(":");
+
     const totalMinutes =
         Number(hh) * 60 +
         Number(mm) +
         Number(ss) / 60;
-    return totalMinutes.toFixed(2);
+
+    return Number(totalMinutes.toFixed(2));
 };
 
 /**

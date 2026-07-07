@@ -10,7 +10,7 @@ public interface RecipeService {
 
     RecipeResponse getById(Long id);
 
-    List<RecipeResponse> getAll(Long recipeHeaderId);
+    List<RecipeResponse> getAllByRecipeHeaderId(Long recipeHeaderId);
 
     void create(CreateRecipeRequest request);
 

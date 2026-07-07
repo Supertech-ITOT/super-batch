@@ -3,5 +3,6 @@ export const queryKeys = {
     recipeHeader: (id: number) => ["recipe-headers", id] as const,
 
     recipes: ["recipes"] as const,
-    recipe: (id:number) => ["recipes",id] as const,
+    recipe: (id: number) => ["recipes", id] as const,
+    recipesByHeader: (id: number) => ["recipes", "header", id] as const,
 }

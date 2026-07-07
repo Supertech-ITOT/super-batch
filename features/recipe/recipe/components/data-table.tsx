@@ -11,10 +11,10 @@ import { DialogProp } from "../../recipe_header/components/recipe-header-view";
 interface DataTableProps<TData extends { id: number }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  setDialog: React.Dispatch<React.SetStateAction<DialogProp>>;
+
 }
 
-const DataTable = <TData extends { id: number }, TValue>({ columns, data, setDialog, }: DataTableProps<TData, TValue>) => {
+const DataTable = <TData extends { id: number }, TValue>({ columns, data }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const table = useReactTable({
@@ -32,23 +32,7 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, setDia
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between pb-2">
-        <Input
-          placeholder="Filter recipes..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <div className="flex mt-0 self-end ml-auto">
-          <Button className="-mt-7 hover:bg-primary  text-white" onClick={() => setDialog({ action: "create", id: null, open: true })}>
-            <Plus className="h-5 w-5 mr-2 " />
-            Add Recipe
-          </Button>
-        </div>
-      </div>
-      <div className="rounded-md border min-h-175">
+      <div className="min-h-114">
         <Table>
           <TableHeader className="bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -69,12 +53,12 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, setDia
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="border-muted-foreground/20 border-b"
+                  className="border-muted-foreground/20 border-b h-20"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className={`border-r border-muted-foreground/20 ${cell.column.id === "description" || cell.column.id === "name" ? "text-left" : "text-center"}`}
+                      className={`border-r border-muted-foreground/20 ${cell.column.id === "message" || cell.column.id === "name" ? "text-left" : "text-center"}`}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
@@ -91,7 +75,7 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, setDia
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between py-4">
+      <div className="flex items-center justify-between p-2">
         <div className="text-sm text-muted-foreground">
           Page {table.getState().pagination.pageIndex + 1} of{" "}
           {table.getPageCount()}
