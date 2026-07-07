@@ -1,6 +1,7 @@
 package com.supertech.superbatch.recipe.recipe.entity;
 
 import com.supertech.superbatch.plant.action.entity.Action;
+import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.transition.entity.Transition;
 import com.supertech.superbatch.recipe.recipe_header.entity.RecipeHeader;
 
@@ -33,4 +34,10 @@ public class Recipe {
     private Action action;
 
     private String message;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Equipment fromEquipment;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Equipment toEquipment;
 }

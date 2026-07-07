@@ -62,23 +62,23 @@ export default function RecipeView({ id }: { id: number }) {
     if (!data || isLoading)
         return;
     return (
-        <div className="flex-1 gap-4 rounded-lg border shadow h-full p-4 overflow-y-auto scrollbar-none flex flex-col bg-card">
+        <div className="gap-4 rounded-lg border shadow h-screen p-4 overflow-y-auto scrollbar-none flex flex-col bg-card">
             <RecipeInfo id={id} />
-            <div className="flex   flex-col gap-4 xl:flex-row">
-                <div className="flex w-full flex-col gap-4 h-full">
+            <div className="flex flex-col gap-4 xl:flex-row xl:flex-1 xl:min-h-0">
+                <div className="flex w-full flex-col gap-4">
                     {/* Table */}
-                    <div className="xl:h-6/5 h-132 bg-card border shadow hover:shadow-lg rounded-lg overflow-hidden">
+                    <div className="flex-4 min-h-0 bg-card border shadow hover:shadow-lg rounded-lg overflow-hidden">
                         <DataTable columns={columns} data={data} onAction={handleAction} />
                     </div>
 
                     {/* Summary */}
-                    <div className="xl:h-2/5 h-100 border bg-card shadow hover:shadow-lg rounded-lg overflow-hidden">
-                        <div className="w-full min-h-30"></div>
+                    <div className="flex-1 min-h-32 border bg-card shadow hover:shadow-lg rounded-lg overflow-hidden">
+
                     </div>
                 </div>
 
                 {/* Dialog */}
-                <div className="min-w-1/4 min-h-200 xl:h-full border shadow hover:shadow-lg rounded-lg overflow-hidden">
+                <div className="min-w-1/4 xl:h-full xl:shrink-0 border shadow hover:shadow-lg rounded-lg overflow-hidden">
                     <RecipeDialog action={dialog.action} recipeHeaderId={id} stepNo={dialog.stepNo} recipeId={dialog.recipeId} />
                     {dialog.action === "delete" && dialog.recipeId &&
                         (

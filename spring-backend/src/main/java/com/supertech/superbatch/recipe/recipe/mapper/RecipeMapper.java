@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.supertech.superbatch.plant.action.entity.Action;
+import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.transition.entity.Transition;
 import com.supertech.superbatch.recipe.recipe.dto.CreateRecipeRequest;
 import com.supertech.superbatch.recipe.recipe.dto.RecipeResponse;
@@ -31,13 +32,17 @@ public class RecipeMapper {
                 .transitionName(recipe.getTransition().getName())
                 .actionId(recipe.getAction().getId())
                 .actionName(recipe.getAction().getName())
+                .fromEquipmentId(recipe.getFromEquipment() != null ? recipe.getFromEquipment().getId() : null)
+                .fromEquipmentName(recipe.getFromEquipment() != null ? recipe.getFromEquipment().getName() : null)
+                .toEquipmentId(recipe.getToEquipment().getId())
+                .toEquipmentName(recipe.getToEquipment().getName())
                 .materials(materials)
                 .parameters(parameters)
                 .build();
     }
 
     public Recipe toEntity(CreateRecipeRequest request, Integer stepNo, RecipeHeader recipeHeader, Action action,
-            Transition transition) {
+            Transition transition, Equipment fromEquipment, Equipment toEquipment) {
         return Recipe.builder()
                 .recipeHeader(recipeHeader)
                 .stepNo(stepNo)
@@ -45,14 +50,19 @@ public class RecipeMapper {
                 .stdTime(request.stdTime())
                 .action(action)
                 .transition(transition)
+                .fromEquipment(fromEquipment)
+                .toEquipment(toEquipment)
                 .build();
     }
 
-    public void updateEntity(UpdateRecipeRequest request, Recipe recipe, Action action, Transition transition) {
+    public void updateEntity(UpdateRecipeRequest request, Recipe recipe, Action action, Transition transition,
+            Equipment fromEquipment, Equipment toEquipment) {
         recipe.setAction(action);
         recipe.setTransition(transition);
         recipe.setMessage(request.message());
         recipe.setStdTime(request.stdTime());
+        recipe.setFromEquipment(fromEquipment);
+        recipe.setToEquipment(toEquipment);
     }
 
 }

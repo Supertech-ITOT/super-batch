@@ -20,10 +20,11 @@ import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { recipeSchema, RecipeSchema, RecipeSchemaLimit, } from "../schemas/recipe-schema";
 import { TransitionType } from "@/features/plant/transition/types/transition.types";
-import { useCreateRecipe, useGetRecipeById, useInsertAboveRecipe, useInsertBelowRecipe, useMoveUpRecipe, useUpdateRecipe } from "../hooks/use-recipe";
+import { useCreateRecipe, useGetRecipeById, useInsertAboveRecipe, useInsertBelowRecipe, useUpdateRecipe } from "../hooks/use-recipe";
 import { durationToMinutes, minutesToDuration } from "@/common/utils/duration.util";
 import { useEffect } from "react";
 import { showApiError } from "@/common/lib/show-api-error";
+import { useGetEquipment } from "@/features/plant/equipment/hooks/use-equipment";
 export type recipeActionType = "create" | "insert-below" | "insert-above" | "edit" | "move-up" | "move-down" | "delete";
 export type RecipeDialogType = {
   recipeId?: number;
@@ -37,6 +38,7 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
   const { data: messages, isLoading: messagesIsLoading } = useGetMessages();
   const { data: materials, isLoading: materialsIsLoading } = useGetMaterials();
   const { data: parameters, isLoading: parametersIsLoading } = useGetParameters();
+  const { data: equipments, isLoading: equipmentsIsLoading } = useGetEquipment();
   const { data: recipe, isLoading: recipeIsLoading } = useGetRecipeById(action === "edit" ? recipeId : undefined);
 
   const { mutateAsync: create, isPending: createIsPending } = useCreateRecipe();
@@ -60,6 +62,7 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
     !messages || messagesIsLoading ||
     !materials || materialsIsLoading ||
     !parameters || parametersIsLoading ||
+    !equipments || equipmentsIsLoading ||
     createIsPending || insertBelowIsPending || insertAboveIsPending || updateIsPending || recipeIsLoading;
 
   useEffect(() => {
@@ -121,7 +124,6 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
   };
 
   const onInvalid = (errors: FieldErrors<RecipeSchema>) => {
-    console.log(errors);
     const firstError = Object.values(errors)[0];
     if (firstError?.message) {
       toast.error(firstError.message.toString());
@@ -255,6 +257,50 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
               />
             </div>
           </div>
+          <div className="flex gap-2">
+            <div className="min-w-0 flex-1 space-y-2">
+              <Label>From Equipment</Label>
+              <Controller
+                control={control}
+                name="fromEquipmentId"
+                render={({ field }) => (
+                  <SearchableSelect
+                    value={field.value}
+                    onChange={field.onChange}
+                    options={equipments.map((t) => ({
+                      value: t.id,
+                      label: t.name,
+                    }))}
+                    placeholder="Select"
+                    searchPlaceholder="Search Equipment..."
+                    disabled={loading}
+                  />
+                )}
+              />
+            </div>
+            <div className="min-w-0 flex-1 space-y-2">
+              <Label>To Equipment</Label>
+              <Controller
+                control={control}
+                name="toEquipmentId"
+                render={({ field }) => (
+                  <SearchableSelect
+                    value={field.value}
+                    onChange={field.onChange}
+                    options={equipments.map((a) => ({
+                      value: a.id,
+                      label: a.name,
+                    }))}
+                    placeholder="Select"
+                    searchPlaceholder="Search Equipment..."
+                    disabled={loading}
+                  />
+                )}
+              />
+            </div>
+          </div>
+
+
 
 
 
@@ -312,6 +358,8 @@ export default function RecipeDialog({ recipeId, recipeHeaderId, action = "creat
                     items.map((i) => ({ parameterId: i.id, stdValue: i.value })),
                   )
                 }
+                isAdd={false}
+                disabled={loading}
 
               />
             )}

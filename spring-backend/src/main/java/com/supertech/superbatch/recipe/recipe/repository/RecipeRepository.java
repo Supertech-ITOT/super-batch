@@ -44,10 +44,10 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
       """)
   void incrementStepNumbersFrom(Long recipeHeaderId, Integer stepNo);
 
-  @EntityGraph(attributePaths = { "recipeHeader", "action", "transition" })
+  @EntityGraph(attributePaths = { "recipeHeader", "action", "transition", "fromEquipment", "toEquipment" })
   Optional<Recipe> findWithRelationsById(Long id);
 
-  @EntityGraph(attributePaths = { "recipeHeader", "action", "transition" })
+  @EntityGraph(attributePaths = { "recipeHeader", "action", "transition", "fromEquipment", "toEquipment" })
   List<Recipe> findWithRelationsByRecipeHeaderId(Long recipeHeaderId);
 
 }

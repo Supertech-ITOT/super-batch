@@ -47,7 +47,7 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, onActi
 
   return (
     <div className="flex flex-col h-full">
-      <div className="h-6/5 overflow-y-auto scrollbar-none">
+      <div className="h-[92%] overflow-y-auto scrollbar-none">
         <Table>
           <TableHeader className="bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -106,7 +106,7 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, onActi
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between p-4">
+      <div className="flex items-center justify-between p-4 h-[8%]">
         <div className="text-sm text-muted-foreground">
           Page {table.getState().pagination.pageIndex + 1} of{" "}
           {table.getPageCount()}

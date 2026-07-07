@@ -10,6 +10,11 @@ import { getColorByText } from "@/common/utils/color.util";
 
 export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogProp>>, router: AppRouterInstance): ColumnDef<RecipeHeaderResponse>[] => [
     {
+        id: "srNo",
+        header: "Sr. No.",
+        cell: ({ row }) => row.index + 1,
+    },
+    {
         accessorKey: "name",
         header: "Recipe Name",
     },

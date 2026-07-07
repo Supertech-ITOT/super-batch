@@ -21,7 +21,7 @@ export default function RecipeInfo({ id }: { id: number }) {
     const loading = !recipeHeader || recipeHeaderIsLoading;
     if (loading) return;
     return (
-        <div className="flex flex-wrap justify-between">
+        <div className="flex h-[5%] flex-wrap justify-between ">
             <div className="flex gap-2 items-center">
                 <h1 className="text-2xl font-semibold">{recipeHeader.name}</h1>
                 <Badge

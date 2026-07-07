@@ -107,8 +107,15 @@ export const columns: ColumnDef<RecipeResponse>[] = [
             />
         ),
     },
-
-
+    {
+        accessorKey: "fromEquipmentName",
+        header: "From Equipment",
+        cell: ({ row }) => row.original.fromEquipmentName ?? "-"
+    },
+    {
+        accessorKey: "toEquipmentName",
+        header: "To Equipment"
+    }
 ];
 
 export default columns;

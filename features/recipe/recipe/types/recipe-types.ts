@@ -9,7 +9,7 @@ export interface CreateRecipeRequest {
 }
 
 export interface UpdateRecipeRequest {
-    id:number;
+    id: number;
     recipeHeaderId: number;
     message: string;
     stdTime: number;
@@ -29,6 +29,10 @@ export interface RecipeResponse {
     transitionName: string;
     actionId: number;
     actionName: string;
+    fromEquipmentId: number;
+    fromEquipmentName: string;
+    toEquipmentId: number;
+    toEquipmentName: string;
     materials: RecipeMaterialResponse[];
     parameters: RecipeParameterResponse[];
 }

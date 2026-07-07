@@ -25,8 +25,10 @@ export const recipeSchema = z.object({
     message: z.string().trim().min(RecipeSchemaLimit.message.min, `Message must be between 2 - 255 chars.`).max(RecipeSchemaLimit.message.max, `Message must be between 2 - 255 chars.`),
     actionId: z.number({ error: `Action is required.` }).min(1, "Action is required"),
     transitionId: z.number({ error: `Transition is required.` }).min(1, "Transition is required"),
+    fromEquipmentId: z.number({ error: `From Equipment is required.` }).min(1, "From Equipment is required").optional(),
+    toEquipmentId: z.number({ error: `To Equipment is required.` }).min(1, "To Equipment is required"),
     materials: z.array(recipeMaterialSchema).optional(),
-    parameters: z.array(recipeParameterSchema).optional(),
+    parameters: z.array(recipeParameterSchema)
 });
 
 export type RecipeSchema = z.infer<typeof recipeSchema>;
