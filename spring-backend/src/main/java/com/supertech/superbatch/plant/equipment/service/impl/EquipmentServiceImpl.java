@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.plant.equipment.dto.AssignEquipmentRequest;
@@ -66,9 +67,7 @@ public class EquipmentServiceImpl implements EquipmentService {
                 && equipmentRepository.existsByNameIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Equipment already exists");
         }
-
         equipmentMapper.updateEntity(equipment, request);
-
         equipmentRepository.save(equipment);
     }
 
@@ -76,6 +75,10 @@ public class EquipmentServiceImpl implements EquipmentService {
     public void delete(Long id) {
         Equipment equipment = equipmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
+        if (equipment.getEquipmentType() == EquipmentType.MAIN_EQUIPMENT) {
+            throw new BadRequestException(
+                    "Main equipment cannot be deleted directly. Delete the creator unit to remove this equipment.");
+        }
         equipmentRepository.delete(equipment);
     }
 
@@ -106,6 +109,11 @@ public class EquipmentServiceImpl implements EquipmentService {
 
         Equipment equipment = equipmentRepository.findByIdWithUnits(request.equipmentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
+
+        if (equipment.getCreatorUnit() != null &&
+                equipment.getCreatorUnit().getId().equals(request.unitId())) {
+            throw new BadRequestException("Main equipment cannot be unassigned from its creator unit.");
+        }
 
         boolean removed = equipment.getUnits()
                 .removeIf(unit -> unit.getId().equals(request.unitId()));
