@@ -1,121 +1,125 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { RecipeResponse } from "../types/recipe-types";
-import { minutesToDuration } from "@/common/utils/duration.util";
+import { RecipeResponse, RecipeStatus, RecipeStatusBadgeStyles } from "../types/recipe.types";
+import { Button } from "@/common/components/ui/button";
+import { DialogProp } from "./recipe-view";
+import { Circle, Eye, PencilLine, Trash2 } from "lucide-react";
+import { format } from "date-fns";
 import { Badge } from "@/common/components/ui/badge";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { getColorByText } from "@/common/utils/color.util";
-import { CollapsibleDataTable } from "@/common/components/collapsible-data-table";
 
-export const columns: ColumnDef<RecipeResponse>[] = [
+export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogProp>>, router: AppRouterInstance): ColumnDef<RecipeResponse>[] => [
     {
-        accessorKey: "stepNo",
-        header: "Step No.",
-        cell: ({ row }) => (
-            <div className="size-8 bg-primary/10 rounded-full flex justify-center items-center place-self-center p-0.5 shadow" >
-                <h1 className="text-primary font-black">{row.original.stepNo}</h1>
-            </div>
-        )
+        id: "srNo",
+        header: "Sr. No.",
+        cell: ({ row }) => row.index + 1,
     },
     {
-        accessorKey: "message",
-        header: "Message",
+        accessorKey: "name",
+        header: "Recipe Name",
+    },
+    {
+        accessorKey: "description",
+        header: "Description",
         cell: ({ row }) => (
             <div
                 className="max-w-sm wrap-break-word whitespace-normal line-clamp-2"
-                title={row.original.message}
+                title={row.original.description}
             >
-                {row.original.message}
+                {row.original.description}
             </div>
         ),
     },
     {
-        accessorKey: "stdTime",
-        header: "Standard Time",
-        cell: ({ row }) => (
-            <div>
-                {minutesToDuration(row.original.stdTime)}
-            </div>
-        )
+        id: "batchSize",
+        header: "Batch Size",
+        cell: ({ row }) => {
+            const batchSize = row.original.batchSize;
+            const uom = "kg";
+            return `${batchSize} ${uom}`.trim();
+        },
+    },
+    {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => {
+            const status = row.original.status;
+            return (
+                <Badge className={RecipeStatusBadgeStyles[status as keyof typeof RecipeStatusBadgeStyles]}>
+                    <Circle className="size-2.5! fill-current" />
+                    {status === RecipeStatus.RELEASED ? "Released" : "Unreleased"}
+                </Badge>
+            );
+        },
+    },
+    {
+        header: "Product",
+        accessorFn: (row) =>
+            row.materialRecipeResponse?.name ?? "-",
+    },
+    {
+        header: "Unit",
+        accessorFn: (row) =>
+            row.unitRecipeResponse?.name ?? "-",
+    },
+    {
+        id: "createdBy",
+        header: "Created By",
+        cell: ({ row }) => {
+            const user = row.original.userRecipeResponse;
+            if (!user) return "-";
+            const initials = user.name?.split(" ").map(word => word[0]).join("").substring(0, 2).toUpperCase();
+            return (
+                <div className="flex items-center gap-3">
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold ${getColorByText(user.name)}`}>
+                        {initials}
+                    </div>
+                    <div className="flex flex-col items-start">
+                        <span className="font-medium">{user.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                            {user.email}
+                        </span>
+                    </div>
+                </div>
+            );
+        },
+    },
+    {
+        id: "lastModified",
+        header: "Last Modified",
+        cell: ({ row }) => {
+            const value = row.original.updatedAt || row.original.createdAt;
+
+            if (!value || new Date(value).getTime() === 0) {
+                return "-";
+            }
+
+            return format(new Date(value), "dd MMM yyyy hh:mm a");
+        },
     },
 
     {
-        accessorKey: "transitionName",
-        header: "Transition",
-        cell: ({ row }) => (
-            <Badge variant={"outline"} className={getColorByText(row.original.transitionName)}>
-                {row.original.transitionName}
-            </Badge>
-        )
-    },
-    {
-        accessorKey: "actionName",
-        header: "Action",
-        cell: ({ row }) => (
-            <Badge variant={"outline"} className={getColorByText(row.original.actionName)}>
-                {row.original.actionName}
-            </Badge>
-        )
-    },
-    {
-        accessorKey: "parameters",
-        header: "Parameters",
-        cell: ({ row }) => (
-            <CollapsibleDataTable
-                title="Parameter(s)"
-                data={row.original.parameters}
-                columns={[
-                    {
-                        header: "Sr.",
-                        render: (_, index) => index + 1,
-                    },
-                    {
-                        header: "Name",
-                        cellClassName: "text-left",
-                        render: (i) => i.parameterName,
-                    },
-                    {
-                        header: "Standard Value",
-                        cellClassName: "text-right",
-                        render: (i) => i.stdValue,
-                    },
-                ]}
-            />
-        ),
-    },
-    {
-        accessorKey: "materials",
-        header: "Materials",
-        cell: ({ row }) => (
-            <CollapsibleDataTable
-                title="Material(s)"
-                data={row.original.materials}
-                columns={[
-                    {
-                        header: "Sr.",
-                        render: (_, index) => index + 1,
-                    },
-                    {
-                        header: "Name",
-                        cellClassName: "text-left",
-                        render: (i) => i.materialName,
-                    },
-                    {
-                        header: "Standard Qty",
-                        cellClassName: "text-right",
-                        render: (i) => i.stdQty,
-                    },
-                ]}
-            />
-        ),
-    },
-    {
-        accessorKey: "fromEquipmentName",
-        header: "From Equipment",
-        cell: ({ row }) => row.original.fromEquipmentName ?? "-"
-    },
-    {
-        accessorKey: "toEquipmentName",
-        header: "To Equipment"
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => {
+            const recipe = row.original;
+
+            return (
+                <div className="flex items-center justify-center gap-2">
+                    <Button variant="ghost" size="icon" onClick={() => router.push(`/Recipe/edit?id=${recipe.id}`)}>
+                        <Eye className="size-5!" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => setDialog({ action: "edit", id: recipe.id, open: true, })} >
+                        <PencilLine className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => setDialog({ action: "delete", id: recipe.id, open: true, })}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                </div>
+            );
+        },
     }
+
 ];
 
 export default columns;

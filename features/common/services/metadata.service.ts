@@ -14,7 +14,7 @@ export const getMaterialTypes = async () => {
 }
 
 
-export const getRecipeHeaderStatusTypes = async () => {
-    const res = await api.get<ApiResponse<OptionResponse[]>>("/metadata/recipe-header-status-types");
+export const getRecipeStatusTypes = async () => {
+    const res = await api.get<ApiResponse<OptionResponse[]>>("/metadata/recipe-status-types");
     return res.data;
 }

@@ -14,8 +14,8 @@ import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.equipment.repository.EquipmentRepository;
 import com.supertech.superbatch.plant.transition.entity.Transition;
 import com.supertech.superbatch.plant.transition.repository.TransitionRepository;
-import com.supertech.superbatch.recipe.recipe_header.entity.RecipeHeader;
-import com.supertech.superbatch.recipe.recipe_header.repository.RecipeHeaderRepository;
+import com.supertech.superbatch.recipe.recipe.entity.Recipe;
+import com.supertech.superbatch.recipe.recipe.repository.RecipeRepository;
 import com.supertech.superbatch.recipe.recipe_sop.dto.CreateRecipeSOPRequest;
 import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPDependencies;
 import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPResponse;
@@ -24,11 +24,11 @@ import com.supertech.superbatch.recipe.recipe_sop.entity.RecipeSOP;
 import com.supertech.superbatch.recipe.recipe_sop.mapper.RecipeSOPMapper;
 import com.supertech.superbatch.recipe.recipe_sop.repository.RecipeSOPRepository;
 import com.supertech.superbatch.recipe.recipe_sop.service.RecipeSOPService;
-import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeMaterialRequest;
-import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeMaterialResponse;
-import com.supertech.superbatch.recipe.recipe_sop_material.service.RecipeMaterialService;
-import com.supertech.superbatch.recipe.recipe_sop_parameter.dto.RecipeParameterResponse;
-import com.supertech.superbatch.recipe.recipe_sop_parameter.service.RecipeParameterService;
+import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialRequest;
+import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialResponse;
+import com.supertech.superbatch.recipe.recipe_sop_material.service.RecipeSOPMaterialService;
+import com.supertech.superbatch.recipe.recipe_sop_parameter.dto.RecipeSOPParameterResponse;
+import com.supertech.superbatch.recipe.recipe_sop_parameter.service.RecipeSOPParameterService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,40 +36,40 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RecipeSOPServiceImpl implements RecipeSOPService {
         private final RecipeSOPRepository recipeSOPRepository;
-        private final RecipeHeaderRepository recipeHeaderRepository;
+        private final RecipeRepository recipeRepository;
         private final RecipeSOPMapper recipeSOPMapper;
         private final ActionRepository actionRepository;
         private final EquipmentRepository equipmentRepository;
         private final TransitionRepository transitionRepository;
-        private final RecipeParameterService recipeParameterService;
-        private final RecipeMaterialService recipeMaterialService;
+        private final RecipeSOPParameterService recipeSOPParameterService;
+        private final RecipeSOPMaterialService recipeSOPMaterialService;
 
         @Override
         public RecipeSOPResponse getById(Long id) {
                 RecipeSOP recipeSOP = recipeSOPRepository.findWithRelationsById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
-                List<RecipeMaterialResponse> materials = recipeMaterialService.getAllByRecipe(recipeSOP);
-                List<RecipeParameterResponse> parameters = recipeParameterService.getAllByRecipe(recipeSOP);
+                List<RecipeSOPMaterialResponse> materials = recipeSOPMaterialService.getAllByRecipe(recipeSOP);
+                List<RecipeSOPParameterResponse> parameters = recipeSOPParameterService.getAllByRecipe(recipeSOP);
                 return recipeSOPMapper.toResponse(recipeSOP, materials, parameters);
         }
 
         @Override
-        public List<RecipeSOPResponse> getAllByRecipeHeaderId(Long recipeHeaderId) {
-                List<RecipeSOP> recipeSOPs = recipeSOPRepository.findWithRelationsByRecipeHeaderId(recipeHeaderId);
+        public List<RecipeSOPResponse> getAllByRecipeId(Long recipeId) {
+                List<RecipeSOP> recipeSOPs = recipeSOPRepository.findWithRelationsByRecipeId(recipeId);
                 return recipeSOPs.stream()
                                 .sorted(Comparator.comparing(RecipeSOP::getStepNo))
                                 .map(
                                                 recipeSOP -> recipeSOPMapper.toResponse(recipeSOP,
-                                                                recipeMaterialService.getAllByRecipe(recipeSOP),
-                                                                recipeParameterService.getAllByRecipe(recipeSOP)))
+                                                                recipeSOPMaterialService.getAllByRecipe(recipeSOP),
+                                                                recipeSOPParameterService.getAllByRecipe(recipeSOP)))
                                 .toList();
         }
 
         @Override
         public void create(CreateRecipeSOPRequest request) {
-                List<RecipeSOP> steps = recipeSOPRepository.findAllByRecipeHeaderId(request.recipeHeaderId());
+                List<RecipeSOP> steps = recipeSOPRepository.findAllByRecipeId(request.recipeId());
                 Integer stepNo = steps.isEmpty() ? 1 : steps.size() + 1;
-                RecipeHeader recipeHeader = recipeHeaderRepository.findById(request.recipeHeaderId())
+                Recipe recipe = recipeRepository.findById(request.recipeId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
                 RecipeSOPDependencies deps = loadInsertDependencies(request.actionId(),
                                 request.transitionId(),
@@ -79,14 +79,14 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                 RecipeSOP recipeSOP = recipeSOPMapper.toEntity(
                                 request,
                                 stepNo,
-                                recipeHeader,
+                                recipe,
                                 deps.action(),
                                 deps.transition(),
                                 deps.fromEquipment(),
                                 deps.toEquipment());
                 recipeSOPRepository.save(recipeSOP);
-                recipeParameterService.create(recipeSOP, request.parameters());
-                recipeMaterialService.create(recipeSOP, request.materials());
+                recipeSOPParameterService.create(recipeSOP, request.parameters());
+                recipeSOPMaterialService.create(recipeSOP, request.materials());
         }
 
         @Transactional
@@ -106,8 +106,8 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                                 deps.transition(),
                                 deps.fromEquipment(),
                                 deps.toEquipment());
-                recipeParameterService.update(recipeSOP, request.parameters());
-                recipeMaterialService.update(recipeSOP, request.materials());
+                recipeSOPParameterService.update(recipeSOP, request.parameters());
+                recipeSOPMaterialService.update(recipeSOP, request.materials());
                 recipeSOPRepository.save(recipeSOP);
         }
 
@@ -116,10 +116,10 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
         public void delete(Long id) {
                 RecipeSOP recipeSOP = recipeSOPRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
-                recipeParameterService.deleteByRecipe(recipeSOP);
-                recipeMaterialService.deleteByRecipe(recipeSOP);
+                recipeSOPParameterService.deleteByRecipeSOP(recipeSOP);
+                recipeSOPMaterialService.deleteByRecipeSOP(recipeSOP);
                 recipeSOPRepository.decrementStepNumbers(
-                                recipeSOP.getRecipeHeader().getId(),
+                                recipeSOP.getRecipe().getId(),
                                 recipeSOP.getStepNo());
                 recipeSOPRepository.delete(recipeSOP);
         }
@@ -132,8 +132,8 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                 if (current.getStepNo() == 1) {
                         throw new BadRequestException("Step 1 cannot be moved up.");
                 }
-                RecipeSOP previous = recipeSOPRepository.findByRecipeHeaderIdAndStepNo(
-                                current.getRecipeHeader().getId(),
+                RecipeSOP previous = recipeSOPRepository.findByRecipeIdAndStepNo(
+                                current.getRecipe().getId(),
                                 current.getStepNo() - 1)
                                 .orElseThrow(() -> new ResourceNotFoundException("Previous step not found."));
                 int temp = current.getStepNo();
@@ -148,8 +148,8 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
         public void moveDown(Long recipeId) {
                 RecipeSOP current = recipeSOPRepository.findById(recipeId)
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
-                RecipeSOP next = recipeSOPRepository.findByRecipeHeaderIdAndStepNo(
-                                current.getRecipeHeader().getId(),
+                RecipeSOP next = recipeSOPRepository.findByRecipeIdAndStepNo(
+                                current.getRecipe().getId(),
                                 current.getStepNo() + 1)
                                 .orElseThrow(() -> new ResourceNotFoundException("Next step not found."));
                 int temp = current.getStepNo();
@@ -169,12 +169,12 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                                 request.toEquipmentId(),
                                 request.materials());
                 recipeSOPRepository.incrementStepNumbersAfter(
-                                recipeSOP.getRecipeHeader().getId(),
+                                recipeSOP.getRecipe().getId(),
                                 recipeSOP.getStepNo());
                 RecipeSOP newRecipeSOP = recipeSOPMapper.toEntity(
                                 request,
                                 recipeSOP.getStepNo() + 1,
-                                recipeSOP.getRecipeHeader(),
+                                recipeSOP.getRecipe(),
                                 deps.action(),
                                 deps.transition(),
                                 deps.fromEquipment(),
@@ -192,12 +192,12 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                                 request.toEquipmentId(),
                                 request.materials());
                 recipeSOPRepository.incrementStepNumbersFrom(
-                                recipeSOP.getRecipeHeader().getId(),
+                                recipeSOP.getRecipe().getId(),
                                 recipeSOP.getStepNo());
                 RecipeSOP newRecipeSOP = recipeSOPMapper.toEntity(
                                 request,
                                 recipeSOP.getStepNo(),
-                                recipeSOP.getRecipeHeader(),
+                                recipeSOP.getRecipe(),
                                 deps.action(),
                                 deps.transition(),
                                 deps.fromEquipment(),
@@ -210,7 +210,7 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                         Long transitionId,
                         Long fromEquipmentId,
                         Long toEquipmentId,
-                        List<RecipeMaterialRequest> materials) {
+                        List<RecipeSOPMaterialRequest> materials) {
 
                 Action action = actionRepository.findById(actionId)
                                 .orElseThrow(() -> new ResourceNotFoundException("Action not found."));
@@ -232,7 +232,7 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                 Equipment toEquipment = equipmentRepository.findById(toEquipmentId)
                                 .orElseThrow(() -> new ResourceNotFoundException("To Equipment not found."));
 
-                recipeMaterialService.validate(transition, materials);
+                recipeSOPMaterialService.validate(transition, materials);
 
                 return RecipeSOPDependencies.builder()
                                 .action(action)

@@ -1,7 +1,20 @@
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createRecipe, updateRecipe, deleteRecipe, moveRecipeUp, moveRecipeDown, insertRecipeAbove, insertRecipeBelow, getRecipeById, getRecipesByHeaderId, } from "../service/recipe.service";
-import { queryKeys } from "../../recipe_header/hooks/query-keys";
-import { CreateRecipeRequest } from "../types/recipe-types";
+import { createRecipe, deleteRecipe, getAllRecipes, getRecipeById, updateRecipe } from "../services/recipe.service";
+import { queryKeys } from "../../common/hooks/query-keys";
+
+
+export const useGetRecipes = (enabled = true) => {
+    return useQuery({
+        queryKey: queryKeys.recipes,
+        queryFn: async () => {
+            const res = await getAllRecipes();
+            return res.data;
+        },
+        enabled,
+    });
+};
+
 
 export const useGetRecipeById = (id?: number) => {
     return useQuery({
@@ -11,18 +24,8 @@ export const useGetRecipeById = (id?: number) => {
             return res.data;
         },
         enabled: !!id,
-    })
-}
-export const useGetRecipeByHeaderId = (id?: number) => {
-    return useQuery({
-        queryKey: id ? queryKeys.recipesByHeader(id) : [],
-        queryFn: async () => {
-            const res = await getRecipesByHeaderId(id!);
-            return res.data;
-        },
-        enabled: !!id,
-    })
-}
+    });
+};
 
 export const useCreateRecipe = () => {
     const queryClient = useQueryClient();
@@ -30,7 +33,7 @@ export const useCreateRecipe = () => {
         mutationFn: createRecipe,
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
-                queryKey: queryKeys.recipesByHeader(variables.recipeHeaderId),
+                queryKey: queryKeys.recipes,
             });
         },
     });
@@ -42,7 +45,7 @@ export const useUpdateRecipe = () => {
         mutationFn: updateRecipe,
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
-                queryKey: queryKeys.recipesByHeader(variables.recipeHeaderId),
+                queryKey: queryKeys.recipes
             });
         },
     });
@@ -54,55 +57,7 @@ export const useDeleteRecipe = () => {
         mutationFn: deleteRecipe,
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
-                queryKey: queryKeys.recipesByHeader(variables.recipeHeaderId),
-            });
-        },
-    });
-};
-
-export const useMoveUpRecipe = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: moveRecipeUp,
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.recipesByHeader(variables.recipeHeaderId),
-            });
-        },
-    });
-};
-
-export const useMoveDownRecipe = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: moveRecipeDown,
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.recipesByHeader(variables.recipeHeaderId),
-            });
-        },
-    });
-};
-
-export const useInsertAboveRecipe = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: ({ id, data, }: { id: number; data: CreateRecipeRequest; }) => insertRecipeAbove(id, data),
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.recipesByHeader(variables.data.recipeHeaderId),
-            });
-        },
-    });
-};
-
-export const useInsertBelowRecipe = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: ({ id, data, }: { id: number; data: CreateRecipeRequest; }) => insertRecipeBelow(id, data),
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.recipesByHeader(variables.data.recipeHeaderId),
+                queryKey: queryKeys.recipes
             });
         },
     });

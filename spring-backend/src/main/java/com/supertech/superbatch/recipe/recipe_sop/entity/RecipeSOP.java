@@ -3,7 +3,7 @@ package com.supertech.superbatch.recipe.recipe_sop.entity;
 import com.supertech.superbatch.plant.action.entity.Action;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.transition.entity.Transition;
-import com.supertech.superbatch.recipe.recipe_header.entity.RecipeHeader;
+import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,7 +25,7 @@ public class RecipeSOP {
     private Double stdTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private RecipeHeader recipeHeader;
+    private Recipe recipe;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Transition transition;

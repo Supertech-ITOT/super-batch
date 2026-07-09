@@ -11,43 +11,43 @@ import org.springframework.data.jpa.repository.Query;
 import com.supertech.superbatch.recipe.recipe_sop.entity.RecipeSOP;
 
 public interface RecipeSOPRepository extends JpaRepository<RecipeSOP, Long> {
-  List<RecipeSOP> findAllByRecipeHeaderId(Long recipeHeaderId);
+  List<RecipeSOP> findAllByRecipeId(Long recipeId);
 
-  Optional<RecipeSOP> findByRecipeHeaderIdAndStepNo(Long recipeHeaderId, Integer stepNo);
+  Optional<RecipeSOP> findByRecipeIdAndStepNo(Long recipeId, Integer stepNo);
 
   @Modifying
   @Query("""
           UPDATE RecipeSOP r
           SET r.stepNo = r.stepNo - 1
-          WHERE r.recipeHeader.id = :recipeHeaderId
+          WHERE r.recipe.id = :recipeId
             AND r.stepNo > :stepNo
       """)
-  void decrementStepNumbers(Long recipeHeaderId, Integer stepNo);
+  void decrementStepNumbers(Long recipeId, Integer stepNo);
 
   // Insert Below
   @Modifying
   @Query("""
           UPDATE RecipeSOP r
           SET r.stepNo = r.stepNo + 1
-          WHERE r.recipeHeader.id = :recipeHeaderId
+          WHERE r.recipe.id = :recipeId
             AND r.stepNo > :stepNo
       """)
-  void incrementStepNumbersAfter(Long recipeHeaderId, Integer stepNo);
+  void incrementStepNumbersAfter(Long recipeId, Integer stepNo);
 
   // Insert Above
   @Modifying
   @Query("""
           UPDATE RecipeSOP r
           SET r.stepNo = r.stepNo + 1
-          WHERE r.recipeHeader.id = :recipeHeaderId
+          WHERE r.recipe.id = :recipeId
             AND r.stepNo >= :stepNo
       """)
-  void incrementStepNumbersFrom(Long recipeHeaderId, Integer stepNo);
+  void incrementStepNumbersFrom(Long recipeId, Integer stepNo);
 
-  @EntityGraph(attributePaths = { "recipeHeader", "action", "transition", "fromEquipment", "toEquipment" })
+  @EntityGraph(attributePaths = { "recipe", "action", "transition", "fromEquipment", "toEquipment" })
   Optional<RecipeSOP> findWithRelationsById(Long id);
 
-  @EntityGraph(attributePaths = { "recipeHeader", "action", "transition", "fromEquipment", "toEquipment" })
-  List<RecipeSOP> findWithRelationsByRecipeHeaderId(Long recipeHeaderId);
+  @EntityGraph(attributePaths = { "recipe", "action", "transition", "fromEquipment", "toEquipment" })
+  List<RecipeSOP> findWithRelationsByRecipeId(Long recipeId);
 
 }

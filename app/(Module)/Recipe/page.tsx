@@ -1,5 +1,4 @@
-import RecipeHeaderView from "@/features/recipe/recipe_header/components/recipe-header-view";
-import { BookOpenText } from "lucide-react";
+import RecipeHeaderView from "@/features/recipe/recipe/components/recipe-view";
 
 export default function RecipeHeaderPage() {
     return (

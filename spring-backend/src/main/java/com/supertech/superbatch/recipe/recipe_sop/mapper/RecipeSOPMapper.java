@@ -7,13 +7,13 @@ import org.springframework.stereotype.Component;
 import com.supertech.superbatch.plant.action.entity.Action;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.transition.entity.Transition;
-import com.supertech.superbatch.recipe.recipe_header.entity.RecipeHeader;
+import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 import com.supertech.superbatch.recipe.recipe_sop.dto.CreateRecipeSOPRequest;
 import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPResponse;
 import com.supertech.superbatch.recipe.recipe_sop.dto.UpdateRecipeSOPRequest;
 import com.supertech.superbatch.recipe.recipe_sop.entity.RecipeSOP;
-import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeMaterialResponse;
-import com.supertech.superbatch.recipe.recipe_sop_parameter.dto.RecipeParameterResponse;
+import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialResponse;
+import com.supertech.superbatch.recipe.recipe_sop_parameter.dto.RecipeSOPParameterResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,11 +21,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RecipeSOPMapper {
 
-    public RecipeSOPResponse toResponse(RecipeSOP recipeSOP, List<RecipeMaterialResponse> materials,
-            List<RecipeParameterResponse> parameters) {
+    public RecipeSOPResponse toResponse(RecipeSOP recipeSOP, List<RecipeSOPMaterialResponse> materials,
+            List<RecipeSOPParameterResponse> parameters) {
         return RecipeSOPResponse.builder()
                 .id(recipeSOP.getId())
-                .recipeHeaderId(recipeSOP.getRecipeHeader().getId())
+                .recipeId(recipeSOP.getRecipe().getId())
                 .stepNo(recipeSOP.getStepNo())
                 .stdTime(recipeSOP.getStdTime())
                 .message(recipeSOP.getMessage())
@@ -42,10 +42,10 @@ public class RecipeSOPMapper {
                 .build();
     }
 
-    public RecipeSOP toEntity(CreateRecipeSOPRequest request, Integer stepNo, RecipeHeader recipeHeader, Action action,
+    public RecipeSOP toEntity(CreateRecipeSOPRequest request, Integer stepNo, Recipe recipe, Action action,
             Transition transition, Equipment fromEquipment, Equipment toEquipment) {
         return RecipeSOP.builder()
-                .recipeHeader(recipeHeader)
+                .recipe(recipe)
                 .stepNo(stepNo)
                 .message(request.message())
                 .stdTime(request.stdTime())

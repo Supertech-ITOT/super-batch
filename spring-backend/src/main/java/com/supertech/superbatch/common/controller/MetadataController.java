@@ -5,7 +5,7 @@ import com.supertech.superbatch.common.dto.OptionDto;
 import com.supertech.superbatch.common.enums.UomType;
 import com.supertech.superbatch.common.util.EnumUtil;
 import com.supertech.superbatch.plant.material.enums.MaterialType;
-import com.supertech.superbatch.recipe.recipe_header.enums.RecipeHeaderStatus;
+import com.supertech.superbatch.recipe.recipe.enums.RecipeStatus;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -30,13 +30,13 @@ public class MetadataController {
 
     }
 
-    @GetMapping("/recipe-header-status-types")
-    public ResponseEntity<ApiResponse<List<OptionDto>>> getRecipeHeaderStatusTypes() {
-        List<OptionDto> data = Arrays.stream(RecipeHeaderStatus.values()).map(type -> new OptionDto(
+    @GetMapping("/recipe-status-types")
+    public ResponseEntity<ApiResponse<List<OptionDto>>> getRecipeStatusTypes() {
+        List<OptionDto> data = Arrays.stream(RecipeStatus.values()).map(type -> new OptionDto(
                 EnumUtil.formatLabel(type.name()),
                 type.name()))
                 .toList();
-        return ResponseEntity.ok(ApiResponse.success("Recipe Header Status types fetched successfully", data));
+        return ResponseEntity.ok(ApiResponse.success("Recipe Status types fetched successfully", data));
 
     }
 

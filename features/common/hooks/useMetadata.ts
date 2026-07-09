@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { getMaterialTypes, getRecipeHeaderStatusTypes, getUomTypes } from "../services/metadata.service"
+import { getMaterialTypes, getRecipeStatusTypes, getUomTypes } from "../services/metadata.service"
 
 
 export const useGetUomTypes = (enabled = true) => {
@@ -25,11 +25,11 @@ export const useGetMaterialTypes = (enabled = true) => {
     })
 }
 
-export const useGetRecipeHeaderStatusTypes = (enabled = true) => {
+export const useGetRecipeStatusTypes = (enabled = true) => {
     return useQuery({
-        queryKey: ["recipe-header-status-types"],
+        queryKey: ["recipe-status-types"],
         queryFn: async () => {
-            const res = await getRecipeHeaderStatusTypes();
+            const res = await getRecipeStatusTypes();
             return res.data;
         },
         enabled

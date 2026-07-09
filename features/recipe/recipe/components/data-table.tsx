@@ -3,33 +3,18 @@
 import { ColumnDef, ColumnFiltersState, SortingState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable, } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/common/components/ui/table";
 import { Button } from "@/common/components/ui/button";
+import { Input } from "@/common/components/ui/input";
 import { useState } from "react";
-import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, ContextMenuLabel, ContextMenuTrigger } from "@/common/components/ui/context-menu";
-import { ChevronsDown, ChevronsUp, CornerLeftDown, CornerLeftUp, LucideIcon, Plus, SquarePen, Trash } from "lucide-react";
-import { recipeActionType } from "./recipe-dialog";
+import { Plus } from "lucide-react";
+import { DialogProp } from "./recipe-view";
 
 interface DataTableProps<TData extends { id: number }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  onAction: (action: recipeActionType, row: TData) => void;
+  setDialog: React.Dispatch<React.SetStateAction<DialogProp>>;
+}
 
-}
-type menuItemType = {
-  label: string;
-  icon: LucideIcon;
-  variant?: "default" | "destructive";
-  action: recipeActionType;
-}
-const menuItem: menuItemType[] = [
-  { label: "Add", icon: Plus, variant: "default", action: "create" },
-  { label: "Insert Above", icon: CornerLeftUp, variant: "default", action: "insert-above" },
-  { label: "Insert Below", icon: CornerLeftDown, variant: "default", action: "insert-below" },
-  { label: "Move Up", icon: ChevronsUp, variant: "default", action: "move-up" },
-  { label: "Move Down", icon: ChevronsDown, variant: "default", action: "move-down" },
-  { label: "Edit", icon: SquarePen, variant: "default", action: "edit" },
-  { label: "Delete", icon: Trash, variant: "destructive", action: "delete" }
-];
-const DataTable = <TData extends { id: number }, TValue>({ columns, data, onAction }: DataTableProps<TData, TValue>) => {
+const DataTable = <TData extends { id: number }, TValue>({ columns, data, setDialog, }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const table = useReactTable({
@@ -41,13 +26,29 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, onActi
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
-    initialState: { pagination: { pageSize: 10 } },
+    initialState: { pagination: { pageSize: 8 } },
     state: { sorting, columnFilters },
   });
 
   return (
     <div className="flex flex-col h-full">
-      <div className="h-[92%] overflow-y-auto scrollbar-none">
+      <div className="flex items-center justify-between pb-2">
+        <Input
+          placeholder="Filter recipes..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("name")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+        <div className="flex mt-0 self-end ml-auto">
+          <Button className="-mt-7 hover:bg-primary  text-white" onClick={() => setDialog({ action: "create", id: null, open: true })}>
+            <Plus className="h-5 w-5 mr-2 " />
+            Add Recipe
+          </Button>
+        </div>
+      </div>
+      <div className="rounded-md border min-h-175">
         <Table>
           <TableHeader className="bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -65,36 +66,20 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, onActi
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <ContextMenu key={row.id}>
-                  <ContextMenuTrigger asChild>
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && "selected"}
-                      className="border-muted-foreground/20 border-b h-12"
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className="border-muted-foreground/20 border-b"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      className={`border-r border-muted-foreground/20 ${cell.column.id === "description" || cell.column.id === "name" ? "text-left" : "text-center"}`}
                     >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell
-                          key={cell.id}
-                          className={`  ${cell.column.id === "parameters" || cell.column.id === "materials" ? "align-top" : ""} border-r border-muted-foreground/20  ${cell.column.id === "message" ? "text-left" : "text-center"}`}
-                        >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  </ContextMenuTrigger>
-                  <ContextMenuContent>
-                    <ContextMenuLabel>Action</ContextMenuLabel>
-                    {menuItem.map((item) => {
-                      const Icon = item.icon;
-                      return (
-                        <ContextMenuItem variant={item.variant} key={item.label} onClick={() => onAction(item.action, row.original)}>
-                          <Icon className="size-4" />
-                          {item.label}
-                        </ContextMenuItem>
-                      )
-                    })}
-                  </ContextMenuContent>
-                </ContextMenu>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
               ))
             ) : (
               <TableRow>
@@ -106,7 +91,7 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, onActi
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between p-4 h-[8%]">
+      <div className="flex items-center justify-between py-4">
         <div className="text-sm text-muted-foreground">
           Page {table.getState().pagination.pageIndex + 1} of{" "}
           {table.getPageCount()}
