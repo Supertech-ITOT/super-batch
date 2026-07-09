@@ -92,11 +92,29 @@ public class UnitServiceImpl implements UnitService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
-        if (equipmentRepository.existsByUnitId(id)) {
-            throw new BadRequestException("Cannot delete unit with equipments");
+
+        Unit unit = unitRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
+
+        // Any equipment assigned to this unit except its own main equipment?
+        if (equipmentRepository.existsNonCreatorEquipmentByUnitId(id)) {
+            throw new BadRequestException(
+                    "Cannot delete unit. Reassign or remove all equipments first.");
         }
-        Unit unit = unitRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
+
+        Equipment mainEquipment = equipmentRepository
+                .findByCreatorUnitIdAndEquipmentType(id, EquipmentType.MAIN_EQUIPMENT)
+                .orElseThrow(() -> new ResourceNotFoundException("Main equipment not found."));
+
+        // Main equipment is still shared with other units
+        if (mainEquipment.getUnits().size() > 1) {
+            throw new BadRequestException(
+                    "Main equipment is assigned to other units. Unassign it first.");
+        }
+
+        equipmentRepository.delete(mainEquipment);
         unitRepository.delete(unit);
     }
 

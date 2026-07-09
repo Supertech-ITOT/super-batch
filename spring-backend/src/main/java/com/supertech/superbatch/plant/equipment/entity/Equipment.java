@@ -49,4 +49,7 @@ public class Equipment {
     @JoinTable(name = "equipment_unit", joinColumns = @JoinColumn(name = "equipment_id"), inverseJoinColumns = @JoinColumn(name = "unit_id"))
     @JsonIgnore
     private Set<Unit> units = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Unit creatorUnit;
 }

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
+import com.supertech.superbatch.plant.equipment.enums.EquipmentType;
 
 public interface EquipmentRepository extends JpaRepository<Equipment, Long> {
 
@@ -42,4 +43,26 @@ public interface EquipmentRepository extends JpaRepository<Equipment, Long> {
                         WHERE e.id = :id
                         """)
         Optional<Equipment> findByIdWithUnits(Long id);
+
+        @Query("""
+                            SELECT COUNT(e) > 0
+                            FROM Equipment e
+                            JOIN e.units u
+                            WHERE u.id = :unitId
+                              AND e.creatorUnit IS NULL
+                        """)
+        boolean existsNonCreatorEquipmentByUnitId(Long unitId);
+
+        @Query("""
+                            SELECT COUNT(e) > 0
+                            FROM Equipment e
+                            JOIN e.units u
+                            WHERE u.id = :unitId
+                              AND e.creatorUnit <> u
+                        """)
+        boolean existsAssignedEquipmentOtherThanMain(Long unitId);
+
+        Optional<Equipment> findByCreatorUnitIdAndEquipmentType(
+                        Long creatorUnitId,
+                        EquipmentType equipmentType);
 }
