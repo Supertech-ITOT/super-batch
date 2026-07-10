@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
-import com.supertech.superbatch.manager.user.entity.Users;
-import com.supertech.superbatch.manager.user.repository.UsersRepository;
+import com.supertech.superbatch.manager.user.entity.User;
+import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.plant.material.entity.Material;
 import com.supertech.superbatch.plant.material.repository.MaterialRepository;
 import com.supertech.superbatch.plant.unit.entity.Unit;
@@ -29,7 +29,7 @@ public class RecipeServiceImpl implements RecipeService {
         private final MaterialRepository materialRepository;
         private final UnitRepository unitRepository;
         private final RecipeMapper recipeMapper;
-        private final UsersRepository usersRepository;
+        private final UserRepository userRepository;
 
         @Override
         public void delete(Long id) {
@@ -48,10 +48,10 @@ public class RecipeServiceImpl implements RecipeService {
 
                 Unit unit = unitRepository.findByIdWithHierarchy(request.unitId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
-                Users users = usersRepository.findById(userId)
+                User user = userRepository.findById(userId)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
-                Recipe recipe = recipeMapper.toEntity(request, material, users, unit);
+                Recipe recipe = recipeMapper.toEntity(request, material, user, unit);
                 recipeRepository.save(recipe);
         }
 

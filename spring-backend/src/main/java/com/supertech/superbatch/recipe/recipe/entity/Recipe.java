@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.supertech.superbatch.manager.user.entity.Users;
+import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.plant.material.entity.Material;
 import com.supertech.superbatch.plant.unit.entity.Unit;
 import com.supertech.superbatch.recipe.recipe.enums.RecipeStatus;
@@ -55,7 +55,7 @@ public class Recipe {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
-    private Users createdBy;
+    private User createdBy;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

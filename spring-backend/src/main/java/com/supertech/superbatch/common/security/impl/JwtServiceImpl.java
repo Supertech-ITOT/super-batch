@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.supertech.superbatch.common.exception.UnauthorizedException;
 import com.supertech.superbatch.common.security.JwtService;
-import com.supertech.superbatch.manager.user.entity.Users;
+import com.supertech.superbatch.manager.user.entity.User;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -31,7 +31,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateToken(Users user) {
+    public String generateToken(User user) {
         return Jwts.builder()
                 .subject(user.getEmail())
                 .claim("userId", user.getId())

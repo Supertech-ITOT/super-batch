@@ -7,9 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.supertech.superbatch.manager.user.entity.Users;
+import com.supertech.superbatch.manager.user.entity.User;
 
-public interface UsersRepository extends JpaRepository<Users, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
         boolean existsByName(String name);
 
@@ -19,7 +19,7 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
                         LEFT JOIN FETCH u.role
                         WHERE u.email = :email
                         """)
-        Optional<Users> findByEmail(@Param("email") String email);
+        Optional<User> findByEmail(@Param("email") String email);
 
         boolean existsByEmail(String email);
 
@@ -31,7 +31,7 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
                         LEFT JOIN FETCH u.role
                         LEFT JOIN FETCH u.createdBy
                         """)
-        List<Users> findAllWithRoleAndCreatedBy();
+        List<User> findAllWithRoleAndCreatedBy();
 
         @Query("""
                         SELECT DISTINCT u
@@ -40,6 +40,6 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
                         LEFT JOIN FETCH u.createdBy
                         WHERE u.id = :id
                         """)
-        Optional<Users> findByIdWithRoleAndCreatedBy(Long id);
+        Optional<User> findByIdWithRoleAndCreatedBy(Long id);
 
 }

@@ -16,7 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Messages {
+public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

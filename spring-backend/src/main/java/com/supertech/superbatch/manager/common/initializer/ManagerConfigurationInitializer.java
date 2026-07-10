@@ -12,8 +12,8 @@ import com.supertech.superbatch.manager.permission.entity.Permission;
 import com.supertech.superbatch.manager.permission.repository.PermissionRepository;
 import com.supertech.superbatch.manager.role.entity.Role;
 import com.supertech.superbatch.manager.role.repository.RoleRepository;
-import com.supertech.superbatch.manager.user.entity.Users;
-import com.supertech.superbatch.manager.user.repository.UsersRepository;
+import com.supertech.superbatch.manager.user.entity.User;
+import com.supertech.superbatch.manager.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +23,7 @@ public class ManagerConfigurationInitializer implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
     private final ModuleRepository moduleRepository;
-    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -76,18 +76,18 @@ public class ManagerConfigurationInitializer implements CommandLineRunner {
     }
 
     private void seedUser() {
-        if (!usersRepository.existsByName("Super Admin")) {
+        if (!userRepository.existsByName("Super Admin")) {
             Role role = roleRepository.findByName("System")
                     .orElseThrow(() -> new ResourceNotFoundException("Role not found."));
-            Users users = Users.builder()
+            User user = User.builder()
                     .name("Super Admin")
                     .email("itotsoftware@supertech.co.in")
                     .password(passwordEncoder.encode("Super@123"))
                     .role(role)
                     .build();
-            users = usersRepository.save(users);
-            users.setCreatedBy(users);
-            usersRepository.save(users);
+            user = userRepository.save(user);
+            user.setCreatedBy(user);
+            userRepository.save(user);
         }
     }
 

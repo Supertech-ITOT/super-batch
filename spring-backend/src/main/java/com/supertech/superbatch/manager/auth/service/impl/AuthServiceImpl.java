@@ -10,21 +10,21 @@ import com.supertech.superbatch.common.security.JwtService;
 import com.supertech.superbatch.manager.auth.dto.LoginRequest;
 import com.supertech.superbatch.manager.auth.dto.LoginResponse;
 import com.supertech.superbatch.manager.auth.service.AuthService;
-import com.supertech.superbatch.manager.user.entity.Users;
-import com.supertech.superbatch.manager.user.repository.UsersRepository;
+import com.supertech.superbatch.manager.user.entity.User;
+import com.supertech.superbatch.manager.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
     @Override
     public LoginResponse login(LoginRequest request) {
-        Users user = usersRepository.findByEmail(request.email())
+        User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Invalid email or password"));
 
@@ -34,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         user.setLastLoginAt(LocalDateTime.now());
-        usersRepository.save(user);
+        userRepository.save(user);
         String token = jwtService.generateToken(user);
 
         LoginResponse loginResponse = LoginResponse.builder()

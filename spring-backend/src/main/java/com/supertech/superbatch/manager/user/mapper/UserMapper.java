@@ -10,7 +10,7 @@ import com.supertech.superbatch.manager.role.entity.Role;
 import com.supertech.superbatch.manager.user.dto.UpdateUserRequest;
 import com.supertech.superbatch.manager.user.dto.UserRequest;
 import com.supertech.superbatch.manager.user.dto.UserResponse;
-import com.supertech.superbatch.manager.user.entity.Users;
+import com.supertech.superbatch.manager.user.entity.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class UserMapper {
     private final PermissionMapper permissionMapper;
 
-    public UserResponse toResponse(Users user, List<Permission> permissions) {
+    public UserResponse toResponse(User user, List<Permission> permissions) {
         return UserResponse.builder()
                 .id(user.getId())
                 .name(user.getName())
@@ -41,8 +41,8 @@ public class UserMapper {
                 .build();
     }
 
-    public Users toEntity(UserRequest request, Role role, Users createdBy, String encodedPassword) {
-        return Users.builder()
+    public User toEntity(UserRequest request, Role role, User createdBy, String encodedPassword) {
+        return User.builder()
                 .name(request.name())
                 .email(request.email())
                 .password(encodedPassword)
@@ -51,7 +51,7 @@ public class UserMapper {
                 .build();
     }
 
-    public void updateEntity(Users user, UpdateUserRequest request, Role role) {
+    public void updateEntity(User user, UpdateUserRequest request, Role role) {
         user.setName(request.name());
         user.setEmail(request.email());
         user.setRole(role);

@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "recipe_sop_parameter")
 @Getter
 @Setter
 @Builder

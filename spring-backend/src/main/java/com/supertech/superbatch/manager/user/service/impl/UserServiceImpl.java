@@ -18,9 +18,9 @@ import com.supertech.superbatch.manager.role.repository.RoleRepository;
 import com.supertech.superbatch.manager.user.dto.UpdateUserRequest;
 import com.supertech.superbatch.manager.user.dto.UserRequest;
 import com.supertech.superbatch.manager.user.dto.UserResponse;
-import com.supertech.superbatch.manager.user.entity.Users;
+import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.mapper.UserMapper;
-import com.supertech.superbatch.manager.user.repository.UsersRepository;
+import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.manager.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -29,78 +29,78 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional
 public class UserServiceImpl implements UserService {
-    private final UsersRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
-    private final PermissionService permissionService;
+        private final UserRepository userRepository;
+        private final RoleRepository roleRepository;
+        private final UserMapper userMapper;
+        private final PasswordEncoder passwordEncoder;
+        private final PermissionService permissionService;
 
-    @Override
-    public List<UserResponse> getAll() {
-        List<Users> users = userRepository.findAllWithRoleAndCreatedBy();
-        Map<Long, List<Permission>> permissionMap = users.stream()
-                .map(user -> user.getRole().getId())
-                .distinct()
-                .collect(Collectors.toMap(Function.identity(), permissionService::getByRoleId));
+        @Override
+        public List<UserResponse> getAll() {
+                List<User> users = userRepository.findAllWithRoleAndCreatedBy();
+                Map<Long, List<Permission>> permissionMap = users.stream()
+                                .map(user -> user.getRole().getId())
+                                .distinct()
+                                .collect(Collectors.toMap(Function.identity(), permissionService::getByRoleId));
 
-        return users.stream()
-                .map(user -> userMapper.toResponse(user, permissionMap.get(user.getRole().getId())))
-                .toList();
-    }
-
-    @Override
-    public void create(UserRequest request, Long userId) {
-        if (userRepository.existsByEmail(request.email())) {
-            throw new DuplicateResourceException("Email already exists.");
+                return users.stream()
+                                .map(user -> userMapper.toResponse(user, permissionMap.get(user.getRole().getId())))
+                                .toList();
         }
 
-        Role role = roleRepository.findById(request.roleId())
-                .orElseThrow(() -> new ResourceNotFoundException("Role not found."));
-        Users createdBy = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+        @Override
+        public void create(UserRequest request, Long userId) {
+                if (userRepository.existsByEmail(request.email())) {
+                        throw new DuplicateResourceException("Email already exists.");
+                }
 
-        Users user = userMapper.toEntity(
-                request,
-                role,
-                createdBy,
-                passwordEncoder.encode(request.password()));
+                Role role = roleRepository.findById(request.roleId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Role not found."));
+                User createdBy = userRepository.findById(userId)
+                                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
-        userRepository.save(user);
-    }
+                User user = userMapper.toEntity(
+                                request,
+                                role,
+                                createdBy,
+                                passwordEncoder.encode(request.password()));
 
-    @Override
-    public void update(Long id, UpdateUserRequest request) {
-
-        Users user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
-
-        if (userRepository.existsByEmailAndIdNot(request.email(), id)) {
-            throw new DuplicateResourceException("Email already exists.");
+                userRepository.save(user);
         }
 
-        Role role = roleRepository.findById(request.roleId())
-                .orElseThrow(() -> new ResourceNotFoundException("Role not found."));
+        @Override
+        public void update(Long id, UpdateUserRequest request) {
 
-        userMapper.updateEntity(user, request, role);
+                User user = userRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
-        userRepository.save(user);
-    }
+                if (userRepository.existsByEmailAndIdNot(request.email(), id)) {
+                        throw new DuplicateResourceException("Email already exists.");
+                }
 
-    @Override
-    public void delete(Long id) {
+                Role role = roleRepository.findById(request.roleId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Role not found."));
 
-        Users user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+                userMapper.updateEntity(user, request, role);
 
-        userRepository.delete(user);
-    }
+                userRepository.save(user);
+        }
 
-    @Override
-    public UserResponse getById(Long id) {
-        Users user = userRepository.findByIdWithRoleAndCreatedBy(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
-        List<Permission> permissions = permissionService.getByRoleId(user.getRole().getId());
-        return userMapper.toResponse(user, permissions);
+        @Override
+        public void delete(Long id) {
 
-    }
+                User user = userRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
+                userRepository.delete(user);
+        }
+
+        @Override
+        public UserResponse getById(Long id) {
+                User user = userRepository.findByIdWithRoleAndCreatedBy(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+                List<Permission> permissions = permissionService.getByRoleId(user.getRole().getId());
+                return userMapper.toResponse(user, permissions);
+
+        }
 }

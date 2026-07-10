@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.supertech.superbatch.common.dto.ApiResponse;
-import com.supertech.superbatch.plant.message.dto.CreateMessagesRequest;
-import com.supertech.superbatch.plant.message.dto.MessagesResponse;
-import com.supertech.superbatch.plant.message.dto.UpdateMessagesRequest;
-import com.supertech.superbatch.plant.message.service.MessagesService;
+import com.supertech.superbatch.plant.message.dto.CreateMessageRequest;
+import com.supertech.superbatch.plant.message.dto.MessageResponse;
+import com.supertech.superbatch.plant.message.dto.UpdateMessageRequest;
+import com.supertech.superbatch.plant.message.service.MessageService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,39 +27,39 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @CrossOrigin("*")
 public class MessageController {
-    private final MessagesService messagesService;
+    private final MessageService messageService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<MessagesResponse>>> getAll() {
-        List<MessagesResponse> messages = messagesService.getAll();
-        return ResponseEntity.ok(ApiResponse.success("Messages fetched successfully", messages));
+    public ResponseEntity<ApiResponse<List<MessageResponse>>> getAll() {
+        List<MessageResponse> message = messageService.getAll();
+        return ResponseEntity.ok(ApiResponse.success("Message fetched successfully", message));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<MessagesResponse>> getById(@PathVariable Long id) {
-        MessagesResponse message = messagesService.getById(id);
+    public ResponseEntity<ApiResponse<MessageResponse>> getById(@PathVariable Long id) {
+        MessageResponse message = messageService.getById(id);
         return ResponseEntity.ok(ApiResponse.success("Message fetched successfully", message));
     }
 
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> create(
-            @Valid @RequestBody CreateMessagesRequest request) {
-        messagesService.create(request);
+            @Valid @RequestBody CreateMessageRequest request) {
+        messageService.create(request);
         return ResponseEntity.ok(ApiResponse.success("Message created successfully", null));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> update(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateMessagesRequest request) {
-        messagesService.update(id, request);
+            @Valid @RequestBody UpdateMessageRequest request) {
+        messageService.update(id, request);
         return ResponseEntity.ok(ApiResponse.success("Message updated successfully", null));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(
             @PathVariable Long id) {
-        messagesService.delete(id);
+        messageService.delete(id);
         return ResponseEntity.ok(ApiResponse.success("Message deleted successfully", null));
     }
 

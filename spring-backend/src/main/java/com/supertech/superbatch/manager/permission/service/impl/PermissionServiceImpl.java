@@ -15,8 +15,8 @@ import com.supertech.superbatch.manager.permission.mapper.PermissionMapper;
 import com.supertech.superbatch.manager.permission.repository.PermissionRepository;
 import com.supertech.superbatch.manager.permission.service.PermissionService;
 import com.supertech.superbatch.manager.role.entity.Role;
-import com.supertech.superbatch.manager.user.entity.Users;
-import com.supertech.superbatch.manager.user.repository.UsersRepository;
+import com.supertech.superbatch.manager.user.entity.User;
+import com.supertech.superbatch.manager.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -24,12 +24,12 @@ import lombok.RequiredArgsConstructor;
 public class PermissionServiceImpl implements PermissionService {
         private final PermissionRepository permissionRepository;
         private final PermissionMapper permissionMapper;
-        private final UsersRepository usersRepository;
+        private final UserRepository userRepository;
         private final ModuleRepository moduleRepository;
 
         @Override
         public void checkReadPermission(Long userId, ModuleType module) {
-                Users user = usersRepository.findById(userId)
+                User user = userRepository.findById(userId)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
                 Permission permission = permissionRepository
@@ -43,7 +43,7 @@ public class PermissionServiceImpl implements PermissionService {
 
         @Override
         public void checkWritePermission(Long userId, ModuleType module) {
-                Users user = usersRepository.findById(userId)
+                User user = userRepository.findById(userId)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
                 Permission permission = permissionRepository
