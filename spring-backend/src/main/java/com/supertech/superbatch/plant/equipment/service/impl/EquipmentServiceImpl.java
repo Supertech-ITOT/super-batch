@@ -59,17 +59,11 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     public void update(Long id, UpdateEquipmentRequest request) {
-        update(id, request, true);
-    }
-
-    @Override
-    public void update(Long id, UpdateEquipmentRequest request, boolean validateMainEquipment) {
 
         Equipment equipment = equipmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
 
-        if (validateMainEquipment
-                && equipment.getEquipmentType() == EquipmentType.MAIN_EQUIPMENT) {
+        if (equipment.getEquipmentType() == EquipmentType.MAIN_EQUIPMENT) {
             throw new BadRequestException(
                     "Main equipment can only be updated through its unit.");
         }

@@ -1,11 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createRecipeSOP, updateRecipeSOP, deleteRecipeSOP, moveRecipeSOPUp, moveRecipeSOPDown, insertRecipeSOPAbove, insertRecipeSOPBelow, getRecipeSOPById, getRecipeSOPsByRecipeId } from "../service/recipe-sop.service";
+import { createRecipeSOP, updateRecipeSOP, deleteRecipeSOP, moveRecipeSOPUp, moveRecipeSOPDown, insertRecipeSOPAbove, insertRecipeSOPBelow, getRecipeSOPById, getRecipeSOPsByRecipeId, getSummaryByRecipeId } from "../service/recipe-sop.service";
 import { queryKeys } from "../../common/hooks/query-keys";
 import { CreateRecipeSOPRequest } from "../types/recipe-sop-types";
 
 export const useGetRecipeSOPById = (id?: number) => {
     return useQuery({
-        queryKey: id ? queryKeys.recipeSop(id) : [],
+        queryKey: id ? queryKeys.recipeSOP(id) : [],
         queryFn: async () => {
             const res = await getRecipeSOPById(id!);
             return res.data;
@@ -107,3 +107,16 @@ export const useInsertBelowRecipeSOP = () => {
         },
     });
 };
+
+export const useGetSummaryByRecipeId = (recipeId: number) => {
+  return useQuery({
+    queryKey: queryKeys.recipeSOPsSummaryByRecipe(recipeId),
+    queryFn: async () => {
+      const res = await getSummaryByRecipeId(recipeId);
+      return res.data;
+    },
+    enabled: !!recipeId,
+  });
+};
+  
+    

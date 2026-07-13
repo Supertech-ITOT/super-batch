@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import com.supertech.superbatch.common.dto.ApiResponse;
 import com.supertech.superbatch.recipe.recipe_sop.dto.CreateRecipeSOPRequest;
 import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPResponse;
+import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPSummaryResponse;
 import com.supertech.superbatch.recipe.recipe_sop.dto.UpdateRecipeSOPRequest;
 import com.supertech.superbatch.recipe.recipe_sop.service.RecipeSOPService;
 
@@ -93,4 +94,13 @@ public class RecipeSOPController {
         recipeSOPService.insertBelow(id, request);
         return ResponseEntity.ok(ApiResponse.success("Step inserted below successfully", null));
     }
+
+    @GetMapping("/summary/{recipeId}")
+    public ResponseEntity<ApiResponse<RecipeSOPSummaryResponse>> getSummaryByRecipeId(
+            @PathVariable Long recipeId) {
+
+        RecipeSOPSummaryResponse response = recipeSOPService.getSummaryByRecipeId(recipeId);
+        return ResponseEntity.ok(ApiResponse.success("Recipe SOP summary fetched successfully.", response));
+    }
+
 }

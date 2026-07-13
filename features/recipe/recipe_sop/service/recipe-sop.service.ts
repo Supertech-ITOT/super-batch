@@ -3,6 +3,7 @@ import {
   CreateRecipeSOPRequest,
   UpdateRecipeSOPRequest,
   RecipeSOPResponse,
+  RecipeSOPSummary,
 } from "../types/recipe-sop-types";
 import { ApiResponse } from "@/common/types/api.types";
 
@@ -50,5 +51,12 @@ export const insertRecipeSOPAbove = async (id: number, data: CreateRecipeSOPRequ
 
 export const insertRecipeSOPBelow = async (id: number, data: CreateRecipeSOPRequest) => {
   const res = await api.post<ApiResponse<RecipeSOPResponse>>(`/recipe-sop/${id}/insert-below`, data);
+  return res.data;
+};
+
+export const getSummaryByRecipeId = async (recipeId: number) => {
+  const res = await api.get<ApiResponse<RecipeSOPSummary>>(
+    `/recipe-sop/summary/${recipeId}`
+  );
   return res.data;
 };

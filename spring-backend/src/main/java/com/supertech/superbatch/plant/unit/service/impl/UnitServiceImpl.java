@@ -13,8 +13,8 @@ import com.supertech.superbatch.plant.equipment.dto.CreateEquipmentRequest;
 import com.supertech.superbatch.plant.equipment.dto.UpdateEquipmentRequest;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.equipment.enums.EquipmentType;
+import com.supertech.superbatch.plant.equipment.mapper.EquipmentMapper;
 import com.supertech.superbatch.plant.equipment.repository.EquipmentRepository;
-import com.supertech.superbatch.plant.equipment.service.EquipmentService;
 import com.supertech.superbatch.plant.unit.dto.CreateUnitRequest;
 import com.supertech.superbatch.plant.unit.dto.UnitResponse;
 import com.supertech.superbatch.plant.unit.dto.UpdateUnitRequest;
@@ -33,7 +33,7 @@ public class UnitServiceImpl implements UnitService {
     private final AreaRepository areaRepository;
     private final EquipmentRepository equipmentRepository;
     private final UnitMapper unitMapper;
-    private final EquipmentService equipmentService;
+    private final EquipmentMapper equipmentMapper;
 
     @Override
     @Transactional
@@ -45,6 +45,11 @@ public class UnitServiceImpl implements UnitService {
         Area area = areaRepository
                 .findById(request.areaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
+
+        if (equipmentRepository.existsByNameIgnoreCase(request.name())) {
+            throw new DuplicateResourceException("Equipment already exists");
+        }
+
         Unit unit = unitMapper.toEntity(request, area);
         unitRepository.save(unit);
 
@@ -56,7 +61,8 @@ public class UnitServiceImpl implements UnitService {
                 .unitId(unit.getId())
                 .build();
 
-        equipmentService.create(createEquipmentRequest);
+        Equipment equipment = equipmentMapper.toEntity(createEquipmentRequest, unit, EquipmentType.MAIN_EQUIPMENT);
+        equipmentRepository.save(equipment);
 
     }
 
@@ -107,7 +113,9 @@ public class UnitServiceImpl implements UnitService {
                 .capacity(request.capacity())
                 .description(request.description())
                 .build();
-        equipmentService.update(mainEquipment.getId(), updateEquipmentRequest, false);
+
+        equipmentMapper.updateEntity(mainEquipment, updateEquipmentRequest);
+        equipmentRepository.save(mainEquipment);
     }
 
     @Override

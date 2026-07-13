@@ -48,7 +48,6 @@ export type RecipeSOPMaterialResponse = {
     stdQty: number;
 };
 
-
 export type RecipeSOPParameterRequest = {
     parameterId: number;
     stdValue: number;
@@ -58,4 +57,17 @@ export type RecipeSOPParameterResponse = {
     parameterId: number;
     parameterName: string;
     stdValue: number;
+};
+
+export type RecipeSOPMaterialSummary = {
+  id: number;
+  name: string;
+  stdQty: number;
+};
+
+export type RecipeSOPSummary = {
+  totalSteps: number;
+  totalMaterials: number;
+  totalDuration: number;
+  materials: RecipeSOPMaterialSummary[];
 };

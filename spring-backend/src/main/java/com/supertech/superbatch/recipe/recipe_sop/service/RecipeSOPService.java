@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.supertech.superbatch.recipe.recipe_sop.dto.CreateRecipeSOPRequest;
 import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPResponse;
+import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPSummaryResponse;
 import com.supertech.superbatch.recipe.recipe_sop.dto.UpdateRecipeSOPRequest;
 
 public interface RecipeSOPService {
@@ -25,4 +26,6 @@ public interface RecipeSOPService {
     void insertAbove(Long recipeId, CreateRecipeSOPRequest request);
 
     void insertBelow(Long recipeId, CreateRecipeSOPRequest request);
+
+    RecipeSOPSummaryResponse getSummaryByRecipeId(Long recipeId);
 }

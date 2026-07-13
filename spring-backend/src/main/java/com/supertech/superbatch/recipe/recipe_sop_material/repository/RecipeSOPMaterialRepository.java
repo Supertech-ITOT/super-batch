@@ -15,6 +15,9 @@ public interface RecipeSOPMaterialRepository extends JpaRepository<RecipeSOPMate
     @EntityGraph(attributePaths = { "material" })
     List<RecipeSOPMaterial> findAllByRecipeSOP(RecipeSOP recipe);
 
+    @EntityGraph(attributePaths = "material")
+    List<RecipeSOPMaterial> findByRecipeSOPRecipeId(Long recipeId);
+
     @Query("""
                 SELECT COALESCE(SUM(rm.stdQty), 0)
                 FROM RecipeSOPMaterial rm

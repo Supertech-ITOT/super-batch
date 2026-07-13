@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useGetRecipeSOPsByRecipeId, useMoveDownRecipeSOP, useMoveUpRecipeSOP } from "../hooks/use-recipe-sop";
 import columns from "./columns";
 import DataTable from "./data-table";
-import RecipeDialog from "./recipe-sop-dialog";
 import RecipeInfo from "./recipe-sop-info";
 import { RecipeSOPResponse } from "../types/recipe-sop-types";
 import { toast } from "sonner";
-import RecipeDeleteDialog from "./recipe-sop-delete-dialog";
 import { showApiError } from "@/common/lib/show-api-error";
 import { useGetRecipeById } from "../../recipe/hooks/use-recipe";
+import RecipeSOPDialog from "./recipe-sop-dialog";
+import RecipeSOPDeleteDialog from "./recipe-sop-delete-dialog";
+
 
 export type recipeSOPActionType = "create" | "insert-below" | "insert-above" | "edit" | "move-up" | "move-down" | "delete";
 export type RecipeSOPDialogType = {
@@ -85,16 +86,15 @@ export default function RecipeSOPView({ recipeId }: { recipeId: number }) {
 
                     {/* Summary */}
                     <div className="flex-1 min-h-56 border bg-card shadow hover:shadow-lg rounded-lg overflow-hidden">
-
                     </div>
                 </div>
 
                 {/* Dialog */}
                 <div className="min-w-1/4 2xl:h-full 2xl:shrink-0 border shadow hover:shadow-lg rounded-lg overflow-hidden">
-                    <RecipeDialog action={dialog.action} recipeId={recipeId} stepNo={dialog.stepNo} recipeSOPId={dialog.recipeSOPId} unitId={recipe.unitRecipeResponse.id} batchSizeUom={recipe.unitRecipeResponse.batchSizeUom.symbol} />
+                    <RecipeSOPDialog action={dialog.action} recipeId={recipeId} stepNo={dialog.stepNo} recipeSOPId={dialog.recipeSOPId} unitId={recipe.unitRecipeResponse.id} batchSizeUom={recipe.unitRecipeResponse.batchSizeUom.symbol} />
                     {dialog.action === "delete" && dialog.recipeSOPId &&
                         (
-                            <RecipeDeleteDialog open id={dialog.recipeSOPId} recipeId={recipeId} onClose={handleClose} />
+                            <RecipeSOPDeleteDialog open id={dialog.recipeSOPId} recipeId={recipeId} onClose={handleClose} />
                         )
                     }
                 </div>

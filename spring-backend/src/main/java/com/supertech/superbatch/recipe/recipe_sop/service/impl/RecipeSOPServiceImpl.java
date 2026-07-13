@@ -1,7 +1,11 @@
 package com.supertech.superbatch.recipe.recipe_sop.service.impl;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +24,9 @@ import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 import com.supertech.superbatch.recipe.recipe.repository.RecipeRepository;
 import com.supertech.superbatch.recipe.recipe_sop.dto.CreateRecipeSOPRequest;
 import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPDependencies;
+import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPMaterialSummaryResponse;
 import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPResponse;
+import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPSummaryResponse;
 import com.supertech.superbatch.recipe.recipe_sop.dto.UpdateRecipeSOPRequest;
 import com.supertech.superbatch.recipe.recipe_sop.entity.RecipeSOP;
 import com.supertech.superbatch.recipe.recipe_sop.mapper.RecipeSOPMapper;
@@ -28,6 +34,7 @@ import com.supertech.superbatch.recipe.recipe_sop.repository.RecipeSOPRepository
 import com.supertech.superbatch.recipe.recipe_sop.service.RecipeSOPService;
 import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialRequest;
 import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialResponse;
+import com.supertech.superbatch.recipe.recipe_sop_material.enitiy.RecipeSOPMaterial;
 import com.supertech.superbatch.recipe.recipe_sop_material.repository.RecipeSOPMaterialRepository;
 import com.supertech.superbatch.recipe.recipe_sop_material.service.RecipeSOPMaterialService;
 import com.supertech.superbatch.recipe.recipe_sop_parameter.dto.RecipeSOPParameterResponse;
@@ -321,5 +328,40 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                                                                 totalPercent));
                         }
                 }
+        }
+
+        @Override
+        public RecipeSOPSummaryResponse getSummaryByRecipeId(Long recipeId) {
+                Recipe recipe = recipeRepository.findById(recipeId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found"));
+
+                List<RecipeSOP> recipeSOPs = recipeSOPRepository.findWithRelationsByRecipeId(recipe.getId());
+                int totalSteps = recipeSOPs.size();
+
+                double totalDuration = recipeSOPs.stream()
+                                .map(RecipeSOP::getStdTime)
+                                .filter(Objects::nonNull)
+                                .mapToDouble(Double::doubleValue)
+                                .sum();
+
+                List<RecipeSOPMaterial> recipeSOPMaterials = recipeSOPMaterialRepository
+                                .findByRecipeSOPRecipeId(recipeId);
+
+                Map<Long, RecipeSOPMaterialSummaryResponse> materialMap = recipeSOPMaterials.stream()
+                                .collect(Collectors.toMap(
+                                                m -> m.getMaterial().getId(),
+                                                m -> new RecipeSOPMaterialSummaryResponse(
+                                                                m.getMaterial().getId(),
+                                                                m.getMaterial().getName(),
+                                                                m.getStdQty()),
+                                                (existing, current) -> new RecipeSOPMaterialSummaryResponse(
+                                                                existing.id(),
+                                                                existing.name(),
+                                                                existing.stdQty() + current.stdQty())));
+
+                List<RecipeSOPMaterialSummaryResponse> materials = new ArrayList<>(materialMap.values());
+
+                return new RecipeSOPSummaryResponse(totalSteps, materials.size(), totalDuration, materials);
+
         }
 }
