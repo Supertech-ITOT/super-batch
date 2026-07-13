@@ -24,21 +24,24 @@ import { useCreateRecipeSOP, useGetRecipeSOPById, useInsertAboveRecipeSOP, useIn
 import { durationToMinutes, minutesToDuration } from "@/common/utils/duration.util";
 import { useEffect } from "react";
 import { showApiError } from "@/common/lib/show-api-error";
-import { useGetEquipment } from "@/features/plant/equipment/hooks/use-equipment";
-export type recipeSOPActionType = "create" | "insert-below" | "insert-above" | "edit" | "move-up" | "move-down" | "delete";
-export type RecipeSOPDialogType = {
+import { useGetEquipmentsByUnitId } from "@/features/plant/equipment/hooks/use-equipment";
+import { recipeSOPActionType } from "./recipe-sop-view";
+
+type RecipeSOPDialogProp = {
   recipeSOPId?: number;
   recipeId: number;
   stepNo?: number;
   action: recipeSOPActionType;
+  unitId: number;
+  batchSizeUom: string;
 }
-export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "create", stepNo }: RecipeSOPDialogType) {
+export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "create", stepNo, unitId, batchSizeUom }: RecipeSOPDialogProp) {
   const { data: transitions, isLoading: transitionsIsLoading } = useGetTransitions();
   const { data: actions, isLoading: actionsIsLoading } = useGetActions();
   const { data: messages, isLoading: messagesIsLoading } = useGetMessages();
   const { data: materials, isLoading: materialsIsLoading } = useGetMaterials();
   const { data: parameters, isLoading: parametersIsLoading } = useGetParameters();
-  const { data: equipments, isLoading: equipmentsIsLoading } = useGetEquipment();
+  const { data: equipments, isLoading: equipmentsIsLoading } = useGetEquipmentsByUnitId(unitId);
   const { data: recipeSOP, isLoading: recipeSOPIsLoading } = useGetRecipeSOPById(action === "edit" ? recipeSOPId : undefined);
 
   const { mutateAsync: create, isPending: createIsPending } = useCreateRecipeSOP();
@@ -46,7 +49,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
   const { mutateAsync: insertAbove, isPending: insertAboveIsPending } = useInsertAboveRecipeSOP();
   const { mutateAsync: update, isPending: updateIsPending } = useUpdateRecipeSOP();
 
-  const { handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty }, } = useForm<RecipeSOPSchema>({
+  const { handleSubmit, reset, watch, control, setValue, formState: { isSubmitting, isDirty }, } = useForm<RecipeSOPSchema>({
     resolver: zodResolver(recipeSOPSchema), defaultValues: {
       stdTime: "",
       actionId: 0,
@@ -57,7 +60,8 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
     },
   });
 
-  const loading = isSubmitting || !transitions || transitionsIsLoading ||
+  const loading = isSubmitting ||
+    !transitions || transitionsIsLoading ||
     !actions || actionsIsLoading ||
     !messages || messagesIsLoading ||
     !materials || materialsIsLoading ||
@@ -73,7 +77,9 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
         message: recipeSOP?.message,
         parameters: recipeSOP?.parameters,
         stdTime: minutesToDuration(recipeSOP?.stdTime ?? 0),
-        transitionId: recipeSOP?.transitionId
+        transitionId: recipeSOP?.transitionId,
+        fromEquipmentId: recipeSOP?.fromEquipmentId,
+        toEquipmentId: recipeSOP?.toEquipmentId
       })
     }
     else {
@@ -84,8 +90,23 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
 
   const selectedTransitionId = watch("transitionId");
   const selectedTransition = transitions?.find((t) => t.id === selectedTransitionId);
+
   const autoMaterialStep = selectedTransition?.name === TransitionType.AUTO_MATERIAL_CHARGE;
   const manualMaterialStep = selectedTransition?.name === TransitionType.MANUAL_MATERIAL_CHARGE;
+  const transferStep = selectedTransition?.name === TransitionType.TRANSFER;
+
+  const parentEq = equipments?.find((e) => e.creatorUnitId === unitId);
+
+  useEffect(() => {
+
+    if (!selectedTransition || !parentEq) return;
+
+    if (transferStep) {
+      setValue("fromEquipmentId", parentEq.id);
+    } else {
+      setValue("toEquipmentId", parentEq.id);
+    }
+  }, [selectedTransition, parentEq, transferStep, setValue]);
 
   const onSubmit = async (formData: RecipeSOPSchema) => {
     let res;
@@ -265,7 +286,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
                 name="fromEquipmentId"
                 render={({ field }) => (
                   <SearchableSelect
-                    value={field.value}
+                    value={field.value ?? undefined}
                     onChange={field.onChange}
                     options={equipments.map((t) => ({
                       value: t.id,
@@ -273,7 +294,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
                     }))}
                     placeholder="Select"
                     searchPlaceholder="Search Equipment..."
-                    disabled={loading}
+                    disabled={loading || !autoMaterialStep}
                   />
                 )}
               />
@@ -293,7 +314,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
                     }))}
                     placeholder="Select"
                     searchPlaceholder="Search Equipment..."
-                    disabled={loading}
+                    disabled={loading || !transferStep}
                   />
                 )}
               />
@@ -321,7 +342,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
                   .map((m) => ({
                     id: m.id,
                     name: m.name,
-                    uom: m.uom.symbol,
+                    uom: batchSizeUom,
                   }))}
                 value={(field.value ?? []).map((m) => ({
                   id: m.materialId,

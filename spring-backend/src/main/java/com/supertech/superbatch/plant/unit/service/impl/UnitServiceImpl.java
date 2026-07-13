@@ -10,10 +10,11 @@ import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.plant.area.entity.Area;
 import com.supertech.superbatch.plant.area.repository.AreaRepository;
 import com.supertech.superbatch.plant.equipment.dto.CreateEquipmentRequest;
+import com.supertech.superbatch.plant.equipment.dto.UpdateEquipmentRequest;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.equipment.enums.EquipmentType;
-import com.supertech.superbatch.plant.equipment.mapper.EquipmentMapper;
 import com.supertech.superbatch.plant.equipment.repository.EquipmentRepository;
+import com.supertech.superbatch.plant.equipment.service.EquipmentService;
 import com.supertech.superbatch.plant.unit.dto.CreateUnitRequest;
 import com.supertech.superbatch.plant.unit.dto.UnitResponse;
 import com.supertech.superbatch.plant.unit.dto.UpdateUnitRequest;
@@ -32,7 +33,7 @@ public class UnitServiceImpl implements UnitService {
     private final AreaRepository areaRepository;
     private final EquipmentRepository equipmentRepository;
     private final UnitMapper unitMapper;
-    private final EquipmentMapper equipmentMapper;
+    private final EquipmentService equipmentService;
 
     @Override
     @Transactional
@@ -55,8 +56,8 @@ public class UnitServiceImpl implements UnitService {
                 .unitId(unit.getId())
                 .build();
 
-        Equipment equipment = equipmentMapper.toEntity(createEquipmentRequest, unit, EquipmentType.MAIN_EQUIPMENT);
-        equipmentRepository.save(equipment);
+        equipmentService.create(createEquipmentRequest);
+
     }
 
     @Override
@@ -77,6 +78,7 @@ public class UnitServiceImpl implements UnitService {
     }
 
     @Override
+    @Transactional
     public void update(Long id, UpdateUnitRequest request) {
         Unit unit = unitRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
         Area area = areaRepository.findById(request.areaId())
@@ -87,8 +89,25 @@ public class UnitServiceImpl implements UnitService {
             throw new DuplicateResourceException("Unit already exists");
         }
 
+        Equipment mainEquipment = equipmentRepository
+                .findByCreatorUnitIdAndEquipmentType(id, EquipmentType.MAIN_EQUIPMENT)
+                .orElseThrow(() -> new ResourceNotFoundException("Main equipment not found."));
+
+        if (!mainEquipment.getName().equalsIgnoreCase(request.name())
+                && equipmentRepository.existsByNameIgnoreCase(request.name())) {
+            throw new DuplicateResourceException("Equipment already exists");
+        }
+
         unitMapper.updateEntity(unit, request, area);
         unitRepository.save(unit);
+
+        UpdateEquipmentRequest updateEquipmentRequest = UpdateEquipmentRequest.builder()
+                .name(request.name())
+                .code(request.code())
+                .capacity(request.capacity())
+                .description(request.description())
+                .build();
+        equipmentService.update(mainEquipment.getId(), updateEquipmentRequest, false);
     }
 
     @Override

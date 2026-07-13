@@ -11,6 +11,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "users")
 @Getter
 @Setter
 @Builder
@@ -30,7 +31,7 @@ public class User {
     private String password;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "role_id", nullable = false)
+    @JoinColumn(nullable = false)
     private Role role;
 
     @CreationTimestamp
@@ -42,7 +43,6 @@ public class User {
     private LocalDateTime lastLoginAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by")
     private User createdBy;
 
 }

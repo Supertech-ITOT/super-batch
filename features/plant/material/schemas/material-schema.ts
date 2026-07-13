@@ -54,8 +54,6 @@ export const materialSchema = z.object({
 
 
     materialType: z.string({ error: "Material Type is required." }).min(1, "Material Type is required").trim(),
-
-    uom: z.string({ error: "Uom type is required." }).min(1, "UOM is required").trim(),
 });
 
 export type MaterialSchema = z.infer<typeof materialSchema>;

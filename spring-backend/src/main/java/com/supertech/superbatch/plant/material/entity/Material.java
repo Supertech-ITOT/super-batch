@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import com.supertech.superbatch.common.enums.UomType;
 import com.supertech.superbatch.plant.material.enums.MaterialType;
 
 import jakarta.persistence.*;
@@ -27,9 +26,6 @@ public class Material {
 
     @Enumerated(EnumType.STRING)
     private MaterialType materialType;
-
-    @Enumerated(EnumType.STRING)
-    private UomType uom;
 
     private String description;
 

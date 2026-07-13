@@ -28,6 +28,8 @@ public class EquipmentMapper {
                         .stream()
                         .map(unitMapper::toUnitSummaryResponse)
                         .toList())
+                .creatorUnitId(equipment.getCreatorUnit() != null ? equipment.getCreatorUnit().getId() : null)
+                .creatorUnitName(equipment.getCreatorUnit() != null ? equipment.getCreatorUnit().getName() : null)
                 .createdAt(equipment.getCreatedAt())
                 .updatedAt(equipment.getUpdatedAt())
                 .build();

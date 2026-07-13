@@ -21,10 +21,9 @@ export default function UpdateMaterialDialog({ open, onClose, materialId }: Prop
     const { mutateAsync: updateMaterial, isPending: isUpdating } = useUpdateMaterial();
     const { data: materialTypes, isLoading: materialTypeIsLoading } = useGetMaterialTypes(open);
     const { data: material, isLoading: materialIsLoading } = useGetMaterialById(materialId);
-    const { data: uomTypes, isLoading: uomTypesIsLoading } = useGetUomTypes(open);
     const { register, handleSubmit, reset, control, watch, formState: { isSubmitting, isDirty } } = useForm<MaterialSchema>({
         resolver: zodResolver(materialSchema),
-        defaultValues: { name: "", materialType: "", description: "", code: "", uom: "" }
+        defaultValues: { name: "", materialType: "", description: "", code: "" }
     });
 
     useEffect(() => {
@@ -34,11 +33,10 @@ export default function UpdateMaterialDialog({ open, onClose, materialId }: Prop
             code: material.code,
             description: material.description,
             materialType: material.materialType,
-            uom: material.uom.value,
         });
     }, [open, material, reset]);
 
-    const loading = isUpdating || isSubmitting || materialTypeIsLoading || uomTypesIsLoading || materialIsLoading;
+    const loading = isUpdating || isSubmitting || materialTypeIsLoading || materialIsLoading;
     const onSubmit = async (formData: MaterialSchema) => {
         try {
             const res = await updateMaterial({
@@ -46,7 +44,6 @@ export default function UpdateMaterialDialog({ open, onClose, materialId }: Prop
                     code: formData.code,
                     name: formData.name,
                     description: formData.description,
-                    uom: formData.uom,
                     materialType: formData.materialType
                 }
             });
@@ -57,7 +54,7 @@ export default function UpdateMaterialDialog({ open, onClose, materialId }: Prop
         }
     };
     const handleClose = () => {
-        reset({ name: "", materialType: "", description: "", code: "", uom: "" });
+        reset({ name: "", materialType: "", description: "", code: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<MaterialSchema>) => {
@@ -103,11 +100,11 @@ export default function UpdateMaterialDialog({ open, onClose, materialId }: Prop
                                     {...register("code")}
                                 />
                             </div>
-                            <div className="flex-1 space-y-2">
-                                <Label>Select Uom Type</Label>
+                            <div className="relative space-y-2 flex-1">
+                                <Label>Select Material Type</Label>
                                 <Controller
                                     control={control}
-                                    name="uom"
+                                    name="materialType"
                                     render={({ field }) => (
                                         <Select
                                             disabled={loading}
@@ -115,11 +112,11 @@ export default function UpdateMaterialDialog({ open, onClose, materialId }: Prop
                                             onValueChange={field.onChange}
                                         >
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Uom Type" />
+                                                <SelectValue placeholder="Select Material Type" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    {uomTypes?.map((e) => (
+                                                    {materialTypes?.map((e) => (
                                                         <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
                                                     ))}
                                                 </SelectGroup>
@@ -128,6 +125,7 @@ export default function UpdateMaterialDialog({ open, onClose, materialId }: Prop
                                     )}
                                 />
                             </div>
+
                         </div>
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
@@ -142,31 +140,7 @@ export default function UpdateMaterialDialog({ open, onClose, materialId }: Prop
                                 {...register("description")}
                             />
                         </div>
-                        <div className="relative space-y-2">
-                            <Label>Select Material Type</Label>
-                            <Controller
-                                control={control}
-                                name="materialType"
-                                render={({ field }) => (
-                                    <Select
-                                        disabled={loading}
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                    >
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select Material Type" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {materialTypes?.map((e) => (
-                                                    <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
-                        </div>
+
 
                     </div>
                     <DialogFooter>

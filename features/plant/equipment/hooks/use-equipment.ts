@@ -80,7 +80,6 @@ export const useGetEquipmentsByUnitId = (unitId?: number) => {
             const res = await getByUnitId(unitId!);
             return res.data;
         },
-        staleTime: 0,
         enabled: !!unitId,
     });
 

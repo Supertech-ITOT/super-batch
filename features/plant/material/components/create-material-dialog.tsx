@@ -19,12 +19,11 @@ type Props = { open: boolean; onClose: () => void; };
 export default function CreateMaterialDialog({ open, onClose }: Props) {
     const { mutateAsync: createMaterial, isPending: isCreating } = useCreateMaterial();
     const { data: materialTypes, isLoading: materialTypeIsLoading } = useGetMaterialTypes(open);
-    const { data: uomTypes, isLoading: uomTypesIsLoading } = useGetUomTypes(open);
     const { register, handleSubmit, reset, control, watch, formState: { isSubmitting, isDirty } } = useForm<MaterialSchema>({
         resolver: zodResolver(materialSchema),
-        defaultValues: { name: "", materialType: "", description: "", code: "", uom: "" }
+        defaultValues: { name: "", materialType: "", description: "", code: "" }
     });
-    const loading = isCreating || isSubmitting || materialTypeIsLoading || uomTypesIsLoading;
+    const loading = isCreating || isSubmitting || materialTypeIsLoading;
     const onSubmit = async (formData: MaterialSchema) => {
         try {
             const res = await createMaterial({
@@ -32,7 +31,6 @@ export default function CreateMaterialDialog({ open, onClose }: Props) {
                 description: formData.description,
                 materialType: formData.materialType,
                 code: formData.code,
-                uom: formData.uom
             });
             toast.success(res.message ?? "Material created successfully.");
             handleClose();
@@ -41,7 +39,7 @@ export default function CreateMaterialDialog({ open, onClose }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ name: "", materialType: "", description: "", code: "", uom: "" });
+        reset({ name: "", materialType: "", description: "", code: ""});
         onClose();
     };
     const onInvalid = (errors: FieldErrors<MaterialSchema>) => {
@@ -87,11 +85,11 @@ export default function CreateMaterialDialog({ open, onClose }: Props) {
                                     {...register("code")}
                                 />
                             </div>
-                            <div className="flex-1 space-y-2">
-                                <Label>Select Uom Type</Label>
+                            <div className="relative space-y-2 flex-1">
+                                <Label>Select Material Type</Label>
                                 <Controller
                                     control={control}
-                                    name="uom"
+                                    name="materialType"
                                     render={({ field }) => (
                                         <Select
                                             disabled={loading}
@@ -99,11 +97,11 @@ export default function CreateMaterialDialog({ open, onClose }: Props) {
                                             onValueChange={field.onChange}
                                         >
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Uom Type" />
+                                                <SelectValue placeholder="Select Material Type" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    {uomTypes?.map((e) => (
+                                                    {materialTypes?.map((e) => (
                                                         <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
                                                     ))}
                                                 </SelectGroup>
@@ -112,6 +110,7 @@ export default function CreateMaterialDialog({ open, onClose }: Props) {
                                     )}
                                 />
                             </div>
+
                         </div>
                         <div className="space-y-2 relative">
                             <div className="flex items-center justify-between">
@@ -126,31 +125,7 @@ export default function CreateMaterialDialog({ open, onClose }: Props) {
                                 {...register("description")}
                             />
                         </div>
-                        <div className="relative space-y-2">
-                            <Label>Select Material Type</Label>
-                            <Controller
-                                control={control}
-                                name="materialType"
-                                render={({ field }) => (
-                                    <Select
-                                        disabled={loading}
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                    >
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select Material Type" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {materialTypes?.map((e) => (
-                                                    <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
-                        </div>
+
 
                     </div>
                     <DialogFooter>

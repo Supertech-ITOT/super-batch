@@ -19,6 +19,8 @@ export interface EquipmentResponse {
     description: string;
     capacity: number;
     units: UnitSummaryResponse[];
+    creatorUnitId: number;
+    creatorUnitName: string;
     createdAt: string;
     updatedAt: string;
 }

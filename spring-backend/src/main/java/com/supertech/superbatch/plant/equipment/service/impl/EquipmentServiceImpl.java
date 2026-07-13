@@ -42,31 +42,43 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     public List<EquipmentResponse> getAll() {
-        return equipmentRepository.findAllWithUnits().stream().map(equipmentMapper::toResponse).toList();
+        return equipmentRepository.findAllWithRelations().stream().map(equipmentMapper::toResponse).toList();
     }
 
     @Override
     public EquipmentResponse getById(Long id) {
-        Equipment equipment = equipmentRepository.findByIdWithUnits(id)
+        Equipment equipment = equipmentRepository.findByIdWithRelations(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
         return equipmentMapper.toResponse(equipment);
     }
 
     @Override
     public List<EquipmentResponse> getByUnitId(long unitId) {
-        return equipmentRepository.findByUnitId(unitId).stream().map(equipmentMapper::toResponse).toList();
+        return equipmentRepository.findByUnitsId(unitId).stream().map(equipmentMapper::toResponse).toList();
     }
 
     @Override
     public void update(Long id, UpdateEquipmentRequest request) {
+        update(id, request, true);
+    }
+
+    @Override
+    public void update(Long id, UpdateEquipmentRequest request, boolean validateMainEquipment) {
 
         Equipment equipment = equipmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
+
+        if (validateMainEquipment
+                && equipment.getEquipmentType() == EquipmentType.MAIN_EQUIPMENT) {
+            throw new BadRequestException(
+                    "Main equipment can only be updated through its unit.");
+        }
 
         if (!equipment.getName().equalsIgnoreCase(request.name())
                 && equipmentRepository.existsByNameIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Equipment already exists");
         }
+
         equipmentMapper.updateEntity(equipment, request);
         equipmentRepository.save(equipment);
     }
@@ -85,7 +97,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Override
     public void assign(AssignEquipmentRequest request) {
 
-        Equipment equipment = equipmentRepository.findByIdWithUnits(request.equipmentId())
+        Equipment equipment = equipmentRepository.findByIdWithRelations(request.equipmentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
 
         Unit unit = unitRepository.findById(request.unitId())
@@ -107,7 +119,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Override
     public void unassign(UnAssignEquipmentRequest request) {
 
-        Equipment equipment = equipmentRepository.findByIdWithUnits(request.equipmentId())
+        Equipment equipment = equipmentRepository.findByIdWithRelations(request.equipmentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
 
         if (equipment.getCreatorUnit() != null &&

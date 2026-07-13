@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.supertech.superbatch.common.enums.UomType;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.plant.action.entity.Action;
@@ -13,6 +14,7 @@ import com.supertech.superbatch.plant.action.repository.ActionRepository;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.equipment.repository.EquipmentRepository;
 import com.supertech.superbatch.plant.transition.entity.Transition;
+import com.supertech.superbatch.plant.transition.enums.TransitionType;
 import com.supertech.superbatch.plant.transition.repository.TransitionRepository;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 import com.supertech.superbatch.recipe.recipe.repository.RecipeRepository;
@@ -26,6 +28,7 @@ import com.supertech.superbatch.recipe.recipe_sop.repository.RecipeSOPRepository
 import com.supertech.superbatch.recipe.recipe_sop.service.RecipeSOPService;
 import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialRequest;
 import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialResponse;
+import com.supertech.superbatch.recipe.recipe_sop_material.repository.RecipeSOPMaterialRepository;
 import com.supertech.superbatch.recipe.recipe_sop_material.service.RecipeSOPMaterialService;
 import com.supertech.superbatch.recipe.recipe_sop_parameter.dto.RecipeSOPParameterResponse;
 import com.supertech.superbatch.recipe.recipe_sop_parameter.service.RecipeSOPParameterService;
@@ -43,6 +46,7 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
         private final TransitionRepository transitionRepository;
         private final RecipeSOPParameterService recipeSOPParameterService;
         private final RecipeSOPMaterialService recipeSOPMaterialService;
+        private final RecipeSOPMaterialRepository recipeSOPMaterialRepository;
 
         @Override
         public RecipeSOPResponse getById(Long id) {
@@ -69,13 +73,14 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
         public void create(CreateRecipeSOPRequest request) {
                 List<RecipeSOP> steps = recipeSOPRepository.findAllByRecipeId(request.recipeId());
                 Integer stepNo = steps.isEmpty() ? 1 : steps.size() + 1;
-                Recipe recipe = recipeRepository.findById(request.recipeId())
+                Recipe recipe = recipeRepository.findByIdWithRelations(request.recipeId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
                 RecipeSOPDependencies deps = loadInsertDependencies(request.actionId(),
                                 request.transitionId(),
                                 request.fromEquipmentId(),
                                 request.toEquipmentId(),
-                                request.materials());
+                                request.materials(),
+                                recipe);
                 RecipeSOP recipeSOP = recipeSOPMapper.toEntity(
                                 request,
                                 stepNo,
@@ -94,11 +99,14 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
         public void update(UpdateRecipeSOPRequest request) {
                 RecipeSOP recipeSOP = recipeSOPRepository.findById(request.id())
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found"));
+                Recipe recipe = recipeRepository.findByIdWithRelations(request.recipeId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
                 RecipeSOPDependencies deps = loadInsertDependencies(request.actionId(),
                                 request.transitionId(),
                                 request.fromEquipmentId(),
                                 request.toEquipmentId(),
-                                request.materials());
+                                request.materials(),
+                                recipe);
                 recipeSOPMapper.updateEntity(
                                 request,
                                 recipeSOP,
@@ -163,11 +171,15 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
         public void insertBelow(Long recipeId, CreateRecipeSOPRequest request) {
                 RecipeSOP recipeSOP = recipeSOPRepository.findById(recipeId)
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found"));
+                Recipe recipe = recipeRepository.findByIdWithRelations(request.recipeId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
+
                 RecipeSOPDependencies deps = loadInsertDependencies(request.actionId(),
                                 request.transitionId(),
                                 request.fromEquipmentId(),
                                 request.toEquipmentId(),
-                                request.materials());
+                                request.materials(),
+                                recipe);
                 recipeSOPRepository.incrementStepNumbersAfter(
                                 recipeSOP.getRecipe().getId(),
                                 recipeSOP.getStepNo());
@@ -186,11 +198,14 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
         public void insertAbove(Long recipeId, CreateRecipeSOPRequest request) {
                 RecipeSOP recipeSOP = recipeSOPRepository.findById(recipeId)
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found"));
+                Recipe recipe = recipeRepository.findByIdWithRelations(request.recipeId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
                 RecipeSOPDependencies deps = loadInsertDependencies(request.actionId(),
                                 request.transitionId(),
                                 request.fromEquipmentId(),
                                 request.toEquipmentId(),
-                                request.materials());
+                                request.materials(),
+                                recipe);
                 recipeSOPRepository.incrementStepNumbersFrom(
                                 recipeSOP.getRecipe().getId(),
                                 recipeSOP.getStepNo());
@@ -210,17 +225,14 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                         Long transitionId,
                         Long fromEquipmentId,
                         Long toEquipmentId,
-                        List<RecipeSOPMaterialRequest> materials) {
+                        List<RecipeSOPMaterialRequest> materials,
+                        Recipe recipe) {
 
                 Action action = actionRepository.findById(actionId)
                                 .orElseThrow(() -> new ResourceNotFoundException("Action not found."));
 
                 Transition transition = transitionRepository.findById(transitionId)
                                 .orElseThrow(() -> new ResourceNotFoundException("Transition not found."));
-
-                if (fromEquipmentId != null && fromEquipmentId.equals(toEquipmentId)) {
-                        throw new BadRequestException("From Equipment and To Equipment cannot be same.");
-                }
 
                 Equipment fromEquipment = null;
 
@@ -232,7 +244,9 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                 Equipment toEquipment = equipmentRepository.findById(toEquipmentId)
                                 .orElseThrow(() -> new ResourceNotFoundException("To Equipment not found."));
 
-                recipeSOPMaterialService.validate(transition, materials);
+                validateEquipment(transition, fromEquipment, toEquipment, recipe.getUnit().getId());
+                validateMaterial(recipe.getId(), transition, materials, recipe.getUnit().getBatchSizeUom(),
+                                recipe.getBatchSize());
 
                 return RecipeSOPDependencies.builder()
                                 .action(action)
@@ -240,5 +254,72 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                                 .fromEquipment(fromEquipment)
                                 .toEquipment(toEquipment)
                                 .build();
+        }
+
+        private void validateEquipment(Transition transition, Equipment fromEquipment, Equipment toEquipment,
+                        Long unitId) {
+                if (fromEquipment != null) {
+                        if (fromEquipment.getId().equals(toEquipment.getId())) {
+                                throw new BadRequestException("From Equipment and To Equipment cannot be same.");
+                        }
+
+                }
+                if (fromEquipment == null
+                                && transition.getName().equals(TransitionType.AUTO_MATERIAL_CHARGE.getDisplayName())) {
+                        throw new BadRequestException("From Equipment is required in Auto Material Charge transition.");
+                }
+                if (!transition.getName().equals(TransitionType.TRANSFER.getDisplayName())
+                                && (toEquipment.getCreatorUnit() == null
+                                                || toEquipment.getCreatorUnit().getId() != unitId)) {
+                        throw new BadRequestException(
+                                        "To Equipment must be recipe main equipment in selected transition.");
+                }
+                if (transition.getName().equals(TransitionType.TRANSFER.getDisplayName())
+                                && (fromEquipment == null || fromEquipment.getCreatorUnit() == null
+                                                || fromEquipment.getCreatorUnit().getId() != unitId)) {
+                        throw new BadRequestException(
+                                        "From Equipment must be recipe main equipment in Transfer transition.");
+                }
+
+        }
+
+        private void validateMaterial(Long recipeId, Transition transition, List<RecipeSOPMaterialRequest> materials,
+                        UomType batchSizeUom, Integer batchSize) {
+
+                materials = materials == null ? List.of() : materials;
+
+                if (TransitionType.AUTO_MATERIAL_CHARGE.getDisplayName().equals(transition.getName())
+                                && materials.size() != 1) {
+                        throw new BadRequestException("Auto material charging step must contain exactly one material.");
+                }
+
+                if (TransitionType.MANUAL_MATERIAL_CHARGE.getDisplayName().equals(transition.getName())
+                                && materials.isEmpty()) {
+                        throw new BadRequestException(
+                                        "Manual material charging step must contain at least one material.");
+                }
+
+                double requestedQty = materials.stream().mapToDouble(RecipeSOPMaterialRequest::stdQty).sum();
+                double existingQty = recipeSOPMaterialRepository.getTotalMaterialQtyByRecipeId(recipeId);
+
+                if (batchSizeUom == UomType.KG) {
+                        double totalQty = existingQty + requestedQty;
+                        if (totalQty > batchSize) {
+                                throw new BadRequestException(
+                                                String.format(
+                                                                "Total material quantity (%.2f kg) exceeds recipe batch size (%d kg).",
+                                                                totalQty,
+                                                                batchSize));
+                        }
+                }
+                if (batchSizeUom == UomType.PERCENT) {
+                        double totalPercent = existingQty + requestedQty;
+                        if (totalPercent > 100) {
+                                throw new BadRequestException(
+                                                String.format(
+                                                                "Total material percentage (%.2f%%) cannot exceed 100%%.",
+                                                                totalPercent));
+                        }
+                }
         }
 }

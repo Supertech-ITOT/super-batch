@@ -14,6 +14,8 @@ public record EquipmentResponse(
         String code,
         String description,
         List<UnitSummaryResponse> units,
+        Long creatorUnitId,
+        String creatorUnitName,
         Integer capacity,
         LocalDateTime createdAt,
         LocalDateTime updatedAt) {

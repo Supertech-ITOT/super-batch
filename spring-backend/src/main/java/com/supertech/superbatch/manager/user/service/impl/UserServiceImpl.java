@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
         @Override
         public List<UserResponse> getAll() {
-                List<User> users = userRepository.findAllWithRoleAndCreatedBy();
+                List<User> users = userRepository.findAll();
                 Map<Long, List<Permission>> permissionMap = users.stream()
                                 .map(user -> user.getRole().getId())
                                 .distinct()
@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
 
         @Override
         public UserResponse getById(Long id) {
-                User user = userRepository.findByIdWithRoleAndCreatedBy(id)
+                User user = userRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
                 List<Permission> permissions = permissionService.getByRoleId(user.getRole().getId());
                 return userMapper.toResponse(user, permissions);

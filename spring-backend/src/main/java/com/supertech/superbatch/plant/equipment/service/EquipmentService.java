@@ -24,6 +24,8 @@ public interface EquipmentService {
 
     void update(Long id, UpdateEquipmentRequest request);
 
+    void update(Long id, UpdateEquipmentRequest request, boolean validateMainEquipment);
+
     void delete(Long id);
 
 }

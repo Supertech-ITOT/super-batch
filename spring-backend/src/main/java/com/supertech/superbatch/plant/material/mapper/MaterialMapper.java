@@ -2,7 +2,6 @@ package com.supertech.superbatch.plant.material.mapper;
 
 import org.springframework.stereotype.Component;
 
-import com.supertech.superbatch.plant.common.mapper.UomMapper;
 import com.supertech.superbatch.plant.material.dto.CreateMaterialRequest;
 import com.supertech.superbatch.plant.material.dto.MaterialResponse;
 import com.supertech.superbatch.plant.material.dto.UpdateMaterialRequest;
@@ -13,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class MaterialMapper {
-    private final UomMapper uomMapper;
 
     public MaterialResponse toResponse(Material material) {
         return new MaterialResponse(
@@ -21,7 +19,6 @@ public class MaterialMapper {
                 material.getCode(),
                 material.getName(),
                 material.getMaterialType(),
-                uomMapper.toResponse(material.getUom()),
                 material.getDescription(),
                 material.getCreatedAt(),
                 material.getUpdatedAt());
@@ -33,7 +30,7 @@ public class MaterialMapper {
                 .code(request.code())
                 .materialType(request.materialType())
                 .description(request.description())
-                .uom(request.uom()).build();
+                .build();
 
     }
 
@@ -41,7 +38,6 @@ public class MaterialMapper {
         material.setName(request.name());
         material.setCode(request.code());
         material.setDescription(request.description());
-        material.setUom(request.uom());
         material.setMaterialType(request.materialType());
     }
 }

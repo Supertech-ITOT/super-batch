@@ -6,19 +6,19 @@ import { Button } from "@/common/components/ui/button";
 import { useState } from "react";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuTrigger } from "@/common/components/ui/context-menu";
 import { ChevronsDown, ChevronsUp, CornerLeftDown, CornerLeftUp, LucideIcon, Plus, SquarePen, Trash } from "lucide-react";
-import { recipeActionType } from "./recipe-sop-dialog";
+import { recipeSOPActionType } from "./recipe-sop-view";
 
 interface DataTableProps<TData extends { id: number }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  onAction: (action: recipeActionType, row: TData) => void;
+  onAction: (action: recipeSOPActionType, row: TData) => void;
 
 }
 type menuItemType = {
   label: string;
   icon: LucideIcon;
   variant?: "default" | "destructive";
-  action: recipeActionType;
+  action: recipeSOPActionType;
 }
 const menuItem: menuItemType[] = [
   { label: "Add", icon: Plus, variant: "default", action: "create" },
@@ -47,7 +47,7 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, onActi
 
   return (
     <div className="flex flex-col h-full">
-      <div className="h-[92%] overflow-y-auto scrollbar-none">
+      <div className="h-120 overflow-y-auto scrollbar-none">
         <Table>
           <TableHeader className="bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -75,7 +75,7 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, onActi
                       {row.getVisibleCells().map((cell) => (
                         <TableCell
                           key={cell.id}
-                          className={`  ${cell.column.id === "parameters" || cell.column.id === "materials" ? "align-top" : ""} border-r border-muted-foreground/20  ${cell.column.id === "message" ? "text-left" : "text-center"}`}
+                          className={`border-r border-muted-foreground/20  ${cell.column.id === "message" ? "text-left" : "text-center"}`}
                         >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </TableCell>
@@ -106,7 +106,7 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, onActi
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between p-4 h-[8%]">
+      <div className="flex items-center justify-between p-4 h-10">
         <div className="text-sm text-muted-foreground">
           Page {table.getState().pagination.pageIndex + 1} of{" "}
           {table.getPageCount()}

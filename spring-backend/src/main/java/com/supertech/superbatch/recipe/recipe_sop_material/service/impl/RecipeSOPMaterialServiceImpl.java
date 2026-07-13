@@ -4,12 +4,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.plant.material.entity.Material;
 import com.supertech.superbatch.plant.material.repository.MaterialRepository;
-import com.supertech.superbatch.plant.transition.entity.Transition;
-import com.supertech.superbatch.plant.transition.enums.TransitionType;
 import com.supertech.superbatch.recipe.recipe_sop.entity.RecipeSOP;
 import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialRequest;
 import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialResponse;
@@ -59,18 +56,4 @@ public class RecipeSOPMaterialServiceImpl implements RecipeSOPMaterialService {
         recipeSOPMaterialRepository.deleteAllByRecipeSOP(recipeSOP);
     }
 
-    @Override
-    public void validate(Transition transition, List<RecipeSOPMaterialRequest> materials) {
-        materials = materials == null ? List.of() : materials;
-
-        if (TransitionType.AUTO_MATERIAL_CHARGE.getDisplayName().equals(transition.getName())
-                && materials.size() != 1) {
-            throw new BadRequestException("Auto material charging step must contain exactly one material.");
-        }
-
-        if (TransitionType.MANUAL_MATERIAL_CHARGE.getDisplayName().equals(transition.getName())
-                && materials.isEmpty()) {
-            throw new BadRequestException("Manual material charging step must contain at least one material.");
-        }
-    }
 }

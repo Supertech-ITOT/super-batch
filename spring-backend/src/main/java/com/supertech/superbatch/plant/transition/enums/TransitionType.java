@@ -14,7 +14,6 @@ public enum TransitionType {
     EVENT("Event"),
     SAMPLE_CHECK("Sample Check"),
     TRANSFER("Transfer"),
-    TRANSFER_AND_RELEASE("Transfer and Release"),
     RELEASE_EQUIPMENT("Release Equipment");
 
     private final String displayName;
