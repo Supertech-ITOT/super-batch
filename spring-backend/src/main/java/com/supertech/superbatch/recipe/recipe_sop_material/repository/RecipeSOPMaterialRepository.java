@@ -24,4 +24,11 @@ public interface RecipeSOPMaterialRepository extends JpaRepository<RecipeSOPMate
                 WHERE rm.recipeSOP.recipe.id = :recipeId
             """)
     Double getTotalMaterialQtyByRecipeId(Long recipeId);
+
+    @Query("""
+            select coalesce(sum(m.stdQty),0)
+            from RecipeSOPMaterial m
+            where m.recipeSOP.id = :recipeSOPId
+            """)
+    double getTotalMaterialQtyByRecipeSOPId(Long recipeSOPId);
 }

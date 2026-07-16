@@ -128,7 +128,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
         }
         case "edit": {
           if (!recipeSOPId) return;
-          res = await update({ ...formData, recipeId: recipeId, id: recipeId, stdTime: durationToMinutes(formData.stdTime), materials: formData.materials ?? [], parameters: formData.parameters ?? [], });
+          res = await update({ ...formData, recipeId: recipeId, id: recipeSOPId, stdTime: durationToMinutes(formData.stdTime), materials: formData.materials ?? [], parameters: formData.parameters ?? [], });
           break;
         }
       }

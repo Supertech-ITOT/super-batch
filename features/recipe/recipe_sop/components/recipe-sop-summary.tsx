@@ -1,7 +1,6 @@
 import { useGetSummaryByRecipeId } from "../hooks/use-recipe-sop";
 import { minutesToDuration } from "@/common/utils/duration.util";
 import { ClipboardList, Clock3, Package } from "lucide-react";
-import { Separator } from "@/common/components/ui/separator";
 import DonutChart from "@/common/components/chart/donut-chart";
 import { useMemo } from "react";
 
@@ -80,6 +79,8 @@ export default function RecipeSOPSummary({ recipeId }: { recipeId: number }) {
             {/* Pie chart */}
             <div className="flex flex-col border flex-1 shadow hover:shadow-lg rounded-lg">
                 <DonutChart
+                    targetSize={data.batchSize}
+                    uom={data.batchSizeUom}
                     title="Materials Summary"
                     data={materialChartData ?? []} />
             </div>

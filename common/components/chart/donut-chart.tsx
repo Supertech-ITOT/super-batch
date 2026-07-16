@@ -4,6 +4,7 @@ import { Pie, PieChart, PieSectorDataItem, Sector } from "recharts";
 import { getChartColorByText } from "@/common/utils/color.util";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import { UomResponse } from "@/features/plant/common/types/uom.types";
 
 type DonutChartData = {
     label: string;
@@ -14,15 +15,13 @@ type DonutChartData = {
 type DonutChartProps = {
     title?: string;
     data: DonutChartData[];
+    targetSize: number;
+    uom: UomResponse;
 
 };
 
-export default function DonutChart({
-    title,
-    data,
-}: DonutChartProps) {
+export default function DonutChart({ title, data, targetSize, uom }: DonutChartProps) {
     const [open, setOpen] = useState(false);
-
     const chartData = useMemo(
         () =>
             data.map((item) => ({
@@ -32,6 +31,8 @@ export default function DonutChart({
         [data]
     );
 
+
+
     if (!chartData.length) {
         return (
             <div className="flex h-80 items-center justify-center rounded-xl border bg-card text-muted-foreground">
@@ -40,34 +41,21 @@ export default function DonutChart({
         );
     }
 
-    const renderActiveShape = ({
-        cx,
-        cy,
-        midAngle,
-        innerRadius,
-        outerRadius,
-        startAngle,
-        endAngle,
-        fill,
-        payload,
-        percent,
-        value,
-    }: PieSectorDataItem) => {
+    const renderActiveShape = ({ cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value, }: PieSectorDataItem) => {
         const RADIAN = Math.PI / 180;
-
         const sin = Math.sin(-RADIAN * (midAngle ?? 0));
         const cos = Math.cos(-RADIAN * (midAngle ?? 0));
-
         const sx = (cx ?? 0) + ((outerRadius ?? 0) + 10) * cos;
         const sy = (cy ?? 0) + ((outerRadius ?? 0) + 10) * sin;
-
         const mx = (cx ?? 0) + ((outerRadius ?? 0) + 30) * cos;
         const my = (cy ?? 0) + ((outerRadius ?? 0) + 30) * sin;
-
         const ex = mx + (cos >= 0 ? 1 : -1) * 22;
         const ey = my;
-
         const textAnchor = cos >= 0 ? "start" : "end";
+
+        const displayValue = typeof value === "number" ? value : Number(value);
+        const kg = uom.symbol === "%" ? (displayValue * targetSize) / 100 : displayValue;
+        const percentage = uom.symbol === "%" ? displayValue : (displayValue / targetSize) * 100;
 
         return (
             <g>
@@ -120,7 +108,7 @@ export default function DonutChart({
                     y={ey}
                     textAnchor={textAnchor}
                 >
-                    {value}
+                    {kg.toFixed(2)} kg
                 </text>
 
                 <text
@@ -130,7 +118,7 @@ export default function DonutChart({
                     textAnchor={textAnchor}
                     className="fill-muted-foreground"
                 >
-                    {(percent! * 100).toFixed(1)}%
+                    {percentage.toFixed(2)}%
                 </text>
             </g>
         );
