@@ -9,6 +9,8 @@ import { showApiError } from "@/common/lib/show-api-error";
 import { useGetRecipeById } from "../../recipe/hooks/use-recipe";
 import RecipeSOPDialog from "./recipe-sop-dialog";
 import RecipeSOPDeleteDialog from "./recipe-sop-delete-dialog";
+import RecipeSOPSummary from "./recipe-sop-summary";
+
 
 
 export type recipeSOPActionType = "create" | "insert-below" | "insert-above" | "edit" | "move-up" | "move-down" | "delete";
@@ -85,7 +87,8 @@ export default function RecipeSOPView({ recipeId }: { recipeId: number }) {
                     </div>
 
                     {/* Summary */}
-                    <div className="flex-1 min-h-56 border bg-card shadow hover:shadow-lg rounded-lg overflow-hidden">
+                    <div className="flex-1 min-h-56  overflow-hidden">
+                        <RecipeSOPSummary recipeId={recipeId} />
                     </div>
                 </div>
 

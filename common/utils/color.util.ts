@@ -24,3 +24,35 @@ export const getColorByText = (text: string, colors: readonly string[] = COLOR_P
     }
     return colors[Math.abs(hash) % colors.length];
 };
+
+
+
+export const CHART_COLORS = [
+  "#f87171", // red-400
+  "#fb923c", // orange-400
+  "#fbbf24", // amber-400
+  "#facc15", // yellow-400
+  "#a3e635", // lime-400
+  "#4ade80", // green-400
+  "#34d399", // emerald-400
+  "#2dd4bf", // teal-400
+  "#22d3ee", // cyan-400
+  "#38bdf8", // sky-400
+  "#60a5fa", // blue-400
+  "#818cf8", // indigo-400
+  "#a78bfa", // violet-400
+  "#c084fc", // purple-400
+  "#f472b6", // pink-400
+] as const;
+
+export const getChartColorByText = (text: string) => {
+  if (!text) return CHART_COLORS[0];
+
+  let hash = 0;
+
+  for (let i = 0; i < text.length; i++) {
+    hash = text.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  return CHART_COLORS[Math.abs(hash) % CHART_COLORS.length];
+};

@@ -151,3 +151,29 @@ select {
     color 200ms ease,
     box-shadow 250ms ease;
 }
+
+/* Remove focus outline from Recharts */
+.recharts-wrapper,
+.recharts-wrapper:focus,
+.recharts-wrapper:focus-visible,
+.recharts-surface,
+.recharts-surface:focus,
+.recharts-surface:focus-visible,
+.recharts-sector,
+.recharts-sector:focus,
+.recharts-sector:focus-visible,
+.recharts-layer,
+.recharts-layer:focus,
+.recharts-layer:focus-visible {
+  outline: none !important;
+}
+
+/* Remove browser SVG focus ring */
+svg:focus,
+svg:focus-visible,
+path:focus,
+path:focus-visible,
+g:focus,
+g:focus-visible {
+  outline: none !important;
+}
