@@ -1,23 +1,8 @@
-# ENV
-.env
-.env.local
-.env.production
-
-# NEXT.JS
-.next/
-out/
-
-# NODE
-node_modules/
-npm-debug.log*
-
-# SPRING BOOT
-spring-backend/target/
-spring-backend/logs/
-
-# IDE
-.idea/
+# VS Code workspace settings
 .vscode/
+
+# JetBrains IDEs
+.idea/
 
 # OS
 .DS_Store
@@ -26,11 +11,7 @@ Thumbs.db
 # Logs
 *.log
 
-# IntelliJ
-*.iml
-
-# VS Code local workspace
-*.code-workspace
-
-# Electron
-/electron/dist
+# Temporary files
+*.tmp
+*.swp
+*.swo

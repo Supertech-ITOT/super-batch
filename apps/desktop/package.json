@@ -1,0 +1,21 @@
+{
+  "name": "superbatch-desktop",
+  "private": true,
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "electron .",
+    "dev": "npm run build && npm run start",
+    "watch": "tsc --watch"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "electron": "^43.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "concurrently": "^10.0.3",
+    "typescript": "^7.0.2",
+    "wait-on": "^9.0.10"
+  }
+}

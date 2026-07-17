@@ -1,0 +1,52 @@
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Wrapper
+.mvn/timing.properties
+
+# Environment
+.env
+.env.local
+application-local.yml
+application-dev.yml
+
+# Logs
+logs/
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Temporary files
+*.tmp
+*.swp
+
+# Lombok
+.lombok
+
+# Spring Boot
+hs_err_pid*
+replay_pid*
+
+# Test reports
+surefire-reports/
+failsafe-reports/
+
+# Generated files
+dependency-reduced-pom.xml

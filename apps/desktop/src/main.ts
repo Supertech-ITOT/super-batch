@@ -1,10 +1,14 @@
-import { app, BrowserWindow, Menu, screen } from 'electron';
+import { app, BrowserWindow, Menu } from 'electron';
 import path from 'path';
 import dotenv from "dotenv";
 
 dotenv.config();
 const HOST_IP = process.env.HOST_IP || "localhost";
 const isDev = !app.isPackaged;
+const splashPath = app.isPackaged
+    ? path.join(process.resourcesPath, "assets", "splash.html")
+    : path.join(__dirname, "..", "assets", "splash.html");
+
 
 function createWindow(): void {
     const splash = new BrowserWindow({
@@ -19,7 +23,7 @@ function createWindow(): void {
         closable: false,
         webPreferences: { nodeIntegration: false, },
     });
-    splash.loadFile(path.join(__dirname, '..', '..', 'public', 'splash.html'));
+    splash.loadFile(splashPath);
 
     const win = new BrowserWindow({
         width: 1280,
