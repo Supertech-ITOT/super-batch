@@ -1,3 +1,4 @@
+import { access } from "fs";
 import { z } from "zod";
 
 export const RoleSchemaLimit = {
@@ -8,8 +9,7 @@ export const RoleSchemaLimit = {
 const permissionSchema = z
     .object({
         moduleId: z.string({ error: "Module is required." }).min(1, "Module is required").trim(),
-        canRead: z.boolean(),
-        canWrite: z.boolean(),
+        access: z.boolean(),
     })
 
 export const roleSchema = z.object({
@@ -37,10 +37,7 @@ export const roleSchema = z.object({
     permissions: z
         .array(permissionSchema)
         .refine(
-            (permissions) =>
-                permissions.some(
-                    (p) => p.canRead || p.canWrite
-                ),
+            (permissions) => permissions.some((p) => p.access),
             {
                 message: "At least one permission must be assigned.",
             }

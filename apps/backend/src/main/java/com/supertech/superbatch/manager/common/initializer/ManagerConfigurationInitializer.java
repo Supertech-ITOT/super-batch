@@ -67,8 +67,7 @@ public class ManagerConfigurationInitializer implements CommandLineRunner {
                 Permission permission = Permission.builder()
                         .module(module)
                         .role(role)
-                        .canRead(true)
-                        .canWrite(true)
+                        .access(true)
                         .build();
                 permissionRepository.save(permission);
             }

@@ -48,7 +48,7 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, setDia
           </Button>
         </div>
       </div>
-      <div className="rounded-md border min-h-175">
+      <div className="rounded-md border min-h-160">
         <Table>
           <TableHeader className="bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (

@@ -52,7 +52,7 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, setDia
                     </Button>
                 </div>
             </div>
-            <div className="rounded-md border h-142 overflow-auto">
+            <div className="rounded-md border min-h-112 overflow-auto">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

@@ -29,7 +29,7 @@ export default function SideBar() {
         if (!module) return true;
         return user?.permissions?.some(
             (permission) =>
-                permission.moduleName === module && permission.canRead
+                permission.moduleName === module && permission.access
         );
     };
 
@@ -99,8 +99,8 @@ export default function SideBar() {
                             </div>
 
                             {/* Plant Operation */}
-                            {open && <div className="mt-10">
-                                <h1 className="text-muted-foreground text-sm uppercase">Plant Operation</h1>
+                            {open && <div className="mt-4">
+                                <h1 className="text-muted-foreground text-sm uppercase">Operation</h1>
                             </div>}
                             <div className="flex flex-col space-y-2 mt-2">
                                 {OperationRoutes

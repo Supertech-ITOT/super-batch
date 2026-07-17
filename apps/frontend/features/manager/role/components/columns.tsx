@@ -39,7 +39,7 @@ export const columns = (
             cell: ({ row }) => {
                 const permissions = row.original.permissions;
                 const assigned = permissions.reduce(
-                    (count, p) => count + (p.canRead ? 1 : 0) + (p.canWrite ? 1 : 0), 0
+                    (count, p) => count + (p.access ? 1 : 0), 0
                 );
                 const total = permissions.length * 2;
                 return `${assigned}/${total}`;

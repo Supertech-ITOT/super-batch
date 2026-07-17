@@ -26,7 +26,7 @@ export default function RoleStat({ totalRole, totalModule }: RoleStatProp) {
         {
             title: "Total Permissions",
             subtitle: "Granted permissions",
-            value: (totalModule ?? 0) * 2,
+            value: (totalModule ?? 0),
             Icon: KeyRound,
             clr: "#D97706",
         },

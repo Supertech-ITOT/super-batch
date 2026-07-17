@@ -29,9 +29,6 @@ public class Permission {
     private Module module;
 
     @Builder.Default
-    private boolean canRead = false;
-
-    @Builder.Default
-    private boolean canWrite = false;
+    private boolean access = false;
 
 }

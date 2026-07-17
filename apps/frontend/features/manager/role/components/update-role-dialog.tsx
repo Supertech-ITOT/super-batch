@@ -44,8 +44,7 @@ export default function UpdateRoleDialog({ open, onClose, roleId }: Props) {
 
                 return {
                     moduleId: String(module.id),
-                    canRead: existing?.canRead ?? false,
-                    canWrite: existing?.canWrite ?? false,
+                    access: existing?.access ?? false,
                 };
             }),
         });
@@ -63,10 +62,9 @@ export default function UpdateRoleDialog({ open, onClose, roleId }: Props) {
                 id: roleId, data: {
                     name: formData.name,
                     description: formData.description,
-                    permissions: formData.permissions.filter((p) => p.canRead || p.canWrite).map((m) => ({
+                    permissions: formData.permissions.filter((p) => p.access).map((m) => ({
                         moduleId: Number(m.moduleId),
-                        canRead: m.canRead,
-                        canWrite: m.canWrite,
+                        access: m.access,
                     })),
                 }
             });
@@ -140,28 +138,18 @@ export default function UpdateRoleDialog({ open, onClose, roleId }: Props) {
                             className="pt-4"
                         >
                             <div className="rounded-md border">
-                                <div className="grid grid-cols-3 border-b bg-muted/50 p-3 font-medium">
+                                <div className="grid grid-cols-2 border-b bg-muted/50 p-3 font-medium">
                                     <div>Module</div>
-                                    <div>Read</div>
-                                    <div>Write</div>
+                                    <div>Access</div>
                                 </div>
 
                                 {modules?.map((module, index) => (
-                                    <div key={module.id} className="grid grid-cols-3 items-center border-b p-3 last:border-0">
+                                    <div key={module.id} className="grid grid-cols-2 items-center border-b p-3 last:border-0">
                                         <div>{toDisplayText(module.name)}</div>
                                         <div>
                                             <Controller
                                                 control={control}
-                                                name={`permissions.${index}.canRead`}
-                                                render={({ field }) => (
-                                                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                                                )}
-                                            />
-                                        </div>
-                                        <div>
-                                            <Controller
-                                                control={control}
-                                                name={`permissions.${index}.canWrite`}
+                                                name={`permissions.${index}.access`}
                                                 render={({ field }) => (
                                                     <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                                                 )}

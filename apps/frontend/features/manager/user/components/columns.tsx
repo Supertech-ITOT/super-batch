@@ -4,7 +4,6 @@ import { Circle, MoreHorizontal, User } from "lucide-react"
 import { Button } from "@/common/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/common/components/ui/dropdown-menu"
 import { DialogProp } from "./user-view";
-import ColorfullBadge from "@/common/components/colorfull-badge";
 import { UserResponse } from "@/features/manager/user/types/user.types";
 import { format } from "date-fns";
 import { getColorByText } from "@/common/utils/color.util";

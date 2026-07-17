@@ -4,8 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record PermissionResponse(
-                Long moduleId,
-                String moduleName,
-                boolean canRead,
-                boolean canWrite) {
+        Long moduleId,
+        String moduleName,
+        boolean access) {
 }

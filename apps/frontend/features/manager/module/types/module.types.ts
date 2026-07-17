@@ -1,12 +1,11 @@
-import { FileText, CalendarClock, BookOpenText, Factory, Users, ShieldCheck, ClipboardList, Settings, Home, LucideIcon } from "lucide-react";
+import { CalendarClock, BookOpenText, Factory, Users, ShieldCheck, ClipboardList, Settings, LucideIcon, UserCogIcon } from "lucide-react";
 
 export enum ModuleType {
+    MANAGER = "MANAGER",
     PLANT_MODEL = "PLANT_MODEL",
-    USER = "USER",
-    ROLE = "ROLE",
-    AUDIT = "AUDIT",
     RECIPE = "RECIPE",
-    SCHEDULER = "SCHEDULER"
+    SCHEDULER = "SCHEDULER",
+    AUDIT = "AUDIT",
 }
 
 export interface ModuleResponse {
@@ -24,54 +23,40 @@ type RouteType = {
 
 export const OperationRoutes: RouteType[] = [
     {
-        label: "Dashboard",
-        path: "/Dashboard",
-        icon: Home,
+        label: "Batch Manager",
+        path: "/Manager/roles",
+        icon: UserCogIcon,
+        module: ModuleType.MANAGER
     },
     {
-        label: "Reports",
-        path: "/Reports",
-        icon: FileText,
+        label: "Plant Model",
+        path: "/PlantModel",
+        icon: Factory,
+        module: ModuleType.PLANT_MODEL
     },
     {
-        label: "Scheduler",
+        label: "Recipe Engine",
+        path: "/Recipe",
+        icon: BookOpenText,
+        module: ModuleType.RECIPE
+    },
+
+    {
+        label: "Batch Scheduler",
         path: "/Scheduler",
         icon: CalendarClock,
         module: ModuleType.SCHEDULER
     },
     {
-        label: "Recipe",
-        path: "/Recipe",
-        icon: BookOpenText,
-        module: ModuleType.RECIPE
-    },
-    {
-        label: "PlantModel",
-        path: "/PlantModel",
-        icon: Factory,
-        module: ModuleType.PLANT_MODEL
-    },
-];
-
-export const ConfigurationRoutes: RouteType[] = [
-    {
-        label: "Users",
-        path: "/Manager/users",
-        icon: Users,
-        module: ModuleType.USER
-    },
-    {
-        label: "Roles",
-        path: "/Manager/roles",
-        icon: ShieldCheck,
-        module: ModuleType.ROLE
-    },
-    {
-        label: "Audit",
+        label: "Batch Audit",
         path: "/Audit",
         icon: ClipboardList,
         module: ModuleType.AUDIT
     },
+];
+
+export const ConfigurationRoutes: RouteType[] = [
+
     {
         label: "Setting",
         path: "/Setting",

@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/common/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/common/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/common/components/ui/dialog";
 import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
 import { Textarea } from "@/common/components/ui/textarea";
@@ -36,8 +36,7 @@ export default function CreateRoleDialog({ open, onClose, }: Props) {
         reset({
             name: "", description: "", permissions: modules.map((module) => ({
                 moduleId: String(module.id),
-                canRead: false,
-                canWrite: false,
+                access: false
             })),
         });
     }, [modules, reset]);
@@ -53,10 +52,9 @@ export default function CreateRoleDialog({ open, onClose, }: Props) {
             const res = await createRole({
                 name: formData.name,
                 description: formData.description,
-                permissions: formData.permissions.filter((p) => p.canRead || p.canWrite).map((m) => ({
+                permissions: formData.permissions.filter((p) => p.access).map((m) => ({
                     moduleId: Number(m.moduleId),
-                    canRead: m.canRead,
-                    canWrite: m.canWrite,
+                    access: m.access,
                 })),
             });
             toast.success(res.message ?? "Role created successfully.");
@@ -130,28 +128,18 @@ export default function CreateRoleDialog({ open, onClose, }: Props) {
                             className="pt-4"
                         >
                             <div className="rounded-md border">
-                                <div className="grid grid-cols-3 border-b bg-muted/50 p-3 font-medium">
+                                <div className="grid grid-cols-2 border-b bg-muted/50 p-3 font-medium">
                                     <div>Module</div>
-                                    <div>Read</div>
-                                    <div>Write</div>
+                                    <div>Access</div>
                                 </div>
 
                                 {modules?.map((module, index) => (
-                                    <div key={module.id} className="grid grid-cols-3 items-center border-b p-3 last:border-0">
+                                    <div key={module.id} className="grid grid-cols-2 items-center border-b p-3 last:border-0">
                                         <div>{toDisplayText(module.name)}</div>
                                         <div>
                                             <Controller
                                                 control={control}
-                                                name={`permissions.${index}.canRead`}
-                                                render={({ field }) => (
-                                                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                                                )}
-                                            />
-                                        </div>
-                                        <div>
-                                            <Controller
-                                                control={control}
-                                                name={`permissions.${index}.canWrite`}
+                                                name={`permissions.${index}.access`}
                                                 render={({ field }) => (
                                                     <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                                                 )}

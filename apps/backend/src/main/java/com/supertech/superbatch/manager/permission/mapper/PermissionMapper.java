@@ -15,8 +15,7 @@ public class PermissionMapper {
         return PermissionResponse.builder()
                 .moduleId(permission.getModule().getId())
                 .moduleName(permission.getModule().getName())
-                .canRead(permission.isCanRead())
-                .canWrite(permission.isCanWrite())
+                .access(permission.isAccess())
                 .build();
     }
 
@@ -26,18 +25,16 @@ public class PermissionMapper {
                 .toList();
     }
 
-    public Permission toEntity(Role role, Module module, boolean canRead, boolean canWrite) {
+    public Permission toEntity(Role role, Module module, boolean access) {
         return Permission.builder()
                 .role(role)
                 .module(module)
-                .canRead(canRead)
-                .canWrite(canWrite)
+                .access(access)
                 .build();
     }
 
-    public void updateEntity(Permission permission, boolean canRead, boolean canWrite) {
-        permission.setCanRead(canRead);
-        permission.setCanWrite(canWrite);
+    public void updateEntity(Permission permission, boolean access) {
+        permission.setAccess(access);
     }
 
 }
