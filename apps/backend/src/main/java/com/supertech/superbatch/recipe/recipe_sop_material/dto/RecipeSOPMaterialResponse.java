@@ -4,9 +4,9 @@ import lombok.Builder;
 
 @Builder
 public record RecipeSOPMaterialResponse(
-                Long id,
-                Long materialId,
-                String materialName,
-                Double stdQty) {
+        Long id,
+        Long materialId,
+        String materialName,
+        Double stdQty) {
 
 }
