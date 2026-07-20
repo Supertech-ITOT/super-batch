@@ -20,14 +20,14 @@ import com.supertech.superbatch.scheduler.control_recipe.enums.ControlRecipeStat
 public class ControlRecipeMapper {
     private final UomMapper uomMapper;
 
-    public ControlRecipeResponse toResponse(ControlRecipe controlRecipe, Recipe recipe) {
+    public ControlRecipeResponse toResponse(ControlRecipe controlRecipe) {
         return ControlRecipeResponse.builder()
                 .id(controlRecipe.getId())
                 .name(controlRecipe.getName())
                 .batchNo(controlRecipe.getBatchNo())
                 .status(controlRecipe.getStatus())
                 .batchSize(controlRecipe.getBatchSize())
-                .recipe(toResponse(recipe))
+                .recipe(toResponse(controlRecipe.getRecipe()))
                 .shiftIncharge(toResponse(controlRecipe.getShiftIncharge()))
                 .createdBy(toResponse(controlRecipe.getCreatedBy()))
                 .sheduledAt(controlRecipe.getScheduledAt())
@@ -50,10 +50,11 @@ public class ControlRecipeMapper {
                 .build();
     }
 
-    public void updateEntity(ControlRecipe recipe, UpdateControlRecipeRequest request) {
+    public void updateEntity(ControlRecipe recipe, UpdateControlRecipeRequest request, User shiftIncharge) {
         recipe.setBatchSize(request.batchSize());
         recipe.setBatchNo(request.batchNo());
         recipe.setScheduledAt(request.scheduledAt());
+        recipe.setShiftIncharge(shiftIncharge);
     }
 
     private UserControlRecipeResponse toResponse(User user) {

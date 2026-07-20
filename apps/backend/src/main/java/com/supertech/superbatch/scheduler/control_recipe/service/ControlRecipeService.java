@@ -2,18 +2,18 @@ package com.supertech.superbatch.scheduler.control_recipe.service;
 
 import java.util.List;
 
-import com.supertech.superbatch.recipe.recipe.dto.CreateRecipeRequest;
-import com.supertech.superbatch.recipe.recipe.dto.RecipeResponse;
-import com.supertech.superbatch.recipe.recipe.dto.UpdateRecipeRequest;
+import com.supertech.superbatch.scheduler.control_recipe.dto.ControlRecipeResponse;
+import com.supertech.superbatch.scheduler.control_recipe.dto.CreateControlRecipeRequest;
+import com.supertech.superbatch.scheduler.control_recipe.dto.UpdateControlRecipeRequest;
 
 public interface ControlRecipeService {
-    void create(CreateRecipeRequest request, Long userId);
+    void create(CreateControlRecipeRequest request, Long userId);
 
-    List<RecipeResponse> getAll();
+    List<ControlRecipeResponse> getAll();
 
-    RecipeResponse getById(Long id);
+    ControlRecipeResponse getById(Long id);
 
-    void update(Long id, UpdateRecipeRequest request);
+    void update(Long id, UpdateControlRecipeRequest request);
 
     void delete(Long id);
 
