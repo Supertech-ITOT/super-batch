@@ -30,7 +30,7 @@ public class ControlRecipeMapper {
                 .recipe(toResponse(controlRecipe.getRecipe()))
                 .shiftIncharge(toResponse(controlRecipe.getShiftIncharge()))
                 .createdBy(toResponse(controlRecipe.getCreatedBy()))
-                .sheduledAt(controlRecipe.getScheduledAt())
+                .scheduledAt(controlRecipe.getScheduledAt())
                 .createdAt(controlRecipe.getCreatedAt())
                 .updatedAt(controlRecipe.getUpdatedAt())
                 .build();

@@ -50,24 +50,24 @@ function SearchableSelect({ value, onChange, options, placeholder = "Select", se
                 </Button>
             </PopoverTrigger>
 
-            <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                <Command className="max-h-72">
+            <PopoverContent align="start"
+                className="w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width) p-0">
+                <Command className="overflow-hidden">
                     <CommandInput placeholder={searchPlaceholder} />
-                    <CommandList>
+                    <CommandList className="max-h-72 overflow-y-auto">
                         <CommandEmpty>{emptyText}</CommandEmpty>
-                        <CommandGroup>
-                            {options.map((option) => (
-                                <CommandItem key={option.value} value={option.label} onSelect={() => { onChange(option.value); setOpen(false); }}>
-                                    <Check
-                                        className={cn(
-                                            "mr-2 h-4 w-4",
-                                            option.value === value ? "opacity-100 text-primary" : "opacity-0"
-                                        )}
-                                    />
-                                    {option.label}
-                                </CommandItem>
-                            ))}
-                        </CommandGroup>
+                        {options.map((option) => (
+                            <CommandItem key={option.value} value={option.label} onSelect={() => { onChange(option.value); setOpen(false); }}>
+                                <Check
+                                    className={cn(
+                                        "mr-2 h-4 w-4",
+                                        option.value === value ? "opacity-100 text-primary" : "opacity-0"
+                                    )}
+                                />
+                                {option.label}
+                            </CommandItem>
+                        ))}
+
                     </CommandList>
                 </Command>
             </PopoverContent>

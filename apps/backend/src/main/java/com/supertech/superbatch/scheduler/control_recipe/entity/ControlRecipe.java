@@ -34,7 +34,7 @@ public class ControlRecipe {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer batchNo;
+    private String batchNo;
 
     private String name;
 

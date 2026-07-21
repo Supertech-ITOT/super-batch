@@ -7,15 +7,15 @@ import jakarta.validation.constraints.Positive;
 
 public record CreateControlRecipeRequest(
 
-        @NotNull(message = "Batch number is required") @Positive(message = "Batch number must be greater than 0") Integer batchNo,
+                @NotNull(message = "Batch number is required") String batchNo,
 
-        @NotNull(message = "Batch size is required") @Positive(message = "Batch size must be greater than 0") Integer batchSize,
+                @NotNull(message = "Batch size is required") @Positive(message = "Batch size must be greater than 0") Integer batchSize,
 
-        @FutureOrPresent(message = "Scheduled time cannot be in the past") LocalDateTime scheduledAt,
+                @FutureOrPresent(message = "Scheduled time cannot be in the past") LocalDateTime scheduledAt,
 
-        @NotNull(message = "Recipe is required") @Positive(message = "Recipe ID must be greater than 0") Long recipeId,
+                @NotNull(message = "Recipe is required") @Positive(message = "Recipe ID must be greater than 0") Long recipeId,
 
-        @NotNull(message = "Shift Incharge is required") @Positive(message = "Shift Incharge ID must be greater than 0") Long shiftInchargeId
+                @NotNull(message = "Shift Incharge is required") @Positive(message = "Shift Incharge ID must be greater than 0") Long shiftInchargeId
 
 ) {
 }

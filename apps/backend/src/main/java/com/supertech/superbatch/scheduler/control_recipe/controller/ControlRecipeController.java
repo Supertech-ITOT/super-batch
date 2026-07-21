@@ -34,7 +34,7 @@ public class ControlRecipeController {
         public ResponseEntity<ApiResponse<Void>> create(@Valid @RequestBody CreateControlRecipeRequest request) {
                 Long userId = userContextService.getCurrentUserId();
                 controlRecipeService.create(request, userId);
-                return ResponseEntity.ok(ApiResponse.success("Control Recipe created successfully", null));
+                return ResponseEntity.ok(ApiResponse.success("Batch Scheduled successfully", null));
         }
 
         @GetMapping
@@ -55,7 +55,7 @@ public class ControlRecipeController {
         public ResponseEntity<ApiResponse<Void>> update(@PathVariable Long id,
                         @Valid @RequestBody UpdateControlRecipeRequest request) {
                 controlRecipeService.update(id, request);
-                return ResponseEntity.ok(ApiResponse.success("Control Recipe updated successfully", null));
+                return ResponseEntity.ok(ApiResponse.success("Batch Schedule updated successfully", null));
         }
 
         @DeleteMapping("/{id}")
