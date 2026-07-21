@@ -1,4 +1,4 @@
-package com.supertech.superbatch.scheduler.controlrecipe_sop.repository;
+package com.supertech.superbatch.scheduler.control_recipe_sop.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,9 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import com.supertech.superbatch.scheduler.controlrecipe_sop.entity.ControlRecipeSOP;
+import com.supertech.superbatch.scheduler.control_recipe_sop.entity.ControlRecipeSOP;
 
-public interface ControlSOPRepositpory extends JpaRepository<ControlRecipeSOP, Long> {
+public interface ControlRecipeSOPRepository extends JpaRepository<ControlRecipeSOP, Long> {
     List<ControlRecipeSOP> findAllByControlRecipeId(Long controlRecipeId);
 
     Optional<ControlRecipeSOP> findByControlRecipeIdAndStepNo(Long controlRecipeId, Integer stepNo);

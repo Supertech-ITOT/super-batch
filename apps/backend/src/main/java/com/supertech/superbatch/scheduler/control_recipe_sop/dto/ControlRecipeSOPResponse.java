@@ -1,4 +1,4 @@
-package com.supertech.superbatch.scheduler.controlrecipe_sop.dto;
+package com.supertech.superbatch.scheduler.control_recipe_sop.dto;
 
 import java.util.List;
 

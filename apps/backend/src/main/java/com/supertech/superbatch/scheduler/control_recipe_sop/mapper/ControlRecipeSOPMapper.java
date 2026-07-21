@@ -1,4 +1,4 @@
-package com.supertech.superbatch.scheduler.controlrecipe_sop.mapper;
+package com.supertech.superbatch.scheduler.control_recipe_sop.mapper;
 
 import java.util.List;
 
@@ -8,12 +8,12 @@ import com.supertech.superbatch.plant.action.entity.Action;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.transition.entity.Transition;
 import com.supertech.superbatch.scheduler.control_recipe.entity.ControlRecipe;
+import com.supertech.superbatch.scheduler.control_recipe_sop.dto.ControlRecipeSOPResponse;
+import com.supertech.superbatch.scheduler.control_recipe_sop.dto.CreateControlRecipeSOPRequest;
+import com.supertech.superbatch.scheduler.control_recipe_sop.dto.UpdateControlRecipeSOPRequest;
+import com.supertech.superbatch.scheduler.control_recipe_sop.entity.ControlRecipeSOP;
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.dto.ControlRecipeSOPMaterialResponse;
 import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.dto.ControlRecipeSOPParameterResponse;
-import com.supertech.superbatch.scheduler.controlrecipe_sop.dto.ControlRecipeSOPResponse;
-import com.supertech.superbatch.scheduler.controlrecipe_sop.dto.CreateControlRecipeSOPRequest;
-import com.supertech.superbatch.scheduler.controlrecipe_sop.dto.UpdateControlRecipeSOPRequest;
-import com.supertech.superbatch.scheduler.controlrecipe_sop.entity.ControlRecipeSOP;
 
 import lombok.RequiredArgsConstructor;
 

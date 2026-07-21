@@ -1,4 +1,4 @@
-package com.supertech.superbatch.scheduler.controlrecipe_sop.entity;
+package com.supertech.superbatch.scheduler.control_recipe_sop.entity;
 
 import com.supertech.superbatch.plant.action.entity.Action;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;

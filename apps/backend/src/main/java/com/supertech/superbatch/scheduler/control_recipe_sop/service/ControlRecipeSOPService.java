@@ -1,11 +1,11 @@
-package com.supertech.superbatch.scheduler.controlrecipe_sop.service;
+package com.supertech.superbatch.scheduler.control_recipe_sop.service;
 
 import java.util.List;
 
-import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPSummaryResponse;
-import com.supertech.superbatch.scheduler.controlrecipe_sop.dto.ControlRecipeSOPResponse;
-import com.supertech.superbatch.scheduler.controlrecipe_sop.dto.CreateControlRecipeSOPRequest;
-import com.supertech.superbatch.scheduler.controlrecipe_sop.dto.UpdateControlRecipeSOPRequest;
+import com.supertech.superbatch.scheduler.control_recipe_sop.dto.ControlRecipeSOPResponse;
+import com.supertech.superbatch.scheduler.control_recipe_sop.dto.ControlRecipeSOPSummaryResponse;
+import com.supertech.superbatch.scheduler.control_recipe_sop.dto.CreateControlRecipeSOPRequest;
+import com.supertech.superbatch.scheduler.control_recipe_sop.dto.UpdateControlRecipeSOPRequest;
 
 public interface ControlRecipeSOPService {
     ControlRecipeSOPResponse getById(Long id);
@@ -26,6 +26,6 @@ public interface ControlRecipeSOPService {
 
     void insertBelow(Long controlRecipeId, CreateControlRecipeSOPRequest request);
 
-    RecipeSOPSummaryResponse getSummaryByRecipeId(Long controlRecipeId);
+    ControlRecipeSOPSummaryResponse getSummaryByControlRecipeId(Long controlRecipeId);
 
 }
