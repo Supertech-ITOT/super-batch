@@ -10,13 +10,13 @@ import com.supertech.superbatch.scheduler.control_recipe_sop.entity.ControlRecip
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.entity.ControlRecipeSOPMaterial;
 
 public interface ControlRecipeSOPMaterialRepository extends JpaRepository<ControlRecipeSOPMaterial, Long> {
-    void deleteAllByRecipeSOP(ControlRecipeSOP controlRecipeSOP);
+    void deleteAllByControlRecipeSOP(ControlRecipeSOP controlRecipeSOP);
 
     @EntityGraph(attributePaths = { "material" })
     List<ControlRecipeSOPMaterial> findAllByControlRecipeSOP(ControlRecipeSOP recipe);
 
     @EntityGraph(attributePaths = "material")
-    List<ControlRecipeSOPMaterial> findByControlRecipeSOPRecipeId(Long recipeId);
+    List<ControlRecipeSOPMaterial> findByControlRecipeSOPControlRecipeId(Long controlRecipeId);
 
     @Query("""
                 SELECT COALESCE(SUM(rm.stdQty), 0)

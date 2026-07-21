@@ -356,7 +356,7 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                                 .sum();
 
                 List<ControlRecipeSOPMaterial> controlRecipeSOPMaterials = controlRecipeSOPMaterialRepository
-                                .findByControlRecipeSOPRecipeId(controlRecipeId);
+                                .findByControlRecipeSOPControlRecipeId(controlRecipeId);
 
                 Map<Long, ControlRecipeSOPMaterialSummaryResponse> materialMap = controlRecipeSOPMaterials.stream()
                                 .collect(Collectors.toMap(

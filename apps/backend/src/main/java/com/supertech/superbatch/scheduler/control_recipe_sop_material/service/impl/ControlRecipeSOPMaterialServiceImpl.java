@@ -55,7 +55,7 @@ public class ControlRecipeSOPMaterialServiceImpl implements ControlRecipeSOPMate
 
     @Override
     public void deleteByControlRecipeSOP(ControlRecipeSOP controlRecipeSOP) {
-        controlRecipeSOPMaterialRepository.deleteAllByRecipeSOP(controlRecipeSOP);
+        controlRecipeSOPMaterialRepository.deleteAllByControlRecipeSOP(controlRecipeSOP);
     }
 
 }

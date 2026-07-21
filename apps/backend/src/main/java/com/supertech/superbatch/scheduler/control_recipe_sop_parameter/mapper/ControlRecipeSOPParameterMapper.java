@@ -2,12 +2,15 @@ package com.supertech.superbatch.scheduler.control_recipe_sop_parameter.mapper;
 
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.supertech.superbatch.plant.parameter.entity.Parameter;
 import com.supertech.superbatch.scheduler.control_recipe_sop.entity.ControlRecipeSOP;
 import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.dto.ControlRecipeSOPParameterRequest;
 import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.dto.ControlRecipeSOPParameterResponse;
 import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.entity.ControlRecipeSOPParameter;
 
+@Component
 public class ControlRecipeSOPParameterMapper {
 
     public ControlRecipeSOPParameterResponse toResponse(ControlRecipeSOPParameter controlRecipeSOPParameter) {
