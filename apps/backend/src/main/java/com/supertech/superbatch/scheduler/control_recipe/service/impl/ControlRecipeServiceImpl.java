@@ -1,5 +1,6 @@
 package com.supertech.superbatch.scheduler.control_recipe.service.impl;
 
+import java.util.Comparator;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
@@ -59,6 +60,7 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
         public List<ControlRecipeResponse> getAll() {
                 List<ControlRecipe> controlRecipes = controlRecipeRepository.findAllWithRelations();
                 List<ControlRecipeResponse> controlRecipeResponses = controlRecipes.stream()
+                                .sorted(Comparator.comparing(ControlRecipe::getScheduledAt).reversed())
                                 .map(controlRecipeMapper::toResponse).toList();
                 return controlRecipeResponses;
         }

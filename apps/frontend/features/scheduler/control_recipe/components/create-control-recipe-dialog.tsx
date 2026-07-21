@@ -81,8 +81,10 @@ export default function CreateControlRecipeDialog({ open, onClose }: Props) {
             <DialogContent className="sm:max-w-md">
                 <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
                     <DialogHeader>
-                        <DialogTitle>Create Schedule</DialogTitle>
-                        <DialogDescription>Create a new batch.</DialogDescription>
+                        <DialogTitle>Create Batch Schedule</DialogTitle>
+                        <DialogDescription>
+                            Configure the batch details and production schedule.
+                        </DialogDescription>
                     </DialogHeader>
                     <div className="py-4 space-y-4">
                         <div className="space-y-2 relative">
@@ -164,7 +166,7 @@ export default function CreateControlRecipeDialog({ open, onClose }: Props) {
                                     className="rounded-r-none"
                                 />
                                 <div className="flex items-center justify-center w-12 border border-l-0 rounded-r-md bg-muted text-sm">
-                                    kg
+                                    KG
                                 </div>
                             </div>
                         </div>

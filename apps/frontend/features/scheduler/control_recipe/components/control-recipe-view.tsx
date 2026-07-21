@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useGetControlRecipes } from "../hooks/use-control-recipe";
 import CreateControlRecipeDialog from "./create-control-recipe-dialog";
 import DeleteControlRecipeDialog from "./delete-control-recipe-dialog";
+import UpdateControlRecipeDialog from "./update-control-recipe-dialog";
 // import UpdateControlRecipeDialog from "./update-control-recipe-dialog";
 
 export type DialogProp = {
@@ -54,8 +55,8 @@ export default function ControlRecipeView() {
                 <>
                     {dialog.action === "create" && (
                         <CreateControlRecipeDialog open onClose={closeDialog} />)}
-                    {/* {dialog.action === "edit" && dialog.id !== null && (
-                        <UpdateControlRecipeDialog open={dialog.open} controlRecipeId={dialog.id} onClose={closeDialog} />)} */}
+                    {dialog.action === "edit" && dialog.id !== null && (
+                        <UpdateControlRecipeDialog open={dialog.open} controlRecipeId={dialog.id} onClose={closeDialog} />)}
                     {dialog.action === "delete" && dialog.id !== null && (
                         <DeleteControlRecipeDialog open={dialog.open} controlRecipeId={dialog.id} onClose={closeDialog} />)}
                 </>

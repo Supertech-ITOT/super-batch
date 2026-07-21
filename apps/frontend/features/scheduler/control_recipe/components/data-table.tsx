@@ -34,7 +34,7 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, setDia
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between pb-2">
         <Input
-          placeholder="Filter recipes..."
+          placeholder="Filter batches..."
           value={(table.getColumn("batch")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("batch")?.setFilterValue(event.target.value)
