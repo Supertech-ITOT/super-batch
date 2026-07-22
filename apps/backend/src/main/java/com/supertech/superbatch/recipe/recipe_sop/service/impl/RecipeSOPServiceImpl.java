@@ -35,11 +35,9 @@ import com.supertech.superbatch.recipe.recipe_sop.mapper.RecipeSOPMapper;
 import com.supertech.superbatch.recipe.recipe_sop.repository.RecipeSOPRepository;
 import com.supertech.superbatch.recipe.recipe_sop.service.RecipeSOPService;
 import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialRequest;
-import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialResponse;
 import com.supertech.superbatch.recipe.recipe_sop_material.enitiy.RecipeSOPMaterial;
 import com.supertech.superbatch.recipe.recipe_sop_material.repository.RecipeSOPMaterialRepository;
 import com.supertech.superbatch.recipe.recipe_sop_material.service.RecipeSOPMaterialService;
-import com.supertech.superbatch.recipe.recipe_sop_parameter.dto.RecipeSOPParameterResponse;
 import com.supertech.superbatch.recipe.recipe_sop_parameter.service.RecipeSOPParameterService;
 
 import lombok.RequiredArgsConstructor;
@@ -62,9 +60,7 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
         public RecipeSOPResponse getById(Long id) {
                 RecipeSOP recipeSOP = recipeSOPRepository.findWithRelationsById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
-                List<RecipeSOPMaterialResponse> materials = recipeSOPMaterialService.getAllByRecipe(recipeSOP);
-                List<RecipeSOPParameterResponse> parameters = recipeSOPParameterService.getAllByRecipe(recipeSOP);
-                return recipeSOPMapper.toResponse(recipeSOP, materials, parameters);
+                return recipeSOPMapper.toResponse(recipeSOP, recipeSOP.getMaterials(), recipeSOP.getParameters());
         }
 
         @Override
@@ -72,10 +68,8 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                 List<RecipeSOP> recipeSOPs = recipeSOPRepository.findWithRelationsByRecipeId(recipeId);
                 return recipeSOPs.stream()
                                 .sorted(Comparator.comparing(RecipeSOP::getStepNo))
-                                .map(
-                                                recipeSOP -> recipeSOPMapper.toResponse(recipeSOP,
-                                                                recipeSOPMaterialService.getAllByRecipe(recipeSOP),
-                                                                recipeSOPParameterService.getAllByRecipe(recipeSOP)))
+                                .map(recipeSOP -> recipeSOPMapper.toResponse(recipeSOP, recipeSOP.getMaterials(),
+                                                recipeSOP.getParameters()))
                                 .toList();
         }
 
@@ -134,8 +128,6 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
         public void delete(Long id) {
                 RecipeSOP recipeSOP = recipeSOPRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
-                recipeSOPParameterService.deleteByRecipeSOP(recipeSOP);
-                recipeSOPMaterialService.deleteByRecipeSOP(recipeSOP);
                 recipeSOPRepository.decrementStepNumbers(
                                 recipeSOP.getRecipe().getId(),
                                 recipeSOP.getStepNo());
@@ -351,8 +343,9 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                                 .mapToDouble(Double::doubleValue)
                                 .sum();
 
-                List<RecipeSOPMaterial> recipeSOPMaterials = recipeSOPMaterialRepository
-                                .findByRecipeSOPRecipeId(recipeId);
+                List<RecipeSOPMaterial> recipeSOPMaterials = recipeSOPs.stream()
+                                .flatMap(recipeSOP -> recipeSOP.getMaterials().stream())
+                                .toList();
 
                 Map<Long, RecipeSOPMaterialSummaryResponse> materialMap = recipeSOPMaterials.stream()
                                 .collect(Collectors.toMap(

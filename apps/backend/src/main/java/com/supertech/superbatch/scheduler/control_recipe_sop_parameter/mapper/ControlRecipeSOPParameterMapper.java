@@ -1,10 +1,12 @@
 package com.supertech.superbatch.scheduler.control_recipe_sop_parameter.mapper;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
 import com.supertech.superbatch.plant.parameter.entity.Parameter;
+import com.supertech.superbatch.recipe.recipe_sop_parameter.entity.RecipeSOPParameter;
 import com.supertech.superbatch.scheduler.control_recipe_sop.entity.ControlRecipeSOP;
 import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.dto.ControlRecipeSOPParameterRequest;
 import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.dto.ControlRecipeSOPParameterResponse;
@@ -23,7 +25,7 @@ public class ControlRecipeSOPParameterMapper {
     }
 
     public List<ControlRecipeSOPParameterResponse> toResponseList(
-            List<ControlRecipeSOPParameter> controlRecipeSOPParameters) {
+            Set<ControlRecipeSOPParameter> controlRecipeSOPParameters) {
         return controlRecipeSOPParameters.stream().map(this::toResponse).toList();
     }
 
@@ -33,6 +35,15 @@ public class ControlRecipeSOPParameterMapper {
                 .controlRecipeSOP(controlRecipeSOP)
                 .parameter(parameter)
                 .stdValue(request.stdValue())
+                .build();
+    }
+
+    public ControlRecipeSOPParameter toEntity(ControlRecipeSOP controlRecipeSOP,
+            RecipeSOPParameter recipeSOPParameter) {
+        return ControlRecipeSOPParameter.builder()
+                .controlRecipeSOP(controlRecipeSOP)
+                .parameter(recipeSOPParameter.getParameter())
+                .stdValue(recipeSOPParameter.getStdValue())
                 .build();
     }
 

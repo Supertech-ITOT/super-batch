@@ -1,9 +1,14 @@
 package com.supertech.superbatch.recipe.recipe_sop.entity;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import com.supertech.superbatch.plant.action.entity.Action;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.transition.entity.Transition;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
+import com.supertech.superbatch.recipe.recipe_sop_material.enitiy.RecipeSOPMaterial;
+import com.supertech.superbatch.recipe.recipe_sop_parameter.entity.RecipeSOPParameter;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,4 +46,12 @@ public class RecipeSOP {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Equipment toEquipment;
+
+    @OneToMany(mappedBy = "recipeSOP", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<RecipeSOPMaterial> materials = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "recipeSOP", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<RecipeSOPParameter> parameters = new LinkedHashSet<>();
 }
