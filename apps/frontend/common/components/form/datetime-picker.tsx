@@ -7,7 +7,7 @@ import { Button } from "@/common/components/ui/button";
 import { Calendar } from "@/common/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger, } from "@/common/components/ui/popover";
 import { cn } from "@/common/lib/utils";
-import SearchableSelect, { SearchableSelectOption } from "./searchable-select";
+import SearchableSelect, { SearchableSelectOption, } from "./searchable-select";
 import { Separator } from "../ui/separator";
 import { Matcher } from "react-day-picker";
 
@@ -30,27 +30,45 @@ function toLocalISOString(date: Date) {
         `${pad(date.getMonth() + 1)}-` +
         `${pad(date.getDate())}T` +
         `${pad(date.getHours())}:` +
-        `${pad(date.getMinutes())}:` +
-        `${pad(date.getSeconds())}`
+        `${pad(date.getMinutes())}:00`
     );
 }
 
 function DateTimePicker({ disabledDates, value, onChange, placeholder = "Select date & time", disabled, className, }: DateTimePickerProps) {
     const [open, setOpen] = useState(false);
-    const [date, setDate] = useState<Date | undefined>(value ? new Date(value) : undefined);
-    const [hour, setHour] = useState("00");
-    const [minute, setMinute] = useState("00");
-    const [second, setSecond] = useState("00");
+    const initialDate = value ? new Date(value) : undefined;
+    const [date, setDate] = useState<Date | undefined>(initialDate);
+    const [hour, setHour] = useState(initialDate ? pad(initialDate.getHours()) : "");
+    const [minute, setMinute] = useState(initialDate ? pad(initialDate.getMinutes()) : "");
 
+    // Sync when parent changes value
+    useEffect(() => {
+        if (!value) {
+            setDate(undefined);
+            setHour("00");
+            setMinute("00");
+            return;
+        }
+
+        const d = new Date(value);
+
+        setDate(d);
+        setHour(pad(d.getHours()));
+        setMinute(pad(d.getMinutes()));
+    }, [value]);
+
+    // Notify parent
     useEffect(() => {
         if (!date) return;
+
         const d = new Date(date);
-        d.setHours(Number(hour));
-        d.setMinutes(Number(minute));
-        d.setSeconds(Number(second));
+        d.setHours(Number(hour || 0));
+        d.setMinutes(Number(minute || 0));
+        d.setSeconds(0);
         d.setMilliseconds(0);
+
         onChange(toLocalISOString(d));
-    }, [date, hour, minute, second]);
+    }, [date, hour, minute, onChange]);
 
     const createTimeOptions = (length: number): SearchableSelectOption[] =>
         Array.from({ length }, (_, i) => ({
@@ -60,20 +78,17 @@ function DateTimePicker({ disabledDates, value, onChange, placeholder = "Select 
 
     const hourOptions = useMemo(() => createTimeOptions(24), []);
     const minuteOptions = useMemo(() => createTimeOptions(60), []);
-    const secondOptions = useMemo(() => createTimeOptions(60), []);
 
-    const renderTimeSelect = (value: string, onChange: (value: string) => void, options: SearchableSelectOption[]) => (
+    const renderTimeSelect = (value: string, onValueChange: (value: string) => void, options: SearchableSelectOption[]) => (
         <div className="flex-1">
             <SearchableSelect
                 value={Number(value)}
-                onChange={(v) => onChange(pad(v))}
+                onChange={(v) => onValueChange(pad(v))}
                 options={options}
-                placeholder="00"
                 searchPlaceholder="Search..."
                 className="h-10 min-w-24 w-full"
             />
         </div>
-
     );
 
     return (
@@ -82,22 +97,33 @@ function DateTimePicker({ disabledDates, value, onChange, placeholder = "Select 
                 <Button
                     variant="outline"
                     disabled={disabled}
-                    className={cn("justify-start font-normal w-full", !date && "text-muted-foreground", className)}
+                    className={cn(
+                        "justify-start w-full font-normal",
+                        !date && "text-muted-foreground",
+                        className
+                    )}
                 >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? `${format(date, "dd MMM yyyy")} ${hour}:${minute}:${second}` : placeholder}
+                    {date ? `${format(date, "dd MMM yyyy")} ${hour}:${minute}` : placeholder}
                 </Button>
             </PopoverTrigger>
 
-            <PopoverContent align="start" className="w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width) p-4">
-                <Calendar disabled={disabledDates} mode="single" selected={date} onSelect={setDate} className="w-full p-0 m-0" />
+            <PopoverContent
+                align="start"
+                className="w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width) p-4"
+            >
+                <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    disabled={disabledDates}
+                    className="w-full p-0 m-0"
+                />
                 <Separator />
-                <div className="flex gap-2 items-center">
+                <div className="flex items-center gap-2">
                     {renderTimeSelect(hour, setHour, hourOptions)}
-                    <span className="text-muted-foreground font-semibold">:</span>
+                    <span className="font-semibold text-muted-foreground">:</span>
                     {renderTimeSelect(minute, setMinute, minuteOptions)}
-                    <span className="text-muted-foreground font-semibold">:</span>
-                    {renderTimeSelect(second, setSecond, secondOptions)}
                 </div>
             </PopoverContent>
         </Popover>
