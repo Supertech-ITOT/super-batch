@@ -1,6 +1,7 @@
 package com.supertech.superbatch.recipe.recipe_sop_parameter.mapper;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,7 @@ public class RecipeSOPParameterMapper {
                 .build();
     }
 
-    public List<RecipeSOPParameterResponse> toResponseList(List<RecipeSOPParameter> recipeSOPParameters) {
+    public List<RecipeSOPParameterResponse> toResponseList(Set<RecipeSOPParameter> recipeSOPParameters) {
         return recipeSOPParameters.stream().map(this::toResponse).toList();
     }
 

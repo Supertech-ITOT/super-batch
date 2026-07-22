@@ -1,6 +1,8 @@
 package com.supertech.superbatch.scheduler.control_recipe.entity;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -8,7 +10,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 import com.supertech.superbatch.scheduler.control_recipe.enums.ControlRecipeStatus;
+import com.supertech.superbatch.scheduler.control_recipe_sop.entity.ControlRecipeSOP;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -17,6 +21,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -59,5 +64,9 @@ public class ControlRecipe {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "controlRecipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<ControlRecipeSOP> sops = new LinkedHashSet<>();
 
 }

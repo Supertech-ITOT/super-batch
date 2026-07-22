@@ -1,6 +1,6 @@
 package com.supertech.superbatch.recipe.recipe_sop.mapper;
 
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -12,17 +12,21 @@ import com.supertech.superbatch.recipe.recipe_sop.dto.CreateRecipeSOPRequest;
 import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPResponse;
 import com.supertech.superbatch.recipe.recipe_sop.dto.UpdateRecipeSOPRequest;
 import com.supertech.superbatch.recipe.recipe_sop.entity.RecipeSOP;
-import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialResponse;
-import com.supertech.superbatch.recipe.recipe_sop_parameter.dto.RecipeSOPParameterResponse;
+import com.supertech.superbatch.recipe.recipe_sop_material.enitiy.RecipeSOPMaterial;
+import com.supertech.superbatch.recipe.recipe_sop_material.mapper.RecipeSOPMaterialMapper;
+import com.supertech.superbatch.recipe.recipe_sop_parameter.entity.RecipeSOPParameter;
+import com.supertech.superbatch.recipe.recipe_sop_parameter.mapper.RecipeSOPParameterMapper;
 
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class RecipeSOPMapper {
+    private final RecipeSOPMaterialMapper recipeSOPMaterialMapper;
+    private final RecipeSOPParameterMapper recipeSOPParameterMapper;
 
-    public RecipeSOPResponse toResponse(RecipeSOP recipeSOP, List<RecipeSOPMaterialResponse> materials,
-            List<RecipeSOPParameterResponse> parameters) {
+    public RecipeSOPResponse toResponse(RecipeSOP recipeSOP, Set<RecipeSOPMaterial> materials,
+            Set<RecipeSOPParameter> parameters) {
         return RecipeSOPResponse.builder()
                 .id(recipeSOP.getId())
                 .recipeId(recipeSOP.getRecipe().getId())
@@ -37,8 +41,8 @@ public class RecipeSOPMapper {
                 .fromEquipmentName(recipeSOP.getFromEquipment() != null ? recipeSOP.getFromEquipment().getName() : null)
                 .toEquipmentId(recipeSOP.getToEquipment().getId())
                 .toEquipmentName(recipeSOP.getToEquipment().getName())
-                .materials(materials)
-                .parameters(parameters)
+                .materials(recipeSOPMaterialMapper.toResponseList(materials))
+                .parameters(recipeSOPParameterMapper.toResponseList(parameters))
                 .build();
     }
 

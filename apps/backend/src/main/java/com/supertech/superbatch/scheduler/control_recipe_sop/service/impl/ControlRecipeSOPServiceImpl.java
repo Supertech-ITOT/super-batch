@@ -34,11 +34,9 @@ import com.supertech.superbatch.scheduler.control_recipe_sop.mapper.ControlRecip
 import com.supertech.superbatch.scheduler.control_recipe_sop.repository.ControlRecipeSOPRepository;
 import com.supertech.superbatch.scheduler.control_recipe_sop.service.ControlRecipeSOPService;
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.dto.ControlRecipeSOPMaterialRequest;
-import com.supertech.superbatch.scheduler.control_recipe_sop_material.dto.ControlRecipeSOPMaterialResponse;
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.entity.ControlRecipeSOPMaterial;
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.repository.ControlRecipeSOPMaterialRepository;
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.service.ControlRecipeSOPMaterialService;
-import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.dto.ControlRecipeSOPParameterResponse;
 import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.service.ControlRecipeSOPParameterService;
 
 import lombok.RequiredArgsConstructor;
@@ -61,11 +59,8 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
         public ControlRecipeSOPResponse getById(Long id) {
                 ControlRecipeSOP controlRecipeSOP = controlRecipeSOPRepository.findWithRelationsById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
-                List<ControlRecipeSOPMaterialResponse> materials = controlRecipeSOPMaterialService
-                                .getAllByControlRecipe(controlRecipeSOP);
-                List<ControlRecipeSOPParameterResponse> parameters = controlRecipeSOPParameterService
-                                .getAllByControlRecipe(controlRecipeSOP);
-                return controlRecipeSOPMapper.toResponse(controlRecipeSOP, materials, parameters);
+                return controlRecipeSOPMapper.toResponse(controlRecipeSOP, controlRecipeSOP.getMaterials(),
+                                controlRecipeSOP.getParameters());
         }
 
         @Override
@@ -74,12 +69,9 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                                 .findWithRelationsByControlRecipeId(controlRecipeId);
                 return controlRecipeSOPs.stream()
                                 .sorted(Comparator.comparing(ControlRecipeSOP::getStepNo))
-                                .map(
-                                                controlRecipeSOP -> controlRecipeSOPMapper.toResponse(controlRecipeSOP,
-                                                                controlRecipeSOPMaterialService.getAllByControlRecipe(
-                                                                                controlRecipeSOP),
-                                                                controlRecipeSOPParameterService.getAllByControlRecipe(
-                                                                                controlRecipeSOP)))
+                                .map(controlRecipeSOP -> controlRecipeSOPMapper.toResponse(controlRecipeSOP,
+                                                controlRecipeSOP.getMaterials(),
+                                                controlRecipeSOP.getParameters()))
                                 .toList();
         }
 
@@ -137,8 +129,6 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
         public void delete(Long id) {
                 ControlRecipeSOP controlRecipeSOP = controlRecipeSOPRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
-                controlRecipeSOPParameterService.deleteByControlRecipeSOP(controlRecipeSOP);
-                controlRecipeSOPMaterialService.deleteByControlRecipeSOP(controlRecipeSOP);
                 controlRecipeSOPRepository.decrementStepNumbers(
                                 controlRecipeSOP.getControlRecipe().getId(),
                                 controlRecipeSOP.getStepNo());
@@ -355,8 +345,9 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                                 .mapToDouble(Double::doubleValue)
                                 .sum();
 
-                List<ControlRecipeSOPMaterial> controlRecipeSOPMaterials = controlRecipeSOPMaterialRepository
-                                .findByControlRecipeSOPControlRecipeId(controlRecipeId);
+                List<ControlRecipeSOPMaterial> controlRecipeSOPMaterials = controlRecipeSOPs.stream()
+                                .flatMap(controlRecipeSOP -> controlRecipeSOP.getMaterials().stream())
+                                .toList();
 
                 Map<Long, ControlRecipeSOPMaterialSummaryResponse> materialMap = controlRecipeSOPMaterials.stream()
                                 .collect(Collectors.toMap(

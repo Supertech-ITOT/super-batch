@@ -10,7 +10,6 @@ import com.supertech.superbatch.plant.parameter.entity.Parameter;
 import com.supertech.superbatch.plant.parameter.repository.ParameterRepository;
 import com.supertech.superbatch.recipe.recipe_sop.entity.RecipeSOP;
 import com.supertech.superbatch.recipe.recipe_sop_parameter.dto.RecipeSOPParameterRequest;
-import com.supertech.superbatch.recipe.recipe_sop_parameter.dto.RecipeSOPParameterResponse;
 import com.supertech.superbatch.recipe.recipe_sop_parameter.entity.RecipeSOPParameter;
 import com.supertech.superbatch.recipe.recipe_sop_parameter.mapper.RecipeSOPParameterMapper;
 import com.supertech.superbatch.recipe.recipe_sop_parameter.repository.RecipeSOPParameterRepository;
@@ -25,12 +24,6 @@ public class RecipeSOPParameterServiceImpl implements RecipeSOPParameterService 
     private final RecipeSOPParameterRepository recipeSOPParameterRepository;
     private final ParameterRepository parameterRepository;
     private final RecipeSOPParameterMapper recipeSOPParameterMapper;
-
-    @Override
-    public List<RecipeSOPParameterResponse> getAllByRecipe(RecipeSOP recipeSOP) {
-        List<RecipeSOPParameter> recipeSOPParameters = recipeSOPParameterRepository.findAllByRecipeSOP(recipeSOP);
-        return recipeSOPParameterMapper.toResponseList(recipeSOPParameters);
-    }
 
     @Override
     public void create(RecipeSOP recipeSOP, List<RecipeSOPParameterRequest> parameters) {

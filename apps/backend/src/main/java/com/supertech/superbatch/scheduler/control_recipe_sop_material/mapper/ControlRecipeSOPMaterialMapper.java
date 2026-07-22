@@ -1,10 +1,12 @@
 package com.supertech.superbatch.scheduler.control_recipe_sop_material.mapper;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
 import com.supertech.superbatch.plant.material.entity.Material;
+import com.supertech.superbatch.recipe.recipe_sop_material.enitiy.RecipeSOPMaterial;
 import com.supertech.superbatch.scheduler.control_recipe_sop.entity.ControlRecipeSOP;
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.dto.ControlRecipeSOPMaterialRequest;
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.dto.ControlRecipeSOPMaterialResponse;
@@ -22,7 +24,7 @@ public class ControlRecipeSOPMaterialMapper {
     }
 
     public List<ControlRecipeSOPMaterialResponse> toResponseList(
-            List<ControlRecipeSOPMaterial> controlRecipeSOPMaterials) {
+            Set<ControlRecipeSOPMaterial> controlRecipeSOPMaterials) {
         return controlRecipeSOPMaterials.stream().map(this::toResponse).toList();
     }
 
@@ -32,6 +34,14 @@ public class ControlRecipeSOPMaterialMapper {
                 .controlRecipeSOP(controlRecipeSOP)
                 .material(material)
                 .stdQty(request.stdQty())
+                .build();
+    }
+
+    public ControlRecipeSOPMaterial toEntity(ControlRecipeSOP controlRecipeSOP, RecipeSOPMaterial recipeSOPMaterial) {
+        return ControlRecipeSOPMaterial.builder()
+                .controlRecipeSOP(controlRecipeSOP)
+                .material(recipeSOPMaterial.getMaterial())
+                .stdQty(recipeSOPMaterial.getStdQty())
                 .build();
     }
 

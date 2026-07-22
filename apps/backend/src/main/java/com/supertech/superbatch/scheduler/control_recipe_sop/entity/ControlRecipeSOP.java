@@ -1,9 +1,14 @@
 package com.supertech.superbatch.scheduler.control_recipe_sop.entity;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import com.supertech.superbatch.plant.action.entity.Action;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.transition.entity.Transition;
 import com.supertech.superbatch.scheduler.control_recipe.entity.ControlRecipe;
+import com.supertech.superbatch.scheduler.control_recipe_sop_material.entity.ControlRecipeSOPMaterial;
+import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.entity.ControlRecipeSOPParameter;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -40,4 +45,12 @@ public class ControlRecipeSOP {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Equipment toEquipment;
+
+    @OneToMany(mappedBy = "controlRecipeSOP", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<ControlRecipeSOPMaterial> materials = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "controlRecipeSOP", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<ControlRecipeSOPParameter> parameters = new LinkedHashSet<>();
 }

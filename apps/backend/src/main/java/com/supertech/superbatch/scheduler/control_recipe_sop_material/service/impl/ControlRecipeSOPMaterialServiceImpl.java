@@ -9,7 +9,6 @@ import com.supertech.superbatch.plant.material.entity.Material;
 import com.supertech.superbatch.plant.material.repository.MaterialRepository;
 import com.supertech.superbatch.scheduler.control_recipe_sop.entity.ControlRecipeSOP;
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.dto.ControlRecipeSOPMaterialRequest;
-import com.supertech.superbatch.scheduler.control_recipe_sop_material.dto.ControlRecipeSOPMaterialResponse;
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.entity.ControlRecipeSOPMaterial;
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.mapper.ControlRecipeSOPMaterialMapper;
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.repository.ControlRecipeSOPMaterialRepository;
@@ -24,13 +23,6 @@ public class ControlRecipeSOPMaterialServiceImpl implements ControlRecipeSOPMate
     private final ControlRecipeSOPMaterialRepository controlRecipeSOPMaterialRepository;
     private final MaterialRepository materialRepository;
     private final ControlRecipeSOPMaterialMapper controlRecipeSOPMaterialMapper;
-
-    @Override
-    public List<ControlRecipeSOPMaterialResponse> getAllByControlRecipe(ControlRecipeSOP controlRecipeSOP) {
-        List<ControlRecipeSOPMaterial> controlrecipeSOPMaterials = controlRecipeSOPMaterialRepository
-                .findAllByControlRecipeSOP(controlRecipeSOP);
-        return controlRecipeSOPMaterialMapper.toResponseList(controlrecipeSOPMaterials);
-    }
 
     @Override
     public void create(ControlRecipeSOP controlRecipeSOP, List<ControlRecipeSOPMaterialRequest> materials) {

@@ -9,7 +9,6 @@ import com.supertech.superbatch.plant.material.entity.Material;
 import com.supertech.superbatch.plant.material.repository.MaterialRepository;
 import com.supertech.superbatch.recipe.recipe_sop.entity.RecipeSOP;
 import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialRequest;
-import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialResponse;
 import com.supertech.superbatch.recipe.recipe_sop_material.enitiy.RecipeSOPMaterial;
 import com.supertech.superbatch.recipe.recipe_sop_material.mapper.RecipeSOPMaterialMapper;
 import com.supertech.superbatch.recipe.recipe_sop_material.repository.RecipeSOPMaterialRepository;
@@ -23,12 +22,6 @@ public class RecipeSOPMaterialServiceImpl implements RecipeSOPMaterialService {
     private final RecipeSOPMaterialRepository recipeSOPMaterialRepository;
     private final MaterialRepository materialRepository;
     private final RecipeSOPMaterialMapper recipeSOPMaterialMapper;
-
-    @Override
-    public List<RecipeSOPMaterialResponse> getAllByRecipe(RecipeSOP recipeSOP) {
-        List<RecipeSOPMaterial> recipeSOPMaterials = recipeSOPMaterialRepository.findAllByRecipeSOP(recipeSOP);
-        return recipeSOPMaterialMapper.toResponseList(recipeSOPMaterials);
-    }
 
     @Override
     public void create(RecipeSOP recipeSOP, List<RecipeSOPMaterialRequest> materials) {

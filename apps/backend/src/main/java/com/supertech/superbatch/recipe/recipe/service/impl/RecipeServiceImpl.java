@@ -3,6 +3,7 @@ package com.supertech.superbatch.recipe.recipe.service.impl;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
+import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.manager.user.entity.User;
@@ -18,6 +19,7 @@ import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 import com.supertech.superbatch.recipe.recipe.mapper.RecipeMapper;
 import com.supertech.superbatch.recipe.recipe.repository.RecipeRepository;
 import com.supertech.superbatch.recipe.recipe.service.RecipeService;
+import com.supertech.superbatch.scheduler.control_recipe.repository.ControlRecipeRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 public class RecipeServiceImpl implements RecipeService {
         private final RecipeRepository recipeRepository;
+        private final ControlRecipeRepository controlRecipeRepository;
         private final MaterialRepository materialRepository;
         private final UnitRepository unitRepository;
         private final RecipeMapper recipeMapper;
@@ -34,7 +37,13 @@ public class RecipeServiceImpl implements RecipeService {
         @Override
         public void delete(Long id) {
                 Recipe recipe = recipeRepository.findById(id)
-                                .orElseThrow(() -> new RuntimeException("Recipe header not found."));
+                                .orElseThrow(() -> new RuntimeException("Recipe not found."));
+
+                long count = controlRecipeRepository.countByRecipeId(id);
+                if (count > 0) {
+                        throw new BadRequestException(
+                                        "Cannot delete recipe because it is used by " + count + " Control Recipe(s).");
+                }
                 recipeRepository.delete(recipe);
         }
 

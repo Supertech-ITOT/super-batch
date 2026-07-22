@@ -9,7 +9,6 @@ import com.supertech.superbatch.plant.parameter.entity.Parameter;
 import com.supertech.superbatch.plant.parameter.repository.ParameterRepository;
 import com.supertech.superbatch.scheduler.control_recipe_sop.entity.ControlRecipeSOP;
 import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.dto.ControlRecipeSOPParameterRequest;
-import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.dto.ControlRecipeSOPParameterResponse;
 import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.entity.ControlRecipeSOPParameter;
 import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.mapper.ControlRecipeSOPParameterMapper;
 import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.repository.ControlRecipeSOPParameterRepository;
@@ -25,13 +24,6 @@ public class ControlRecipeSOPParameterServiceImpl implements ControlRecipeSOPPar
     private final ControlRecipeSOPParameterRepository controlRecipeSOPParameterRepository;
     private final ParameterRepository parameterRepository;
     private final ControlRecipeSOPParameterMapper controlRecipeSOPParameterMapper;
-
-    @Override
-    public List<ControlRecipeSOPParameterResponse> getAllByControlRecipe(ControlRecipeSOP controlRecipeSOP) {
-        List<ControlRecipeSOPParameter> controlRecipeSOPParameters = controlRecipeSOPParameterRepository
-                .findAllByControlRecipeSOP(controlRecipeSOP);
-        return controlRecipeSOPParameterMapper.toResponseList(controlRecipeSOPParameters);
-    }
 
     @Override
     public void create(ControlRecipeSOP controlRecipeSOP, List<ControlRecipeSOPParameterRequest> parameters) {

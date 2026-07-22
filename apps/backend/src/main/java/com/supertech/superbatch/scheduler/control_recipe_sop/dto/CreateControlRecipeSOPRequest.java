@@ -7,16 +7,18 @@ import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.dto.Contr
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
+@Builder
 public record CreateControlRecipeSOPRequest(
-                @NotNull(message = "Control Recipe is required.") Long controlRecipeId,
-                @NotBlank(message = "Message is required.") String message,
-                @NotNull(message = "Standard time is required.") Double stdTime,
-                @NotNull(message = "Transition is required.") Long transitionId,
-                @NotNull(message = "Action is required.") Long actionId,
-                Long fromEquipmentId,
-                @NotNull(message = "To Equipment is required.") Long toEquipmentId,
-                List<ControlRecipeSOPMaterialRequest> materials,
-                List<ControlRecipeSOPParameterRequest> parameters) {
+        @NotNull(message = "Control Recipe is required.") Long controlRecipeId,
+        @NotBlank(message = "Message is required.") String message,
+        @NotNull(message = "Standard time is required.") Double stdTime,
+        @NotNull(message = "Transition is required.") Long transitionId,
+        @NotNull(message = "Action is required.") Long actionId,
+        Long fromEquipmentId,
+        @NotNull(message = "To Equipment is required.") Long toEquipmentId,
+        List<ControlRecipeSOPMaterialRequest> materials,
+        List<ControlRecipeSOPParameterRequest> parameters) {
 
 }

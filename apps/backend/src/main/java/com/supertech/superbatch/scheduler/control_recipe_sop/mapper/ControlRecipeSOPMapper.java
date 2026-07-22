@@ -1,29 +1,34 @@
 package com.supertech.superbatch.scheduler.control_recipe_sop.mapper;
 
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
 import com.supertech.superbatch.plant.action.entity.Action;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.transition.entity.Transition;
+import com.supertech.superbatch.recipe.recipe_sop.entity.RecipeSOP;
 import com.supertech.superbatch.scheduler.control_recipe.entity.ControlRecipe;
 import com.supertech.superbatch.scheduler.control_recipe_sop.dto.ControlRecipeSOPResponse;
 import com.supertech.superbatch.scheduler.control_recipe_sop.dto.CreateControlRecipeSOPRequest;
 import com.supertech.superbatch.scheduler.control_recipe_sop.dto.UpdateControlRecipeSOPRequest;
 import com.supertech.superbatch.scheduler.control_recipe_sop.entity.ControlRecipeSOP;
-import com.supertech.superbatch.scheduler.control_recipe_sop_material.dto.ControlRecipeSOPMaterialResponse;
-import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.dto.ControlRecipeSOPParameterResponse;
+import com.supertech.superbatch.scheduler.control_recipe_sop_material.entity.ControlRecipeSOPMaterial;
+import com.supertech.superbatch.scheduler.control_recipe_sop_material.mapper.ControlRecipeSOPMaterialMapper;
+import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.entity.ControlRecipeSOPParameter;
+import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.mapper.ControlRecipeSOPParameterMapper;
 
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class ControlRecipeSOPMapper {
+        private final ControlRecipeSOPMaterialMapper controlRecipeSOPMaterialMapper;
+        private final ControlRecipeSOPParameterMapper controlRecipeSOPParameterMapper;
 
         public ControlRecipeSOPResponse toResponse(ControlRecipeSOP controlRecipeSOP,
-                        List<ControlRecipeSOPMaterialResponse> materials,
-                        List<ControlRecipeSOPParameterResponse> parameters) {
+                        Set<ControlRecipeSOPMaterial> materials,
+                        Set<ControlRecipeSOPParameter> parameters) {
                 return ControlRecipeSOPResponse.builder()
                                 .id(controlRecipeSOP.getId())
                                 .controlRecipeId(controlRecipeSOP.getControlRecipe().getId())
@@ -42,8 +47,8 @@ public class ControlRecipeSOPMapper {
                                                 : null)
                                 .toEquipmentId(controlRecipeSOP.getToEquipment().getId())
                                 .toEquipmentName(controlRecipeSOP.getToEquipment().getName())
-                                .materials(materials)
-                                .parameters(parameters)
+                                .materials(controlRecipeSOPMaterialMapper.toResponseList(materials))
+                                .parameters(controlRecipeSOPParameterMapper.toResponseList(parameters))
                                 .build();
         }
 
@@ -72,6 +77,19 @@ public class ControlRecipeSOPMapper {
                 controlRecipeSOP.setStdTime(request.stdTime());
                 controlRecipeSOP.setFromEquipment(fromEquipment);
                 controlRecipeSOP.setToEquipment(toEquipment);
+        }
+
+        public ControlRecipeSOP toEntity(RecipeSOP recipeSOP, ControlRecipe controlRecipe) {
+                return ControlRecipeSOP.builder()
+                                .controlRecipe(controlRecipe)
+                                .stepNo(recipeSOP.getStepNo())
+                                .message(recipeSOP.getMessage())
+                                .stdTime(recipeSOP.getStdTime())
+                                .action(recipeSOP.getAction())
+                                .transition(recipeSOP.getTransition())
+                                .fromEquipment(recipeSOP.getFromEquipment())
+                                .toEquipment(recipeSOP.getToEquipment())
+                                .build();
         }
 
 }
