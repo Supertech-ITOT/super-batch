@@ -6,10 +6,12 @@ import lombok.RequiredArgsConstructor;
 
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.plant.common.mapper.UomMapper;
+import com.supertech.superbatch.plant.unit.entity.Unit;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 import com.supertech.superbatch.scheduler.control_recipe.dto.ControlRecipeResponse;
 import com.supertech.superbatch.scheduler.control_recipe.dto.CreateControlRecipeRequest;
 import com.supertech.superbatch.scheduler.control_recipe.dto.MasterRecipeResponse;
+import com.supertech.superbatch.scheduler.control_recipe.dto.UnitControlRecipeResponse;
 import com.supertech.superbatch.scheduler.control_recipe.dto.UpdateControlRecipeRequest;
 import com.supertech.superbatch.scheduler.control_recipe.dto.UserControlRecipeResponse;
 import com.supertech.superbatch.scheduler.control_recipe.entity.ControlRecipe;
@@ -72,8 +74,16 @@ public class ControlRecipeMapper {
                 .name(recipe.getName())
                 .description(recipe.getDescription())
                 .product(recipe.getMaterial().getName())
-                .unit(recipe.getUnit().getName())
-                .batchSizeUom(uomMapper.toResponse(recipe.getUnit().getBatchSizeUom()))
+                .unit(toResponse(recipe.getUnit()))
+                .build();
+    }
+
+    private UnitControlRecipeResponse toResponse(Unit unit) {
+        return UnitControlRecipeResponse.builder()
+                .id(unit.getId())
+                .name(unit.getName())
+                .batchSizeUom(uomMapper.toResponse(unit.getBatchSizeUom()))
+                .capacity(unit.getCapacity())
                 .build();
     }
 

@@ -100,10 +100,10 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogPro
                 <div className="flex flex-wrap gap-1">
                     <Badge
                         variant="outline"
-                        className={`h-6 gap-1 px-2 text-[11px] ${getColorByText(row.original.recipe.unit)}`}
+                        className={`h-6 gap-1 px-2 text-[11px] ${getColorByText(row.original.recipe.unit.name)}`}
                     >
                         <Boxes />
-                        {row.original.recipe.unit}
+                        {row.original.recipe.unit.name}
                     </Badge>
 
                     <Badge

@@ -34,7 +34,13 @@ export interface MasterRecipeResponse {
   name: string;
   product: string;
   description: string;
-  unit: string;
+  unit: UnitControlRecipeResponse;
+
+}
+export interface UnitControlRecipeResponse {
+  id: number;
+  name: string;
+  capacity: number;
   batchSizeUom: UomResponse;
 }
 

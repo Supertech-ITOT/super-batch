@@ -1,12 +1,12 @@
 import { ColumnDef } from "@tanstack/react-table";
+import { ControlRecipeSOPResponse } from "../types/control_recipe-sop-types";
 import { minutesToADuration } from "@/common/utils/duration.util";
 import { Badge } from "@/common/components/ui/badge";
 import { getColorByText } from "@/common/utils/color.util";
 import { CollapsibleDataTable } from "@/common/components/collapsible-data-table";
 import { ArrowRightLeft, Circle, Play } from "lucide-react";
-import { RecipeSOPResponse } from "../types/recipe-sop-types";
 
-export const columns: ColumnDef<RecipeSOPResponse>[] = [
+export const columns: ColumnDef<ControlRecipeSOPResponse>[] = [
     {
         accessorKey: "stepNo",
         header: "Step",

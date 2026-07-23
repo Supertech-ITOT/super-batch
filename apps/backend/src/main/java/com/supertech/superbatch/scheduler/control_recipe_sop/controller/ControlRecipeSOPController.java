@@ -29,7 +29,7 @@ public class ControlRecipeSOPController {
     }
 
     @GetMapping("/recipe/{id}")
-    public ResponseEntity<ApiResponse<List<ControlRecipeSOPResponse>>> getAllByRecipeId(
+    public ResponseEntity<ApiResponse<List<ControlRecipeSOPResponse>>> getAllByControlRecipeId(
             @PathVariable Long id) {
         List<ControlRecipeSOPResponse> response = controlRecipeSOPService.getAllByControlRecipeId(id);
         return ResponseEntity.ok(ApiResponse.success("Step fetched successfully", response));

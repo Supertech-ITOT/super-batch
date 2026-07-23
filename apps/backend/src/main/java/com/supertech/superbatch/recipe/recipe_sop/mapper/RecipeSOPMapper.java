@@ -9,6 +9,7 @@ import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.transition.entity.Transition;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 import com.supertech.superbatch.recipe.recipe_sop.dto.CreateRecipeSOPRequest;
+import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPEquipmentResponse;
 import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPResponse;
 import com.supertech.superbatch.recipe.recipe_sop.dto.UpdateRecipeSOPRequest;
 import com.supertech.superbatch.recipe.recipe_sop.entity.RecipeSOP;
@@ -16,7 +17,6 @@ import com.supertech.superbatch.recipe.recipe_sop_material.enitiy.RecipeSOPMater
 import com.supertech.superbatch.recipe.recipe_sop_material.mapper.RecipeSOPMaterialMapper;
 import com.supertech.superbatch.recipe.recipe_sop_parameter.entity.RecipeSOPParameter;
 import com.supertech.superbatch.recipe.recipe_sop_parameter.mapper.RecipeSOPParameterMapper;
-
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -37,10 +37,8 @@ public class RecipeSOPMapper {
                 .transitionName(recipeSOP.getTransition().getName())
                 .actionId(recipeSOP.getAction().getId())
                 .actionName(recipeSOP.getAction().getName())
-                .fromEquipmentId(recipeSOP.getFromEquipment() != null ? recipeSOP.getFromEquipment().getId() : null)
-                .fromEquipmentName(recipeSOP.getFromEquipment() != null ? recipeSOP.getFromEquipment().getName() : null)
-                .toEquipmentId(recipeSOP.getToEquipment().getId())
-                .toEquipmentName(recipeSOP.getToEquipment().getName())
+                .fromEquipment(toResponse(recipeSOP.getFromEquipment()))
+                .toEquipment(toResponse(recipeSOP.getToEquipment()))
                 .materials(recipeSOPMaterialMapper.toResponseList(materials))
                 .parameters(recipeSOPParameterMapper.toResponseList(parameters))
                 .build();
@@ -68,6 +66,17 @@ public class RecipeSOPMapper {
         recipeSOP.setStdTime(request.stdTime());
         recipeSOP.setFromEquipment(fromEquipment);
         recipeSOP.setToEquipment(toEquipment);
+    }
+
+    private RecipeSOPEquipmentResponse toResponse(Equipment equipment) {
+        if (equipment == null) {
+            return null;
+        }
+        return RecipeSOPEquipmentResponse.builder()
+                .id(equipment.getId())
+                .name(equipment.getName())
+                .code(equipment.getCode())
+                .build();
     }
 
 }

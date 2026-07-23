@@ -29,15 +29,16 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, setDia
     initialState: { pagination: { pageSize: 8 } },
     state: { sorting, columnFilters },
   });
-
+  const rows = table.getRowModel().rows;
+  const emptyRows = Math.max(0, 8 - rows.length);
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between pb-2">
         <Input
           placeholder="Filter recipes..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn("recipe")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
+            table.getColumn("recipe")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -48,8 +49,8 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, setDia
           </Button>
         </div>
       </div>
-      <div className="rounded-md border min-h-160">
-        <Table>
+      <div className="rounded-md border">
+        <Table className="min-h-160">
           <TableHeader className="bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -64,29 +65,70 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, setDia
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="border-muted-foreground/20 border-b"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={`border-r border-muted-foreground/20 ${cell.column.id === "description" || cell.column.id === "name" ? "text-left" : "text-center"}`}
-                    >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+            {rows.length ? (
+              <>
+                {rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className="border-muted-foreground/20 border-b"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        className={`border-r border-muted-foreground/20 ${cell.column.id === "recipe" ? "text-left" : "text-center"}`}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+
+                {/* Empty Rows */}
+                {Array.from({ length: emptyRows }).map((_, index) => (
+                  <TableRow
+                    key={`empty-${index}`}
+                    className="border-muted-foreground/20 border-b"
+                  >
+                    {columns.map((_, colIndex) => (
+                      <TableCell
+                        key={colIndex}
+                        className="border-r border-muted-foreground/20"
+                      >
+                        &nbsp;
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </>
             ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
+              <>
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+
+                {/* Fill remaining rows */}
+                {Array.from({ length: 7 }).map((_, index) => (
+                  <TableRow
+                    key={`empty-${index}`}
+                    className="border-muted-foreground/20 border-b"
+                  >
+                    {columns.map((_, colIndex) => (
+                      <TableCell
+                        key={colIndex}
+                        className="border-r border-muted-foreground/20"
+                      >
+                        &nbsp;
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </>
             )}
           </TableBody>
         </Table>

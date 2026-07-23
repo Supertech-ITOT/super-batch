@@ -79,10 +79,10 @@ export default function RecipeSOPView({ recipeId }: { recipeId: number }) {
     return (
         <div className="gap-4 rounded-lg border shadow h-screen p-4 overflow-y-auto scrollbar-none flex flex-col bg-card">
             <RecipeInfo recipe={recipe} />
-            <div className="flex flex-col gap-4 2xl:flex-row 2xl:flex-1 2xl:min-h-0">
-                <div className="flex w-full flex-col gap-4">
+            <div className="flex flex-col gap-4 min-w-0 2xl:flex-row 2xl:flex-1 2xl:min-h-0">
+                <div className="flex w-full min-w-0 flex-col gap-4">
                     {/* Table */}
-                    <div className="flex-4 min-h-0 bg-card border shadow hover:shadow-lg rounded-lg overflow-hidden">
+                    <div className="flex-4 min-w-0 min-h-0 bg-card border shadow hover:shadow-lg rounded-lg overflow-hidden">
                         <DataTable columns={columns} data={recipeSOP} onAction={handleAction} />
                     </div>
 

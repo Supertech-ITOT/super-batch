@@ -1,9 +1,6 @@
-import { useMemo, useState } from "react";
-import { Maximize2 } from "lucide-react";
-import { Pie, PieChart, PieSectorDataItem, Sector } from "recharts";
+import { useCallback, useMemo } from "react";
+import { Label, Pie, PieChart, Tooltip } from "recharts";
 import { getChartColorByText } from "@/common/utils/color.util";
-import { Button } from "../ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { UomResponse } from "@/features/plant/common/types/uom.types";
 
 type DonutChartData = {
@@ -20,17 +17,77 @@ type DonutChartProps = {
 
 };
 
-export default function DonutChart({ title, data, targetSize, uom }: DonutChartProps) {
-    const [open, setOpen] = useState(false);
+export default function DonutChart({ data, targetSize, uom }: DonutChartProps) {
     const chartData = useMemo(
-        () =>
-            data.map((item) => ({
-                ...item,
-                fill: item.fill ?? getChartColorByText(item.label),
-            })),
+        () => data.map((item) => ({
+            ...item,
+            fill: item.fill ?? getChartColorByText(item.label),
+        })),
         [data]
     );
 
+    const totalValue = useMemo(() => chartData.reduce((sum, item) => sum + item.value, 0),
+        [chartData]
+    );
+
+    const totalUsedKg = useMemo(() => {
+        return chartData.reduce((sum, item) => {
+            const qtyKg =
+                uom.symbol === "%"
+                    ? (item.value / 100) * targetSize
+                    : item.value;
+
+            return sum + qtyKg;
+        }, 0);
+    }, [chartData, targetSize, uom.symbol]);
+
+    const remainingQty = Math.max(targetSize - totalUsedKg, 0);
+
+    const renderTooltip = useCallback(
+        ({ active, payload }: any) => {
+            if (!active || !payload?.length) return null;
+            const item = payload[0].payload;
+            const qty = uom.symbol === "%" ? (item.value * targetSize) / 100 : item.value;
+            const percentage = uom.symbol === "%" ? item.value : (item.value / targetSize) * 100;
+            return (
+                <div className="relative min-w-52 overflow-hidden rounded-xl border border-border/50 bg-background/75 shadow-xl backdrop-blur-xl">
+                    <div
+                        className="absolute -bottom-6 -right-6 h-24 w-24 rounded-full opacity-30 blur-3xl"
+                        style={{ backgroundColor: item.fill }}
+                    />
+                    {/* Header */}
+                    <div className="flex items-center gap-3 border-b px-4 py-3">
+                        <span
+                            className="h-3.5 w-3.5 rounded-full ring-2 ring-background"
+                            style={{ backgroundColor: item.fill }}
+                        />
+                        <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-semibold text-foreground">{item.label}</p>
+                            <p className="text-xs text-muted-foreground">Material</p>
+                        </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="space-y-3 p-4">
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Quantity</span>
+                            <span
+                                className="rounded-md px-2 py-1 text-sm font-semibold"
+                                style={{ backgroundColor: `${item.fill}20`, color: item.fill, }}
+                            >
+                                {qty.toFixed(2)} KG
+                            </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Contribution</span>
+                            <span className="text-sm font-semibold text-foreground">{percentage.toFixed(1)}%</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        },
+        [targetSize, uom.symbol]
+    );
 
 
     if (!chartData.length) {
@@ -41,158 +98,99 @@ export default function DonutChart({ title, data, targetSize, uom }: DonutChartP
         );
     }
 
-    const renderActiveShape = ({ cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value, }: PieSectorDataItem) => {
-        const RADIAN = Math.PI / 180;
-        const sin = Math.sin(-RADIAN * (midAngle ?? 0));
-        const cos = Math.cos(-RADIAN * (midAngle ?? 0));
-        const sx = (cx ?? 0) + ((outerRadius ?? 0) + 10) * cos;
-        const sy = (cy ?? 0) + ((outerRadius ?? 0) + 10) * sin;
-        const mx = (cx ?? 0) + ((outerRadius ?? 0) + 30) * cos;
-        const my = (cy ?? 0) + ((outerRadius ?? 0) + 30) * sin;
-        const ex = mx + (cos >= 0 ? 1 : -1) * 22;
-        const ey = my;
-        const textAnchor = cos >= 0 ? "start" : "end";
 
-        const displayValue = typeof value === "number" ? value : Number(value);
-        const kg = uom.symbol === "%" ? (displayValue * targetSize) / 100 : displayValue;
-        const percentage = uom.symbol === "%" ? displayValue : (displayValue / targetSize) * 100;
-
-        return (
-            <g>
-                <text
-                    x={cx}
-                    y={cy}
-                    dy={8}
-                    textAnchor="middle"
-                    fill={fill}
-                    fontSize={open ? 20 : 10}
-                >
-                    {payload?.label}
-                </text>
-
-                <Sector
-                    cx={cx}
-                    cy={cy}
-                    innerRadius={innerRadius}
-                    outerRadius={outerRadius}
-                    startAngle={startAngle}
-                    endAngle={endAngle}
-                    fill={fill}
-                />
-
-                <Sector
-                    cx={cx}
-                    cy={cy}
-                    startAngle={startAngle}
-                    endAngle={endAngle}
-                    innerRadius={(outerRadius ?? 0) + 6}
-                    outerRadius={(outerRadius ?? 0) + 10}
-                    fill={fill}
-                />
-
-                <path
-                    d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`}
-                    stroke={fill}
-                    fill="none"
-                />
-
-                <circle
-                    cx={ex}
-                    cy={ey}
-                    r={2}
-                    fill={fill}
-                />
-
-                <text
-                    x={ex + (cos >= 0 ? 12 : -12)}
-                    y={ey}
-                    textAnchor={textAnchor}
-                >
-                    {kg.toFixed(2)} kg
-                </text>
-
-                <text
-                    x={ex + (cos >= 0 ? 12 : -12)}
-                    y={ey}
-                    dy={18}
-                    textAnchor={textAnchor}
-                    className="fill-muted-foreground"
-                >
-                    {percentage.toFixed(2)}%
-                </text>
-            </g>
-        );
-    };
-
-    const Chart = (
-        <PieChart
-            responsive
-            tabIndex={-1}
-
-            style={{
-                width: "100%",
-                height: "100%",
-                outline: "none",
-            }}
-        >
-            <Pie
-                data={chartData}
-                dataKey="value"
-                nameKey="label"
-                activeShape={renderActiveShape}
-                cx="50%"
-                cy="50%"
-                innerRadius={"55%"}
-                outerRadius={"75%"}
-                paddingAngle={3}
-                cornerRadius={8}
-                stroke="none"
-                isAnimationActive
-                animationDuration={600}
-                rootTabIndex={-1}
-            />
-        </PieChart>
-    );
 
     return (
-        <>
-            <div className="flex h-full flex-col rounded-xl border bg-card">
-                {title && (
-                    <div className="flex items-center justify-between border-b px-5 py-2 shrink-0">
-                        <h2 className="text-lg font-semibold">
-                            {title}
-                        </h2>
+        <div className="flex h-full w-full flex-col gap-4 lg:flex-row">
+            {/* Donut Chart */}
+            <div className="flex-1 min-w-0">
+                <PieChart
+                    responsive
+                    tabIndex={-1}
+                    style={{ width: "100%", height: "100%", outline: "none", }}
+                >
+                    <Pie
+                        data={chartData}
+                        dataKey="value"
+                        nameKey="label"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={"55%"}
+                        outerRadius={"75%"}
+                        paddingAngle={3}
+                        cornerRadius={8}
+                        stroke="none"
+                        isAnimationActive
+                        animationDuration={600}
+                        rootTabIndex={-1}
 
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setOpen(true)}
-                        >
-                            <Maximize2 className="h-4 w-4" />
-                        </Button>
-                    </div>
-                )}
+                    >
+                        <Label
+                            position="left"
+                            content={({ viewBox }) => {
+                                if (!viewBox || !("cx" in viewBox)) return null;
+                                return (
+                                    <g>
+                                        <text x={viewBox.cx} y={viewBox.cy - 10} textAnchor="middle" className="fill-muted-foreground text-sm">
+                                            Remaining
+                                        </text>
+                                        <text x={viewBox.cx} y={viewBox.cy + 10} textAnchor="middle" className="fill-foreground text-lg font-bold">
+                                            {remainingQty.toFixed(1)} KG
+                                        </text>
+                                        <text x={viewBox.cx} y={viewBox.cy + 26} textAnchor="middle" className="fill-muted-foreground text-xs font-semibold">
+                                            Target {targetSize.toFixed(1)} KG
+                                        </text>
+                                    </g>
+                                );
+                            }}
+                        />
 
-                <div className="min-h-0 flex-1">
-                    {Chart}
-                </div>
+
+                    </Pie>
+                    <Tooltip
+                        cursor={false}
+                        content={renderTooltip}
+                    />
+                </PieChart>
             </div>
 
-            <Dialog
-                open={open}
-                onOpenChange={setOpen}
-            >
-                <DialogContent
-                    className="max-w-[60vw]! h-[60vh] p-0 overflow-hidden gap-0!">
-                    <DialogHeader className="border-b px-6 py-4">
-                        <DialogTitle>{title}</DialogTitle>
-                    </DialogHeader>
+            {/* Legend */}
+            <div className="w-full lg:w-82 lg:shrink-0 p-2 flex flex-col justify-between ">
+                <div>
+                    <div className="border-b px-4 py-1.5 bg-muted/30  flex justify-between">
+                        <h4 className="text-sm font-semibold">Materials</h4>
+                        <strong className="text-primary font-bold">{chartData.length}</strong>
+                    </div>
 
-
-                    {Chart}
-
-                </DialogContent>
-            </Dialog>
-        </>
+                    <div className="max-h-34 overflow-y-auto scrollbar-none">
+                        {chartData.map((item, idx) => (
+                            <div
+                                key={item.label}
+                                className="flex items-center justify-between gap-3 border-b px-4 py-1.5 last:border-b-0 hover:bg-muted/40"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <span
+                                        className="size-4 shrink-0 rounded-full text-xs flex justify-center items-center text-white"
+                                        style={{ backgroundColor: item.fill }}
+                                    >
+                                        {idx + 1}
+                                    </span>
+                                    <span className="truncate text-sm" title={item.label}>{item.label}</span>
+                                </div>
+                                <strong className="text-sm font-semibold">{item.value} {uom.symbol.toUpperCase()}</strong>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="border-t bg-muted/30 px-4 py-1.5">
+                    <div className="flex items-center justify-between text-sm font-semibold">
+                        <span>Total</span>
+                        <span className="text-primary">
+                            {totalValue.toFixed(2)} {uom.symbol.toUpperCase()}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }

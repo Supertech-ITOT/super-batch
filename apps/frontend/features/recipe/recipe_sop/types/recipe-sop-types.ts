@@ -31,10 +31,8 @@ export interface RecipeSOPResponse {
     transitionName: string;
     actionId: number;
     actionName: string;
-    fromEquipmentId: number;
-    fromEquipmentName: string;
-    toEquipmentId: number;
-    toEquipmentName: string;
+    fromEquipment: RecipeSOPEquipmentResponse;
+    toEquipment: RecipeSOPEquipmentResponse;
     materials: RecipeSOPMaterialResponse[];
     parameters: RecipeSOPParameterResponse[];
 }
@@ -60,6 +58,12 @@ export type RecipeSOPParameterResponse = {
     parameterName: string;
     stdValue: number;
 };
+
+export type RecipeSOPEquipmentResponse = {
+    id: number;
+    name: string;
+    code: string;
+}
 
 export type RecipeSOPMaterialSummary = {
     id: number;

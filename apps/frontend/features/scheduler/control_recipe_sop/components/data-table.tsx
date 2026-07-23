@@ -6,19 +6,19 @@ import { Button } from "@/common/components/ui/button";
 import { useState } from "react";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuTrigger } from "@/common/components/ui/context-menu";
 import { ChevronsDown, ChevronsUp, CornerLeftDown, CornerLeftUp, LucideIcon, Plus, SquarePen, Trash } from "lucide-react";
-import { recipeSOPActionType } from "./recipe-sop-view";
+import { controlRecipeSOPActionType } from "./control-recipe-sop-view";
 
 interface DataTableProps<TData extends { id: number }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  onAction: (action: recipeSOPActionType, row: TData) => void;
+  onAction: (action: controlRecipeSOPActionType, row: TData) => void;
 
 }
 type menuItemType = {
   label: string;
   icon: LucideIcon;
   variant?: "default" | "destructive";
-  action: recipeSOPActionType;
+  action: controlRecipeSOPActionType;
 }
 const menuItem: menuItemType[] = [
   { label: "Add", icon: Plus, variant: "default", action: "create" },

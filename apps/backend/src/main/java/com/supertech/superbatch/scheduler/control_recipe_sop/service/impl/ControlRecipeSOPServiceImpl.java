@@ -39,6 +39,7 @@ import com.supertech.superbatch.scheduler.control_recipe_sop_material.repository
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.service.ControlRecipeSOPMaterialService;
 import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.service.ControlRecipeSOPParameterService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -101,6 +102,7 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                 controlRecipeSOPMaterialService.create(controlRecipeSOP, request.materials());
         }
 
+        @Transactional
         @Override
         public void update(UpdateControlRecipeSOPRequest request) {
                 ControlRecipeSOP controlRecipeSOP = controlRecipeSOPRepository.findById(request.id())
@@ -125,6 +127,7 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                 controlRecipeSOPRepository.save(controlRecipeSOP);
         }
 
+        @Transactional
         @Override
         public void delete(Long id) {
                 ControlRecipeSOP controlRecipeSOP = controlRecipeSOPRepository.findById(id)
@@ -135,6 +138,7 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                 controlRecipeSOPRepository.delete(controlRecipeSOP);
         }
 
+        @Transactional
         @Override
         public void moveUp(Long controlRecipeId) {
                 ControlRecipeSOP current = controlRecipeSOPRepository.findById(controlRecipeId)
@@ -153,6 +157,7 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                 controlRecipeSOPRepository.save(previous);
         }
 
+        @Transactional
         @Override
         public void moveDown(Long controlRecipeId) {
                 ControlRecipeSOP current = controlRecipeSOPRepository.findById(controlRecipeId)
@@ -168,6 +173,7 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                 controlRecipeSOPRepository.save(next);
         }
 
+        @Transactional
         @Override
         public void insertAbove(Long controlRecipeId, CreateControlRecipeSOPRequest request) {
                 ControlRecipeSOP controlRecipeSOP = controlRecipeSOPRepository.findById(controlRecipeId)
@@ -194,6 +200,7 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                 controlRecipeSOPRepository.save(newControlRecipeSOP);
         }
 
+        @Transactional
         @Override
         public void insertBelow(Long controlRecipeId, CreateControlRecipeSOPRequest request) {
                 ControlRecipeSOP controlRecipeSOP = controlRecipeSOPRepository.findById(controlRecipeId)

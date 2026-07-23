@@ -35,7 +35,6 @@ export default function UpdateControlRecipeDialog({ open, onClose, controlRecipe
         !controlRecipe ||
         !users ||
         !units;
-    const selectedUnitMaxRange = units?.find((unit) => unit.name === controlRecipe?.recipe.unit)?.capacity;
 
 
     useEffect(() => {
@@ -43,6 +42,7 @@ export default function UpdateControlRecipeDialog({ open, onClose, controlRecipe
         reset({ batchNo: controlRecipe.batchNo, batchSize: String(controlRecipe.batchSize), scheduledAt: controlRecipe.scheduledAt, shiftInchargeId: controlRecipe.shiftIncharge.id })
     }, [reset, controlRecipe]);
 
+    const selectedUnitMaxRange = controlRecipe?.recipe.unit.capacity;
 
     const onSubmit = async (formData: UpdateControlRecipeSchema) => {
         if (!selectedUnitMaxRange) return;

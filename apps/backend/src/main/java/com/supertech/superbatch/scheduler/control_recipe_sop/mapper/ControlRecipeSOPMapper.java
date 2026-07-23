@@ -9,6 +9,7 @@ import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.transition.entity.Transition;
 import com.supertech.superbatch.recipe.recipe_sop.entity.RecipeSOP;
 import com.supertech.superbatch.scheduler.control_recipe.entity.ControlRecipe;
+import com.supertech.superbatch.scheduler.control_recipe_sop.dto.ControlRecipeSOPEquipmentResponse;
 import com.supertech.superbatch.scheduler.control_recipe_sop.dto.ControlRecipeSOPResponse;
 import com.supertech.superbatch.scheduler.control_recipe_sop.dto.CreateControlRecipeSOPRequest;
 import com.supertech.superbatch.scheduler.control_recipe_sop.dto.UpdateControlRecipeSOPRequest;
@@ -39,14 +40,8 @@ public class ControlRecipeSOPMapper {
                                 .transitionName(controlRecipeSOP.getTransition().getName())
                                 .actionId(controlRecipeSOP.getAction().getId())
                                 .actionName(controlRecipeSOP.getAction().getName())
-                                .fromEquipmentId(controlRecipeSOP.getFromEquipment() != null
-                                                ? controlRecipeSOP.getFromEquipment().getId()
-                                                : null)
-                                .fromEquipmentName(controlRecipeSOP.getFromEquipment() != null
-                                                ? controlRecipeSOP.getFromEquipment().getName()
-                                                : null)
-                                .toEquipmentId(controlRecipeSOP.getToEquipment().getId())
-                                .toEquipmentName(controlRecipeSOP.getToEquipment().getName())
+                                .fromEquipment(toResponse(controlRecipeSOP.getFromEquipment()))
+                                .toEquipment(toResponse(controlRecipeSOP.getToEquipment()))
                                 .materials(controlRecipeSOPMaterialMapper.toResponseList(materials))
                                 .parameters(controlRecipeSOPParameterMapper.toResponseList(parameters))
                                 .build();
@@ -89,6 +84,17 @@ public class ControlRecipeSOPMapper {
                                 .transition(recipeSOP.getTransition())
                                 .fromEquipment(recipeSOP.getFromEquipment())
                                 .toEquipment(recipeSOP.getToEquipment())
+                                .build();
+        }
+
+        private ControlRecipeSOPEquipmentResponse toResponse(Equipment equipment) {
+                if (equipment == null) {
+                        return null;
+                }
+                return ControlRecipeSOPEquipmentResponse.builder()
+                                .id(equipment.getId())
+                                .name(equipment.getName())
+                                .code(equipment.getCode())
                                 .build();
         }
 

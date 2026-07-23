@@ -18,39 +18,39 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { GitBranch, Loader2, } from "lucide-react";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { recipeSOPSchema, RecipeSOPSchema, RecipeSOPSchemaLimit, } from "../schemas/recipe-sop-schema";
+import { controlRecipeSOPSchema, ControlRecipeSOPSchema, ControlRecipeSOPSchemaLimit, } from "../schemas/control-recipe-sop-schema";
 import { TransitionType } from "@/features/plant/transition/types/transition.types";
-import { useCreateRecipeSOP, useGetRecipeSOPById, useInsertAboveRecipeSOP, useInsertBelowRecipeSOP, useUpdateRecipeSOP } from "../hooks/use-recipe-sop";
 import { durationToMinutes, minutesToDuration } from "@/common/utils/duration.util";
 import { useEffect } from "react";
 import { showApiError } from "@/common/lib/show-api-error";
 import { useGetEquipmentsByUnitId } from "@/features/plant/equipment/hooks/use-equipment";
-import { recipeSOPActionType } from "./recipe-sop-view";
+import { controlRecipeSOPActionType } from "./control-recipe-sop-view";
+import { useCreateControlRecipeSOP, useGetControlRecipeSOPById, useInsertAboveControlRecipeSOP, useInsertBelowControlRecipeSOP, useUpdateControlRecipeSOP } from "../hooks/use-control-recipe-sop";
 
-type RecipeSOPDialogProp = {
-  recipeSOPId?: number;
-  recipeId: number;
+type ControlRecipeSOPDialogProp = {
+  controlRecipeSOPId?: number;
+  controlRecipeId: number;
   stepNo?: number;
-  action: recipeSOPActionType;
+  action: controlRecipeSOPActionType;
   unitId: number;
   batchSizeUom: string;
 }
-export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "create", stepNo, unitId, batchSizeUom }: RecipeSOPDialogProp) {
+export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlRecipeId, action = "create", stepNo, unitId, batchSizeUom }: ControlRecipeSOPDialogProp) {
   const { data: transitions, isLoading: transitionsIsLoading } = useGetTransitions();
   const { data: actions, isLoading: actionsIsLoading } = useGetActions();
   const { data: messages, isLoading: messagesIsLoading } = useGetMessages();
   const { data: materials, isLoading: materialsIsLoading } = useGetMaterials();
   const { data: parameters, isLoading: parametersIsLoading } = useGetParameters();
   const { data: equipments, isLoading: equipmentsIsLoading } = useGetEquipmentsByUnitId(unitId);
-  const { data: recipeSOP, isLoading: recipeSOPIsLoading } = useGetRecipeSOPById(action === "edit" ? recipeSOPId : undefined);
+  const { data: controlRecipeSOP, isLoading: controlRecipeSOPIsLoading } = useGetControlRecipeSOPById(action === "edit" ? controlRecipeSOPId : undefined);
 
-  const { mutateAsync: create, isPending: createIsPending } = useCreateRecipeSOP();
-  const { mutateAsync: insertBelow, isPending: insertBelowIsPending } = useInsertBelowRecipeSOP();
-  const { mutateAsync: insertAbove, isPending: insertAboveIsPending } = useInsertAboveRecipeSOP();
-  const { mutateAsync: update, isPending: updateIsPending } = useUpdateRecipeSOP();
+  const { mutateAsync: create, isPending: createIsPending } = useCreateControlRecipeSOP();
+  const { mutateAsync: insertBelow, isPending: insertBelowIsPending } = useInsertBelowControlRecipeSOP();
+  const { mutateAsync: insertAbove, isPending: insertAboveIsPending } = useInsertAboveControlRecipeSOP();
+  const { mutateAsync: update, isPending: updateIsPending } = useUpdateControlRecipeSOP();
 
-  const { handleSubmit, reset, watch, control, setValue, formState: { isSubmitting, isDirty }, } = useForm<RecipeSOPSchema>({
-    resolver: zodResolver(recipeSOPSchema), defaultValues: {
+  const { handleSubmit, reset, watch, control, setValue, formState: { isSubmitting, isDirty }, } = useForm<ControlRecipeSOPSchema>({
+    resolver: zodResolver(controlRecipeSOPSchema), defaultValues: {
       stdTime: "",
       actionId: 0,
       transitionId: 0,
@@ -67,25 +67,25 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
     !materials || materialsIsLoading ||
     !parameters || parametersIsLoading ||
     !equipments || equipmentsIsLoading ||
-    createIsPending || insertBelowIsPending || insertAboveIsPending || updateIsPending || recipeSOPIsLoading;
+    createIsPending || insertBelowIsPending || insertAboveIsPending || updateIsPending || controlRecipeSOPIsLoading;
 
   useEffect(() => {
-    if (action === "edit" || recipeSOP) {
+    if (action === "edit" || controlRecipeSOP) {
       reset({
-        actionId: recipeSOP?.actionId,
-        materials: recipeSOP?.materials,
-        message: recipeSOP?.message,
-        parameters: recipeSOP?.parameters,
-        stdTime: minutesToDuration(recipeSOP?.stdTime ?? 0),
-        transitionId: recipeSOP?.transitionId,
-        fromEquipmentId: recipeSOP?.fromEquipment.id,
-        toEquipmentId: recipeSOP?.toEquipment.id
+        actionId: controlRecipeSOP?.actionId,
+        materials: controlRecipeSOP?.materials,
+        message: controlRecipeSOP?.message,
+        parameters: controlRecipeSOP?.parameters,
+        stdTime: minutesToDuration(controlRecipeSOP?.stdTime ?? 0),
+        transitionId: controlRecipeSOP?.transitionId,
+        fromEquipmentId: controlRecipeSOP?.fromEquipment.id,
+        toEquipmentId: controlRecipeSOP?.toEquipment.id
       })
     }
     else {
       handleClear();
     }
-  }, [reset, recipeSOP]);
+  }, [reset, controlRecipeSOP]);
 
 
   const selectedTransitionId = watch("transitionId");
@@ -108,27 +108,27 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
     }
   }, [selectedTransition, parentEq, transferStep, setValue]);
 
-  const onSubmit = async (formData: RecipeSOPSchema) => {
+  const onSubmit = async (formData: ControlRecipeSOPSchema) => {
     let res;
     try {
       switch (action) {
         case "create": {
-          res = await create({ ...formData, recipeId, stdTime: durationToMinutes(formData.stdTime), });
+          res = await create({ ...formData, controlRecipeId, stdTime: durationToMinutes(formData.stdTime), });
           break;
         }
         case "insert-below": {
-          if (!recipeSOPId) return;
-          res = await insertBelow({ id: recipeSOPId, data: { ...formData, recipeId, stdTime: durationToMinutes(formData.stdTime), } });
+          if (!controlRecipeSOPId) return;
+          res = await insertBelow({ id: controlRecipeSOPId, data: { ...formData, controlRecipeId, stdTime: durationToMinutes(formData.stdTime), } });
           break;
         }
         case "insert-above": {
-          if (!recipeSOPId) return;
-          res = await insertAbove({ id: recipeSOPId, data: { ...formData, recipeId, stdTime: durationToMinutes(formData.stdTime), } });
+          if (!controlRecipeSOPId) return;
+          res = await insertAbove({ id: controlRecipeSOPId, data: { ...formData, controlRecipeId, stdTime: durationToMinutes(formData.stdTime), } });
           break;
         }
         case "edit": {
-          if (!recipeSOPId) return;
-          res = await update({ ...formData, recipeId: recipeId, id: recipeSOPId, stdTime: durationToMinutes(formData.stdTime), materials: formData.materials ?? [], parameters: formData.parameters ?? [], });
+          if (!controlRecipeSOPId) return;
+          res = await update({ ...formData, controlRecipeId: controlRecipeId, id: controlRecipeSOPId, stdTime: durationToMinutes(formData.stdTime), materials: formData.materials ?? [], parameters: formData.parameters ?? [], });
           break;
         }
       }
@@ -144,7 +144,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
     reset({});
   };
 
-  const onInvalid = (errors: FieldErrors<RecipeSOPSchema>) => {
+  const onInvalid = (errors: FieldErrors<ControlRecipeSOPSchema>) => {
     const firstError = Object.values(errors)[0];
     if (firstError?.message) {
       toast.error(firstError.message.toString());
@@ -214,7 +214,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
               <Label>Message</Label>
               <CharacterProgress
                 value={watch("message")}
-                max={RecipeSOPSchemaLimit.message.max}
+                max={ControlRecipeSOPSchemaLimit.message.max}
               />
             </div>
             <Controller
@@ -230,7 +230,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
                   }))}
                   placeholder="Brief message overview"
                   disabled={loading}
-                  maxLength={RecipeSOPSchemaLimit.message.max}
+                  maxLength={ControlRecipeSOPSchemaLimit.message.max}
                   className="w-full min-w-0 max-w-full min-h-28 resize-none wrap-break-word"
                 />
               )}
