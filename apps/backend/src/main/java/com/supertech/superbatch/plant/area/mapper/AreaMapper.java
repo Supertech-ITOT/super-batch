@@ -53,4 +53,18 @@ public class AreaMapper {
                 area.setAreaType(request.areaType());
                 area.setPlant(plant);
         }
+
+        public Area copy(Area area) {
+                if (area == null) {
+                        return null;
+                }
+                return Area.builder()
+                                .id(area.getId())
+                                .name(area.getName())
+                                .description(area.getDescription())
+                                .areaType(area.getAreaType())
+                                .createdAt(area.getCreatedAt())
+                                .updatedAt(area.getUpdatedAt())
+                                .build();
+        }
 }

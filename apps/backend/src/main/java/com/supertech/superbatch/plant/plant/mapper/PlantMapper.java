@@ -61,4 +61,19 @@ public class PlantMapper {
                 plant.setLocation(request.location());
                 plant.setPlantType(request.plantType());
         }
+
+        public Plant copy(Plant plant) {
+                if (plant == null) {
+                        return null;
+                }
+                return Plant.builder()
+                                .id(plant.getId())
+                                .name(plant.getName())
+                                .description(plant.getDescription())
+                                .location(plant.getLocation())
+                                .plantType(plant.getPlantType())
+                                .createdAt(plant.getCreatedAt())
+                                .updatedAt(plant.getUpdatedAt())
+                                .build();
+        }
 }

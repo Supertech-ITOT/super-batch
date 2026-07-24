@@ -64,4 +64,20 @@ public class UnitMapper {
                                 .name(unit.getName())
                                 .build();
         }
+
+        public Unit copy(Unit unit) {
+                if (unit == null) {
+                        return null;
+                }
+                return Unit.builder()
+                                .id(unit.getId())
+                                .name(unit.getName())
+                                .description(unit.getDescription())
+                                .batchSizeUom(unit.getBatchSizeUom())
+                                .capacity(unit.getCapacity())
+                                .createdAt(unit.getCreatedAt())
+                                .updatedAt(unit.getUpdatedAt())
+                                .build();
+        }
+
 }

@@ -56,4 +56,22 @@ public class EquipmentMapper {
         equipment.setCode(request.code());
         equipment.setCapacity(request.capacity());
     }
+
+    public Equipment copy(Equipment equipment) {
+        if (equipment == null) {
+            return null;
+        }
+        return Equipment.builder()
+                .id(equipment.getId())
+                .name(equipment.getName())
+                .code(equipment.getCode())
+                .description(equipment.getDescription())
+                .equipmentType(equipment.getEquipmentType())
+                .capacity(equipment.getCapacity())
+                .createdAt(equipment.getCreatedAt())
+                .updatedAt(equipment.getUpdatedAt())
+                .creatorUnit(equipment.getCreatorUnit())
+                .build();
+    }
+
 }

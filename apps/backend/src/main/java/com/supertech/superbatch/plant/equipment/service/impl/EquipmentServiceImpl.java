@@ -4,9 +4,13 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.supertech.superbatch.audit.dto.BatchAuditRequest;
+import com.supertech.superbatch.audit.enums.BatchAuditAction;
+import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.plant.equipment.dto.AssignEquipmentRequest;
 import com.supertech.superbatch.plant.equipment.dto.CreateEquipmentRequest;
 import com.supertech.superbatch.plant.equipment.dto.EquipmentResponse;
@@ -20,6 +24,7 @@ import com.supertech.superbatch.plant.equipment.service.EquipmentService;
 import com.supertech.superbatch.plant.unit.entity.Unit;
 import com.supertech.superbatch.plant.unit.repository.UnitRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -28,8 +33,10 @@ public class EquipmentServiceImpl implements EquipmentService {
     private final EquipmentRepository equipmentRepository;
     private final UnitRepository unitRepository;
     private final EquipmentMapper equipmentMapper;
+    private final BatchAuditService batchAuditService;
 
     @Override
+    @Transactional
     public void create(CreateEquipmentRequest request) {
         if (equipmentRepository.existsByNameIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Equipment already exists");
@@ -38,6 +45,15 @@ public class EquipmentServiceImpl implements EquipmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
         Equipment equipment = equipmentMapper.toEntity(request, unit, EquipmentType.SUB_EQUIPMENT);
         equipmentRepository.save(equipment);
+        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
+                .entityId(equipment.getId())
+                .entityName(equipment.getName())
+                .action(BatchAuditAction.CREATED)
+                .module(ModuleType.PLANT_MODEL)
+                .oldData(null)
+                .newData(equipmentMapper.toResponse(equipment))
+                .build();
+        batchAuditService.save(batchAuditRequest);
     }
 
     @Override
@@ -58,6 +74,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
+    @Transactional
     public void update(Long id, UpdateEquipmentRequest request) {
 
         Equipment equipment = equipmentRepository.findById(id)
@@ -72,9 +89,18 @@ public class EquipmentServiceImpl implements EquipmentService {
                 && equipmentRepository.existsByNameIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Equipment already exists");
         }
-
+        Equipment oldData = equipmentMapper.copy(equipment);
         equipmentMapper.updateEntity(equipment, request);
         equipmentRepository.save(equipment);
+        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
+                .entityId(equipment.getId())
+                .entityName(equipment.getName())
+                .action(BatchAuditAction.UPDATED)
+                .module(ModuleType.PLANT_MODEL)
+                .oldData(oldData)
+                .newData(equipmentMapper.toResponse(equipment))
+                .build();
+        batchAuditService.save(batchAuditRequest);
     }
 
     @Override
@@ -85,6 +111,16 @@ public class EquipmentServiceImpl implements EquipmentService {
             throw new BadRequestException(
                     "Main equipment cannot be deleted directly. Delete the creator unit to remove this equipment.");
         }
+        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
+                .entityId(equipment.getId())
+                .entityName(equipment.getName())
+                .action(BatchAuditAction.DELETED)
+                .module(ModuleType.PLANT_MODEL)
+                .oldData(equipmentMapper.copy(equipment))
+                .newData(null)
+                .build();
+
+        batchAuditService.save(batchAuditRequest);
         equipmentRepository.delete(equipment);
     }
 

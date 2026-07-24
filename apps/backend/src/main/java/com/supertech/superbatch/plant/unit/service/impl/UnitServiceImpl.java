@@ -4,9 +4,13 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.supertech.superbatch.audit.dto.BatchAuditRequest;
+import com.supertech.superbatch.audit.enums.BatchAuditAction;
+import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.plant.area.entity.Area;
 import com.supertech.superbatch.plant.area.repository.AreaRepository;
 import com.supertech.superbatch.plant.equipment.dto.CreateEquipmentRequest;
@@ -15,6 +19,7 @@ import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.equipment.enums.EquipmentType;
 import com.supertech.superbatch.plant.equipment.mapper.EquipmentMapper;
 import com.supertech.superbatch.plant.equipment.repository.EquipmentRepository;
+import com.supertech.superbatch.plant.plant.entity.Plant;
 import com.supertech.superbatch.plant.unit.dto.CreateUnitRequest;
 import com.supertech.superbatch.plant.unit.dto.UnitResponse;
 import com.supertech.superbatch.plant.unit.dto.UpdateUnitRequest;
@@ -34,6 +39,7 @@ public class UnitServiceImpl implements UnitService {
     private final EquipmentRepository equipmentRepository;
     private final UnitMapper unitMapper;
     private final EquipmentMapper equipmentMapper;
+    private final BatchAuditService batchAuditService;
 
     @Override
     @Transactional
@@ -63,6 +69,15 @@ public class UnitServiceImpl implements UnitService {
 
         Equipment equipment = equipmentMapper.toEntity(createEquipmentRequest, unit, EquipmentType.MAIN_EQUIPMENT);
         equipmentRepository.save(equipment);
+        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
+                .entityId(unit.getId())
+                .entityName(unit.getName())
+                .action(BatchAuditAction.CREATED)
+                .module(ModuleType.PLANT_MODEL)
+                .oldData(null)
+                .newData(unitMapper.toResponse(unit))
+                .build();
+        batchAuditService.save(batchAuditRequest);
 
     }
 
@@ -113,9 +128,19 @@ public class UnitServiceImpl implements UnitService {
                 .capacity(request.capacity())
                 .description(request.description())
                 .build();
-
+        Unit oldData = unitMapper.copy(unit);
         equipmentMapper.updateEntity(mainEquipment, updateEquipmentRequest);
         equipmentRepository.save(mainEquipment);
+        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
+                .entityId(unit.getId())
+                .entityName(unit.getName())
+                .action(BatchAuditAction.UPDATED)
+                .module(ModuleType.PLANT_MODEL)
+                .oldData(oldData)
+                .newData(unitMapper.toResponse(unit))
+                .build();
+        batchAuditService.save(batchAuditRequest);
+
     }
 
     @Override
@@ -140,9 +165,19 @@ public class UnitServiceImpl implements UnitService {
             throw new BadRequestException(
                     "Main equipment is assigned to other units. Unassign it first.");
         }
-
         equipmentRepository.delete(mainEquipment);
+        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
+                .entityId(unit.getId())
+                .entityName(unit.getName())
+                .action(BatchAuditAction.DELETED)
+                .module(ModuleType.PLANT_MODEL)
+                .oldData(unitMapper.copy(unit))
+                .newData(null)
+                .build();
+
+        batchAuditService.save(batchAuditRequest);
         unitRepository.delete(unit);
+
     }
 
     @Override

@@ -23,6 +23,10 @@ public class BatchAudit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long entityId;
+
+    private String entityName;
+
     @Enumerated(EnumType.STRING)
     private BatchAuditAction action;
 
@@ -30,7 +34,6 @@ public class BatchAudit {
     private ModuleType module;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "performed_by")
     private User performedBy;
 
     @UpdateTimestamp
