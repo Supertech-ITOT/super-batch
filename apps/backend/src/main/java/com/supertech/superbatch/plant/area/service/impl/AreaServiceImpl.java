@@ -18,7 +18,6 @@ import com.supertech.superbatch.plant.area.entity.Area;
 import com.supertech.superbatch.plant.area.mapper.AreaMapper;
 import com.supertech.superbatch.plant.area.repository.AreaRepository;
 import com.supertech.superbatch.plant.area.service.AreaService;
-import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.plant.entity.Plant;
 import com.supertech.superbatch.plant.plant.repository.PlantRepository;
 import com.supertech.superbatch.plant.unit.repository.UnitRepository;
@@ -53,7 +52,7 @@ public class AreaServiceImpl implements AreaService {
                 .action(BatchAuditAction.CREATED)
                 .module(ModuleType.PLANT_MODEL)
                 .oldData(null)
-                .newData(areaMapper.toResponse(area))
+                .newData(areaMapper.copy(area))
                 .build();
         batchAuditService.save(batchAuditRequest);
     }
@@ -95,7 +94,7 @@ public class AreaServiceImpl implements AreaService {
                 .action(BatchAuditAction.UPDATED)
                 .module(ModuleType.PLANT_MODEL)
                 .oldData(oldData)
-                .newData(areaMapper.toResponse(area))
+                .newData(areaMapper.copy(area))
                 .build();
         batchAuditService.save(batchAuditRequest);
     }

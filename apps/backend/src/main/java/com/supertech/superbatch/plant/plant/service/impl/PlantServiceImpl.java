@@ -43,7 +43,7 @@ public class PlantServiceImpl implements PlantService {
                 .action(BatchAuditAction.CREATED)
                 .module(ModuleType.PLANT_MODEL)
                 .oldData(null)
-                .newData(plantMapper.toResponse(plant))
+                .newData(plantMapper.copy(plant))
                 .build();
         batchAuditService.save(batchAuditRequest);
 
@@ -78,7 +78,7 @@ public class PlantServiceImpl implements PlantService {
                 .action(BatchAuditAction.UPDATED)
                 .module(ModuleType.PLANT_MODEL)
                 .oldData(oldData)
-                .newData(plantMapper.toResponse(plant))
+                .newData(plantMapper.copy(plant))
                 .build();
         batchAuditService.save(batchAuditRequest);
     }

@@ -45,13 +45,14 @@ public class EquipmentServiceImpl implements EquipmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
         Equipment equipment = equipmentMapper.toEntity(request, unit, EquipmentType.SUB_EQUIPMENT);
         equipmentRepository.save(equipment);
+
         BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
                 .entityId(equipment.getId())
                 .entityName(equipment.getName())
                 .action(BatchAuditAction.CREATED)
                 .module(ModuleType.PLANT_MODEL)
                 .oldData(null)
-                .newData(equipmentMapper.toResponse(equipment))
+                .newData(equipmentMapper.copy(equipment))
                 .build();
         batchAuditService.save(batchAuditRequest);
     }
@@ -89,16 +90,18 @@ public class EquipmentServiceImpl implements EquipmentService {
                 && equipmentRepository.existsByNameIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Equipment already exists");
         }
+
         Equipment oldData = equipmentMapper.copy(equipment);
         equipmentMapper.updateEntity(equipment, request);
         equipmentRepository.save(equipment);
+
         BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
                 .entityId(equipment.getId())
                 .entityName(equipment.getName())
                 .action(BatchAuditAction.UPDATED)
                 .module(ModuleType.PLANT_MODEL)
                 .oldData(oldData)
-                .newData(equipmentMapper.toResponse(equipment))
+                .newData(equipmentMapper.copy(equipment))
                 .build();
         batchAuditService.save(batchAuditRequest);
     }
@@ -111,6 +114,7 @@ public class EquipmentServiceImpl implements EquipmentService {
             throw new BadRequestException(
                     "Main equipment cannot be deleted directly. Delete the creator unit to remove this equipment.");
         }
+
         BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
                 .entityId(equipment.getId())
                 .entityName(equipment.getName())
@@ -119,8 +123,8 @@ public class EquipmentServiceImpl implements EquipmentService {
                 .oldData(equipmentMapper.copy(equipment))
                 .newData(null)
                 .build();
-
         batchAuditService.save(batchAuditRequest);
+
         equipmentRepository.delete(equipment);
     }
 
