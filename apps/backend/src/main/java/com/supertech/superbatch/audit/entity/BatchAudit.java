@@ -23,9 +23,7 @@ public class BatchAudit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long entityId;
-
-    private String entityName;
+    private String entity;
 
     @Enumerated(EnumType.STRING)
     private BatchAuditAction action;

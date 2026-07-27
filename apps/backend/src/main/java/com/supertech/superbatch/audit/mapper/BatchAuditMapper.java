@@ -14,13 +14,12 @@ public class BatchAuditMapper {
         return BatchAuditResponse.builder()
                 .id(audit.getId())
                 .action(audit.getAction().name())
-                .moduleName(audit.getModule().name())
+                .module(audit.getModule().name())
                 .performedBy(toResponse(audit.getPerformedBy()))
                 .performedAt(audit.getPerformedAt())
                 .oldData(audit.getOldData())
                 .newData(audit.getNewData())
-                .entityName(audit.getEntityName())
-                .entityId(audit.getEntityId())
+                .entity(audit.getEntity())
                 .build();
 
     }
@@ -36,8 +35,7 @@ public class BatchAuditMapper {
 
     public BatchAudit toEntity(BatchAuditRequest request, User performedBy) {
         return BatchAudit.builder()
-                .entityId(request.entityId())
-                .entityName(request.entityName())
+                .entity(request.entity())
                 .action(request.action())
                 .module(request.module())
                 .performedBy(performedBy)

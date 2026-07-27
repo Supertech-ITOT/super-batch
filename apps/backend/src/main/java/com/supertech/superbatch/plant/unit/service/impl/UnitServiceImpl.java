@@ -35,186 +35,183 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UnitServiceImpl implements UnitService {
-    private final UnitRepository unitRepository;
-    private final AreaRepository areaRepository;
-    private final EquipmentRepository equipmentRepository;
-    private final UnitMapper unitMapper;
-    private final EquipmentMapper equipmentMapper;
-    private final BatchAuditService batchAuditService;
+        private final UnitRepository unitRepository;
+        private final AreaRepository areaRepository;
+        private final EquipmentRepository equipmentRepository;
+        private final UnitMapper unitMapper;
+        private final EquipmentMapper equipmentMapper;
+        private final BatchAuditService batchAuditService;
 
-    @Override
-    @Transactional
-    public void create(CreateUnitRequest request) {
+        @Override
+        @Transactional
+        public void create(CreateUnitRequest request) {
 
-        if (unitRepository.existsByNameIgnoreCaseAndAreaId(request.name(), request.areaId())) {
-            throw new DuplicateResourceException("Unit already exists");
-        }
-        Area area = areaRepository
-                .findById(request.areaId())
-                .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
+                if (unitRepository.existsByNameIgnoreCaseAndAreaId(request.name(), request.areaId())) {
+                        throw new DuplicateResourceException("Unit already exists");
+                }
+                Area area = areaRepository
+                                .findById(request.areaId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
 
-        if (equipmentRepository.existsByNameIgnoreCase(request.name())) {
-            throw new DuplicateResourceException("Equipment already exists");
-        }
+                if (equipmentRepository.existsByNameIgnoreCase(request.name())) {
+                        throw new DuplicateResourceException("Equipment already exists");
+                }
 
-        Unit unit = unitMapper.toEntity(request, area);
-        unitRepository.save(unit);
+                Unit unit = unitMapper.toEntity(request, area);
+                unitRepository.save(unit);
 
-        CreateEquipmentRequest createEquipmentRequest = CreateEquipmentRequest.builder()
-                .name(request.name())
-                .code(request.code())
-                .capacity(request.capacity())
-                .description(request.description())
-                .unitId(unit.getId())
-                .build();
-        Equipment equipment = equipmentMapper.toEntity(createEquipmentRequest, unit, EquipmentType.MAIN_EQUIPMENT);
-        equipmentRepository.save(equipment);
+                CreateEquipmentRequest createEquipmentRequest = CreateEquipmentRequest.builder()
+                                .name(request.name())
+                                .code(request.code())
+                                .capacity(request.capacity())
+                                .description(request.description())
+                                .unitId(unit.getId())
+                                .build();
+                Equipment equipment = equipmentMapper.toEntity(createEquipmentRequest, unit,
+                                EquipmentType.MAIN_EQUIPMENT);
+                equipmentRepository.save(equipment);
 
-        BatchAuditRequest unitBatchAuditRequest = BatchAuditRequest.builder()
-                .entityId(unit.getId())
-                .entityName(unit.getName())
-                .action(BatchAuditAction.CREATED)
-                .module(ModuleType.PLANT_MODEL)
-                .oldData(null)
-                .newData(unitMapper.copy(unit))
-                .build();
-        batchAuditService.save(unitBatchAuditRequest);
-        BatchAuditRequest equipmentBatchAuditRequest = BatchAuditRequest.builder()
-                .entityId(equipment.getId())
-                .entityName(equipment.getName())
-                .action(BatchAuditAction.CREATED)
-                .module(ModuleType.PLANT_MODEL)
-                .oldData(null)
-                .newData(equipmentMapper.copy(equipment))
-                .build();
-        batchAuditService.save(equipmentBatchAuditRequest);
+                BatchAuditRequest unitBatchAuditRequest = BatchAuditRequest.builder()
+                                .entity("Unit")
+                                .action(BatchAuditAction.CREATED)
+                                .module(ModuleType.PLANT_MODEL)
+                                .oldData(null)
+                                .newData(unitMapper.copy(unit))
+                                .build();
+                batchAuditService.save(unitBatchAuditRequest);
+                BatchAuditRequest equipmentBatchAuditRequest = BatchAuditRequest.builder()
+                                .entity("Equipment")
+                                .action(BatchAuditAction.CREATED)
+                                .module(ModuleType.PLANT_MODEL)
+                                .oldData(null)
+                                .newData(equipmentMapper.copy(equipment))
+                                .build();
+                batchAuditService.save(equipmentBatchAuditRequest);
 
-    }
-
-    @Override
-    public List<UnitResponse> getAll() {
-        return unitRepository.findAllHierarchy().stream().map(unitMapper::toResponse).toList();
-    }
-
-    @Override
-    public UnitResponse getById(Long id) {
-        Unit unit = unitRepository.findByIdWithHierarchy(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
-        return unitMapper.toResponse(unit);
-    }
-
-    @Override
-    public List<UnitResponse> getByAreaId(Long areaId) {
-        return unitRepository.findByAreaId(areaId).stream().map(unitMapper::toResponse).toList();
-    }
-
-    @Override
-    @Transactional
-    public void update(Long id, UpdateUnitRequest request) {
-        Unit unit = unitRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
-        Area area = areaRepository.findById(request.areaId())
-                .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
-
-        if (unitRepository.existsByNameIgnoreCaseAndAreaId(request.name(), unit.getArea().getId())
-                && !unit.getName().equalsIgnoreCase(request.name())) {
-            throw new DuplicateResourceException("Unit already exists");
         }
 
-        Equipment mainEquipment = equipmentRepository
-                .findByCreatorUnitIdAndEquipmentType(id, EquipmentType.MAIN_EQUIPMENT)
-                .orElseThrow(() -> new ResourceNotFoundException("Main equipment not found."));
-
-        if (!mainEquipment.getName().equalsIgnoreCase(request.name())
-                && equipmentRepository.existsByNameIgnoreCase(request.name())) {
-            throw new DuplicateResourceException("Equipment already exists");
+        @Override
+        public List<UnitResponse> getAll() {
+                return unitRepository.findAllHierarchy().stream().map(unitMapper::toResponse).toList();
         }
 
-        UnitAudit unitOldData = unitMapper.copy(unit);
-        unitMapper.updateEntity(unit, request, area);
-        unitRepository.save(unit);
-
-        EquipmentAudit equipmentOldData = equipmentMapper.copy(mainEquipment);
-        UpdateEquipmentRequest updateEquipmentRequest = UpdateEquipmentRequest.builder()
-                .name(request.name())
-                .code(request.code())
-                .capacity(request.capacity())
-                .description(request.description())
-                .build();
-        equipmentMapper.updateEntity(mainEquipment, updateEquipmentRequest);
-        equipmentRepository.save(mainEquipment);
-
-        BatchAuditRequest unitBatchAuditRequest = BatchAuditRequest.builder()
-                .entityId(unit.getId())
-                .entityName(unit.getName())
-                .action(BatchAuditAction.UPDATED)
-                .module(ModuleType.PLANT_MODEL)
-                .oldData(unitOldData)
-                .newData(unitMapper.copy(unit))
-                .build();
-        batchAuditService.save(unitBatchAuditRequest);
-        BatchAuditRequest equipmentBatchAuditRequest = BatchAuditRequest.builder()
-                .entityId(mainEquipment.getId())
-                .entityName(mainEquipment.getName())
-                .action(BatchAuditAction.UPDATED)
-                .module(ModuleType.PLANT_MODEL)
-                .oldData(equipmentOldData)
-                .newData(equipmentMapper.copy(mainEquipment))
-                .build();
-        batchAuditService.save(equipmentBatchAuditRequest);
-
-    }
-
-    @Override
-    @Transactional
-    public void delete(Long id) {
-
-        Unit unit = unitRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
-
-        // Any equipment assigned to this unit except its own main equipment?
-        if (equipmentRepository.existsNonCreatorEquipmentByUnitId(id)) {
-            throw new BadRequestException(
-                    "Cannot delete unit. Reassign or remove all equipments first.");
+        @Override
+        public UnitResponse getById(Long id) {
+                Unit unit = unitRepository.findByIdWithHierarchy(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
+                return unitMapper.toResponse(unit);
         }
 
-        Equipment mainEquipment = equipmentRepository
-                .findByCreatorUnitIdAndEquipmentType(id, EquipmentType.MAIN_EQUIPMENT)
-                .orElseThrow(() -> new ResourceNotFoundException("Main equipment not found."));
-
-        // Main equipment is still shared with other units
-        if (mainEquipment.getUnits().size() > 1) {
-            throw new BadRequestException(
-                    "Main equipment is assigned to other units. Unassign it first.");
+        @Override
+        public List<UnitResponse> getByAreaId(Long areaId) {
+                return unitRepository.findByAreaId(areaId).stream().map(unitMapper::toResponse).toList();
         }
 
-        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entityId(unit.getId())
-                .entityName(unit.getName())
-                .action(BatchAuditAction.DELETED)
-                .module(ModuleType.PLANT_MODEL)
-                .oldData(unitMapper.copy(unit))
-                .newData(null)
-                .build();
-        batchAuditService.save(batchAuditRequest);
-        BatchAuditRequest equipmentBatchAuditRequest = BatchAuditRequest.builder()
-                .entityId(mainEquipment.getId())
-                .entityName(mainEquipment.getName())
-                .action(BatchAuditAction.DELETED)
-                .module(ModuleType.PLANT_MODEL)
-                .oldData(equipmentMapper.copy(mainEquipment))
-                .newData(null)
-                .build();
-        batchAuditService.save(equipmentBatchAuditRequest);
+        @Override
+        @Transactional
+        public void update(Long id, UpdateUnitRequest request) {
+                Unit unit = unitRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
+                Area area = areaRepository.findById(request.areaId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
 
-        equipmentRepository.delete(mainEquipment);
-        unitRepository.delete(unit);
+                if (unitRepository.existsByNameIgnoreCaseAndAreaId(request.name(), unit.getArea().getId())
+                                && !unit.getName().equalsIgnoreCase(request.name())) {
+                        throw new DuplicateResourceException("Unit already exists");
+                }
 
-    }
+                Equipment mainEquipment = equipmentRepository
+                                .findByCreatorUnitIdAndEquipmentType(id, EquipmentType.MAIN_EQUIPMENT)
+                                .orElseThrow(() -> new ResourceNotFoundException("Main equipment not found."));
 
-    @Override
-    public Unit getUnitById(Long id) {
-        Unit unit = unitRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Unit not found."));
-        return unit;
-    }
+                if (!mainEquipment.getName().equalsIgnoreCase(request.name())
+                                && equipmentRepository.existsByNameIgnoreCase(request.name())) {
+                        throw new DuplicateResourceException("Equipment already exists");
+                }
+
+                UnitAudit unitOldData = unitMapper.copy(unit);
+                unitMapper.updateEntity(unit, request, area);
+                unitRepository.save(unit);
+
+                EquipmentAudit equipmentOldData = equipmentMapper.copy(mainEquipment);
+                UpdateEquipmentRequest updateEquipmentRequest = UpdateEquipmentRequest.builder()
+                                .name(request.name())
+                                .code(request.code())
+                                .capacity(request.capacity())
+                                .description(request.description())
+                                .build();
+                equipmentMapper.updateEntity(mainEquipment, updateEquipmentRequest);
+                equipmentRepository.save(mainEquipment);
+
+                BatchAuditRequest unitBatchAuditRequest = BatchAuditRequest.builder()
+                                .entity("Unit")
+                                .action(BatchAuditAction.UPDATED)
+                                .module(ModuleType.PLANT_MODEL)
+                                .oldData(unitOldData)
+                                .newData(unitMapper.copy(unit))
+                                .build();
+                batchAuditService.save(unitBatchAuditRequest);
+                BatchAuditRequest equipmentBatchAuditRequest = BatchAuditRequest.builder()
+                                .entity("Equipment")
+                                .action(BatchAuditAction.UPDATED)
+                                .module(ModuleType.PLANT_MODEL)
+                                .oldData(equipmentOldData)
+                                .newData(equipmentMapper.copy(mainEquipment))
+                                .build();
+                batchAuditService.save(equipmentBatchAuditRequest);
+
+        }
+
+        @Override
+        @Transactional
+        public void delete(Long id) {
+
+                Unit unit = unitRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
+
+                // Any equipment assigned to this unit except its own main equipment?
+                if (equipmentRepository.existsNonCreatorEquipmentByUnitId(id)) {
+                        throw new BadRequestException(
+                                        "Cannot delete unit. Reassign or remove all equipments first.");
+                }
+
+                Equipment mainEquipment = equipmentRepository
+                                .findByCreatorUnitIdAndEquipmentType(id, EquipmentType.MAIN_EQUIPMENT)
+                                .orElseThrow(() -> new ResourceNotFoundException("Main equipment not found."));
+
+                // Main equipment is still shared with other units
+                if (mainEquipment.getUnits().size() > 1) {
+                        throw new BadRequestException(
+                                        "Main equipment is assigned to other units. Unassign it first.");
+                }
+
+                BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
+                                .entity("Unit")
+                                .action(BatchAuditAction.DELETED)
+                                .module(ModuleType.PLANT_MODEL)
+                                .oldData(unitMapper.copy(unit))
+                                .newData(null)
+                                .build();
+                batchAuditService.save(batchAuditRequest);
+                BatchAuditRequest equipmentBatchAuditRequest = BatchAuditRequest.builder()
+                                .entity("Equipment")
+                                .action(BatchAuditAction.DELETED)
+                                .module(ModuleType.PLANT_MODEL)
+                                .oldData(equipmentMapper.copy(mainEquipment))
+                                .newData(null)
+                                .build();
+                batchAuditService.save(equipmentBatchAuditRequest);
+
+                equipmentRepository.delete(mainEquipment);
+                unitRepository.delete(unit);
+
+        }
+
+        @Override
+        public Unit getUnitById(Long id) {
+                Unit unit = unitRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Unit not found."));
+                return unit;
+        }
 
 }

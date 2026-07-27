@@ -39,8 +39,7 @@ public class PlantServiceImpl implements PlantService {
         Plant plant = plantMapper.toEntity(request);
         plantRepository.save(plant);
         BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entityId(plant.getId())
-                .entityName(plant.getName())
+                .entity("Plant")
                 .action(BatchAuditAction.CREATED)
                 .module(ModuleType.PLANT_MODEL)
                 .oldData(null)
@@ -74,8 +73,7 @@ public class PlantServiceImpl implements PlantService {
         plantMapper.updateEntity(plant, request);
         plantRepository.save(plant);
         BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entityId(plant.getId())
-                .entityName(plant.getName())
+                .entity("Plant")
                 .action(BatchAuditAction.UPDATED)
                 .module(ModuleType.PLANT_MODEL)
                 .oldData(oldData)
@@ -91,8 +89,7 @@ public class PlantServiceImpl implements PlantService {
         }
         Plant plant = plantRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Plant not found"));
         BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entityId(plant.getId())
-                .entityName(plant.getName())
+                .entity("Plant")
                 .action(BatchAuditAction.DELETED)
                 .module(ModuleType.PLANT_MODEL)
                 .oldData(plantMapper.copy(plant))

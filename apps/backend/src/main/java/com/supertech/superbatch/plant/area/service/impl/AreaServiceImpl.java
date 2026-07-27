@@ -48,8 +48,7 @@ public class AreaServiceImpl implements AreaService {
         Area area = areaMapper.toEntity(request, plant);
         areaRepository.save(area);
         BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entityId(area.getId())
-                .entityName(area.getName())
+                .entity("Area")
                 .action(BatchAuditAction.CREATED)
                 .module(ModuleType.PLANT_MODEL)
                 .oldData(null)
@@ -90,8 +89,7 @@ public class AreaServiceImpl implements AreaService {
         areaMapper.updateEntity(area, request, plant);
         areaRepository.save(area);
         BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entityId(plant.getId())
-                .entityName(plant.getName())
+                .entity("Area")
                 .action(BatchAuditAction.UPDATED)
                 .module(ModuleType.PLANT_MODEL)
                 .oldData(oldData)
@@ -107,8 +105,7 @@ public class AreaServiceImpl implements AreaService {
         }
         Area area = areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area not found"));
         BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entityId(area.getId())
-                .entityName(area.getName())
+                .entity("Area")
                 .action(BatchAuditAction.DELETED)
                 .module(ModuleType.PLANT_MODEL)
                 .oldData(areaMapper.copy(area))

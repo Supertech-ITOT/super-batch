@@ -48,8 +48,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         equipmentRepository.save(equipment);
 
         BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entityId(equipment.getId())
-                .entityName(equipment.getName())
+                .entity("Equipment")
                 .action(BatchAuditAction.CREATED)
                 .module(ModuleType.PLANT_MODEL)
                 .oldData(null)
@@ -97,8 +96,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         equipmentRepository.save(equipment);
 
         BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entityId(equipment.getId())
-                .entityName(equipment.getName())
+                .entity("Equipment")
                 .action(BatchAuditAction.UPDATED)
                 .module(ModuleType.PLANT_MODEL)
                 .oldData(oldData)
@@ -117,8 +115,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         }
 
         BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entityId(equipment.getId())
-                .entityName(equipment.getName())
+                .entity("Equipment")
                 .action(BatchAuditAction.DELETED)
                 .module(ModuleType.PLANT_MODEL)
                 .oldData(equipmentMapper.copy(equipment))

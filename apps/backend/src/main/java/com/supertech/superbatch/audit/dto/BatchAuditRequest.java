@@ -7,10 +7,9 @@ import lombok.Builder;
 
 @Builder
 public record BatchAuditRequest(
-        Long entityId,
-        String entityName,
-        BatchAuditAction action,
-        ModuleType module,
-        Object oldData,
-        Object newData) {
+                String entity,
+                BatchAuditAction action,
+                ModuleType module,
+                Object oldData,
+                Object newData) {
 }
