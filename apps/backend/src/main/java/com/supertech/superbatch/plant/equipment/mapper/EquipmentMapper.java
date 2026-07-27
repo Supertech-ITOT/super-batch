@@ -69,8 +69,6 @@ public class EquipmentMapper {
                 .description(equipment.getDescription())
                 .equipmentType(equipment.getEquipmentType().name())
                 .capacity(equipment.getCapacity())
-                .createdAt(equipment.getCreatedAt())
-                .updatedAt(equipment.getUpdatedAt())
                 .build();
     }
 

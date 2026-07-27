@@ -64,8 +64,6 @@ public class AreaMapper {
                                 .name(area.getName())
                                 .description(area.getDescription())
                                 .areaType(area.getAreaType())
-                                .createdAt(area.getCreatedAt())
-                                .updatedAt(area.getUpdatedAt())
                                 .build();
         }
 }

@@ -76,8 +76,6 @@ public class UnitMapper {
                                 .code(unit.getCode())
                                 .description(unit.getDescription())
                                 .capacity(unit.getCapacity())
-                                .createdAt(unit.getCreatedAt())
-                                .updatedAt(unit.getUpdatedAt())
                                 .build();
         }
 

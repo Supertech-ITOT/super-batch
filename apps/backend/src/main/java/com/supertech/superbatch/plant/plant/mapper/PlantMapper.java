@@ -73,8 +73,6 @@ public class PlantMapper {
                                 .description(plant.getDescription())
                                 .location(plant.getLocation())
                                 .plantType(plant.getPlantType())
-                                .createdAt(plant.getCreatedAt())
-                                .updatedAt(plant.getUpdatedAt())
                                 .build();
         }
 }

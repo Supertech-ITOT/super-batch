@@ -1,6 +1,5 @@
 package com.supertech.superbatch.plant.plant.dto;
 
-import java.time.LocalDateTime;
 
 import lombok.Builder;
 
@@ -10,7 +9,5 @@ public record PlantAudit(
         String name,
         String description,
         String location,
-        String plantType,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt) {
+        String plantType) {
 }
