@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import com.supertech.superbatch.plant.area.entity.Area;
 import com.supertech.superbatch.plant.common.mapper.UomMapper;
 import com.supertech.superbatch.plant.unit.dto.CreateUnitRequest;
+import com.supertech.superbatch.plant.unit.dto.UnitAudit;
 import com.supertech.superbatch.plant.unit.dto.UnitResponse;
 import com.supertech.superbatch.plant.unit.dto.UnitSummaryResponse;
 import com.supertech.superbatch.plant.unit.dto.UpdateUnitRequest;
@@ -65,11 +66,11 @@ public class UnitMapper {
                                 .build();
         }
 
-        public Unit copy(Unit unit) {
+        public UnitAudit copy(Unit unit) {
                 if (unit == null) {
                         return null;
                 }
-                return Unit.builder()
+                return UnitAudit.builder()
                                 .id(unit.getId())
                                 .name(unit.getName())
                                 .code(unit.getCode())

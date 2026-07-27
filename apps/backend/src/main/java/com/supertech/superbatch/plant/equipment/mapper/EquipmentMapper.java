@@ -3,6 +3,7 @@ package com.supertech.superbatch.plant.equipment.mapper;
 import org.springframework.stereotype.Component;
 
 import com.supertech.superbatch.plant.equipment.dto.CreateEquipmentRequest;
+import com.supertech.superbatch.plant.equipment.dto.EquipmentAudit;
 import com.supertech.superbatch.plant.equipment.dto.EquipmentResponse;
 import com.supertech.superbatch.plant.equipment.dto.UpdateEquipmentRequest;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
@@ -57,16 +58,16 @@ public class EquipmentMapper {
         equipment.setCapacity(request.capacity());
     }
 
-    public Equipment copy(Equipment equipment) {
+    public EquipmentAudit copy(Equipment equipment) {
         if (equipment == null) {
             return null;
         }
-        return Equipment.builder()
+        return EquipmentAudit.builder()
                 .id(equipment.getId())
                 .name(equipment.getName())
                 .code(equipment.getCode())
                 .description(equipment.getDescription())
-                .equipmentType(equipment.getEquipmentType())
+                .equipmentType(equipment.getEquipmentType().name())
                 .capacity(equipment.getCapacity())
                 .createdAt(equipment.getCreatedAt())
                 .updatedAt(equipment.getUpdatedAt())

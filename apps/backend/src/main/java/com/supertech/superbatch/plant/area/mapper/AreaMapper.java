@@ -2,6 +2,7 @@ package com.supertech.superbatch.plant.area.mapper;
 
 import org.springframework.stereotype.Component;
 
+import com.supertech.superbatch.plant.area.dto.AreaAudit;
 import com.supertech.superbatch.plant.area.dto.AreaResponse;
 import com.supertech.superbatch.plant.area.dto.CreateAreaRequest;
 import com.supertech.superbatch.plant.area.dto.UpdateAreaRequest;
@@ -54,11 +55,11 @@ public class AreaMapper {
                 area.setPlant(plant);
         }
 
-        public Area copy(Area area) {
+        public AreaAudit copy(Area area) {
                 if (area == null) {
                         return null;
                 }
-                return Area.builder()
+                return AreaAudit.builder()
                                 .id(area.getId())
                                 .name(area.getName())
                                 .description(area.getDescription())

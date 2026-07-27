@@ -3,6 +3,7 @@ package com.supertech.superbatch.plant.plant.mapper;
 import org.springframework.stereotype.Component;
 
 import com.supertech.superbatch.plant.plant.dto.CreatePlantRequest;
+import com.supertech.superbatch.plant.plant.dto.PlantAudit;
 import com.supertech.superbatch.plant.plant.dto.PlantResponse;
 import com.supertech.superbatch.plant.plant.dto.UpdatePlantRequest;
 import com.supertech.superbatch.plant.plant.entity.Plant;
@@ -62,11 +63,11 @@ public class PlantMapper {
                 plant.setPlantType(request.plantType());
         }
 
-        public Plant copy(Plant plant) {
+        public PlantAudit copy(Plant plant) {
                 if (plant == null) {
                         return null;
                 }
-                return Plant.builder()
+                return PlantAudit.builder()
                                 .id(plant.getId())
                                 .name(plant.getName())
                                 .description(plant.getDescription())
