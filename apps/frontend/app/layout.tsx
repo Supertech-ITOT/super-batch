@@ -6,6 +6,8 @@ import { Toaster } from "@/common/components/ui/sonner";
 import QueryProvider from "@/common/providers/query-provider";
 import ThemeProvider from "@/common/providers/theme-provider";
 import AuthGuardProvider from "@/common/providers/auth-guard-provider";
+import TitleBar from "@/common/components/title-bar";
+import { SidebarProvider } from "@/common/components/sidebar-provider";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -16,18 +18,23 @@ export const metadata: Metadata = {
 export default function RootLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
   return (
     <html lang="en" suppressHydrationWarning className={cn("antialiased", "font-sans", inter.variable)}>
-      <body>
+      <body className="h-screen  overflow-hidden">
         <ThemeProvider>
           <QueryProvider>
-            <main className="min-h-screen">
-              <AuthGuardProvider>
-                {children}
-              </AuthGuardProvider>
-            </main>
+            <AuthGuardProvider>
+              <SidebarProvider>
+                <div className="flex h-full flex-col">
+                  <TitleBar />
+                  <main className="flex-1 overflow-hidden">
+                    {children}
+                  </main>
+                </div>
+              </SidebarProvider>
+            </AuthGuardProvider>
             <Toaster richColors position="top-center" />
           </QueryProvider>
         </ThemeProvider>
       </body>
-    </html>
+    </html >
   );
 }

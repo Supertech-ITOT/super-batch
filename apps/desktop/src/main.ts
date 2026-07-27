@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import path from 'path';
 import dotenv from "dotenv";
 
@@ -30,13 +30,20 @@ function createWindow(): void {
         height: 800,
         minWidth: 1024,
         minHeight: 600,
+
+        frame: false,
+        titleBarStyle: "hidden",
+        autoHideMenuBar: true,
+        backgroundColor: "#0f172a",
+
+        show: false,
+
         webPreferences: {
+            preload: path.join(__dirname, "preload.js"),
             contextIsolation: true,
             nodeIntegration: false,
             sandbox: false,
         },
-        title: 'BatchScheduler',
-        show: false,
     });
 
     Menu.setApplicationMenu(null);
@@ -58,6 +65,30 @@ function createWindow(): void {
             win.show();
         }, 5000);
     });
+
+    ipcMain.on("window:minimize", () => {
+        win.minimize();
+    });
+
+    ipcMain.on("window:maximize", () => {
+        if (win.isMaximized()) {
+            win.unmaximize();
+        } else {
+            win.maximize();
+        }
+    });
+
+    ipcMain.on("window:close", () => {
+        win.close();
+    });
+
+    ipcMain.on("window:refresh", () => {
+        win.reload();
+    });
+
+    ipcMain.handle("window:isMaximized", () => {
+        return win.isMaximized();
+    });
 }
 
 app.whenReady().then(() => {
@@ -67,3 +98,5 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
 });
+
+

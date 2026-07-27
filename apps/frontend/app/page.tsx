@@ -7,7 +7,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="min-h-screen w-full flex flex-row overflow-hidden relative">
+    <div className="h-full w-full flex flex-row overflow-hidden relative">
       <div className="absolute inset-0">
         <Image
           src="/light-bg.png"

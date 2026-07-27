@@ -6,7 +6,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { useState } from "react";
-import Image from "next/image";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
 import { useLogout } from "@/features/manager/auth/hooks/use-auth";
@@ -14,13 +13,14 @@ import { useGetCurrentUser } from "@/features/manager/user/hooks/use-user";
 import { ConfigurationRoutes, ModuleType, OperationRoutes } from "@/features/manager/module/types/module.types";
 import SidebarSkeleton from "./sidebar-skeleton";
 import SessionCard from "./session-card";
+import { useSidebar } from "./sidebar-provider";
 
 
 
 export default function SideBar() {
     const pathname = usePathname();
     const router = useRouter();
-    const [open, setOpen] = useState<boolean>(true);
+    const { open } = useSidebar();
     const { mutateAsync: logout, isPending: logoutIsPending } = useLogout();
     const { data: user, isLoading: userIsLoading } = useGetCurrentUser();
     const loading = !user || userIsLoading;
@@ -45,62 +45,14 @@ export default function SideBar() {
     }
     return (
         <>
-            {/* Outside Toggle Button */}
-            {!open && (
-                <Button onClick={() => setOpen(true)} size="icon-lg" variant="outline" className="fixed transition-all duration-1000 top-4 left-4 z-40">
-                    <PanelLeftOpen className="w-6! h-6!" />
-                </Button>
-            )}
-            <aside className={`min-h-screen z-50 border-r transition-all duration-300 bg-card overflow-hidden flex flex-col  ${open ? "w-60 p-4" : "w-18 items-center"}`}>
+            <aside className={`h-full z-50 border-r transition-all duration-300 bg-card overflow-hidden flex flex-col  ${open ? "w-60 p-4" : "w-12 items-center"}`}>
                 {loading
                     ? (<SidebarSkeleton open={open} />)
                     : (
                         <>
-                            <div className="flex justify-between items-center my-4">
-                                <Button
-                                    onClick={() => setOpen((prev) => !prev)}
-                                    variant="ghost"
-                                    size="icon-lg"
-                                    className="h-auto w-full justify-start "
-                                >
-                                    {open ? (
-                                        <div className="w-46">
-                                            <Image
-                                                src="/superbatch-light.png"
-                                                alt="SuperBatch Light Logo"
-                                                priority
-                                                width={500}
-                                                height={120}
-                                                draggable={false}
-                                                className="w-full h-auto object-contain dark:hidden"
-                                            />
-                                            <Image
-                                                src="/superbatch-dark.png"
-                                                alt="SuperBatch Dark Logo"
-                                                priority
-                                                width={500}
-                                                height={120}
-                                                draggable={false}
-                                                className="hidden dark:block w-full h-auto object-contain"
-                                            />
-                                        </div>
-                                    ) : (
-                                        <Image
-                                            src="/icon.png"
-                                            alt="SuperBatch Icon"
-                                            priority
-                                            width={20}
-                                            height={20}
-                                            draggable={false}
-                                            className="w-8 h-8 object-contain"
-                                        />
-                                    )}
-                                </Button>
-                            </div>
-
                             {/* Plant Operation */}
-                            {open && <div className="mt-4">
-                                <h1 className="text-muted-foreground text-sm uppercase">Operation</h1>
+                            {open && <div>
+                                <h1 className="font-semibold text-sm uppercase">Operation</h1>
                             </div>}
                             <div className="flex flex-col space-y-2 mt-2">
                                 {OperationRoutes
@@ -121,7 +73,7 @@ export default function SideBar() {
                             </div>
                             {/* Configuration */}
                             {open && <div className="mt-10 ">
-                                <h1 className="text-muted-foreground text-sm uppercase">Configuration</h1>
+                                <h1 className="font-semibold text-sm uppercase">Configuration</h1>
                             </div>
                             }
                             <div className="flex flex-col space-y-2 mt-2">
@@ -143,14 +95,14 @@ export default function SideBar() {
                             </div>
 
                             {/* User Section */}
-                            <div className="mt-auto py-4">
-                                <Separator className="mb-4" />
+                            <div className="mt-auto p-2">
+                                <Separator className="my-4" />
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button className="w-full flex bg-card! h-14! items-center justify-between rounded-xl p-3! hover:bg-muted transition-all">
+                                        <Button className="w-full flex bg-card! items-center justify-between rounded-xl  hover:bg-muted transition-all">
                                             <div className="flex items-center gap-3">
                                                 {/* Avatar */}
-                                                <div className="w-11 h-11 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold text-sm">
+                                                <div className={`${open ? "size-11" : "size-8"} rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold text-sm`}>
                                                     {initials}
                                                 </div>
                                                 {/* User Info */}
@@ -163,7 +115,7 @@ export default function SideBar() {
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent
-                                        side="top"
+                                        side="right"
                                         align="end"
                                         className="w-62 p-2 rounded-xl"
                                     >
