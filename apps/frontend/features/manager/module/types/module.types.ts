@@ -1,4 +1,4 @@
-import { CalendarClock, BookOpenText, Factory, Users, ShieldCheck, ClipboardList, Settings, LucideIcon, UserCogIcon } from "lucide-react";
+import { CalendarClock, BookOpenText, Factory, Users, ShieldCheck, ClipboardList, Settings, LucideIcon, UserCogIcon, Building, Boxes, Cpu, PackageCheckIcon, Gauge, ArrowRightLeft, Play, MessageSquareQuote } from "lucide-react";
 
 export enum ModuleType {
     MANAGER = "MANAGER",
@@ -63,3 +63,43 @@ export const ConfigurationRoutes: RouteType[] = [
         icon: Settings,
     },
 ];
+
+export const EntityItems  = [
+
+    {
+        label: "Plant",
+        icon: Factory
+    },
+    {
+        label: "Area",
+        icon: Building
+    },
+    {
+        label: "Unit",
+        icon: Boxes
+    },
+    {
+        label: "Equipment",
+        icon: Cpu
+    },
+    {
+        label: "Material",
+        icon:PackageCheckIcon
+    },
+    {
+        label: "Parameter",
+        icon: Gauge
+    },
+    {
+        label: "Transition",
+        icon: ArrowRightLeft
+    },
+    {
+        label: "Action",
+        icon: Play
+    },
+    {
+        label: "Message",
+        icon: MessageSquareQuote
+    },
+]

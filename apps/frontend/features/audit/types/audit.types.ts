@@ -1,13 +1,13 @@
 export interface BatchAuditResponse{
     id:number;
     action:string;
-    moduleName:string;
+    module:string;
     performedBy:BatchAuditUserResponse;
     performedAt:string;
     oldData:string;
     newData:string;
-    entityName:string;
-    entityId:number;
+    entity:string;
+
 }
 
 export interface BatchAuditUserResponse{

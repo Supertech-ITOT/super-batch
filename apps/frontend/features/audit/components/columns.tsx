@@ -6,10 +6,15 @@ import { toDisplayText } from "@/common/lib/format-enum";
 import { Badge } from "@/common/components/ui/badge";
 import { getColorByText } from "@/common/utils/color.util";
 import { Circle, Eye } from "lucide-react";
-import { OperationRoutes } from "@/features/manager/module/types/module.types";
+import {
+  EntityItems,
+  OperationRoutes,
+} from "@/features/manager/module/types/module.types";
 import { Button } from "@/common/components/ui/button";
 
-export const columns: ColumnDef<BatchAuditResponse>[] = [
+export const columns = (
+  onViewChanges: (audit: BatchAuditResponse) => void,
+): ColumnDef<BatchAuditResponse>[] => [
   {
     id: "srNo",
     header: "Sr. No.",
@@ -29,11 +34,11 @@ export const columns: ColumnDef<BatchAuditResponse>[] = [
     },
   },
   {
-    id: "moduleName",
+    id: "module",
     header: "Module",
     cell: ({ row }) => {
       const module = OperationRoutes.find(
-        (route) => route.module === row.original.moduleName,
+        (route) => route.module === row.original.module,
       );
 
       const Icon = module?.icon;
@@ -41,11 +46,29 @@ export const columns: ColumnDef<BatchAuditResponse>[] = [
       return (
         <div className="flex items-center gap-2 justify-center">
           {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
-          <span>{module?.label ?? toDisplayText(row.original.moduleName)}</span>
+          <span>{module?.label ?? toDisplayText(row.original.module)}</span>
         </div>
       );
     },
   },
+
+  {
+    id: "entity",
+    header: "Entity",
+    cell: ({ row }) => {
+      const entity = EntityItems.find((e) => e.label === row.original.entity);
+
+      const Icon = entity?.icon;
+
+      return (
+        <div className="flex items-center gap-2 justify-center">
+          {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+          <span>{entity?.label ?? toDisplayText(row.original.entity)}</span>
+        </div>
+      );
+    },
+  },
+
   {
     id: "performedBy",
     header: "Performed By",
@@ -81,10 +104,6 @@ export const columns: ColumnDef<BatchAuditResponse>[] = [
         ? format(new Date(row.performedAt), "dd MMM yyyy hh:mm a")
         : "-",
   },
-  {
-    header: "Entity",
-    accessorFn: (row) => row.entityName,
-  },
 
   {
     id: "changes",
@@ -94,9 +113,7 @@ export const columns: ColumnDef<BatchAuditResponse>[] = [
         variant="ghost"
         size="sm"
         className="text-primary"
-        onClick={() => {
-          // Open dialog
-        }}
+        onClick={() => onViewChanges(row.original)}
       >
         <Eye className="mr-2 h-4 w-4" />
         View Changes
