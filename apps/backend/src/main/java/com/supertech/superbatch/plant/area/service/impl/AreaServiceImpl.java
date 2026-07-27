@@ -11,6 +11,7 @@ import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
+import com.supertech.superbatch.plant.area.dto.AreaAudit;
 import com.supertech.superbatch.plant.area.dto.AreaResponse;
 import com.supertech.superbatch.plant.area.dto.CreateAreaRequest;
 import com.supertech.superbatch.plant.area.dto.UpdateAreaRequest;
@@ -85,7 +86,7 @@ public class AreaServiceImpl implements AreaService {
                 && !area.getName().equalsIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Area already exists");
         }
-        Area oldData = areaMapper.copy(area);
+        AreaAudit oldData = areaMapper.copy(area);
         areaMapper.updateEntity(area, request, plant);
         areaRepository.save(area);
         BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()

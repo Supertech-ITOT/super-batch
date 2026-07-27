@@ -9,6 +9,7 @@ import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.plant.area.repository.AreaRepository;
 import com.supertech.superbatch.plant.plant.dto.CreatePlantRequest;
+import com.supertech.superbatch.plant.plant.dto.PlantAudit;
 import com.supertech.superbatch.plant.plant.dto.PlantResponse;
 import com.supertech.superbatch.plant.plant.dto.UpdatePlantRequest;
 import com.supertech.superbatch.plant.plant.entity.Plant;
@@ -69,7 +70,7 @@ public class PlantServiceImpl implements PlantService {
                 && !plant.getName().equalsIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Plant already exists");
         }
-        Plant oldData = plantMapper.copy(plant);
+        PlantAudit oldData = plantMapper.copy(plant);
         plantMapper.updateEntity(plant, request);
         plantRepository.save(plant);
         BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()

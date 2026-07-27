@@ -13,6 +13,7 @@ import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.plant.equipment.dto.AssignEquipmentRequest;
 import com.supertech.superbatch.plant.equipment.dto.CreateEquipmentRequest;
+import com.supertech.superbatch.plant.equipment.dto.EquipmentAudit;
 import com.supertech.superbatch.plant.equipment.dto.EquipmentResponse;
 import com.supertech.superbatch.plant.equipment.dto.UnAssignEquipmentRequest;
 import com.supertech.superbatch.plant.equipment.dto.UpdateEquipmentRequest;
@@ -91,7 +92,7 @@ public class EquipmentServiceImpl implements EquipmentService {
             throw new DuplicateResourceException("Equipment already exists");
         }
 
-        Equipment oldData = equipmentMapper.copy(equipment);
+        EquipmentAudit oldData = equipmentMapper.copy(equipment);
         equipmentMapper.updateEntity(equipment, request);
         equipmentRepository.save(equipment);
 

@@ -14,12 +14,14 @@ import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.plant.area.entity.Area;
 import com.supertech.superbatch.plant.area.repository.AreaRepository;
 import com.supertech.superbatch.plant.equipment.dto.CreateEquipmentRequest;
+import com.supertech.superbatch.plant.equipment.dto.EquipmentAudit;
 import com.supertech.superbatch.plant.equipment.dto.UpdateEquipmentRequest;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.equipment.enums.EquipmentType;
 import com.supertech.superbatch.plant.equipment.mapper.EquipmentMapper;
 import com.supertech.superbatch.plant.equipment.repository.EquipmentRepository;
 import com.supertech.superbatch.plant.unit.dto.CreateUnitRequest;
+import com.supertech.superbatch.plant.unit.dto.UnitAudit;
 import com.supertech.superbatch.plant.unit.dto.UnitResponse;
 import com.supertech.superbatch.plant.unit.dto.UpdateUnitRequest;
 import com.supertech.superbatch.plant.unit.entity.Unit;
@@ -127,11 +129,11 @@ public class UnitServiceImpl implements UnitService {
             throw new DuplicateResourceException("Equipment already exists");
         }
 
-        Unit unitOldData = unitMapper.copy(unit);
+        UnitAudit unitOldData = unitMapper.copy(unit);
         unitMapper.updateEntity(unit, request, area);
         unitRepository.save(unit);
 
-        Equipment equipmentOldData = equipmentMapper.copy(mainEquipment);
+        EquipmentAudit equipmentOldData = equipmentMapper.copy(mainEquipment);
         UpdateEquipmentRequest updateEquipmentRequest = UpdateEquipmentRequest.builder()
                 .name(request.name())
                 .code(request.code())
