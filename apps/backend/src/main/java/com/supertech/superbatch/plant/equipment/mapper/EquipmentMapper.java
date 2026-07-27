@@ -70,7 +70,6 @@ public class EquipmentMapper {
                 .capacity(equipment.getCapacity())
                 .createdAt(equipment.getCreatedAt())
                 .updatedAt(equipment.getUpdatedAt())
-                .creatorUnit(equipment.getCreatorUnit())
                 .build();
     }
 
