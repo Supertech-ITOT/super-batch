@@ -22,6 +22,7 @@ import {
 import { Button } from "@/common/components/ui/button";
 import { Input } from "@/common/components/ui/input";
 import { useState } from "react";
+import AuditFilter from "./audit-filter";
 
 interface DataTableProps<TData extends { id: number }, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -34,8 +35,25 @@ const DataTable = <TData extends { id: number }, TValue>({
 }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [fromDate, setFromDate] = useState<Date>();
+  const [toDate, setToDate] = useState<Date>();
+  const filteredData = data.filter((item: any) => {
+    const date = new Date(item.performedAt);
+    if (fromDate && date < fromDate) {
+      return false;
+    }
+    if (toDate) {
+      const end = new Date(toDate);
+      end.setHours(23, 59, 59, 999);
+      if (date > end) {
+        return false;
+      }
+    }
+
+    return true;
+  });
   const table = useReactTable({
-    data,
+    data: filteredData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -58,6 +76,25 @@ const DataTable = <TData extends { id: number }, TValue>({
             table.getColumn("action")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
+        />
+        <AuditFilter
+          search={(table.getColumn("action")?.getFilterValue() as string) ?? ""}
+          onSearchChange={(value) =>
+            table.getColumn("action")?.setFilterValue(value)
+          }
+          fromDate={fromDate}
+          toDate={toDate}
+          onFromDateChange={setFromDate}
+          onToDateChange={setToDate}
+          onReset={() => {
+            setFromDate(undefined);
+            setToDate(undefined);
+          }}
+          onApply={() => {
+            // Optional:
+            // Leave empty if filtering happens automatically.
+            // If you fetch data from the backend, call your API here.
+          }}
         />
       </div>
       <div className="rounded-md border">

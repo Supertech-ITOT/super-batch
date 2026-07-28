@@ -13,10 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/common/components/ui/table";
-import { Card } from "@/common/components/ui/card";
 import { ScrollArea } from "@/common/components/ui/scroll-area";
 import { Separator } from "@/common/components/ui/separator";
-import { toDisplayText } from "@/common/lib/format-enum";
 
 interface AuditChangesDialogProps {
   open: boolean;
@@ -27,7 +25,7 @@ interface AuditChangesDialogProps {
 
 function renderValue(value: unknown) {
   if (value === null || value === undefined) {
-    return "—";
+    return "-";
   }
 
   if (typeof value === "boolean") {
@@ -39,6 +37,13 @@ function renderValue(value: unknown) {
   }
 
   return String(value);
+}
+
+function formatFieldName(field: string) {
+  return field
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/[_-]/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 export default function AuditChangesDialog({
@@ -67,8 +72,8 @@ export default function AuditChangesDialog({
   );
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl! h-[50vh] p-0 flex flex-col overflow-hidden gap-0!">
-        <DialogHeader className="px-6 py-5">
+      <DialogContent className="max-w-6xl! h-[80vh] p-0 flex flex-col overflow-hidden gap-0!">
+        <DialogHeader className="px-6 py-3">
           <DialogTitle>Audit Changes</DialogTitle>
           <DialogDescription>
             Compare previous and current values.
@@ -77,57 +82,65 @@ export default function AuditChangesDialog({
 
         <Separator />
 
-        <div className="flex flex-1 flex-col overflow-hidden p-6">
+        <div className="flex flex-1 flex-col overflow-hidden p-6 ">
           {/* ================= LEFT : TABLE ================= */}
-          <Card className="flex-[3] overflow-hidden">
-            <div className="border-b px-4 py-0.5 flex items-center justify-between">
-              <h3 className="font-semibold">Changed Fields</h3>
-              <span className="text-sm text-muted-foreground">
-                {fields.length} field{fields.length !== 1 && "s"}
-              </span>
-            </div>
-
-            <ScrollArea className="h-full">
+          <div className="h-full">
+            <ScrollArea className="h-105">
               <Table>
-                <TableHeader className="sticky top-0 bg-background z-10">
+                <TableHeader className="sticky top-0">
                   <TableRow>
-                    <TableHead className="w-56">Field</TableHead>
-                    <TableHead>Previous Value</TableHead>
-                    <TableHead>Current Value</TableHead>
+                    <TableHead className="w-56 font-semibold">Field</TableHead>
+                    <TableHead className="font-semibold">Previous</TableHead>
+                    <TableHead className="font-semibold">Current</TableHead>
                   </TableRow>
                 </TableHeader>
 
                 <TableBody>
-                  {fields.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={3}
-                        className="h-32 text-center text-muted-foreground"
+                  {fields.map((field) => {
+                    const oldValue = renderValue(oldObj[field]);
+                    const newValue = renderValue(newObj[field]);
+
+                    const changed = oldValue !== newValue;
+
+                    return (
+                      <TableRow
+                        key={field}
+                        className="transition-colors hover:bg-muted/40"
                       >
-                        No audit data available.
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    fields.map((field) => (
-                      <TableRow key={field}>
-                        <TableCell className="font-medium whitespace-nowrap">
-                          {toDisplayText(field)}
+                        <TableCell className="font-medium">
+                          {formatFieldName(field)}
                         </TableCell>
 
-                        <TableCell className="font-mono break-all">
-                          {renderValue(oldObj[field])}
+                        <TableCell>
+                          <div
+                            className={`rounded-md border px-3 py-2 font-mono text-sm ${
+                              changed
+                                ? "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/20"
+                                : "bg-muted/30"
+                            }`}
+                          >
+                            {oldValue}
+                          </div>
                         </TableCell>
 
-                        <TableCell className="font-mono break-all">
-                          {renderValue(newObj[field])}
+                        <TableCell>
+                          <div
+                            className={`rounded-md border px-3 py-2 font-mono text-sm ${
+                              changed
+                                ? "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/20"
+                                : "bg-muted/30"
+                            }`}
+                          >
+                            {newValue}
+                          </div>
                         </TableCell>
                       </TableRow>
-                    ))
-                  )}
+                    );
+                  })}
                 </TableBody>
               </Table>
             </ScrollArea>
-          </Card>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
