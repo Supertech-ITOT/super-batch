@@ -21,11 +21,13 @@ import { toast } from "sonner";
 import { controlRecipeSOPSchema, ControlRecipeSOPSchema, ControlRecipeSOPSchemaLimit, } from "../schemas/control-recipe-sop-schema";
 import { TransitionType } from "@/features/plant/transition/types/transition.types";
 import { durationToMinutes, minutesToDuration } from "@/common/utils/duration.util";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { showApiError } from "@/common/lib/show-api-error";
 import { useGetEquipmentsByUnitId } from "@/features/plant/equipment/hooks/use-equipment";
 import { controlRecipeSOPActionType } from "./control-recipe-sop-view";
 import { useCreateControlRecipeSOP, useGetControlRecipeSOPById, useInsertAboveControlRecipeSOP, useInsertBelowControlRecipeSOP, useUpdateControlRecipeSOP } from "../hooks/use-control-recipe-sop";
+import { RadioGroup, RadioGroupItem } from "@/common/components/ui/radio-group";
+import { Separator } from "@/common/components/ui/separator";
 
 type ControlRecipeSOPDialogProp = {
   controlRecipeSOPId?: number;
@@ -33,9 +35,9 @@ type ControlRecipeSOPDialogProp = {
   stepNo?: number;
   action: controlRecipeSOPActionType;
   unitId: number;
-  batchSizeUom: string;
+  batchSize: number;
 }
-export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlRecipeId, action = "create", stepNo, unitId, batchSizeUom }: ControlRecipeSOPDialogProp) {
+export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlRecipeId, action = "create", stepNo, unitId, batchSize }: ControlRecipeSOPDialogProp) {
   const { data: transitions, isLoading: transitionsIsLoading } = useGetTransitions();
   const { data: actions, isLoading: actionsIsLoading } = useGetActions();
   const { data: messages, isLoading: messagesIsLoading } = useGetMessages();
@@ -48,6 +50,9 @@ export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlReci
   const { mutateAsync: insertBelow, isPending: insertBelowIsPending } = useInsertBelowControlRecipeSOP();
   const { mutateAsync: insertAbove, isPending: insertAboveIsPending } = useInsertAboveControlRecipeSOP();
   const { mutateAsync: update, isPending: updateIsPending } = useUpdateControlRecipeSOP();
+
+  const [materialInputMode, setMaterialInputMode] = useState<"ABSOLUTE" | "PERCENTAGE">("ABSOLUTE");
+
 
   const { handleSubmit, reset, watch, control, setValue, formState: { isSubmitting, isDirty }, } = useForm<ControlRecipeSOPSchema>({
     resolver: zodResolver(controlRecipeSOPSchema), defaultValues: {
@@ -320,43 +325,68 @@ export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlReci
               />
             </div>
           </div>
+          <div className="space-y-4">
+            <Label className="font-medium">Material Quantity Mode</Label>
+            <RadioGroup
+              value={materialInputMode}
+              onValueChange={(v) =>
+                setMaterialInputMode(v as "ABSOLUTE" | "PERCENTAGE")
+              }
+              className="flex gap-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="ABSOLUTE" id="kg" />
+                <Label htmlFor="kg">
+                  Absolute (KG)
+                </Label>
+              </div>
 
-
-
-
-
-          <Controller
-            control={control}
-            name="materials"
-            render={({ field }) => (
-              <ValuePicker
-                label="Materials"
-                placeholder="Search Material..."
-                valueLabel="Std Qty"
-                disabled={!(autoMaterialStep || manualMaterialStep)}
-                limit={autoMaterialStep ? 1 : undefined}
-                options={materials
-                  .filter(
-                    (f) => f.materialType !== MaterialType.FINISHED_PRODUCT,
-                  )
-                  .map((m) => ({
-                    id: m.id,
-                    name: m.name,
-                    uom: batchSizeUom,
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="PERCENTAGE" id="percent" />
+                <Label htmlFor="percent">
+                  Percentage (%)
+                </Label>
+              </div>
+            </RadioGroup>
+            <Separator />
+            <Controller
+              control={control}
+              name="materials"
+              render={({ field }) => (
+                <ValuePicker
+                  label="Materials"
+                  placeholder="Search Material..."
+                  valueLabel={materialInputMode === "ABSOLUTE" ? `Std Qty (KG)` : "Std Qty (%)"}
+                  disabled={!(autoMaterialStep || manualMaterialStep)}
+                  limit={autoMaterialStep ? 1 : undefined}
+                  options={materials
+                    .filter((f) => f.materialType !== MaterialType.FINISHED_PRODUCT)
+                    .map((m) => {
+                      const selected = (field.value ?? []).find((x) => x.materialId === m.id);
+                      const kg = selected?.stdQty ?? 0;
+                      const percentage = batchSize > 0 ? (kg / batchSize) * 100 : 0;
+                      return {
+                        id: m.id,
+                        name: m.name,
+                        uom: materialInputMode === "ABSOLUTE" ? `${percentage.toFixed(2)} %` : `${kg.toFixed(2)} KG`,
+                      };
+                    })}
+                  value={(field.value ?? []).map((m) => ({
+                    id: m.materialId,
+                    value: materialInputMode === "ABSOLUTE" ? m.stdQty : (m.stdQty / batchSize) * 100
                   }))}
-                value={(field.value ?? []).map((m) => ({
-                  id: m.materialId,
-                  value: m.stdQty,
-                }))}
-                onChange={(items) =>
-                  field.onChange(
-                    items.map((i) => ({ materialId: i.id, stdQty: i.value })),
-                  )
-                }
-              />
-            )}
-          />
-
+                  onChange={(items) =>
+                    field.onChange(
+                      items.map((i) => ({
+                        materialId: i.id,
+                        stdQty: materialInputMode === "ABSOLUTE" ? i.value : (i.value * batchSize) / 100,
+                      }))
+                    )
+                  }
+                />
+              )}
+            />
+          </div>
           <Controller
             control={control}
             name="parameters"

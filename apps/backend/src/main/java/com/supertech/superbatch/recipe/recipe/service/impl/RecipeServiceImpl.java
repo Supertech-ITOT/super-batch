@@ -1,5 +1,6 @@
 package com.supertech.superbatch.recipe.recipe.service.impl;
 
+import java.util.Comparator;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +58,9 @@ public class RecipeServiceImpl implements RecipeService {
 
                 Unit unit = unitRepository.findByIdWithHierarchy(request.unitId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
+                if (request.batchSize() > unit.getCapacity()) {
+                        throw new BadRequestException("Batch size must be below unit capacity.");
+                }
                 User user = userRepository.findById(userId)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
@@ -66,7 +70,10 @@ public class RecipeServiceImpl implements RecipeService {
 
         @Override
         public List<RecipeResponse> getAll() {
-                return recipeRepository.findAllWithRelations().stream().map(recipeMapper::toResponse)
+                return recipeRepository.findAllWithRelations()
+                                .stream()
+                                .sorted(Comparator.comparing(Recipe::getCreatedAt).reversed())
+                                .map(recipeMapper::toResponse)
                                 .toList();
         }
 

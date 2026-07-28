@@ -40,7 +40,6 @@ export default function ControlRecipeSOPInfo({ controlRecipe }: { controlRecipe:
                 <div className="flex gap-2">
                     <Badge variant={"outline"} >Unit: {controlRecipe.recipe.unit.name}</Badge>
                     <Badge variant={"outline"} >Batch Size: {controlRecipe.batchSize} KG</Badge>
-                    <Badge variant={"outline"} >Batch Size Uom: {controlRecipe.recipe.unit.batchSizeUom.symbol.toUpperCase()}</Badge>
                 </div>
                 <p className="max-w-5xl text-sm leading-4 text-muted-foreground">
                     {controlRecipe.recipe.description}

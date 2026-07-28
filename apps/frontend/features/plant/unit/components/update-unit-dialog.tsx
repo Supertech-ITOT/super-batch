@@ -11,7 +11,6 @@ import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/common/components/ui/select";
 import { useGetAreas } from "../../area/hooks/use-areas";
-import { useGetUomTypes } from "@/features/common/hooks/useMetadata";
 import CharacterProgress from "@/common/components/form/character-progress";
 import { Textarea } from "@/common/components/ui/textarea";
 import { useGetUnitById, useUpdateUnit } from "../hooks/use-units";
@@ -22,17 +21,16 @@ export default function UpdateUnitDialog({ open, onClose, unitId }: Props) {
     const { mutateAsync: updateUnit, isPending: isUpdating } = useUpdateUnit();
     const { data: areas, isLoading: areasLoading } = useGetAreas(open);
     const { data: unit, isLoading: unitLoading } = useGetUnitById(unitId);
-    const { data: uomTypes, isLoading: uomTypesIsLoading } = useGetUomTypes(open);
     const { register, handleSubmit, reset, control, watch, formState: { isSubmitting, isDirty } } = useForm<UnitSchema>({
         resolver: zodResolver(unitSchema),
-        defaultValues: { name: "", areaId: "", batchSizeUom: "", capacity: "", code: "", description: "" }
+        defaultValues: { name: "", areaId: "", capacity: "", code: "", description: "" }
     });
 
     useEffect(() => {
         if (!open || !unit || !areas) return;
-        reset({ name: unit.name, areaId: String(unit.areaId), batchSizeUom: String(unit.batchSizeUom.value), capacity: String(unit.capacity), code: unit.code, description: unit.description });
+        reset({ name: unit.name, areaId: String(unit.areaId), capacity: String(unit.capacity), code: unit.code, description: unit.description });
     }, [open, unit, areas, reset]);
-    const loading = isUpdating || unitLoading || areasLoading || isSubmitting || uomTypesIsLoading;
+    const loading = isUpdating || unitLoading || areasLoading || isSubmitting;
 
     const onSubmit = async (formData: UnitSchema) => {
         try {
@@ -42,7 +40,6 @@ export default function UpdateUnitDialog({ open, onClose, unitId }: Props) {
                     name: formData.name,
                     code: formData.code,
                     description: formData.description,
-                    batchSizeUom: formData.batchSizeUom,
                     capacity: Number(formData.capacity)
                 }
             });
@@ -55,7 +52,7 @@ export default function UpdateUnitDialog({ open, onClose, unitId }: Props) {
     };
 
     const handleClose = () => {
-        reset({ name: "", areaId: "", batchSizeUom: "", capacity: "", code: "", description: "" });
+        reset({ name: "", areaId: "", capacity: "", code: "", description: "" });
         onClose();
     };
 
@@ -131,42 +128,14 @@ export default function UpdateUnitDialog({ open, onClose, unitId }: Props) {
                                 {...register("description")}
                             />
                         </div>
-                        <div className="flex gap-2">
-                            <div className="space-y-2 flex-1">
-                                <Label>Area</Label>
-                                <Input
-                                    type="text"
-                                    disabled
-                                    value={areas?.find((a) => a.id === unit?.areaId)?.name ?? ""}
-                                />
-                            </div>
-                            <div className="space-y-2 flex-1">
-                                <Label>Batch Size Uom</Label>
-                                <Controller
-                                    control={control}
-                                    name="batchSizeUom"
-                                    render={({ field }) => (
-                                        <Select
-                                            disabled={loading}
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Batch Size Uom" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {uomTypes?.filter(f => f.value == "KG" || f.value == "PERCENT").map((e) => (
-                                                        <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                            </div>
+                        <div className="space-y-2 relative">
+                            <Label>Area</Label>
+                            <Input
+                                type="text"
+                                disabled
+                                value={areas?.find((a) => a.id === unit?.areaId)?.name ?? ""}
+                            />
                         </div>
-
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>

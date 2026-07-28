@@ -94,7 +94,7 @@ export default function RecipeSOPView({ recipeId }: { recipeId: number }) {
 
                 {/* Dialog */}
                 <div className="min-w-1/4 2xl:h-full 2xl:shrink-0 border shadow hover:shadow-lg rounded-lg overflow-hidden">
-                    <RecipeSOPDialog action={dialog.action} recipeId={recipeId} stepNo={dialog.stepNo} recipeSOPId={dialog.recipeSOPId} unitId={recipe.unitRecipeResponse.id} batchSizeUom={recipe.unitRecipeResponse.batchSizeUom.symbol} />
+                    <RecipeSOPDialog action={dialog.action} recipeId={recipeId} stepNo={dialog.stepNo} recipeSOPId={dialog.recipeSOPId} unitId={recipe.unitRecipeResponse.id} batchSize={recipe.batchSize} />
                     {dialog.action === "delete" && dialog.recipeSOPId &&
                         (
                             <RecipeSOPDeleteDialog open id={dialog.recipeSOPId} recipeId={recipeId} onClose={handleClose} />
