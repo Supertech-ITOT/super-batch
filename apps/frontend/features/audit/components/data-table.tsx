@@ -69,14 +69,6 @@ const DataTable = <TData extends { id: number }, TValue>({
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between pb-2">
-        <Input
-          placeholder="Filter audits..."
-          value={(table.getColumn("action")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("action")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
         <AuditFilter
           search={(table.getColumn("action")?.getFilterValue() as string) ?? ""}
           onSearchChange={(value) =>
