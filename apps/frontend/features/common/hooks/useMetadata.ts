@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { getMaterialTypes, getRecipeStatusTypes, getUomTypes } from "../services/metadata.service"
+import { getBatchAuditAction, getMaterialTypes, getRecipeStatusTypes, getUomTypes } from "../services/metadata.service"
 
 
 export const useGetUomTypes = (enabled = true) => {
@@ -19,6 +19,17 @@ export const useGetMaterialTypes = (enabled = true) => {
         queryKey: ["material-types"],
         queryFn: async () => {
             const res = await getMaterialTypes();
+            return res.data;
+        },
+        enabled
+    })
+}
+
+export const useGetBatchAuditAction = (enabled = true) => {
+    return useQuery({
+        queryKey: ["batch-audit-action"],
+        queryFn: async () => {
+            const res = await getBatchAuditAction();
             return res.data;
         },
         enabled

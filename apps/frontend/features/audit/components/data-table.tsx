@@ -20,9 +20,12 @@ import {
   TableRow,
 } from "@/common/components/ui/table";
 import { Button } from "@/common/components/ui/button";
-import { Input } from "@/common/components/ui/input";
-import { useState } from "react";
-import AuditFilter from "./audit-filter";
+import { useEffect, useState } from "react";
+import AuditFilter, { AuditFilterValue } from "./audit-filter";
+import { useGetUser } from "@/features/manager/user/hooks/use-user";
+import { useGetModules } from "@/features/manager/module/hooks/use-module";
+import { useGetBatchAuditAction } from "@/features/common/hooks/useMetadata";
+import { toDisplayText } from "@/common/lib/format-enum";
 
 interface DataTableProps<TData extends { id: number }, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -35,25 +38,20 @@ const DataTable = <TData extends { id: number }, TValue>({
 }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [fromDate, setFromDate] = useState<Date>();
-  const [toDate, setToDate] = useState<Date>();
-  const filteredData = data.filter((item: any) => {
-    const date = new Date(item.performedAt);
-    if (fromDate && date < fromDate) {
-      return false;
-    }
-    if (toDate) {
-      const end = new Date(toDate);
-      end.setHours(23, 59, 59, 999);
-      if (date > end) {
-        return false;
-      }
-    }
-
-    return true;
+  const { data: users } = useGetUser();
+  const { data: modules } = useGetModules();
+  const { data: actions } = useGetBatchAuditAction();
+  const [filter, setFilter] = useState<AuditFilterValue>({
+    search: "",
+    module: undefined,
+    action: undefined,
+    user: undefined,
+    fromDate: undefined,
+    toDate: undefined,
   });
+
   const table = useReactTable({
-    data: filteredData,
+    data: data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -64,29 +62,45 @@ const DataTable = <TData extends { id: number }, TValue>({
     initialState: { pagination: { pageSize: 8 } },
     state: { sorting, columnFilters },
   });
+  useEffect(() => {
+    table.getColumn("action")?.setFilterValue(filter.search);
+  }, [filter.search, table]);
   const rows = table.getRowModel().rows;
   const emptyRows = Math.max(0, 8 - rows.length);
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between pb-2">
         <AuditFilter
-          search={(table.getColumn("action")?.getFilterValue() as string) ?? ""}
-          onSearchChange={(value) =>
-            table.getColumn("action")?.setFilterValue(value)
+          filter={filter}
+          onFilterChange={setFilter}
+          modules={
+            modules?.map((m) => ({
+              label: toDisplayText(m.name),
+              value: m.id,
+            })) ?? []
           }
-          fromDate={fromDate}
-          toDate={toDate}
-          onFromDateChange={setFromDate}
-          onToDateChange={setToDate}
-          onReset={() => {
-            setFromDate(undefined);
-            setToDate(undefined);
-          }}
-          onApply={() => {
-            // Optional:
-            // Leave empty if filtering happens automatically.
-            // If you fetch data from the backend, call your API here.
-          }}
+          actions={
+            actions?.map((a, index) => ({
+              label: a.label,
+              value: index + 1, // temporary if a.value is a string
+            })) ?? []
+          }
+          users={
+            users?.map((u) => ({
+              label: u.name,
+              value: u.id,
+            })) ?? []
+          }
+          onReset={() =>
+            setFilter({
+              search: "",
+              module: undefined,
+              action: undefined,
+              user: undefined,
+              fromDate: undefined,
+              toDate: undefined,
+            })
+          }
         />
       </div>
       <div className="rounded-md border">

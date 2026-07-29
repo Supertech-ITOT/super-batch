@@ -13,6 +13,11 @@ export const getMaterialTypes = async () => {
     return res.data;
 }
 
+export const getBatchAuditAction = async () => {
+    const res = await api.get<ApiResponse<OptionResponse[]>>("/metadata/batch-audit-action");
+    return res.data;
+}
+
 
 export const getRecipeStatusTypes = async () => {
     const res = await api.get<ApiResponse<OptionResponse[]>>("/metadata/recipe-status-types");

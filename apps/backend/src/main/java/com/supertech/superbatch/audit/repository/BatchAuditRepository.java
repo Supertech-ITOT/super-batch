@@ -4,10 +4,11 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.supertech.superbatch.audit.entity.BatchAudit;
 
-public interface BatchAuditRepository extends JpaRepository<BatchAudit, Long> {
+public interface BatchAuditRepository extends JpaRepository<BatchAudit, Long>, JpaSpecificationExecutor<BatchAudit> {
     @Override
     @EntityGraph(attributePaths = { "performedBy", "performedBy.role" })
     List<BatchAudit> findAll();

@@ -1,5 +1,6 @@
 package com.supertech.superbatch.common.controller;
 
+import com.supertech.superbatch.audit.enums.BatchAuditAction;
 import com.supertech.superbatch.common.dto.ApiResponse;
 import com.supertech.superbatch.common.dto.OptionDto;
 import com.supertech.superbatch.common.enums.UomType;
@@ -48,5 +49,15 @@ public class MetadataController {
                 .toList();
 
         return ResponseEntity.ok(ApiResponse.success("UOM types fetched successfully", data));
+    }
+
+    @GetMapping("/batch-audit-action")
+    public ResponseEntity<ApiResponse<List<OptionDto>>> getBatchAuditAction() {
+
+        List<OptionDto> data = Arrays.stream(BatchAuditAction.values()).map(type -> new OptionDto(
+                EnumUtil.formatLabel(type.name()),
+                type.name()))
+                .toList();
+        return ResponseEntity.ok(ApiResponse.success("Batch Audit Action fetched successfully", data));
     }
 }

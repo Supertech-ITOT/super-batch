@@ -1,16 +1,20 @@
 package com.supertech.superbatch.audit.service.impl;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.supertech.superbatch.audit.dto.AuditDiff;
 import com.supertech.superbatch.audit.dto.BatchAuditRequest;
 import com.supertech.superbatch.audit.dto.BatchAuditResponse;
+import com.supertech.superbatch.audit.dto.BatchAuditSearchRequest;
 import com.supertech.superbatch.audit.entity.BatchAudit;
 import com.supertech.superbatch.audit.mapper.BatchAuditMapper;
 import com.supertech.superbatch.audit.repository.BatchAuditRepository;
 import com.supertech.superbatch.audit.service.AuditDiffGeneratorService;
 import com.supertech.superbatch.audit.service.BatchAuditService;
+import com.supertech.superbatch.audit.specification.BatchAuditSpecification;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.common.security.UserContextService;
 import com.supertech.superbatch.manager.user.entity.User;
@@ -42,8 +46,17 @@ public class BatchAuditServiceImpl implements BatchAuditService {
     }
 
     @Override
-    public List<BatchAuditResponse> getAll() {
-        return batchAuditRepository.findAll().stream().map(batchAuditMapper::toResponse).toList();
+    @Transactional()
+    public Page<BatchAuditResponse> getAll(BatchAuditSearchRequest request) {
+
+        Pageable pageable = PageRequest.of(
+                request.page(),
+                request.size(),
+                Sort.by(Sort.Direction.DESC, "performedAt"));
+
+        return batchAuditRepository
+                .findAll(BatchAuditSpecification.filter(request), pageable)
+                .map(batchAuditMapper::toResponse);
     }
 
 }

@@ -1,13 +1,14 @@
 package com.supertech.superbatch.audit.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 import com.supertech.superbatch.audit.dto.BatchAuditRequest;
 import com.supertech.superbatch.audit.dto.BatchAuditResponse;
+import com.supertech.superbatch.audit.dto.BatchAuditSearchRequest;
 
 public interface BatchAuditService {
     void save(BatchAuditRequest request);
 
-    List<BatchAuditResponse> getAll();
+    Page<BatchAuditResponse> getAll(BatchAuditSearchRequest request);
 
 }
