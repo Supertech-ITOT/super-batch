@@ -46,14 +46,12 @@ public class RecipeMapper {
                 .build();
     }
 
-    public void updateEntity(Recipe recipe, UpdateRecipeRequest request, Material material,
-            Unit unit) {
+    public void updateEntity(Recipe recipe, UpdateRecipeRequest request, Material material) {
         recipe.setName(request.name());
         recipe.setDescription(request.description());
         recipe.setBatchSize(request.batchSize());
         recipe.setMaterial(material);
         recipe.setStatus(request.status());
-        recipe.setUnit(unit);
     }
 
     private UserRecipeResponse toResponse(User users) {
@@ -77,6 +75,7 @@ public class RecipeMapper {
                 .id(unit.getId())
                 .name(unit.getName())
                 .code(unit.getCode())
+                .capacity(unit.getCapacity())
                 .build();
     }
 }

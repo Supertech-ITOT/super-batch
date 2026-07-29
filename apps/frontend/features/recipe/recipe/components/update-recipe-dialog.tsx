@@ -1,6 +1,6 @@
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { useGetRecipeById, useUpdateRecipe } from "../hooks/use-recipe";
-import { recipeSchema, RecipeSchema, RecipeSchemaLimit } from "../schemas/recipe-schema";
+import { RecipeSchemaLimit, updateRecipeSchema, UpdateRecipeSchema } from "../schemas/recipe-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { toast } from "sonner";
@@ -25,21 +25,20 @@ export default function UpdateRecipeDialog({ open, onClose, recipeId }: Props) {
     const { data: units, isLoading: isLoadingUnits } = useGetUnits();
     const { data: materials, isLoading: isLoadingMaterials } = useGetMaterials();
     const { data: recipeStatus, isLoading: isLoadingRecipeStatus } = useGetRecipeStatusTypes();
-    const { register, handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty } } = useForm<RecipeSchema>({
-        resolver: zodResolver(recipeSchema),
-        defaultValues: { name: "", description: "", batchSize: "", materialId: "", unitId: "", status: "" }
+    const { register, handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty } } = useForm<UpdateRecipeSchema>({
+        resolver: zodResolver(updateRecipeSchema),
+        defaultValues: { name: "", description: "", batchSize: "", materialId: "", status: "" }
     });
     const loading = isSubmitting || isUpdating || isLoadingMaterials || isLoadingUnits || isLoadingRecipeStatus || recipeIsLoading;
-    const selectedUnitId = watch("unitId");
-    const selectedUnitMaxRange = units?.find((unit) => unit.id === Number(selectedUnitId))?.capacity;
 
     useEffect(() => {
         if (loading || !recipe)
             return;
-        reset({ name: recipe.name, description: recipe.description, batchSize: String(recipe.batchSize), materialId: String(recipe.materialRecipeResponse.id), unitId: String(recipe.unitRecipeResponse.id), status: recipe.status });
+        reset({ name: recipe.name, description: recipe.description, batchSize: String(recipe.batchSize), materialId: String(recipe.materialRecipeResponse.id), status: recipe.status });
     }, [recipe, reset])
 
-    const onSubmit = async (formData: RecipeSchema) => {
+    const selectedUnitMaxRange = recipe?.unitRecipeResponse.capacity;
+    const onSubmit = async (formData: UpdateRecipeSchema) => {
         if (!selectedUnitMaxRange) return;
         if (Number(formData.batchSize) > selectedUnitMaxRange) {
             toast.error(`Batch size must be under unit capacity - ${selectedUnitMaxRange}kg`)
@@ -53,7 +52,6 @@ export default function UpdateRecipeDialog({ open, onClose, recipeId }: Props) {
                     description: formData.description,
                     batchSize: Number(formData.batchSize),
                     materialId: Number(formData.materialId),
-                    unitId: Number(formData.unitId),
                     status: formData.status,
                 },
             });
@@ -64,10 +62,10 @@ export default function UpdateRecipeDialog({ open, onClose, recipeId }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ name: "", description: "", batchSize: "", materialId: "", unitId: "", status: "" });
+        reset({ name: "", description: "", batchSize: "", materialId: "", status: "" });
         onClose();
     };
-    const onInvalid = (errors: FieldErrors<RecipeSchema>) => {
+    const onInvalid = (errors: FieldErrors<UpdateRecipeSchema>) => {
         const firstError = Object.values(errors)[0];
         if (firstError?.message) {
             toast.error(firstError.message.toString());
@@ -108,35 +106,17 @@ export default function UpdateRecipeDialog({ open, onClose, recipeId }: Props) {
                                 {...register("description")}
                             />
                         </div>
-                        <div className="flex gap-2">
-                            <div className="relative flex-1 space-y-2">
+                        <div className="grid grid-cols-2 gap-2">
+                            <div className="relative space-y-2">
                                 <Label>Unit</Label>
-                                <Controller
-                                    control={control}
-                                    name="unitId"
-                                    render={({ field }) => (
-                                        <Select
-                                            disabled={loading}
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Unit" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {units?.map((unit) => (
-                                                        <SelectItem key={unit.id} value={String(unit.id)}>
-                                                            {unit.name}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
+                                <Input
+                                    type="text"
+                                    readOnly
+                                    disabled
+                                    value={recipe?.unitRecipeResponse.name}
                                 />
                             </div>
-                            <div className="space-y-2 relative flex-1">
+                            <div className="space-y-2 relative">
                                 <div className="flex items-center justify-between">
                                     <Label>Batch Size</Label>
                                 </div>
@@ -148,7 +128,7 @@ export default function UpdateRecipeDialog({ open, onClose, recipeId }: Props) {
                                         {...register("batchSize")}
                                     />
                                     <div className="flex items-center justify-center w-12 border border-l-0 rounded-r-md bg-muted text-sm">
-                                        kg
+                                        KG
                                     </div>
                                 </div>
                             </div>

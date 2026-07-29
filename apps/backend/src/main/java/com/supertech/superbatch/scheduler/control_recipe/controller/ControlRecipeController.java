@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.supertech.superbatch.common.dto.ApiResponse;
 import com.supertech.superbatch.common.security.UserContextService;
 import com.supertech.superbatch.scheduler.control_recipe.dto.ControlRecipeResponse;
 import com.supertech.superbatch.scheduler.control_recipe.dto.CreateControlRecipeRequest;
+import com.supertech.superbatch.scheduler.control_recipe.dto.EquipmentMappingResponse;
 import com.supertech.superbatch.scheduler.control_recipe.dto.UpdateControlRecipeRequest;
 import com.supertech.superbatch.scheduler.control_recipe.service.ControlRecipeService;
 
@@ -41,26 +43,35 @@ public class ControlRecipeController {
         public ResponseEntity<ApiResponse<List<ControlRecipeResponse>>> getAll() {
                 List<ControlRecipeResponse> controlRecipeResponses = controlRecipeService.getAll();
                 return ResponseEntity.ok(
-                                ApiResponse.success("All Control recipe fetched successfully", controlRecipeResponses));
+                                ApiResponse.success("All Scheduled Batch fetched successfully",
+                                                controlRecipeResponses));
         }
 
         @GetMapping("/{id}")
         public ResponseEntity<ApiResponse<ControlRecipeResponse>> getById(@PathVariable Long id) {
                 ControlRecipeResponse controlRecipeResponse = controlRecipeService.getById(id);
                 return ResponseEntity
-                                .ok(ApiResponse.success("Control Recipe fetched successfully", controlRecipeResponse));
+                                .ok(ApiResponse.success("Scheduled Batch fetched successfully", controlRecipeResponse));
         }
 
         @PutMapping("/{id}")
         public ResponseEntity<ApiResponse<Void>> update(@PathVariable Long id,
                         @Valid @RequestBody UpdateControlRecipeRequest request) {
                 controlRecipeService.update(id, request);
-                return ResponseEntity.ok(ApiResponse.success("Batch Schedule updated successfully", null));
+                return ResponseEntity.ok(ApiResponse.success("Scheduled Batch updated successfully", null));
         }
 
         @DeleteMapping("/{id}")
         public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
                 controlRecipeService.delete(id);
-                return ResponseEntity.ok(ApiResponse.success("Control Recipe deleted successfully", null));
+                return ResponseEntity.ok(ApiResponse.success("Scheduled Batch deleted successfully", null));
+        }
+
+        @GetMapping("/{recipeId}/equipment-mapping")
+        public ResponseEntity<ApiResponse<List<EquipmentMappingResponse>>> getRecipeEquipments(
+                        @PathVariable Long recipeId, @RequestParam Long unitId) {
+
+                List<EquipmentMappingResponse> response = controlRecipeService.getRecipeEquipments(recipeId, unitId);
+                return ResponseEntity.ok(ApiResponse.success("Equipment mapping fetched successfully.", response));
         }
 }

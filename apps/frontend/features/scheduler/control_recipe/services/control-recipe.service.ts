@@ -1,6 +1,6 @@
 import api from "@/common/lib/axios"
 import { ApiResponse } from "@/common/types/api.types"
-import { CreateControlRecipeRequest, ControlRecipeResponse, UpdateControlRecipeRequest } from "../types/control-recipe.types"
+import { CreateControlRecipeRequest, ControlRecipeResponse, UpdateControlRecipeRequest, EquipmentMappingResponse } from "../types/control-recipe.types"
 
 export const getAllControlRecipes = async () => {
     const res = await api.get<ApiResponse<ControlRecipeResponse[]>>("/control-recipe");
@@ -26,3 +26,9 @@ export const deleteControlRecipe = async (id: number) => {
     const res = await api.delete<ApiResponse<void>>(`/control-recipe/${id}`);
     return res.data;
 }
+
+
+export const getRecipeEquipmentMapping = async (recipeId: number, unitId: number) => {
+    const res = await api.get<ApiResponse<EquipmentMappingResponse[]>>(`/control-recipe/${recipeId}/equipment-mapping`, { params: { unitId, }, });
+    return res.data;
+};

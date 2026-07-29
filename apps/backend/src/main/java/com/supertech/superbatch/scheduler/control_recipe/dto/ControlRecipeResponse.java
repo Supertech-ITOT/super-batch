@@ -8,15 +8,16 @@ import lombok.Builder;
 
 @Builder
 public record ControlRecipeResponse(
-        Long id,
-        String batchNo,
-        String name,
-        MasterRecipeResponse recipe,
-        ControlRecipeStatus status,
-        Integer batchSize,
-        UserControlRecipeResponse createdBy,
-        UserControlRecipeResponse shiftIncharge,
-        LocalDateTime scheduledAt,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt) {
+                Long id,
+                String batchNo,
+                String name,
+                UnitControlRecipeResponse unit,
+                MasterRecipeResponse recipe,
+                ControlRecipeStatus status,
+                Integer batchSize,
+                UserControlRecipeResponse createdBy,
+                UserControlRecipeResponse shiftIncharge,
+                LocalDateTime scheduledAt,
+                LocalDateTime createdAt,
+                LocalDateTime updatedAt) {
 }

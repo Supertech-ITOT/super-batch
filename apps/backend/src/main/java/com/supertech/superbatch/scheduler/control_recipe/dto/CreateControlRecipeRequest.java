@@ -1,6 +1,9 @@
 package com.supertech.superbatch.scheduler.control_recipe.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -15,7 +18,11 @@ public record CreateControlRecipeRequest(
 
                 @NotNull(message = "Recipe is required") @Positive(message = "Recipe ID must be greater than 0") Long recipeId,
 
-                @NotNull(message = "Shift Incharge is required") @Positive(message = "Shift Incharge ID must be greater than 0") Long shiftInchargeId
+                @NotNull(message = "Unit is required") @Positive(message = "Unit ID must be greater than 0") Long unitId,
+
+                @NotNull(message = "Shift Incharge is required") @Positive(message = "Shift Incharge ID must be greater than 0") Long shiftInchargeId,
+
+                @Valid List<EquipmentMappingRequest> equipmentMappings
 
 ) {
 }

@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.supertech.superbatch.manager.user.entity.User;
+import com.supertech.superbatch.plant.unit.entity.Unit;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 import com.supertech.superbatch.scheduler.control_recipe.enums.ControlRecipeStatus;
 import com.supertech.superbatch.scheduler.control_recipe_sop.entity.ControlRecipeSOP;
@@ -45,6 +46,9 @@ public class ControlRecipe {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Recipe recipe;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Unit unit;
 
     @Enumerated(EnumType.STRING)
     private ControlRecipeStatus status;

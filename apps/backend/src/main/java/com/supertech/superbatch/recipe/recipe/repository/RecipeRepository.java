@@ -20,4 +20,8 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     boolean existsByNameIgnoreCase(String name);
 
+    @Query(" SELECT DISTINCT r FROM Recipe r WHERE r.id = :id")
+    @EntityGraph(attributePaths = { "sops", "sops.fromEquipment", "sops.toEquipment", "unit" })
+    Optional<Recipe> findByIdWithSopsAndEquipment(Long id);
+
 }

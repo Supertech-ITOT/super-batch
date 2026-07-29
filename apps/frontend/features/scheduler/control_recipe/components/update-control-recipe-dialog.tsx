@@ -92,6 +92,9 @@ export default function UpdateControlRecipeDialog({ open, onClose, controlRecipe
                                     type="text"
                                     placeholder="LOT_88"
                                     {...register("batchNo")}
+                                    onChange={(e) => {
+                                        e.target.value = e.target.value.toUpperCase();
+                                    }}
                                 />
                             </div>
                         </div>

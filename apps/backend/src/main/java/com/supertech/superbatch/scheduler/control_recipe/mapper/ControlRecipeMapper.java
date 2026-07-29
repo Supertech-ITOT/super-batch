@@ -25,6 +25,7 @@ public class ControlRecipeMapper {
                 .id(controlRecipe.getId())
                 .name(controlRecipe.getName())
                 .batchNo(controlRecipe.getBatchNo())
+                .unit(toResponse(controlRecipe.getUnit()))
                 .status(controlRecipe.getStatus())
                 .batchSize(controlRecipe.getBatchSize())
                 .recipe(toResponse(controlRecipe.getRecipe()))
@@ -36,10 +37,12 @@ public class ControlRecipeMapper {
                 .build();
     }
 
-    public ControlRecipe toEntity(CreateControlRecipeRequest request, String name, Recipe recipe, User createdBy,
+    public ControlRecipe toEntity(CreateControlRecipeRequest request, Unit unit, String name, Recipe recipe,
+            User createdBy,
             User shiftIncharge) {
         return ControlRecipe.builder()
                 .name(name)
+                .unit(unit)
                 .batchNo(request.batchNo())
                 .batchSize(request.batchSize())
                 .recipe(recipe)

@@ -4,8 +4,9 @@ import lombok.Builder;
 
 @Builder
 public record UnitRecipeResponse(
-        Long id,
-        String name,
-        String code) {
+                Long id,
+                String name,
+                String code,
+                Integer capacity) {
 
 }

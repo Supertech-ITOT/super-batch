@@ -28,6 +28,7 @@ import { useGetEquipmentsByUnitId } from "@/features/plant/equipment/hooks/use-e
 import { recipeSOPActionType } from "./recipe-sop-view";
 import { RadioGroup, RadioGroupItem } from "@/common/components/ui/radio-group";
 import { Separator } from "@/common/components/ui/separator";
+import { showFormError } from "@/common/lib/show-form-error";
 
 type RecipeSOPDialogProp = {
   recipeSOPId?: number;
@@ -82,7 +83,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
         parameters: recipeSOP?.parameters,
         stdTime: minutesToDuration(recipeSOP?.stdTime ?? 0),
         transitionId: recipeSOP?.transitionId,
-        fromEquipmentId: recipeSOP?.fromEquipment.id,
+        fromEquipmentId: recipeSOP?.fromEquipment?.id ?? undefined,
         toEquipmentId: recipeSOP?.toEquipment.id
       })
     }
@@ -149,10 +150,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
   };
 
   const onInvalid = (errors: FieldErrors<RecipeSOPSchema>) => {
-    const firstError = Object.values(errors)[0];
-    if (firstError?.message) {
-      toast.error(firstError.message.toString());
-    }
+    toast.error(showFormError(errors));
   };
 
   if (loading) {
@@ -192,7 +190,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
               <Input
                 placeholder="..."
                 type="number"
-                disabled={loading}
+                disabled
                 readOnly
                 value={stepNo ?? 0}
               />
@@ -327,6 +325,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
           <div className="space-y-4">
             <Label className="font-medium">Material Quantity Mode</Label>
             <RadioGroup
+              disabled={!(autoMaterialStep || manualMaterialStep)}
               value={materialInputMode}
               onValueChange={(v) =>
                 setMaterialInputMode(v as "ABSOLUTE" | "PERCENTAGE")
@@ -335,16 +334,11 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="ABSOLUTE" id="kg" />
-                <Label htmlFor="kg">
-                  Absolute (KG)
-                </Label>
+                <Label htmlFor="kg">Absolute (KG)</Label>
               </div>
-
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="PERCENTAGE" id="percent" />
-                <Label htmlFor="percent">
-                  Percentage (%)
-                </Label>
+                <Label htmlFor="percent">Percentage (%)</Label>
               </div>
             </RadioGroup>
             <Separator />

@@ -249,7 +249,7 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                 Equipment toEquipment = equipmentRepository.findById(toEquipmentId)
                                 .orElseThrow(() -> new ResourceNotFoundException("To Equipment not found."));
 
-                validateEquipment(transition, fromEquipment, toEquipment, controlRecipe.getRecipe().getUnit().getId());
+                validateEquipment(transition, fromEquipment, toEquipment, controlRecipe.getUnit().getId());
                 validateMaterial(controlRecipe.getId(), recipeSOPId, transition, materials,
                                 controlRecipe.getBatchSize());
 

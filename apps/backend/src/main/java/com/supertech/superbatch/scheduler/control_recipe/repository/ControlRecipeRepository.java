@@ -11,13 +11,13 @@ import com.supertech.superbatch.scheduler.control_recipe.entity.ControlRecipe;
 
 public interface ControlRecipeRepository extends JpaRepository<ControlRecipe, Long> {
         @Query("SELECT crh FROM ControlRecipe crh")
-        @EntityGraph(attributePaths = { "recipe", "recipe.material", "recipe.unit",
+        @EntityGraph(attributePaths = { "recipe", "unit", "recipe.material", "recipe.unit",
                         "createdBy",
                         "createdBy.role", "shiftIncharge", "shiftIncharge.role" })
         List<ControlRecipe> findAllWithRelations();
 
         @Query("SELECT crh FROM ControlRecipe crh WHERE crh.id = :id")
-        @EntityGraph(attributePaths = { "recipe", "recipe.material", "recipe.unit",
+        @EntityGraph(attributePaths = { "recipe", "unit", "recipe.material", "recipe.unit",
                         "createdBy",
                         "createdBy.role", "shiftIncharge", "shiftIncharge.role" })
         Optional<ControlRecipe> findByIdWithRelations(Long id);

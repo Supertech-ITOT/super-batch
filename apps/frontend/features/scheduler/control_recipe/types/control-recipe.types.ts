@@ -3,6 +3,7 @@ export interface ControlRecipeResponse {
   id: number;
   batchNo: string;
   name: string;
+  unit: UnitControlRecipeResponse
   recipe: MasterRecipeResponse;
   status: ControlRecipeStatus;
   batchSize: number;
@@ -18,6 +19,8 @@ export interface CreateControlRecipeRequest {
   batchSize: number;
   scheduledAt: string; //YYYY-MM-DDTHH:mm:ss
   recipeId: number;
+  unitId: number;
+  equipmentMappings: EquipmentMappingRequest[];
   shiftInchargeId: number;
 }
 
@@ -47,6 +50,18 @@ export interface UserControlRecipeResponse {
   name: string;
   email: string;
   role: string;
+}
+
+export interface EquipmentMappingRequest {
+  recipeEquipmentId: number;
+  executionEquipmentId: number;
+}
+
+export interface EquipmentMappingResponse {
+  equipmentId: number;
+  equipmentName: string;
+  mappedEquipmentId: number | null;
+  autoMapped: boolean;
 }
 
 export enum ControlRecipeStatus {

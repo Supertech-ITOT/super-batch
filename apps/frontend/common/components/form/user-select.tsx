@@ -1,5 +1,5 @@
 import { memo, useMemo, useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown } from "lucide-react";
 import { Button } from "@/common/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, } from "@/common/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger, } from "@/common/components/ui/popover";
@@ -92,38 +92,27 @@ function UserSelect({ value, onChange, options, placeholder = "Select User", sea
                                 <CommandItem
                                     key={option.id}
                                     value={`${option.name} ${option.email} ${option.role}`}
-                                    onSelect={() => {
-                                        onChange(option.id);
-                                        setOpen(false);
-                                    }}
-                                    className="flex cursor-pointer items-center gap-2 px-3 py-2"
+                                    data-checked={option.id === value}
+                                    onSelect={() => { onChange(option.id); setOpen(false); }}
+                                    className="flex cursor-pointer items-center gap-0.5 py-0.5"
                                 >
                                     <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${getColorByText(option.name)}`}>
                                         {getInitials(option.name)}
                                     </div>
 
                                     <div className="min-w-0 flex-1 leading-tight">
-                                        <div className="truncate text-sm font-medium">
+                                        <div className="truncate text-sm font-medium" title={option.name}>
                                             {option.name}
                                         </div>
 
-                                        <div className="truncate text-xs text-muted-foreground">
+                                        <div className="truncate text-xs text-muted-foreground" title={option.email}>
                                             {option.email}
                                         </div>
 
-                                        <div className="truncate text-[11px] text-primary">
+                                        <div className="truncate text-[11px] text-primary" title={option.role}>
                                             {option.role}
                                         </div>
                                     </div>
-
-                                    <Check
-                                        className={cn(
-                                            "h-4 w-4 shrink-0",
-                                            option.id === value
-                                                ? "opacity-100 text-primary"
-                                                : "opacity-0"
-                                        )}
-                                    />
                                 </CommandItem>
                             ))}
                         </CommandGroup>

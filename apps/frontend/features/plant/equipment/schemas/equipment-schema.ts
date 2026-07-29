@@ -52,7 +52,7 @@ export const equipmentSchema = z.object({
         ),
 
 
-    capacity: z.string({ error: "Capacity is required." }).trim(),
+    capacity: z.string({ error: "Capacity is required." }).min(1, "Capacity is required").trim(),
 
     unitId: z.string({ error: "Unit is required." }).trim()
 });

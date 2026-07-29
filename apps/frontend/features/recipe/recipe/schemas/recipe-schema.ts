@@ -5,7 +5,7 @@ export const RecipeSchemaLimit = {
     description: { min: 2, max: 255 },
 } as const
 
-export const recipeSchema = z.object({
+export const baseRecipeSchema = z.object({
     name: z.string()
         .trim()
         .min(
@@ -53,4 +53,12 @@ export const recipeSchema = z.object({
         .min(1, `Status must is required`)
 });
 
-export type RecipeSchema = z.infer<typeof recipeSchema>;
+
+export const createRecipeSchema = baseRecipeSchema;
+
+export const updateRecipeSchema = baseRecipeSchema.omit({
+    unitId: true,
+});
+
+export type CreateRecipeSchema = z.infer<typeof createRecipeSchema>;
+export type UpdateRecipeSchema = z.infer<typeof updateRecipeSchema>;
