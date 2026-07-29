@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarIcon, RotateCcw, Search } from "lucide-react";
+import {
+  Activity,
+  Boxes,
+  CalendarIcon,
+  RotateCcw,
+  Search,
+  UserCircle,
+} from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/common/components/ui/button";
 import { Calendar } from "@/common/components/ui/calendar";
@@ -71,40 +78,43 @@ export default function AuditFilter({
       </div>
 
       {/* Module */}
-      <div className="w-56">
+      <div className=" relative w-56">
+        <Boxes className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black z-10 " />
         <SearchableSelect
           value={filter.module}
           onChange={(value) => updateFilter("module", value)}
           placeholder="Module"
           options={modules}
-          className="text-bg-card "
+          className="text-bg-card font-medium pl-10 "
         />
       </div>
 
       {/* Action */}
-      <div className="w-56">
+      <div className="relative w-56">
+        <Activity className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black z-10" />
         <SearchableSelect
           value={filter.action}
           onChange={(value) => updateFilter("action", value)}
           placeholder="Action"
           options={actions}
-          className="text-bg-card "
+          className="text-bg-card font-medium pl-10"
         />
       </div>
 
       {/* User */}
-      <div className="w-56">
+      <div className="relative w-56">
+        <UserCircle className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black z-10" />
         <SearchableSelect
           value={filter.user}
           onChange={(value) => updateFilter("user", value)}
           placeholder="User"
           options={users}
-          className="text-bg-card "
+          className="text-bg-card font-medium! pl-10"
         />
       </div>
 
       {/* From Date */}
-      <div className="w-56 bg-card">
+      <div className="w-56">
         <Popover open={fromOpen} onOpenChange={setFromOpen}>
           <PopoverTrigger asChild>
             <Button

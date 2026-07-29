@@ -6,10 +6,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.supertech.superbatch.audit.enums.BatchAuditAction;
 import com.supertech.superbatch.manager.user.entity.User;
-import com.supertech.superbatch.manager.module.enums.ModuleType;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.supertech.superbatch.manager.module.entity.Module;
 
 @Entity
 @Getter
@@ -28,8 +28,8 @@ public class BatchAudit {
     @Enumerated(EnumType.STRING)
     private BatchAuditAction action;
 
-    @Enumerated(EnumType.STRING)
-    private ModuleType module;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Module module;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User performedBy;

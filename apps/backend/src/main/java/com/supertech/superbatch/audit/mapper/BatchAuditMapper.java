@@ -6,6 +6,7 @@ import com.supertech.superbatch.audit.dto.BatchAuditRequest;
 import com.supertech.superbatch.audit.dto.BatchAuditResponse;
 import com.supertech.superbatch.audit.dto.BatchAuditUserResponse;
 import com.supertech.superbatch.audit.entity.BatchAudit;
+import com.supertech.superbatch.manager.module.entity.Module;
 import com.supertech.superbatch.manager.user.entity.User;
 
 @Component
@@ -14,7 +15,7 @@ public class BatchAuditMapper {
         return BatchAuditResponse.builder()
                 .id(audit.getId())
                 .action(audit.getAction().name())
-                .module(audit.getModule().name())
+                .module(audit.getModule().getName())
                 .performedBy(toResponse(audit.getPerformedBy()))
                 .performedAt(audit.getPerformedAt())
                 .oldData(audit.getOldData())
@@ -33,11 +34,11 @@ public class BatchAuditMapper {
                 .build();
     }
 
-    public BatchAudit toEntity(BatchAuditRequest request, User performedBy) {
+    public BatchAudit toEntity(BatchAuditRequest request, User performedBy, Module module) {
         return BatchAudit.builder()
                 .entity(request.entity())
                 .action(request.action())
-                .module(request.module())
+                .module(module)
                 .performedBy(performedBy)
                 .build();
     }

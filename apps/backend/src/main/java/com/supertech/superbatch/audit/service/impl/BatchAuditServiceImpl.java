@@ -19,6 +19,8 @@ import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.common.security.UserContextService;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
+import com.supertech.superbatch.manager.module.entity.Module;
+import com.supertech.superbatch.manager.module.repository.ModuleRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ public class BatchAuditServiceImpl implements BatchAuditService {
     private final BatchAuditMapper batchAuditMapper;
     private final UserContextService userContextService;
     private final UserRepository userRepository;
+    private final ModuleRepository moduleRepository;
     private final AuditDiffGeneratorService auditDiffGeneratorService;
 
     @Override
@@ -37,7 +40,9 @@ public class BatchAuditServiceImpl implements BatchAuditService {
     public void save(BatchAuditRequest request) {
         Long userId = userContextService.getCurrentUserId();
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found."));
-        BatchAudit batchAudit = batchAuditMapper.toEntity(request, user);
+        Module module = moduleRepository.findById(request.module().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Module not found."));
+        BatchAudit batchAudit = batchAuditMapper.toEntity(request, user, module);
         AuditDiff diff = auditDiffGeneratorService.generate(request.oldData(), request.newData());
         batchAudit.setOldData(diff.oldData());
         batchAudit.setNewData(diff.newData());

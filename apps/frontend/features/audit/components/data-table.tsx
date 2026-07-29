@@ -20,7 +20,7 @@ import {
   TableRow,
 } from "@/common/components/ui/table";
 import { Button } from "@/common/components/ui/button";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AuditFilter, { AuditFilterValue } from "./audit-filter";
 import { useGetUser } from "@/features/manager/user/hooks/use-user";
 import { useGetModules } from "@/features/manager/module/hooks/use-module";
@@ -30,25 +30,21 @@ import { toDisplayText } from "@/common/lib/format-enum";
 interface DataTableProps<TData extends { id: number }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  filter: AuditFilterValue;
+  onFilterChange: (value: AuditFilterValue) => void;
 }
 
 const DataTable = <TData extends { id: number }, TValue>({
   columns,
   data,
+  filter,
+  onFilterChange,
 }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const { data: users } = useGetUser();
   const { data: modules } = useGetModules();
   const { data: actions } = useGetBatchAuditAction();
-  const [filter, setFilter] = useState<AuditFilterValue>({
-    search: "",
-    module: undefined,
-    action: undefined,
-    user: undefined,
-    fromDate: undefined,
-    toDate: undefined,
-  });
 
   const table = useReactTable({
     data: data,
@@ -62,9 +58,7 @@ const DataTable = <TData extends { id: number }, TValue>({
     initialState: { pagination: { pageSize: 8 } },
     state: { sorting, columnFilters },
   });
-  useEffect(() => {
-    table.getColumn("action")?.setFilterValue(filter.search);
-  }, [filter.search, table]);
+
   const rows = table.getRowModel().rows;
   const emptyRows = Math.max(0, 8 - rows.length);
   return (
@@ -72,7 +66,7 @@ const DataTable = <TData extends { id: number }, TValue>({
       <div className="flex items-center justify-between pb-2">
         <AuditFilter
           filter={filter}
-          onFilterChange={setFilter}
+          onFilterChange={onFilterChange}
           modules={
             modules?.map((m) => ({
               label: toDisplayText(m.name),
@@ -92,7 +86,7 @@ const DataTable = <TData extends { id: number }, TValue>({
             })) ?? []
           }
           onReset={() =>
-            setFilter({
+            onFilterChange({
               search: "",
               module: undefined,
               action: undefined,
