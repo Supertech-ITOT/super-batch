@@ -19,6 +19,7 @@ import com.supertech.superbatch.plant.transition.entity.Transition;
 import com.supertech.superbatch.plant.transition.enums.TransitionType;
 import com.supertech.superbatch.plant.transition.repository.TransitionRepository;
 import com.supertech.superbatch.scheduler.control_recipe.entity.ControlRecipe;
+import com.supertech.superbatch.scheduler.control_recipe.enums.ControlRecipeStatus;
 import com.supertech.superbatch.scheduler.control_recipe.repository.ControlRecipeRepository;
 import com.supertech.superbatch.scheduler.control_recipe_sop.dto.ControlRecipeSOPDependencies;
 import com.supertech.superbatch.scheduler.control_recipe_sop.dto.ControlRecipeSOPMaterialSummaryResponse;
@@ -104,7 +105,10 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                 ControlRecipeSOP controlRecipeSOP = controlRecipeSOPRepository.findById(request.id())
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found"));
                 ControlRecipe controlRecipe = controlRecipeRepository.findByIdWithRelations(request.controlRecipeId())
-                                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
+                                .orElseThrow(() -> new ResourceNotFoundException("Control Recipe not found."));
+                if (controlRecipe.getStatus().equals(ControlRecipeStatus.TRANSFER)) {
+                        throw new BadRequestException("Transfered batch connot be edit again.");
+                }
                 ControlRecipeSOPDependencies deps = loadInsertDependencies(request.actionId(),
                                 request.transitionId(),
                                 request.fromEquipmentId(),

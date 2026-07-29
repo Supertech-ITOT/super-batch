@@ -32,3 +32,8 @@ export const getRecipeEquipmentMapping = async (recipeId: number, unitId: number
     const res = await api.get<ApiResponse<EquipmentMappingResponse[]>>(`/control-recipe/${recipeId}/equipment-mapping`, { params: { unitId, }, });
     return res.data;
 };
+
+export const transferControlRecipe = async (id: number) => {
+    const res = await api.put<ApiResponse<void>>(`/control-recipe/${id}/transfer`);
+    return res.data;
+};

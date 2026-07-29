@@ -20,4 +20,6 @@ public interface ControlRecipeService {
 
     List<EquipmentMappingResponse> getRecipeEquipments(Long recipeId, Long unitId);
 
+    void transfer(Long id);
+
 }

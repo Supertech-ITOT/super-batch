@@ -1,6 +1,6 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createControlRecipe, deleteControlRecipe, getAllControlRecipes, getControlRecipeById, getRecipeEquipmentMapping, updateControlRecipe } from "../services/control-recipe.service";
+import { createControlRecipe, deleteControlRecipe, getAllControlRecipes, getControlRecipeById, getRecipeEquipmentMapping, transferControlRecipe, updateControlRecipe } from "../services/control-recipe.service";
 import { queryKeys } from "../../common/hooks/query-keys";
 
 
@@ -69,6 +69,19 @@ export const useDeleteControlRecipe = () => {
     return useMutation({
         mutationFn: deleteControlRecipe,
         onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.controlRecipes
+            });
+        },
+    });
+};
+
+export const useTransferControlRecipe = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: transferControlRecipe,
+        onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: queryKeys.controlRecipes
             });

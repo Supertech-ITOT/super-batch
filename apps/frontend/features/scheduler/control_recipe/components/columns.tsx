@@ -214,20 +214,20 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogPro
         id: "actions",
         header: "Actions",
         cell: ({ row }) => {
-            const recipe = row.original;
+            const controlRecipe = row.original;
 
             return (
                 <div className="flex items-center justify-center flex-col gap-0.5">
-                    <Button variant="ghost" size="icon" onClick={() => router.push(`/Scheduler/edit?id=${recipe.id}`)}>
+                    <Button variant="ghost" size="icon" onClick={() => router.push(`/Scheduler/edit?id=${controlRecipe.id}`)}>
                         <Eye className="size-5!" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => router.push(`/Scheduler/edit?id=${recipe.id}`)}>
+                    <Button variant="ghost" size="icon" onClick={() =>setDialog({ action: "transfer", id: controlRecipe.id, open: true, })}>
                         <MoveRight className="size-5! text-primary" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => setDialog({ action: "edit", id: recipe.id, open: true, })} >
+                    <Button variant="ghost" size="icon" onClick={() => setDialog({ action: "edit", id: controlRecipe.id, open: true, })} >
                         <PencilLine className="size-4! text-blue-800" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => setDialog({ action: "delete", id: recipe.id, open: true, })}>
+                    <Button variant="ghost" size="icon" onClick={() => setDialog({ action: "delete", id: controlRecipe.id, open: true, })}>
                         <Trash2 className="size-4.5! text-destructive" />
                     </Button>
                 </div>

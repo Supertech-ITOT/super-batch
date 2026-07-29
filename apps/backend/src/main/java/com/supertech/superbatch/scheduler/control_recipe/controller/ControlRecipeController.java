@@ -74,4 +74,11 @@ public class ControlRecipeController {
                 List<EquipmentMappingResponse> response = controlRecipeService.getRecipeEquipments(recipeId, unitId);
                 return ResponseEntity.ok(ApiResponse.success("Equipment mapping fetched successfully.", response));
         }
+
+        @PutMapping("/{id}/transfer")
+        public ResponseEntity<ApiResponse<Void>> transfer(@PathVariable Long id) {
+                controlRecipeService.transfer(id);
+                return ResponseEntity.ok(
+                                ApiResponse.success("Scheduled Batch transferred successfully.", null));
+        }
 }

@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.supertech.superbatch.batch.batch.entity.Batch;
+import com.supertech.superbatch.batch.batch.mapper.BatchMapper;
+import com.supertech.superbatch.batch.batch.repository.BatchRepository;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
@@ -31,6 +34,7 @@ import com.supertech.superbatch.scheduler.control_recipe.dto.EquipmentMappingReq
 import com.supertech.superbatch.scheduler.control_recipe.dto.EquipmentMappingResponse;
 import com.supertech.superbatch.scheduler.control_recipe.dto.UpdateControlRecipeRequest;
 import com.supertech.superbatch.scheduler.control_recipe.entity.ControlRecipe;
+import com.supertech.superbatch.scheduler.control_recipe.enums.ControlRecipeStatus;
 import com.supertech.superbatch.scheduler.control_recipe.mapper.ControlRecipeMapper;
 import com.supertech.superbatch.scheduler.control_recipe.repository.ControlRecipeRepository;
 import com.supertech.superbatch.scheduler.control_recipe.service.ControlRecipeService;
@@ -63,6 +67,8 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
         private final RecipeRepository recipeRepository;
         private final RecipeSOPRepository recipeSOPRepository;
         private final EquipmentRepository equipmentRepository;
+        private final BatchMapper batchMapper;
+        private final BatchRepository batchRepository;
 
         @Override
         public void delete(Long id) {
@@ -132,6 +138,10 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
                 }
                 ControlRecipe controlRecipe = controlRecipeRepository.findById(id)
                                 .orElseThrow(() -> new RuntimeException("Control Recipe not found."));
+
+                if (controlRecipe.getStatus().equals(ControlRecipeStatus.TRANSFER)) {
+                        throw new BadRequestException("Transfered batch connot be edit again.");
+                }
 
                 User shiftIncharge = userRepository.findById(request.shiftInchargeId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Shift Incharge User not found."));
@@ -244,5 +254,18 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
                                                         .build();
                                 })
                                 .toList();
+        }
+
+        @Override
+        public void transfer(Long id) {
+                ControlRecipe controlRecipe = controlRecipeRepository.findByIdWithRelations(id)
+                                .orElseThrow(() -> new RuntimeException("Control Recipe not found."));
+                if (controlRecipe.getStatus() == ControlRecipeStatus.TRANSFER) {
+                        throw new RuntimeException("Already transferred.");
+                }
+                Batch batch = batchMapper.toEntity(controlRecipe);
+                batchRepository.save(batch);
+                controlRecipe.setStatus(ControlRecipeStatus.TRANSFER);
+                controlRecipeRepository.save(controlRecipe);
         }
 }

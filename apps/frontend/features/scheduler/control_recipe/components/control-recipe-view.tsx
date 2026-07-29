@@ -10,10 +10,10 @@ import { useGetControlRecipes } from "../hooks/use-control-recipe";
 import CreateControlRecipeDialog from "./create-control-recipe-dialog";
 import DeleteControlRecipeDialog from "./delete-control-recipe-dialog";
 import UpdateControlRecipeDialog from "./update-control-recipe-dialog";
-// import UpdateControlRecipeDialog from "./update-control-recipe-dialog";
+import TransferControlRecipeDialog from "./transfer-control-recipe-dialog";
 
 export type DialogProp = {
-    action: "create" | "edit" | "delete" | null;
+    action: "create" | "edit" | "delete" | "transfer" | null;
     id: number | null;
     open: boolean;
 };
@@ -59,6 +59,8 @@ export default function ControlRecipeView() {
                         <UpdateControlRecipeDialog open={dialog.open} controlRecipeId={dialog.id} onClose={closeDialog} />)}
                     {dialog.action === "delete" && dialog.id !== null && (
                         <DeleteControlRecipeDialog open={dialog.open} controlRecipeId={dialog.id} onClose={closeDialog} />)}
+                    {dialog.action === "transfer" && dialog.id !== null && (
+                        <TransferControlRecipeDialog open={dialog.open} controlRecipeId={dialog.id} onClose={closeDialog} />)}
                 </>
             }
 

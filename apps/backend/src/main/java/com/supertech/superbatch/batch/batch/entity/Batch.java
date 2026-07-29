@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 import com.supertech.superbatch.batch.batch_sop.entity.BatchSOP;
+import com.supertech.superbatch.plant.unit.entity.Unit;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 import com.supertech.superbatch.scheduler.control_recipe.entity.ControlRecipe;
 import jakarta.persistence.*;
@@ -29,6 +30,8 @@ public class Batch {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Recipe masterRecipe;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Unit unit;
     @ManyToOne(fetch = FetchType.LAZY)
     private ControlRecipe controlRecipe;
 
