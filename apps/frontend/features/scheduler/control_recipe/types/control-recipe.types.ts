@@ -1,4 +1,3 @@
-import { UomResponse } from "@/features/plant/common/types/uom.types";
 
 export interface ControlRecipeResponse {
   id: number;
@@ -41,7 +40,6 @@ export interface UnitControlRecipeResponse {
   id: number;
   name: string;
   capacity: number;
-  batchSizeUom: UomResponse;
 }
 
 export interface UserControlRecipeResponse {

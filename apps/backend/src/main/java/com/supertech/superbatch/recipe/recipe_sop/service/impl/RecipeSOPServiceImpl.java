@@ -10,13 +10,10 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.supertech.superbatch.common.enums.UomType;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.plant.action.entity.Action;
 import com.supertech.superbatch.plant.action.repository.ActionRepository;
-import com.supertech.superbatch.plant.common.dto.UomResponse;
-import com.supertech.superbatch.plant.common.mapper.UomMapper;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.equipment.repository.EquipmentRepository;
 import com.supertech.superbatch.plant.transition.entity.Transition;
@@ -54,7 +51,6 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
         private final RecipeSOPParameterService recipeSOPParameterService;
         private final RecipeSOPMaterialService recipeSOPMaterialService;
         private final RecipeSOPMaterialRepository recipeSOPMaterialRepository;
-        private final UomMapper uomMapper;
 
         @Override
         public RecipeSOPResponse getById(Long id) {
@@ -250,8 +246,7 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                                 .orElseThrow(() -> new ResourceNotFoundException("To Equipment not found."));
 
                 validateEquipment(transition, fromEquipment, toEquipment, recipe.getUnit().getId());
-                validateMaterial(recipe.getId(), recipeSOPId, transition, materials, recipe.getUnit().getBatchSizeUom(),
-                                recipe.getBatchSize());
+                validateMaterial(recipe.getId(), recipeSOPId, transition, materials, recipe.getBatchSize());
 
                 return RecipeSOPDependencies.builder()
                                 .action(action)
@@ -290,7 +285,7 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
 
         private void validateMaterial(Long recipeId, Long recipeSOPId, Transition transition,
                         List<RecipeSOPMaterialRequest> materials,
-                        UomType batchSizeUom, Integer batchSize) {
+                        Integer batchSize) {
 
                 materials = materials == null ? List.of() : materials;
 
@@ -314,19 +309,12 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
 
                 double finalQty = existingQty + requestedQty;
 
-                if (batchSizeUom == UomType.KG) {
-                        if (finalQty > batchSize) {
-                                throw new BadRequestException(String.format(
-                                                "Total material quantity (%.2f kg) exceeds recipe batch size (%d kg).",
-                                                finalQty, batchSize));
-                        }
+                if (finalQty > batchSize) {
+                        throw new BadRequestException(String.format(
+                                        "Total material quantity (%.2f kg) exceeds recipe batch size (%d kg).",
+                                        finalQty, batchSize));
                 }
-                if (batchSizeUom == UomType.PERCENT) {
-                        if (finalQty > 100) {
-                                throw new BadRequestException(String.format(
-                                                "Total material percentage (%.2f%%) cannot exceed 100%%.", finalQty));
-                        }
-                }
+
         }
 
         @Override
@@ -335,8 +323,6 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                                 .orElseThrow(() -> new ResourceNotFoundException("Recipe not found"));
 
                 Integer batchSize = recipe.getBatchSize();
-                UomResponse batchSizeUom = uomMapper.toResponse(recipe.getUnit().getBatchSizeUom());
-
                 List<RecipeSOP> recipeSOPs = recipeSOPRepository.findWithRelationsByRecipeId(recipe.getId());
                 int totalSteps = recipeSOPs.size();
                 double totalDuration = recipeSOPs.stream()
@@ -363,7 +349,7 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
 
                 List<RecipeSOPMaterialSummaryResponse> materials = new ArrayList<>(materialMap.values());
 
-                return new RecipeSOPSummaryResponse(batchSize, batchSizeUom, totalSteps, materials.size(),
+                return new RecipeSOPSummaryResponse(batchSize, totalSteps, materials.size(),
                                 totalDuration, materials);
 
         }

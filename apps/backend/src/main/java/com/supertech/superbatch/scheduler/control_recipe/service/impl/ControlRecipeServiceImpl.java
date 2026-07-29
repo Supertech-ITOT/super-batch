@@ -59,10 +59,8 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
                 if (controlRecipeRepository.existsByBatchNoIgnoreCase(request.batchNo())) {
                         throw new DuplicateResourceException("Batch No already exists.");
                 }
-                List<ControlRecipe> controlRecipes = controlRecipeRepository.findByRecipeId(request.recipeId());
-                Integer count = controlRecipes.isEmpty() ? 1 : controlRecipes.size() + 1;
 
-                Recipe recipe = recipeRepository.findById(request.recipeId())
+                Recipe recipe = recipeRepository.findByIdWithRelations(request.recipeId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
 
                 User createdBy = userRepository.findById(userId)
@@ -71,7 +69,8 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
                 User shiftIncharge = userRepository.findById(request.shiftInchargeId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Shift Incharge User not found."));
 
-                String controlRecipeName = "CR_" + recipe.getName() + "_" + count;
+                String controlRecipeName = "CR_" + recipe.getName() + "_" + recipe.getUnit().getCode() + "_"
+                                + request.batchNo();
 
                 ControlRecipe controlRecipe = null;
                 controlRecipe = controlRecipeMapper.toEntity(request, controlRecipeName, recipe, createdBy,

@@ -10,7 +10,6 @@ import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/common/components/ui/select";
 import { useGetAreas } from "../../area/hooks/use-areas";
-import { useGetUomTypes } from "@/features/common/hooks/useMetadata";
 import { useEffect } from "react";
 import CharacterProgress from "@/common/components/form/character-progress";
 import { Textarea } from "@/common/components/ui/textarea";
@@ -20,19 +19,18 @@ import { unitSchema, UnitSchema, UnitSchemaLimit } from "../schemas/unit-schema"
 type Props = { open: boolean; onClose: () => void; areaId?: number };
 export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
     const { mutateAsync: createUnit, isPending: isCreating } = useCreateUnit();
-    const { data: uomTypes, isLoading: uomTypesIsLoading } = useGetUomTypes(open);
     const { data: areas, isLoading: areasLoading } = useGetAreas(open);
     const { register, handleSubmit, reset, control, watch, formState: { isSubmitting, isDirty } } = useForm<UnitSchema>({
         resolver: zodResolver(unitSchema),
-        defaultValues: { name: "", areaId: "", batchSizeUom: "", capacity: "", code: "", description: "" }
+        defaultValues: { name: "", areaId: "", capacity: "", code: "", description: "" }
     });
 
     useEffect(() => {
         if (!open || !areaId) return;
-        reset({ name: "", areaId: String(areaId), batchSizeUom: "", code: "", description: "" })
+        reset({ name: "", areaId: String(areaId), code: "", description: "" })
     }, [open, areaId, reset]);
 
-    const loading = isCreating || areasLoading || isSubmitting || uomTypesIsLoading;
+    const loading = isCreating || areasLoading || isSubmitting;
     const onSubmit = async (formData: UnitSchema) => {
         try {
             const res = await createUnit({
@@ -40,7 +38,6 @@ export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
                 name: formData.name,
                 code: formData.code,
                 description: formData.description,
-                batchSizeUom: formData.batchSizeUom,
                 capacity: Number(formData.capacity)
             });
             toast.success(res.message ?? "Unit created successfully.");
@@ -50,7 +47,7 @@ export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ name: "", areaId: "", batchSizeUom: "", capacity: "", code: "", description: "" });
+        reset({ name: "", areaId: "", capacity: "", code: "", description: "" });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<UnitSchema>) => {
@@ -126,60 +123,31 @@ export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
                                 {...register("description")}
                             />
                         </div>
-                        <div className="flex gap-2">
-                            <div className="space-y-2 flex-1">
-                                <Label>Select Area</Label>
-                                <Controller
-                                    control={control}
-                                    name="areaId"
-                                    render={({ field }) => (
-                                        <Select
-                                            disabled={loading || !!areaId}
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Area" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {areas?.map((p) => (
-                                                        <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                            </div>
-                            <div className="space-y-2 flex-1">
-                                <Label>Batch Size Uom</Label>
-                                <Controller
-                                    control={control}
-                                    name="batchSizeUom"
-                                    render={({ field }) => (
-                                        <Select
-                                            disabled={loading}
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Batch Size Uom" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {uomTypes?.filter(f => f.value == "KG" || f.value == "PERCENT").map((e) => (
-                                                        <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                            </div>
-
+                        <div className="space-y-2 relative">
+                            <Label>Select Area</Label>
+                            <Controller
+                                control={control}
+                                name="areaId"
+                                render={({ field }) => (
+                                    <Select
+                                        disabled={loading || !!areaId}
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select Area" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {areas?.map((p) => (
+                                                    <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
                         </div>
-
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>

@@ -51,8 +51,6 @@ export const unitSchema = z.object({
             `Description cannot exceed ${UnitSchemaLimit.description.max} characters`
         ),
 
-    batchSizeUom: z.string({ error: "Batch Size Uom is required." }).min(1, "Batch Size Uom is required").trim(),
-
     capacity: z.string({ error: "Capacity is required." }).trim(),
 
     areaId: z.string({ error: "Area is required." }).min(1, "Area is required").trim()

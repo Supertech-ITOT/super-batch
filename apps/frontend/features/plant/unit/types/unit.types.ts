@@ -1,5 +1,3 @@
-import { UomResponse } from "../../common/types/uom.types";
-
 export interface UnitSummaryResponse {
     id: number;
     name: string;
@@ -13,7 +11,6 @@ export interface UnitResponse {
     areaId: number;
     areaName: string;
     capacity: number;
-    batchSizeUom: UomResponse;
     totalEquipment: number;
     createdAt: string;
     updatedAt: string;
@@ -23,7 +20,6 @@ export interface CreateUnitRequest {
     code: string;
     description: string;
     capacity: number;
-    batchSizeUom: string;
     areaId: number;
 }
 export interface UpdateUnitRequest {
@@ -31,6 +27,5 @@ export interface UpdateUnitRequest {
     code: string;
     description: string;
     capacity: number;
-    batchSizeUom: string;
     areaId: number;
 }

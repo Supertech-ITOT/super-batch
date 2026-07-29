@@ -3,7 +3,6 @@ package com.supertech.superbatch.plant.unit.mapper;
 import org.springframework.stereotype.Component;
 
 import com.supertech.superbatch.plant.area.entity.Area;
-import com.supertech.superbatch.plant.common.mapper.UomMapper;
 import com.supertech.superbatch.plant.unit.dto.CreateUnitRequest;
 import com.supertech.superbatch.plant.unit.dto.UnitAudit;
 import com.supertech.superbatch.plant.unit.dto.UnitResponse;
@@ -16,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class UnitMapper {
-        private final UomMapper uomMapper;
 
         public UnitResponse toResponse(Unit unit) {
 
@@ -32,7 +30,6 @@ public class UnitMapper {
                                 .areaId(unit.getArea().getId())
                                 .areaName(unit.getArea().getName())
                                 .capacity(unit.getCapacity())
-                                .batchSizeUom(uomMapper.toResponse(unit.getBatchSizeUom()))
                                 .totalEquipment(totalEquipment)
                                 .createdAt(unit.getCreatedAt())
                                 .updatedAt(unit.getUpdatedAt())
@@ -45,7 +42,6 @@ public class UnitMapper {
                                 .code(request.code())
                                 .description(request.description())
                                 .capacity(request.capacity())
-                                .batchSizeUom(request.batchSizeUom())
                                 .area(area)
                                 .build();
         }
@@ -55,7 +51,6 @@ public class UnitMapper {
                 unit.setCode(request.code());
                 unit.setDescription(request.description());
                 unit.setCapacity(request.capacity());
-                unit.setBatchSizeUom(request.batchSizeUom());
                 unit.setArea(area);
         }
 

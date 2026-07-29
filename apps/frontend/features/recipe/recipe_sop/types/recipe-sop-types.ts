@@ -1,5 +1,3 @@
-import { UomResponse } from "@/features/plant/common/types/uom.types";
-
 export interface CreateRecipeSOPRequest {
     recipeId: number;
     message: string;
@@ -73,7 +71,6 @@ export type RecipeSOPMaterialSummary = {
 
 export type RecipeSOPSummary = {
     batchSize: number;
-    batchSizeUom: UomResponse;
     totalSteps: number;
     totalMaterials: number;
     totalDuration: number;

@@ -1,7 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { Label, Pie, PieChart, Tooltip } from "recharts";
 import { getChartColorByText } from "@/common/utils/color.util";
-import { UomResponse } from "@/features/plant/common/types/uom.types";
 
 type DonutChartData = {
     label: string;
@@ -13,11 +12,10 @@ type DonutChartProps = {
     title?: string;
     data: DonutChartData[];
     targetSize: number;
-    uom: UomResponse;
 
 };
 
-export default function DonutChart({ data, targetSize, uom }: DonutChartProps) {
+export default function DonutChart({ data, targetSize }: DonutChartProps) {
     const chartData = useMemo(
         () => data.map((item) => ({
             ...item,
@@ -32,14 +30,10 @@ export default function DonutChart({ data, targetSize, uom }: DonutChartProps) {
 
     const totalUsedKg = useMemo(() => {
         return chartData.reduce((sum, item) => {
-            const qtyKg =
-                uom.symbol === "%"
-                    ? (item.value / 100) * targetSize
-                    : item.value;
-
+            const qtyKg = item.value;
             return sum + qtyKg;
         }, 0);
-    }, [chartData, targetSize, uom.symbol]);
+    }, [chartData, targetSize]);
 
     const remainingQty = Math.max(targetSize - totalUsedKg, 0);
 
@@ -47,8 +41,8 @@ export default function DonutChart({ data, targetSize, uom }: DonutChartProps) {
         ({ active, payload }: any) => {
             if (!active || !payload?.length) return null;
             const item = payload[0].payload;
-            const qty = uom.symbol === "%" ? (item.value * targetSize) / 100 : item.value;
-            const percentage = uom.symbol === "%" ? item.value : (item.value / targetSize) * 100;
+            const qty = item.value;
+            const percentage = (item.value / targetSize) * 100;
             return (
                 <div className="relative min-w-52 overflow-hidden rounded-xl border border-border/50 bg-background/75 shadow-xl backdrop-blur-xl">
                     <div
@@ -86,7 +80,7 @@ export default function DonutChart({ data, targetSize, uom }: DonutChartProps) {
                 </div>
             );
         },
-        [targetSize, uom.symbol]
+        [targetSize]
     );
 
 
@@ -177,7 +171,7 @@ export default function DonutChart({ data, targetSize, uom }: DonutChartProps) {
                                     </span>
                                     <span className="truncate text-sm" title={item.label}>{item.label}</span>
                                 </div>
-                                <strong className="text-sm font-semibold">{item.value} {uom.symbol.toUpperCase()}</strong>
+                                <strong className="text-sm font-semibold">{item.value} KG</strong>
                             </div>
                         ))}
                     </div>
@@ -186,7 +180,7 @@ export default function DonutChart({ data, targetSize, uom }: DonutChartProps) {
                     <div className="flex items-center justify-between text-sm font-semibold">
                         <span>Total</span>
                         <span className="text-primary">
-                            {totalValue.toFixed(2)} {uom.symbol.toUpperCase()}
+                            {totalValue.toFixed(2)} KG
                         </span>
                     </div>
                 </div>

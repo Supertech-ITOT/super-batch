@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 
 import com.supertech.superbatch.manager.user.entity.User;
-import com.supertech.superbatch.plant.common.mapper.UomMapper;
 import com.supertech.superbatch.plant.material.entity.Material;
 import com.supertech.superbatch.plant.unit.entity.Unit;
 import com.supertech.superbatch.recipe.recipe.dto.CreateRecipeRequest;
@@ -19,7 +18,6 @@ import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 @Component
 @RequiredArgsConstructor
 public class RecipeMapper {
-    private final UomMapper uomMapper;
 
     public RecipeResponse toResponse(Recipe recipe) {
         return RecipeResponse.builder()
@@ -79,7 +77,6 @@ public class RecipeMapper {
                 .id(unit.getId())
                 .name(unit.getName())
                 .code(unit.getCode())
-                .batchSizeUom(uomMapper.toResponse(unit.getBatchSizeUom()))
                 .build();
     }
 }

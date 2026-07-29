@@ -78,7 +78,6 @@ export default function ControlRecipeSOPSummary({ controlRecipeId }: { controlRe
             <div className="flex flex-col border flex-2 shadow hover:shadow-lg rounded-lg">
                 <DonutChart
                     targetSize={data.batchSize}
-                    uom={data.batchSizeUom}
                     title="Materials Summary"
                     data={materialChartData ?? []} />
             </div>

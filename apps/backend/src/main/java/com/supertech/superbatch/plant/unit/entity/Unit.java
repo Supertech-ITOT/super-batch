@@ -8,7 +8,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.supertech.superbatch.common.enums.UomType;
 import com.supertech.superbatch.plant.area.entity.Area;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
 
@@ -44,9 +43,6 @@ public class Unit {
     private Set<Equipment> equipments = new HashSet<>();
 
     private Integer capacity;
-
-    @Enumerated(EnumType.STRING)
-    private UomType batchSizeUom;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
