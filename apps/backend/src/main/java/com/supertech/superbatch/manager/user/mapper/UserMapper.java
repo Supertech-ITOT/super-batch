@@ -8,6 +8,7 @@ import com.supertech.superbatch.manager.permission.entity.Permission;
 import com.supertech.superbatch.manager.permission.mapper.PermissionMapper;
 import com.supertech.superbatch.manager.role.entity.Role;
 import com.supertech.superbatch.manager.user.dto.UpdateUserRequest;
+import com.supertech.superbatch.manager.user.dto.UserAudit;
 import com.supertech.superbatch.manager.user.dto.UserRequest;
 import com.supertech.superbatch.manager.user.dto.UserResponse;
 import com.supertech.superbatch.manager.user.entity.User;
@@ -55,5 +56,19 @@ public class UserMapper {
         user.setName(request.name());
         user.setEmail(request.email());
         user.setRole(role);
+    }
+
+    public UserAudit copy(User user) {
+        if (user == null) {
+            return null;
+        }
+        return UserAudit.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .role(user.getRole().getName())
+                .createdBy(user.getCreatedBy().getName())
+                .build();
+
     }
 }
