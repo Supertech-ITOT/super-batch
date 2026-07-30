@@ -29,7 +29,7 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogPro
                         <span className="font-semibold text-sm"> #{batchNo}</span>
                         <Badge className={ControlRecipeStatusBadgeStyles[status as keyof typeof ControlRecipeStatusBadgeStyles]} >
                             <Circle className="size-2 fill-current" />
-                            {status === ControlRecipeStatus.SHEDULED ? "Scheduled" : "Transfer"}
+                            {status === ControlRecipeStatus.SHEDULED ? "Scheduled" : "Transferred"}
                         </Badge>
                     </div>
 
@@ -221,7 +221,7 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogPro
                     <Button variant="ghost" size="icon" onClick={() => router.push(`/Scheduler/edit?id=${controlRecipe.id}`)}>
                         <Eye className="size-5!" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() =>setDialog({ action: "transfer", id: controlRecipe.id, open: true, })}>
+                    <Button variant="ghost" size="icon" onClick={() => setDialog({ action: "transfer", id: controlRecipe.id, open: true, })}>
                         <MoveRight className="size-5! text-primary" />
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => setDialog({ action: "edit", id: controlRecipe.id, open: true, })} >

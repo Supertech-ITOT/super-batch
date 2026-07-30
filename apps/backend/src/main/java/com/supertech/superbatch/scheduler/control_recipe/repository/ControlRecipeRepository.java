@@ -22,18 +22,8 @@ public interface ControlRecipeRepository extends JpaRepository<ControlRecipe, Lo
                         "createdBy.role",
 
                         "shiftIncharge",
-                        "shiftIncharge.role",
+                        "shiftIncharge.role"
 
-                        "sops.transition",
-                        "sops.action",
-                        "sops.fromEquipment",
-                        "sops.toEquipment",
-
-                        "sops.materials",
-                        "sops.materials.material",
-
-                        "sops.parameters",
-                        "sops.parameters.parameter"
         })
         List<ControlRecipe> findAllWithRelations();
 

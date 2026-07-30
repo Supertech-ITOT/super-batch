@@ -66,13 +66,13 @@ export interface EquipmentMappingResponse {
 
 export enum ControlRecipeStatus {
   SHEDULED = "SHEDULED",
-  TRANSFER = "TRANSFER",
+  TRANSFERRED = "TRANSFERRED",
 }
 
 export const ControlRecipeStatusBadgeStyles = {
   SHEDULED:
     "text-green-700 bg-green-100 border-green-200 dark:text-green-400 dark:bg-green-950 dark:border-green-800",
 
-  TRANSFER:
+  TRANSFERRED:
     "text-gray-700 bg-gray-100 border-gray-200 dark:text-gray-300 dark:bg-gray-900 dark:border-gray-700",
 } as const;

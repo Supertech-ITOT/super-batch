@@ -106,8 +106,8 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found"));
                 ControlRecipe controlRecipe = controlRecipeRepository.findByIdWithRelations(request.controlRecipeId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Control Recipe not found."));
-                if (controlRecipe.getStatus().equals(ControlRecipeStatus.TRANSFER)) {
-                        throw new BadRequestException("Transfered batch connot be edit again.");
+                if (controlRecipe.getStatus().equals(ControlRecipeStatus.TRANSFERRED)) {
+                        throw new BadRequestException("Transferred batch connot be edit again.");
                 }
                 ControlRecipeSOPDependencies deps = loadInsertDependencies(request.actionId(),
                                 request.transitionId(),

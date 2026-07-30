@@ -15,7 +15,24 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     List<Recipe> findAllWithRelations();
 
     @Query("SELECT rh FROM Recipe rh WHERE rh.id = :id")
-    @EntityGraph(attributePaths = { "material", "unit", "createdBy" })
+    @EntityGraph(attributePaths = {
+            "unit",
+            "material",
+
+            "createdBy",
+            "createdBy.role",
+
+            "sops.transition",
+            "sops.action",
+            "sops.fromEquipment",
+            "sops.toEquipment",
+
+            "sops.materials",
+            "sops.materials.material",
+
+            "sops.parameters",
+            "sops.parameters.parameter"
+    })
     Optional<Recipe> findByIdWithRelations(Long id);
 
     boolean existsByNameIgnoreCase(String name);

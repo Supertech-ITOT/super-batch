@@ -1,5 +1,6 @@
 package com.supertech.superbatch.scheduler.control_recipe_sop.mapper;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Component;
@@ -74,9 +75,20 @@ public class ControlRecipeSOPMapper {
                 controlRecipeSOP.setToEquipment(toEquipment);
         }
 
-        public ControlRecipeSOP toEntity(RecipeSOP recipeSOP, ControlRecipe controlRecipe, Equipment fromEquipment,
-                        Equipment toEquipment) {
-                return ControlRecipeSOP.builder()
+        public ControlRecipeSOP toEntity(RecipeSOP recipeSOP, ControlRecipe controlRecipe,
+                        Map<Long, Long> equipmentMapping, Map<Long, Equipment> equipments) {
+
+                Equipment fromEquipment = recipeSOP.getFromEquipment();
+                if (!equipmentMapping.isEmpty() && recipeSOP.getFromEquipment() != null) {
+                        fromEquipment = equipments.get(equipmentMapping.get(recipeSOP.getFromEquipment().getId()));
+                }
+
+                Equipment toEquipment = recipeSOP.getToEquipment();
+                if (!equipmentMapping.isEmpty() && recipeSOP.getToEquipment() != null) {
+                        toEquipment = equipments.get(equipmentMapping.get(recipeSOP.getToEquipment().getId()));
+                }
+
+                ControlRecipeSOP controlRecipeSOP = ControlRecipeSOP.builder()
                                 .controlRecipe(controlRecipe)
                                 .stepNo(recipeSOP.getStepNo())
                                 .message(recipeSOP.getMessage())
@@ -86,6 +98,8 @@ public class ControlRecipeSOPMapper {
                                 .fromEquipment(fromEquipment)
                                 .toEquipment(toEquipment)
                                 .build();
+
+                return controlRecipeSOP;
         }
 
         private ControlRecipeSOPEquipmentResponse toResponse(Equipment equipment) {

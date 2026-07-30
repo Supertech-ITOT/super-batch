@@ -2,11 +2,11 @@
 
 import { Badge } from "@/common/components/ui/badge";
 import { Button } from "@/common/components/ui/button";
-import { PencilLine, Trash2 } from "lucide-react";
+import { Circle, PencilLine, Trash2 } from "lucide-react";
 import { useState } from "react";
 import DeleteControlRecipeDialog from "../../control_recipe/components/delete-control-recipe-dialog";
 import UpdateControlRecipeDialog from "../../control_recipe/components/update-control-recipe-dialog";
-import { ControlRecipeResponse, ControlRecipeStatus } from "../../control_recipe/types/control-recipe.types";
+import { ControlRecipeResponse, ControlRecipeStatus, ControlRecipeStatusBadgeStyles } from "../../control_recipe/types/control-recipe.types";
 
 export type DialogProp = {
     action: "edit" | "delete" | null;
@@ -23,18 +23,10 @@ export default function ControlRecipeSOPInfo({ controlRecipe }: { controlRecipe:
                 <div className="flex gap-2 items-center">
                     <h1 className="text-2xl font-semibold">{controlRecipe.name}</h1>
                     <Badge
-                        className={`flex items-center gap-2 border font-semibold ${controlRecipe.status === ControlRecipeStatus.SHEDULED
-                            ? "text-green-700 bg-green-100 border-green-200 dark:text-green-400 dark:bg-green-950 dark:border-green-800"
-                            : "text-gray-700 bg-gray-100 border-gray-200 dark:text-gray-300 dark:bg-gray-900 dark:border-gray-700"
-                            }`}
+                        className={`flex items-center gap-2 border font-semibold ${ControlRecipeStatusBadgeStyles[controlRecipe.status]}`}
                     >
-                        <div
-                            className={`h-2 w-2 rounded-full ${controlRecipe.status === ControlRecipeStatus.SHEDULED
-                                ? "bg-green-500"
-                                : "bg-gray-500"
-                                }`}
-                        />
-                        {controlRecipe.status === ControlRecipeStatus.SHEDULED ? "Scheduled" : "Transfer"}
+                        <Circle className={`h-2 w-2 fill-current`} />
+                        {controlRecipe.status === ControlRecipeStatus.SHEDULED ? "Scheduled" : "Transferred"}
                     </Badge>
                 </div>
                 <div className="flex gap-2">
