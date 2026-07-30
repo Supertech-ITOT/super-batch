@@ -1,5 +1,6 @@
 package com.supertech.superbatch.scheduler.control_recipe.service.impl;
 
+import com.supertech.superbatch.scheduler.control_recipe.dto.ControlRecipeAudit;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
@@ -8,12 +9,16 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import com.supertech.superbatch.audit.dto.BatchAuditRequest;
+import com.supertech.superbatch.audit.enums.BatchAuditAction;
+import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.batch.batch.entity.Batch;
 import com.supertech.superbatch.batch.batch.mapper.BatchMapper;
 import com.supertech.superbatch.batch.batch.repository.BatchRepository;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
@@ -48,11 +53,21 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
         private final EquipmentRepository equipmentRepository;
         private final BatchMapper batchMapper;
         private final BatchRepository batchRepository;
+        private final BatchAuditService batchAuditService;
 
         @Override
         public void delete(Long id) {
                 ControlRecipe controlRecipe = controlRecipeRepository.findById(id)
                                 .orElseThrow(() -> new RuntimeException("Control Recipe not found."));
+                BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
+                                .entity("Control_Recipe")
+                                .action(BatchAuditAction.DELETED)
+                                .module(ModuleType.SCHEDULER)
+                                .oldData(controlRecipeMapper.copy(controlRecipe))
+                                .newData(null)
+                                .build();
+
+                batchAuditService.save(batchAuditRequest);
                 controlRecipeRepository.delete(controlRecipe);
         }
 
@@ -92,6 +107,17 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
                 ControlRecipe controlRecipe = controlRecipeMapper.toEntity(request, unit, recipe, createdBy,
                                 shiftIncharge, equipmentLists);
                 controlRecipeRepository.save(controlRecipe);
+
+                BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
+                                .entity("Control_Recipe")
+                                .action(BatchAuditAction.CREATED)
+                                .module(ModuleType.SCHEDULER)
+                                .oldData(null)
+                                .newData(controlRecipeMapper.copy(controlRecipe))
+                                .build();
+
+                batchAuditService.save(batchAuditRequest);
+
         }
 
         @Override
@@ -124,9 +150,19 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
 
                 User shiftIncharge = userRepository.findById(request.shiftInchargeId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Shift Incharge User not found."));
-
+                ControlRecipeAudit oldData = controlRecipeMapper.copy(controlRecipe);
                 controlRecipeMapper.updateEntity(controlRecipe, request, shiftIncharge);
                 controlRecipeRepository.save(controlRecipe);
+
+                BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
+                                .entity("Control_Recipe")
+                                .action(BatchAuditAction.UPDATED)
+                                .module(ModuleType.SCHEDULER)
+                                .oldData(oldData)
+                                .newData(controlRecipeMapper.copy(controlRecipe))
+                                .build();
+
+                batchAuditService.save(batchAuditRequest);
         }
 
         @Override

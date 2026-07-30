@@ -9,6 +9,7 @@ import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.transition.entity.Transition;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 import com.supertech.superbatch.recipe.recipe_sop.dto.CreateRecipeSOPRequest;
+import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPAudit;
 import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPEquipmentResponse;
 import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPResponse;
 import com.supertech.superbatch.recipe.recipe_sop.dto.UpdateRecipeSOPRequest;
@@ -79,4 +80,19 @@ public class RecipeSOPMapper {
                 .build();
     }
 
+    public RecipeSOPAudit copy(RecipeSOP recipeSOP) {
+        return RecipeSOPAudit.builder()
+                .id(recipeSOP.getId())
+                .stepNo(recipeSOP.getStepNo())
+                .stdTime(recipeSOP.getStdTime())
+                .recipe(recipeSOP.getRecipe().getName())
+                .transition(recipeSOP.getTransition().getName())
+                .action(recipeSOP.getAction().getName())
+                .message(recipeSOP.getMessage())
+                .fromEquipment(recipeSOP.getFromEquipment().getName())
+                .toEquipment(recipeSOP.getToEquipment().getName())
+                .materials(recipeSOP.getMaterials().stream().map(recipeSOPMaterialMapper::copy).toList())
+                .parameters(recipeSOP.getParameters().stream().map(recipeSOPParameterMapper::copy).toList())
+                .build();
+    }
 }

@@ -10,8 +10,12 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.supertech.superbatch.audit.dto.BatchAuditRequest;
+import com.supertech.superbatch.audit.enums.BatchAuditAction;
+import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.plant.action.entity.Action;
 import com.supertech.superbatch.plant.action.repository.ActionRepository;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
@@ -22,6 +26,7 @@ import com.supertech.superbatch.plant.transition.repository.TransitionRepository
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 import com.supertech.superbatch.recipe.recipe.repository.RecipeRepository;
 import com.supertech.superbatch.recipe.recipe_sop.dto.CreateRecipeSOPRequest;
+import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPAudit;
 import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPDependencies;
 import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPMaterialSummaryResponse;
 import com.supertech.superbatch.recipe.recipe_sop.dto.RecipeSOPResponse;
@@ -51,6 +56,7 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
         private final RecipeSOPParameterService recipeSOPParameterService;
         private final RecipeSOPMaterialService recipeSOPMaterialService;
         private final RecipeSOPMaterialRepository recipeSOPMaterialRepository;
+        private final BatchAuditService batchAuditService;
 
         @Override
         public RecipeSOPResponse getById(Long id) {
@@ -92,6 +98,16 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                 recipeSOPRepository.save(recipeSOP);
                 recipeSOPParameterService.create(recipeSOP, request.parameters());
                 recipeSOPMaterialService.create(recipeSOP, request.materials());
+
+                BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
+                                .entity("Recipe_SOP")
+                                .action(BatchAuditAction.CREATED)
+                                .module(ModuleType.RECIPE)
+                                .oldData(null)
+                                .newData(recipeSOPMapper.copy(recipeSOP))
+                                .build();
+                batchAuditService.save(batchAuditRequest);
+
         }
 
         @Transactional
@@ -107,6 +123,8 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                                 request.toEquipmentId(),
                                 request.materials(),
                                 recipe, recipeSOP.getId());
+
+                RecipeSOPAudit oldData = recipeSOPMapper.copy(recipeSOP);
                 recipeSOPMapper.updateEntity(
                                 request,
                                 recipeSOP,
@@ -117,6 +135,16 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                 recipeSOPParameterService.update(recipeSOP, request.parameters());
                 recipeSOPMaterialService.update(recipeSOP, request.materials());
                 recipeSOPRepository.save(recipeSOP);
+
+                BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
+                                .entity("Recipe_SOP")
+                                .action(BatchAuditAction.UPDATED)
+                                .module(ModuleType.RECIPE)
+                                .oldData(oldData)
+                                .newData(recipeSOPMapper.copy(recipeSOP))
+                                .build();
+
+                batchAuditService.save(batchAuditRequest);
         }
 
         @Transactional
@@ -124,6 +152,14 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
         public void delete(Long id) {
                 RecipeSOP recipeSOP = recipeSOPRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
+                BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
+                                .entity("Recipe_SOP")
+                                .action(BatchAuditAction.DELETED)
+                                .module(ModuleType.RECIPE)
+                                .oldData(recipeSOPMapper.copy(recipeSOP))
+                                .newData(null)
+                                .build();
+                batchAuditService.save(batchAuditRequest);
                 recipeSOPRepository.decrementStepNumbers(
                                 recipeSOP.getRecipe().getId(),
                                 recipeSOP.getStepNo());

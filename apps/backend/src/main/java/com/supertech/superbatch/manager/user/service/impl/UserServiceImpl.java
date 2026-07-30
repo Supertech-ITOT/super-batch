@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
                 BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
                                 .entity("User")
                                 .action(BatchAuditAction.CREATED)
-                                .module(ModuleType.USER)
+                                .module(ModuleType.MANAGER)
                                 .oldData(null)
                                 .newData(userMapper.copy(user))
                                 .build();
@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
                 BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
                                 .entity("User")
                                 .action(BatchAuditAction.UPDATED)
-                                .module(ModuleType.USER)
+                                .module(ModuleType.MANAGER)
                                 .oldData(oldData)
                                 .newData(userMapper.copy(user))
                                 .build();
@@ -118,7 +118,7 @@ public class UserServiceImpl implements UserService {
                 BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
                                 .entity("User")
                                 .action(BatchAuditAction.DELETED)
-                                .module(ModuleType.USER)
+                                .module(ModuleType.MANAGER)
                                 .oldData(userMapper.copy(user))
                                 .newData(null)
                                 .build();

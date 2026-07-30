@@ -9,6 +9,7 @@ import com.supertech.superbatch.plant.material.entity.Material;
 import com.supertech.superbatch.plant.unit.entity.Unit;
 import com.supertech.superbatch.recipe.recipe.dto.CreateRecipeRequest;
 import com.supertech.superbatch.recipe.recipe.dto.MaterialRecipeResponse;
+import com.supertech.superbatch.recipe.recipe.dto.RecipeAudit;
 import com.supertech.superbatch.recipe.recipe.dto.RecipeResponse;
 import com.supertech.superbatch.recipe.recipe.dto.UnitRecipeResponse;
 import com.supertech.superbatch.recipe.recipe.dto.UpdateRecipeRequest;
@@ -78,4 +79,19 @@ public class RecipeMapper {
                 .capacity(unit.getCapacity())
                 .build();
     }
+
+    public RecipeAudit copy(Recipe recipe) {
+        return RecipeAudit.builder()
+                .id(recipe.getId())
+                .name(recipe.getName())
+                .description(recipe.getDescription())
+                .status(recipe.getStatus().name())
+                .batchSize(recipe.getBatchSize())
+                .material(recipe.getMaterial().getName())
+                .unit(recipe.getUnit().getName())
+                .createdBy(recipe.getCreatedBy().getName())
+                .build();
+
+    }
+
 }

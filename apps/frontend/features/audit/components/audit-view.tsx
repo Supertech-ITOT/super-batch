@@ -23,7 +23,7 @@ export default function AuditView() {
     fromDate: null,
     toDate: null,
     page: 0,
-    size: 8,
+    size: 12,
   });
   const [filter, setFilter] = useState<AuditFilterValue>({
     search: "",
@@ -37,15 +37,11 @@ export default function AuditView() {
   useEffect(() => {
     setSearchRequest((prev) => ({
       ...prev,
+      page: 0,
       search: debouncedFilter.search,
       userId: debouncedFilter.user ?? null,
-      fromDate: debouncedFilter.fromDate
-        ? debouncedFilter.fromDate.toISOString().split("T")[0]
-        : null,
-      toDate: debouncedFilter.toDate
-        ? debouncedFilter.toDate.toISOString().split("T")[0]
-        : null,
-      page: 0,
+      fromDate: debouncedFilter.fromDate?.toISOString().split("T")[0] ?? null,
+      toDate: debouncedFilter.toDate?.toISOString().split("T")[0] ?? null,
     }));
   }, [debouncedFilter]);
 
@@ -73,16 +69,23 @@ export default function AuditView() {
   }
 
   return (
-    <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none flex-col">
+    <div className="flex-1 rounded-lg border shadow h-full bg-card px-4 overflow-y-auto scrollbar-none flex-col">
       <div className="flex-1 min-h-0 my-4">
         <DataTable
-          columns={columns((audit) => {
+          columns={columns(searchRequest.page, searchRequest.size, (audit) => {
             setSelectedAudit(audit);
             setOpen(true);
           })}
           data={audits?.content ?? []}
           filter={filter}
           onFilterChange={setFilter}
+          page={searchRequest.page}
+          size={searchRequest.size}
+          totalPages={audits?.totalPages ?? 0}
+          totalElements={audits?.totalElements ?? 0}
+          onPageChange={(page) =>
+            setSearchRequest((prev) => ({ ...prev, page }))
+          }
         />
         {selectedAudit && (
           <AuditChangesDialog

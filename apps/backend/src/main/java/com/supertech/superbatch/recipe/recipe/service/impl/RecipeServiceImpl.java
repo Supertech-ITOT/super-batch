@@ -4,9 +4,13 @@ import java.util.Comparator;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
+import com.supertech.superbatch.audit.dto.BatchAuditRequest;
+import com.supertech.superbatch.audit.enums.BatchAuditAction;
+import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.plant.material.entity.Material;
@@ -14,6 +18,7 @@ import com.supertech.superbatch.plant.material.repository.MaterialRepository;
 import com.supertech.superbatch.plant.unit.entity.Unit;
 import com.supertech.superbatch.plant.unit.repository.UnitRepository;
 import com.supertech.superbatch.recipe.recipe.dto.CreateRecipeRequest;
+import com.supertech.superbatch.recipe.recipe.dto.RecipeAudit;
 import com.supertech.superbatch.recipe.recipe.dto.RecipeResponse;
 import com.supertech.superbatch.recipe.recipe.dto.UpdateRecipeRequest;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
@@ -34,6 +39,7 @@ public class RecipeServiceImpl implements RecipeService {
         private final UnitRepository unitRepository;
         private final RecipeMapper recipeMapper;
         private final UserRepository userRepository;
+        private final BatchAuditService batchAuditService;
 
         @Override
         public void delete(Long id) {
@@ -45,6 +51,15 @@ public class RecipeServiceImpl implements RecipeService {
                         throw new BadRequestException(
                                         "Cannot delete recipe because it is used by " + count + " Control Recipe(s).");
                 }
+
+                BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
+                                .entity("Recipe")
+                                .action(BatchAuditAction.DELETED)
+                                .module(ModuleType.RECIPE)
+                                .oldData(recipeMapper.copy(recipe))
+                                .newData(null)
+                                .build();
+                batchAuditService.save(batchAuditRequest);
                 recipeRepository.delete(recipe);
         }
 
@@ -66,6 +81,14 @@ public class RecipeServiceImpl implements RecipeService {
 
                 Recipe recipe = recipeMapper.toEntity(request, material, user, unit);
                 recipeRepository.save(recipe);
+                BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
+                                .entity("Recipe")
+                                .action(BatchAuditAction.CREATED)
+                                .module(ModuleType.RECIPE)
+                                .oldData(null)
+                                .newData(recipeMapper.toResponse(recipe))
+                                .build();
+                batchAuditService.save(batchAuditRequest);
         }
 
         @Override
@@ -98,7 +121,18 @@ public class RecipeServiceImpl implements RecipeService {
                                 !recipe.getName().equalsIgnoreCase(request.name())) {
                         throw new DuplicateResourceException("Recipe already exists.");
                 }
+                RecipeAudit oldData = recipeMapper.copy(recipe);
                 recipeMapper.updateEntity(recipe, request, material);
                 recipeRepository.save(recipe);
+
+                BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
+                                .entity("Recipe")
+                                .action(BatchAuditAction.UPDATED)
+                                .module(ModuleType.RECIPE)
+                                .oldData(oldData)
+                                .newData(recipeMapper.copy(recipe))
+                                .build();
+
+                batchAuditService.save(batchAuditRequest);
         }
 }

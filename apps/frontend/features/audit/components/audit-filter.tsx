@@ -65,9 +65,9 @@ export default function AuditFilter({
   };
 
   return (
-    <div className="mb-4 flex flex-wrap items-end gap-2 rounded-lg border bg-background p-4 w-full">
+    <div className="flex flex-wrap items-end gap-2 rounded-lg border bg-background p-2 w-full ">
       {/* Search */}
-      <div className="relative w-72">
+      <div className="relative min-w-72 grow">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
         <Input
           className="pl-9 bg-card"
@@ -78,7 +78,7 @@ export default function AuditFilter({
       </div>
 
       {/* Module */}
-      <div className=" relative w-56">
+      <div className=" relative min-w-56 grow">
         <Boxes className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-bg-card z-10 " />
         <SearchableSelect
           value={filter.module}
@@ -90,7 +90,7 @@ export default function AuditFilter({
       </div>
 
       {/* Action */}
-      <div className="relative w-56">
+      <div className="relative min-w-56 grow">
         <Activity className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-bg-card z-10" />
         <SearchableSelect
           value={filter.action}
@@ -102,7 +102,7 @@ export default function AuditFilter({
       </div>
 
       {/* User */}
-      <div className="relative w-56">
+      <div className="relative min-w-56 grow">
         <UserCircle className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-bg-card z-10" />
         <SearchableSelect
           value={filter.user}
@@ -114,7 +114,7 @@ export default function AuditFilter({
       </div>
 
       {/* From Date */}
-      <div className="w-56">
+      <div className="min-w-56 grow">
         <Popover open={fromOpen} onOpenChange={setFromOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -149,7 +149,7 @@ export default function AuditFilter({
       </div>
 
       {/* To Date */}
-      <div className="w-56">
+      <div className="min-w-56 grow">
         <Popover open={toOpen} onOpenChange={setToOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -189,7 +189,7 @@ export default function AuditFilter({
       <Button
         variant="outline"
         onClick={onReset}
-        className="bg-card hover:bg-card"
+        className="bg-card hover:bg-card grow"
       >
         <RotateCcw className="mr-2 h-4 w-4" />
         Reset

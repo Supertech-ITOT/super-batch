@@ -73,7 +73,7 @@ public class RoleServiceImpl implements RoleService {
         BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
                 .entity("Role")
                 .action(BatchAuditAction.CREATED)
-                .module(ModuleType.ROLE)
+                .module(ModuleType.MANAGER)
                 .oldData(null)
                 .newData(roleMapper.copy(role))
                 .build();
@@ -105,7 +105,7 @@ public class RoleServiceImpl implements RoleService {
         BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
                 .entity("Role")
                 .action(BatchAuditAction.UPDATED)
-                .module(ModuleType.ROLE)
+                .module(ModuleType.MANAGER)
                 .oldData(oldData)
                 .newData(roleMapper.copy(role))
                 .build();
@@ -118,7 +118,7 @@ public class RoleServiceImpl implements RoleService {
         BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
                 .entity("Role")
                 .action(BatchAuditAction.DELETED)
-                .module(ModuleType.ROLE)
+                .module(ModuleType.MANAGER)
                 .oldData(roleMapper.copy(role))
                 .newData(null)
                 .build();

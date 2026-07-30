@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.supertech.superbatch.plant.parameter.entity.Parameter;
 import com.supertech.superbatch.recipe.recipe_sop.entity.RecipeSOP;
+import com.supertech.superbatch.recipe.recipe_sop_parameter.dto.RecipeSOPParameterAudit;
 import com.supertech.superbatch.recipe.recipe_sop_parameter.dto.RecipeSOPParameterRequest;
 import com.supertech.superbatch.recipe.recipe_sop_parameter.dto.RecipeSOPParameterResponse;
 import com.supertech.superbatch.recipe.recipe_sop_parameter.entity.RecipeSOPParameter;
@@ -32,6 +33,14 @@ public class RecipeSOPParameterMapper {
                 .recipeSOP(recipeSOP)
                 .parameter(parameter)
                 .stdValue(request.stdValue())
+                .build();
+    }
+
+    public RecipeSOPParameterAudit copy(RecipeSOPParameter recipeSOPParameter) {
+        return RecipeSOPParameterAudit.builder()
+                .id(recipeSOPParameter.getId())
+                .name(recipeSOPParameter.getParameter().getName())
+                .stdValue(recipeSOPParameter.getStdValue())
                 .build();
     }
 }

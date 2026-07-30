@@ -1,4 +1,4 @@
-import { CalendarClock, BookOpenText, Factory, Users, ShieldCheck, ClipboardList, Settings, LucideIcon, UserCogIcon, Building, Boxes, Cpu, PackageCheckIcon, Gauge, ArrowRightLeft, Play, MessageSquareQuote } from "lucide-react";
+import { CalendarClock, BookOpenText, Factory, Users, ShieldCheck, ClipboardList, Settings, LucideIcon, UserCogIcon, Building, Boxes, Cpu, PackageCheckIcon, Gauge, ArrowRightLeft, Play, MessageSquareQuote, Hash } from "lucide-react";
 
 export enum ModuleType {
     MANAGER = "MANAGER",
@@ -102,4 +102,21 @@ export const EntityItems  = [
         label: "Message",
         icon: MessageSquareQuote
     },
+    {
+        label:"Recipe",
+        icon: BookOpenText
+    },
+    {
+        label:"Recipe_SOP",
+        icon: Hash
+    },
+    {
+        label:"Role",
+        icon: ShieldCheck
+    },
+    {
+        label:"User",
+        icon: Users
+    }
+    
 ]

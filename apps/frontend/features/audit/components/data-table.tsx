@@ -32,6 +32,12 @@ interface DataTableProps<TData extends { id: number }, TValue> {
   data: TData[];
   filter: AuditFilterValue;
   onFilterChange: (value: AuditFilterValue) => void;
+
+  page: number;
+  size: number;
+  totalPages: number;
+  totalElements: number;
+  onPageChange: (page: number) => void;
 }
 
 const DataTable = <TData extends { id: number }, TValue>({
@@ -39,6 +45,11 @@ const DataTable = <TData extends { id: number }, TValue>({
   data,
   filter,
   onFilterChange,
+  page,
+  size,
+  totalPages,
+  totalElements,
+  onPageChange,
 }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -47,23 +58,30 @@ const DataTable = <TData extends { id: number }, TValue>({
   const { data: actions } = useGetBatchAuditAction();
 
   const table = useReactTable({
-    data: data,
+    data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    manualPagination: true,
+    pageCount: totalPages,
+    state: {
+      sorting,
+      columnFilters,
+      pagination: {
+        pageIndex: page,
+        pageSize: size,
+      },
+    },
     onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    initialState: { pagination: { pageSize: 8 } },
-    state: { sorting, columnFilters },
   });
 
-  const rows = table.getRowModel().rows;
-  const emptyRows = Math.max(0, 8 - rows.length);
+  const rows = table.getCoreRowModel().rows;
+  const emptyRows = Math.max(0, size - rows.length);
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between pb-2">
+    <div className="flex flex-col h-full space-y-2">
+      <div className="flex items-center justify-between">
         <AuditFilter
           filter={filter}
           onFilterChange={onFilterChange}
@@ -192,26 +210,26 @@ const DataTable = <TData extends { id: number }, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between py-4">
+      <div className="flex items-center justify-between py-2">
         <div className="text-sm text-muted-foreground">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
+          Page {page + 1} of {Math.max(totalPages, 1)}
         </div>
 
         <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            disabled={page === 0}
+            onClick={() => onPageChange(page - 1)}
           >
             Previous
           </Button>
+
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            disabled={page + 1 >= totalPages}
+            onClick={() => onPageChange(page + 1)}
           >
             Next
           </Button>

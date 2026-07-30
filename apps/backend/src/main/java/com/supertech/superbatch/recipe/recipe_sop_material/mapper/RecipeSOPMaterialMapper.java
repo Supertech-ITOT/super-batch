@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.supertech.superbatch.plant.material.entity.Material;
 import com.supertech.superbatch.recipe.recipe_sop.entity.RecipeSOP;
+import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialAudit;
 import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialRequest;
 import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialResponse;
 import com.supertech.superbatch.recipe.recipe_sop_material.enitiy.RecipeSOPMaterial;
@@ -32,6 +33,14 @@ public class RecipeSOPMaterialMapper {
                 .recipeSOP(recipeSOP)
                 .material(material)
                 .stdQty(request.stdQty())
+                .build();
+    }
+
+    public RecipeSOPMaterialAudit copy(RecipeSOPMaterial recipeSOPMaterial) {
+        return RecipeSOPMaterialAudit.builder()
+                .id(recipeSOPMaterial.getId())
+                .name(recipeSOPMaterial.getMaterial().getName())
+                .stdQty(recipeSOPMaterial.getStdQty())
                 .build();
     }
 }

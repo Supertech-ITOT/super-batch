@@ -13,12 +13,14 @@ import {
 import { Button } from "@/common/components/ui/button";
 
 export const columns = (
+  page: number,
+  pageSize: number,
   onViewChanges: (audit: BatchAuditResponse) => void,
 ): ColumnDef<BatchAuditResponse>[] => [
   {
     id: "srNo",
     header: "Sr. No.",
-    cell: ({ row }) => row.index + 1,
+    cell: ({ row }) => page * pageSize + row.index + 1,
   },
   {
     id: "action",
@@ -76,23 +78,25 @@ export const columns = (
       const user = row.original.performedBy;
       if (!user) return "-";
       return (
-        <div className="flex items-start gap-3">
-          <UserAvatar name={user.name} />
-          <div className="min-w-0 text-left">
-            <p className="truncate font-medium">{user.name}</p>
-            <p className="truncate text-xs text-muted-foreground">
-              {user.email}
-            </p>
-            <div className="flex flex-row gap-1">
-              <Badge
-                variant={"outline"}
-                className={`h-6 px-2 text-[11px] ${getColorByText(user.role)}`}
-              >
-                <Circle className="size-2.5 fill-current" />
-                {user.role}
-              </Badge>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <UserAvatar name={user.name} />
+
+            <div className="min-w-0 text-left">
+              <p className="truncate font-medium">{user.name}</p>
+              <p className="truncate text-xs text-muted-foreground">
+                {user.email}
+              </p>
             </div>
           </div>
+
+          <Badge
+            variant="outline"
+            className={`h-6 text-[11px] shrink-0 ${getColorByText(user.role)}`}
+          >
+            <Circle className="size-2.5 fill-current" />
+            {user.role}
+          </Badge>
         </div>
       );
     },
