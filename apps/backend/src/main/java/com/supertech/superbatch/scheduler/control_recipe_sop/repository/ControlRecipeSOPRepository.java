@@ -11,6 +11,11 @@ import org.springframework.data.jpa.repository.Query;
 import com.supertech.superbatch.scheduler.control_recipe_sop.entity.ControlRecipeSOP;
 
 public interface ControlRecipeSOPRepository extends JpaRepository<ControlRecipeSOP, Long> {
+
+  @Override
+  @EntityGraph(attributePaths = { "controlRecipe" })
+  Optional<ControlRecipeSOP> findById(Long id);
+
   List<ControlRecipeSOP> findAllByControlRecipeId(Long controlRecipeId);
 
   Optional<ControlRecipeSOP> findByControlRecipeIdAndStepNo(Long controlRecipeId, Integer stepNo);

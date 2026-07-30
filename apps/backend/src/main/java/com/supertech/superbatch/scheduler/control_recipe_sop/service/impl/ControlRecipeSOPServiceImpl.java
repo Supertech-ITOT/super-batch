@@ -75,11 +75,14 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
 
         @Override
         public void create(CreateControlRecipeSOPRequest request) {
+                ControlRecipe controlRecipe = controlRecipeRepository.findByIdWithRelations(request.controlRecipeId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Control Recipe not found."));
+                if (controlRecipe.getStatus().equals(ControlRecipeStatus.TRANSFERRED)) {
+                        throw new BadRequestException("Transferred batch cannot be edit again.");
+                }
                 List<ControlRecipeSOP> steps = controlRecipeSOPRepository
                                 .findAllByControlRecipeId(request.controlRecipeId());
                 Integer stepNo = steps.isEmpty() ? 1 : steps.size() + 1;
-                ControlRecipe controlRecipe = controlRecipeRepository.findByIdWithRelations(request.controlRecipeId())
-                                .orElseThrow(() -> new ResourceNotFoundException("Control Recipe not found."));
                 ControlRecipeSOPDependencies deps = loadInsertDependencies(request.actionId(),
                                 request.transitionId(),
                                 request.fromEquipmentId(),
@@ -132,6 +135,9 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
         public void delete(Long id) {
                 ControlRecipeSOP controlRecipeSOP = controlRecipeSOPRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
+                if (controlRecipeSOP.getControlRecipe().getStatus().equals(ControlRecipeStatus.TRANSFERRED)) {
+                        throw new BadRequestException("Transferred batch cannot be edit again.");
+                }
                 controlRecipeSOPRepository.decrementStepNumbers(
                                 controlRecipeSOP.getControlRecipe().getId(),
                                 controlRecipeSOP.getStepNo());
@@ -143,6 +149,9 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
         public void moveUp(Long controlRecipeId) {
                 ControlRecipeSOP current = controlRecipeSOPRepository.findById(controlRecipeId)
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
+                if (current.getControlRecipe().getStatus().equals(ControlRecipeStatus.TRANSFERRED)) {
+                        throw new BadRequestException("Transferred batch cannot be edit again.");
+                }
                 if (current.getStepNo() == 1) {
                         throw new BadRequestException("Step 1 cannot be moved up.");
                 }
@@ -162,6 +171,9 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
         public void moveDown(Long controlRecipeId) {
                 ControlRecipeSOP current = controlRecipeSOPRepository.findById(controlRecipeId)
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
+                if (current.getControlRecipe().getStatus().equals(ControlRecipeStatus.TRANSFERRED)) {
+                        throw new BadRequestException("Transferred batch cannot be edit again.");
+                }
                 ControlRecipeSOP next = controlRecipeSOPRepository.findByControlRecipeIdAndStepNo(
                                 current.getControlRecipe().getId(),
                                 current.getStepNo() + 1)
@@ -180,6 +192,9 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found"));
                 ControlRecipe controlRecipe = controlRecipeRepository.findByIdWithRelations(request.controlRecipeId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
+                if (controlRecipe.getStatus().equals(ControlRecipeStatus.TRANSFERRED)) {
+                        throw new BadRequestException("Transferred batch cannot be edit again.");
+                }
                 ControlRecipeSOPDependencies deps = loadInsertDependencies(request.actionId(),
                                 request.transitionId(),
                                 request.fromEquipmentId(),
@@ -207,6 +222,9 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                                 .orElseThrow(() -> new ResourceNotFoundException("Step not found"));
                 ControlRecipe controlRecipe = controlRecipeRepository.findByIdWithRelations(request.controlRecipeId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
+                if (controlRecipe.getStatus().equals(ControlRecipeStatus.TRANSFERRED)) {
+                        throw new BadRequestException("Transferred batch cannot be edit again.");
+                }
 
                 ControlRecipeSOPDependencies deps = loadInsertDependencies(request.actionId(),
                                 request.transitionId(),

@@ -164,13 +164,9 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogPro
 
                                 {/* Role */}
                                 <div className="flex justify-end">
-                                    <div
-                                        className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${getColorByText(
-                                            user.role
-                                        )}`}
-                                    >
+                                    <Badge className={getColorByText(user.role)}>
                                         {user.role}
-                                    </div>
+                                    </Badge>
                                 </div>
                             </div>
                         ) : (
