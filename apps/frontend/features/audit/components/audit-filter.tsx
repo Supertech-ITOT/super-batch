@@ -79,7 +79,7 @@ export default function AuditFilter({
 
       {/* Module */}
       <div className=" relative w-56">
-        <Boxes className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black z-10 " />
+        <Boxes className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-bg-card z-10 " />
         <SearchableSelect
           value={filter.module}
           onChange={(value) => updateFilter("module", value)}
@@ -91,7 +91,7 @@ export default function AuditFilter({
 
       {/* Action */}
       <div className="relative w-56">
-        <Activity className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black z-10" />
+        <Activity className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-bg-card z-10" />
         <SearchableSelect
           value={filter.action}
           onChange={(value) => updateFilter("action", value)}
@@ -103,7 +103,7 @@ export default function AuditFilter({
 
       {/* User */}
       <div className="relative w-56">
-        <UserCircle className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black z-10" />
+        <UserCircle className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-bg-card z-10" />
         <SearchableSelect
           value={filter.user}
           onChange={(value) => updateFilter("user", value)}
