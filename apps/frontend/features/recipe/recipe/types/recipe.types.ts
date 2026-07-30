@@ -27,7 +27,6 @@ export interface UpdateRecipeRequest {
     description: string;
     batchSize: number;
     materialId: number;
-    unitId: number;
     status: string;
 }
 
@@ -43,6 +42,7 @@ export interface UnitRecipeResponse {
     id: number;
     name: string;
     code: string;
+    capacity: number;
 }
 
 export interface UserRecipeResponse {

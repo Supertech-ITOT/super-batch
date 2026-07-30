@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.supertech.superbatch.scheduler.control_recipe.dto.ControlRecipeResponse;
 import com.supertech.superbatch.scheduler.control_recipe.dto.CreateControlRecipeRequest;
+import com.supertech.superbatch.scheduler.control_recipe.dto.EquipmentMappingResponse;
 import com.supertech.superbatch.scheduler.control_recipe.dto.UpdateControlRecipeRequest;
 
 public interface ControlRecipeService {
@@ -16,5 +17,9 @@ public interface ControlRecipeService {
     void update(Long id, UpdateControlRecipeRequest request);
 
     void delete(Long id);
+
+    List<EquipmentMappingResponse> getRecipeEquipments(Long recipeId, Long unitId);
+
+    void transfer(Long id);
 
 }

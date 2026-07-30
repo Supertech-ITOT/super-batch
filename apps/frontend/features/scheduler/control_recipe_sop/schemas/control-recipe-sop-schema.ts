@@ -9,12 +9,12 @@ export const ControlRecipeSOPSchemaLimit = {
 
 const controlRecipeSOPMaterialSchema = z.object({
     materialId: z.number().min(1, "Material is required."),
-    stdQty: z.number().nonnegative("Standard Quantity cannot be negative."),
+    stdQty: z.number().nonnegative("Standard Quantity cannot be negative.").gt(0, "Standard Quantity must be greater than 0."),
 });
 
 const controlRecipeSOPParameterSchema = z.object({
     parameterId: z.number().min(1, "Parameter is required."),
-    stdValue: z.number().nonnegative("Standard Value cannot be negative."),
+    stdValue: z.number(),
 });
 
 export const controlRecipeSOPSchema = z.object({

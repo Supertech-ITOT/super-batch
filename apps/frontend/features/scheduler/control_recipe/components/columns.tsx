@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/common/components/ui/button";
 import { DialogProp } from "./control-recipe-view";
-import { BookCopy, BookOpen, BookOpenText, Boxes, CalendarDays, Circle, ClipboardList, Clock3, Eye, Factory, Package, PencilLine, Scale, Trash2 } from "lucide-react";
+import { BookCopy, BookOpen, BookOpenText, Boxes, CalendarDays, Circle, ClipboardList, Clock3, Eye, Factory, MoveRight, Package, PencilLine, Scale, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/common/components/ui/badge";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -103,7 +103,7 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogPro
                         className={`h-6 gap-1 px-2 text-[11px] ${getColorByText(row.original.recipe.unit.name)}`}
                     >
                         <Boxes />
-                        {row.original.recipe.unit.name}
+                        {row.original.unit.name}
                     </Badge>
 
                     <Badge
@@ -133,31 +133,72 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogPro
             ];
 
             return (
-                <div className="space-y-1.5">
-                    {assignments.map(({ user, assignment }) => user ? (
-                        <div key={assignment} className="flex items-start gap-3">
-                            <UserAvatar name={user.name} />
-                            <div className="min-w-0 text-left">
-                                <p className="truncate font-medium">{user.name}</p>
-                                <p className="truncate text-xs text-muted-foreground">{user.email}</p>
-                                <div className="flex flex-row gap-1">
-                                    <Badge variant={"secondary"} className="h-6 px-2 text-[11px] text-foreground/70 "> <Circle className="size-2.5 fill-current" />{assignment}</Badge>
-                                    <Badge variant={"outline"} className={`h-6 px-2 text-[11px] ${getColorByText(user.role)}`}><Circle className="size-2.5 fill-current" />{user.role}</Badge>
+                <div className="space-y-2">
+                    {assignments.map(({ user, assignment }) =>
+                        user ? (
+                            <div
+                                key={assignment}
+                                className="grid grid-cols-[100px_1fr_100px] items-center gap-3  border-l-2 border-l-primary bg-card px-3 py-2"
+                            >
+                                {/* Assignment */}
+                                <p className="text-[10px] text-left font-semibold uppercase tracking-wider text-muted-foreground">
+                                    {assignment}
+                                </p>
+
+                                {/* User */}
+                                <div className="flex items-center gap-3 min-w-0">
+                                    <UserAvatar
+                                        name={user.name}
+                                        className="size-8 shrink-0"
+                                    />
+
+                                    <div className="min-w-0">
+                                        <p className="truncate text-sm font-medium leading-none">
+                                            {user.name}
+                                        </p>
+                                        <p className="mt-1 truncate text-xs text-muted-foreground">
+                                            {user.email}
+                                        </p>
+                                    </div>
                                 </div>
 
+                                {/* Role */}
+                                <div className="flex justify-end">
+                                    <div
+                                        className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${getColorByText(
+                                            user.role
+                                        )}`}
+                                    >
+                                        {user.role}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    ) : (
-                        <div key={assignment} className="text-sm text-muted-foreground">-</div>
-                    )
+                        ) : (
+                            <div
+                                key={assignment}
+                                className="grid grid-cols-[140px_1fr_110px] items-center gap-3 rounded-lg border border-dashed px-3 py-2"
+                            >
+                                <div className="border-l-2 border-muted pl-2">
+                                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                                        {assignment}
+                                    </p>
+                                </div>
+
+                                <p className="text-xs text-muted-foreground">
+                                    No user assigned
+                                </p>
+
+                                <div />
+                            </div>
+                        )
                     )}
                 </div>
             );
         },
     },
     {
-        id: "lastModified",
-        header: "Last Modified",
+        id: "modified",
+        header: "Modified",
         cell: ({ row }) => {
             const value = row.original.updatedAt || row.original.createdAt;
 
@@ -173,18 +214,21 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogPro
         id: "actions",
         header: "Actions",
         cell: ({ row }) => {
-            const recipe = row.original;
+            const controlRecipe = row.original;
 
             return (
-                <div className="flex items-center justify-center gap-2">
-                    <Button variant="ghost" size="icon" onClick={() => router.push(`/Scheduler/edit?id=${recipe.id}`)}>
+                <div className="flex items-center justify-center flex-col gap-0.5">
+                    <Button variant="ghost" size="icon" onClick={() => router.push(`/Scheduler/edit?id=${controlRecipe.id}`)}>
                         <Eye className="size-5!" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => setDialog({ action: "edit", id: recipe.id, open: true, })} >
-                        <PencilLine className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" onClick={() =>setDialog({ action: "transfer", id: controlRecipe.id, open: true, })}>
+                        <MoveRight className="size-5! text-primary" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => setDialog({ action: "delete", id: recipe.id, open: true, })}>
-                        <Trash2 className="h-4 w-4 text-destructive" />
+                    <Button variant="ghost" size="icon" onClick={() => setDialog({ action: "edit", id: controlRecipe.id, open: true, })} >
+                        <PencilLine className="size-4! text-blue-800" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => setDialog({ action: "delete", id: controlRecipe.id, open: true, })}>
+                        <Trash2 className="size-4.5! text-destructive" />
                     </Button>
                 </div>
             );

@@ -80,7 +80,7 @@ public class RecipeServiceImpl implements RecipeService {
         @Override
         public RecipeResponse getById(Long id) {
                 Recipe recipe = recipeRepository.findByIdWithRelations(id)
-                                .orElseThrow(() -> new RuntimeException("Recipe header not found."));
+                                .orElseThrow(() -> new RuntimeException("Recipe not found."));
                 return recipeMapper.toResponse(recipe);
         }
 
@@ -88,15 +88,17 @@ public class RecipeServiceImpl implements RecipeService {
         public void update(Long id, UpdateRecipeRequest request) {
                 Material material = materialRepository.findById(request.materialId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Material not found."));
-                Unit unit = unitRepository.findByIdWithHierarchy(request.unitId())
-                                .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
-                Recipe recipe = recipeRepository.findById(id)
-                                .orElseThrow(() -> new RuntimeException("Recipe header not found."));
+                Recipe recipe = recipeRepository.findByIdWithRelations(id)
+                                .orElseThrow(() -> new RuntimeException("Recipe not found."));
+
+                if (request.batchSize() > recipe.getUnit().getCapacity()) {
+                        throw new BadRequestException("Batch size must be below unit capacity.");
+                }
                 if (recipeRepository.existsByNameIgnoreCase(request.name()) &&
                                 !recipe.getName().equalsIgnoreCase(request.name())) {
                         throw new DuplicateResourceException("Recipe already exists.");
                 }
-                recipeMapper.updateEntity(recipe, request, material, unit);
+                recipeMapper.updateEntity(recipe, request, material);
                 recipeRepository.save(recipe);
         }
 }

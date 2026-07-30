@@ -16,6 +16,7 @@ import {
   CommandList,
 } from "@/common/components/ui/command";
 import { toast } from "sonner";
+import { Badge } from "../ui/badge";
 
 export interface PickerOption {
   id: number;
@@ -157,23 +158,40 @@ function ValuePicker({
         {displayItems.map(({ item, option }, idx) => (
           <div
             key={item.id}
-            className="flex items-center gap-3 rounded-md border p-2"
+            className="flex items-center gap-2 rounded-md border p-1"
           >
-            <span className="text-sm">{idx + 1}.</span>
-            <div className="flex-1 truncate">
-              {option?.name} ({option?.uom}){" "}
+            <span className="w-5 text-xs text-primary font-medium text-center">
+              {idx + 1}
+            </span>
+
+            <div
+              className="flex-1 min-w-0"
+              title={`${option?.name} (${option?.uom})`}
+            >
+              <div className="truncate text-sm font-medium">
+                {option?.name}
+              </div>
+
+              <div className="flex items-center gap-1 ">
+                <Badge variant="secondary" className="h-5 px-1.5 text-[10px]">
+                  {option?.uom}
+                </Badge>
+              </div>
             </div>
+
             <Input
               type="number"
               value={item.value}
               placeholder={valueLabel}
-              className="w-28"
+              className="h-8 w-24 text-right"
               onChange={(e) => update(item.id, Number(e.target.value))}
             />
+
             {isAdd && (
               <Button
                 size="icon"
                 variant="ghost"
+                className="h-8 w-8"
                 onClick={() => remove(item.id)}
               >
                 <Trash2 className="h-4 w-4 text-destructive" />

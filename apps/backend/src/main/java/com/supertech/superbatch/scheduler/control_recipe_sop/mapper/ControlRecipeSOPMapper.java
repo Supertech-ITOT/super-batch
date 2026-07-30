@@ -74,7 +74,8 @@ public class ControlRecipeSOPMapper {
                 controlRecipeSOP.setToEquipment(toEquipment);
         }
 
-        public ControlRecipeSOP toEntity(RecipeSOP recipeSOP, ControlRecipe controlRecipe) {
+        public ControlRecipeSOP toEntity(RecipeSOP recipeSOP, ControlRecipe controlRecipe, Equipment fromEquipment,
+                        Equipment toEquipment) {
                 return ControlRecipeSOP.builder()
                                 .controlRecipe(controlRecipe)
                                 .stepNo(recipeSOP.getStepNo())
@@ -82,8 +83,8 @@ public class ControlRecipeSOPMapper {
                                 .stdTime(recipeSOP.getStdTime())
                                 .action(recipeSOP.getAction())
                                 .transition(recipeSOP.getTransition())
-                                .fromEquipment(recipeSOP.getFromEquipment())
-                                .toEquipment(recipeSOP.getToEquipment())
+                                .fromEquipment(fromEquipment)
+                                .toEquipment(toEquipment)
                                 .build();
         }
 

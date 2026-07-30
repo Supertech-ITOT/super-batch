@@ -28,6 +28,7 @@ import { controlRecipeSOPActionType } from "./control-recipe-sop-view";
 import { useCreateControlRecipeSOP, useGetControlRecipeSOPById, useInsertAboveControlRecipeSOP, useInsertBelowControlRecipeSOP, useUpdateControlRecipeSOP } from "../hooks/use-control-recipe-sop";
 import { RadioGroup, RadioGroupItem } from "@/common/components/ui/radio-group";
 import { Separator } from "@/common/components/ui/separator";
+import { showFormError } from "@/common/lib/show-form-error";
 
 type ControlRecipeSOPDialogProp = {
   controlRecipeSOPId?: number;
@@ -83,7 +84,7 @@ export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlReci
         parameters: controlRecipeSOP?.parameters,
         stdTime: minutesToDuration(controlRecipeSOP?.stdTime ?? 0),
         transitionId: controlRecipeSOP?.transitionId,
-        fromEquipmentId: controlRecipeSOP?.fromEquipment.id,
+        fromEquipmentId: controlRecipeSOP?.fromEquipment?.id ?? undefined,
         toEquipmentId: controlRecipeSOP?.toEquipment.id
       })
     }
@@ -150,10 +151,7 @@ export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlReci
   };
 
   const onInvalid = (errors: FieldErrors<ControlRecipeSOPSchema>) => {
-    const firstError = Object.values(errors)[0];
-    if (firstError?.message) {
-      toast.error(firstError.message.toString());
-    }
+    toast.error(showFormError(errors));
   };
 
   if (loading) {
@@ -193,7 +191,7 @@ export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlReci
               <Input
                 placeholder="..."
                 type="number"
-                disabled={loading}
+                disabled
                 readOnly
                 value={stepNo ?? 0}
               />
@@ -328,6 +326,7 @@ export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlReci
           <div className="space-y-4">
             <Label className="font-medium">Material Quantity Mode</Label>
             <RadioGroup
+              disabled={!(autoMaterialStep || manualMaterialStep)}
               value={materialInputMode}
               onValueChange={(v) =>
                 setMaterialInputMode(v as "ABSOLUTE" | "PERCENTAGE")
@@ -336,16 +335,11 @@ export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlReci
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="ABSOLUTE" id="kg" />
-                <Label htmlFor="kg">
-                  Absolute (KG)
-                </Label>
+                <Label htmlFor="kg">Absolute (KG)</Label>
               </div>
-
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="PERCENTAGE" id="percent" />
-                <Label htmlFor="percent">
-                  Percentage (%)
-                </Label>
+                <Label htmlFor="percent">Percentage (%)</Label>
               </div>
             </RadioGroup>
             <Separator />

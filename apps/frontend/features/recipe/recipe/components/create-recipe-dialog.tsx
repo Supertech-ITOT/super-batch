@@ -1,7 +1,7 @@
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { recipeSchema, RecipeSchemaLimit, RecipeSchema } from "../schemas/recipe-schema";
+import { CreateRecipeSchema, createRecipeSchema, RecipeSchemaLimit } from "../schemas/recipe-schema";
 import { useCreateRecipe } from "../hooks/use-recipe";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
@@ -23,15 +23,15 @@ export default function CreateRecipeDialog({ open, onClose }: Props) {
     const { data: units, isLoading: isLoadingUnits } = useGetUnits();
     const { data: materials, isLoading: isLoadingMaterials } = useGetMaterials();
     const { data: recipeStatus, isLoading: isLoadingRecipeStatus } = useGetRecipeStatusTypes();
-    const { register, handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty } } = useForm<RecipeSchema>({
-        resolver: zodResolver(recipeSchema),
+    const { register, handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty } } = useForm<CreateRecipeSchema>({
+        resolver: zodResolver(createRecipeSchema),
         defaultValues: { name: "", description: "", batchSize: "", materialId: "", unitId: "", status: "" }
     });
     const loading = isSubmitting || isCreating || isLoadingMaterials || isLoadingUnits || isLoadingRecipeStatus;
     const selectedUnitId = watch("unitId");
     const selectedUnitMaxRange = units?.find((unit) => unit.id === Number(selectedUnitId))?.capacity;
 
-    const onSubmit = async (formData: RecipeSchema) => {
+    const onSubmit = async (formData: CreateRecipeSchema) => {
         if (!selectedUnitMaxRange) return;
         if (Number(formData.batchSize) > selectedUnitMaxRange) {
             toast.error(`Batch size must be under unit capacity - ${selectedUnitMaxRange}kg`)
@@ -58,7 +58,7 @@ export default function CreateRecipeDialog({ open, onClose }: Props) {
         reset({ name: "", description: "", batchSize: "", materialId: "", unitId: "", status: "" });
         onClose();
     };
-    const onInvalid = (errors: FieldErrors<RecipeSchema>) => {
+    const onInvalid = (errors: FieldErrors<CreateRecipeSchema>) => {
         const firstError = Object.values(errors)[0];
         if (firstError?.message) {
             toast.error(firstError.message.toString());
