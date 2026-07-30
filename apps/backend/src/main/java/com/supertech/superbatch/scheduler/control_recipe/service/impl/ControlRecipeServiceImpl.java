@@ -119,7 +119,7 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
                                 .orElseThrow(() -> new RuntimeException("Control Recipe not found."));
 
                 if (controlRecipe.getStatus().equals(ControlRecipeStatus.TRANSFERRED)) {
-                        throw new BadRequestException("TransferRed batch connot be edit again.");
+                        throw new BadRequestException("Transferred batch cannot be edit again.");
                 }
 
                 User shiftIncharge = userRepository.findById(request.shiftInchargeId())

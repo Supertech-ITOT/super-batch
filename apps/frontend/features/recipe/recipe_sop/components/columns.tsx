@@ -42,15 +42,16 @@ export const columns: ColumnDef<RecipeSOPResponse>[] = [
         id: "transitionAction",
         header: "Process",
         cell: ({ row }) => (
-            <div className="space-y-1.5">
-                <div className="grid grid-cols-[18px_54px_1fr] items-center gap-2">
-                    <div className="flex size-5 items-center justify-center rounded bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-                        <ArrowRightLeft className="size-3" />
+            <div className="space-y-1.5 text-left">
+                <div className="flex flex-row items-center justify-between">
+                    <div className="flex gap-2">
+                        <div className="flex size-5 items-center justify-center rounded bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                            <ArrowRightLeft className="size-3" />
+                        </div>
+                        <span className="text-xs font-medium text-left text-muted-foreground">
+                            Transition
+                        </span>
                     </div>
-
-                    <span className="text-xs font-medium text-left text-muted-foreground">
-                        Transition
-                    </span>
 
                     <Badge
                         variant="outline"
@@ -61,14 +62,17 @@ export const columns: ColumnDef<RecipeSOPResponse>[] = [
                     </Badge>
                 </div>
 
-                <div className="grid grid-cols-[18px_54px_1fr] items-center gap-2">
-                    <div className="flex size-5 items-center justify-center rounded bg-pink-100 text-pink-600 dark:bg-pink-950/40 dark:text-pink-400">
-                        <Play className="size-3 fill-current" />
-                    </div>
+                <div className="flex flex-row items-center justify-between">
+                    <div className="flex gap-2">
 
-                    <span className="text-xs font-medium text-left text-muted-foreground">
-                        Action
-                    </span>
+                        <div className="flex size-5 items-center justify-center rounded bg-pink-100 text-pink-600 dark:bg-pink-950/40 dark:text-pink-400">
+                            <Play className="size-3 fill-current" />
+                        </div>
+
+                        <span className="text-xs font-medium text-left text-muted-foreground">
+                            Action
+                        </span>
+                    </div>
 
                     <Badge
                         variant="outline"

@@ -10,6 +10,7 @@ import ControlRecipeSOPInfo from "./control-recipe-sop-info";
 import ControlRecipeSOPSummary from "./control-recipe-sop-summary";
 import ControlRecipeSOPDeleteDialog from "./control-recipe-sop-delete-dialog";
 import ControlRecipeSOPDialog from "./control-recipe-sop-dialog";
+import { ControlRecipeStatus } from "../../control_recipe/types/control-recipe.types";
 
 export type controlRecipeSOPActionType = "create" | "insert-below" | "insert-above" | "edit" | "move-up" | "move-down" | "delete";
 export type ControlRecipeSOPDialogType = {
@@ -23,6 +24,7 @@ export default function ControlRecipeSOPView({ controlRecipeId }: { controlRecip
     const { data: controlRecipe, isLoading: controlRecipeIsLoading } = useGetControlRecipeById(controlRecipeId);
     const { data: controlRecipeSOP, isLoading: controlRecipeSOPIsLoading } = useGetControlRecipeSOPsByControlRecipeId(controlRecipeId);
     const loading = controlRecipeIsLoading || controlRecipeSOPIsLoading;
+    const hideDialog = controlRecipe?.status === ControlRecipeStatus.TRANSFERRED;
 
     const { mutateAsync: moveUp } = useMoveUpControlRecipeSOP();
     const { mutateAsync: moveDown } = useMoveDownControlRecipeSOP();
@@ -81,7 +83,7 @@ export default function ControlRecipeSOPView({ controlRecipeId }: { controlRecip
                 <div className="flex w-full min-w-0 flex-col gap-4">
                     {/* Table */}
                     <div className="flex-4 min-w-0 min-h-0 bg-card border shadow hover:shadow-lg rounded-lg overflow-hidden">
-                        <DataTable columns={columns} data={controlRecipeSOP} onAction={handleAction} />
+                        <DataTable columns={columns} data={controlRecipeSOP} onAction={handleAction} disabled={hideDialog} />
                     </div>
 
                     {/* Summary */}
@@ -91,14 +93,14 @@ export default function ControlRecipeSOPView({ controlRecipeId }: { controlRecip
                 </div>
 
                 {/* Dialog */}
-                <div className="min-w-1/4 2xl:h-full 2xl:shrink-0 border shadow hover:shadow-lg rounded-lg overflow-hidden">
+                {!hideDialog && <div className="min-w-1/4 2xl:h-full 2xl:shrink-0 border shadow hover:shadow-lg rounded-lg overflow-hidden">
                     <ControlRecipeSOPDialog action={dialog.action} controlRecipeId={controlRecipeId} stepNo={dialog.stepNo} controlRecipeSOPId={dialog.controlRecipeSOPId} unitId={controlRecipe.unit.id} batchSize={controlRecipe.batchSize} />
                     {dialog.action === "delete" && dialog.controlRecipeSOPId &&
                         (
                             <ControlRecipeSOPDeleteDialog open id={dialog.controlRecipeSOPId} controlRecipeId={controlRecipeId} onClose={handleClose} />
                         )
                     }
-                </div>
+                </div>}
             </div>
         </div>
     );

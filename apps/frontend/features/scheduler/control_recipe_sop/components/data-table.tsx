@@ -12,6 +12,7 @@ interface DataTableProps<TData extends { id: number }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   onAction: (action: controlRecipeSOPActionType, row: TData) => void;
+  disabled: boolean;
 
 }
 type menuItemType = {
@@ -29,7 +30,7 @@ const menuItem: menuItemType[] = [
   { label: "Edit", icon: SquarePen, variant: "default", action: "edit" },
   { label: "Delete", icon: Trash, variant: "destructive", action: "delete" }
 ];
-const DataTable = <TData extends { id: number }, TValue>({ columns, data, onAction }: DataTableProps<TData, TValue>) => {
+const DataTable = <TData extends { id: number }, TValue>({ columns, data, onAction, disabled }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const table = useReactTable({
@@ -57,7 +58,10 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, onActi
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="font-semibold border-r border-muted-foreground/20 last:border-r-0 text-center">
+                    <TableHead
+                      key={header.id}
+                      style={{ width: header.getSize() }}
+                      className="font-semibold border-r border-muted-foreground/20 last:border-r-0 text-center">
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext(),)}
                     </TableHead>
                   );
@@ -69,8 +73,8 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, onActi
             {rows.length ? (
               <>
                 {rows.map((row) => (
-                  <ContextMenu key={row.id}>
-                    <ContextMenuTrigger asChild>
+                  <ContextMenu key={row.id} >
+                    <ContextMenuTrigger asChild disabled={disabled}>
                       <TableRow
                         data-state={row.getIsSelected() && "selected"}
                         className="border-muted-foreground/20 border-b h-12"
@@ -78,6 +82,7 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, onActi
                         {row.getVisibleCells().map((cell) => (
                           <TableCell
                             key={cell.id}
+                            style={{ width: cell.column.getSize() }}
                             className={`border-r border-muted-foreground/20 ${cell.column.id === "message"
                               ? "text-left"
                               : "text-center"
