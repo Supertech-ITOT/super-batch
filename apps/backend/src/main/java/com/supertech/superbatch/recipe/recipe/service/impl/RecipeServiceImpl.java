@@ -10,6 +10,7 @@ import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
@@ -43,7 +44,7 @@ public class RecipeServiceImpl implements RecipeService {
 
         @Override
         public void delete(Long id) {
-                Recipe recipe = recipeRepository.findById(id)
+                Recipe recipe = recipeRepository.findByIdWithRelations(id)
                                 .orElseThrow(() -> new RuntimeException("Recipe not found."));
 
                 long count = controlRecipeRepository.countByRecipeId(id);
@@ -52,14 +53,7 @@ public class RecipeServiceImpl implements RecipeService {
                                         "Cannot delete recipe because it is used by " + count + " Control Recipe(s).");
                 }
 
-                BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                                .entity("Recipe")
-                                .action(BatchAuditAction.DELETED)
-                                .module(ModuleType.RECIPE)
-                                .oldData(recipeMapper.copy(recipe))
-                                .newData(null)
-                                .build();
-                batchAuditService.save(batchAuditRequest);
+                audit(BatchAuditAction.DELETED, recipeMapper.copy(recipe), null);
                 recipeRepository.delete(recipe);
         }
 
@@ -81,14 +75,9 @@ public class RecipeServiceImpl implements RecipeService {
 
                 Recipe recipe = recipeMapper.toEntity(request, material, user, unit);
                 recipeRepository.save(recipe);
-                BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                                .entity("Recipe")
-                                .action(BatchAuditAction.CREATED)
-                                .module(ModuleType.RECIPE)
-                                .oldData(null)
-                                .newData(recipeMapper.toResponse(recipe))
-                                .build();
-                batchAuditService.save(batchAuditRequest);
+
+                audit(BatchAuditAction.CREATED, null, recipeMapper.copy(recipe));
+
         }
 
         @Override
@@ -124,15 +113,17 @@ public class RecipeServiceImpl implements RecipeService {
                 RecipeAudit oldData = recipeMapper.copy(recipe);
                 recipeMapper.updateEntity(recipe, request, material);
                 recipeRepository.save(recipe);
+                audit(BatchAuditAction.UPDATED, oldData, recipeMapper.copy(recipe));
+        }
 
-                BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                                .entity("Recipe")
-                                .action(BatchAuditAction.UPDATED)
-                                .module(ModuleType.RECIPE)
-                                .oldData(oldData)
-                                .newData(recipeMapper.copy(recipe))
-                                .build();
-
-                batchAuditService.save(batchAuditRequest);
+        private void audit(BatchAuditAction action, RecipeAudit oldData, RecipeAudit newData) {
+                batchAuditService.save(
+                                BatchAuditRequest.builder()
+                                                .entity(EntityType.RECIPE)
+                                                .module(ModuleType.RECIPE)
+                                                .action(action)
+                                                .oldData(oldData)
+                                                .newData(newData)
+                                                .build());
         }
 }

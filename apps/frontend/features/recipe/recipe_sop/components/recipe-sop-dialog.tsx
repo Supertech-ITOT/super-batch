@@ -146,7 +146,14 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
   };
 
   const handleClear = () => {
-    reset({});
+    reset({
+      stdTime: "",
+      actionId: 0,
+      transitionId: 0,
+      message: "",
+      materials: [],
+      parameters: [],
+    },);
   };
 
   const onInvalid = (errors: FieldErrors<RecipeSOPSchema>) => {

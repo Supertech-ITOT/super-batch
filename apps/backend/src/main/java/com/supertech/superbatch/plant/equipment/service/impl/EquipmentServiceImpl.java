@@ -10,6 +10,7 @@ import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.plant.equipment.dto.AssignEquipmentRequest;
 import com.supertech.superbatch.plant.equipment.dto.CreateEquipmentRequest;
@@ -47,14 +48,8 @@ public class EquipmentServiceImpl implements EquipmentService {
         Equipment equipment = equipmentMapper.toEntity(request, unit, EquipmentType.SUB_EQUIPMENT);
         equipmentRepository.save(equipment);
 
-        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entity("Equipment")
-                .action(BatchAuditAction.CREATED)
-                .module(ModuleType.PLANT_MODEL)
-                .oldData(null)
-                .newData(equipmentMapper.copy(equipment))
-                .build();
-        batchAuditService.save(batchAuditRequest);
+        audit(BatchAuditAction.CREATED, null, equipmentMapper.copy(equipment));
+
     }
 
     @Override
@@ -94,15 +89,8 @@ public class EquipmentServiceImpl implements EquipmentService {
         EquipmentAudit oldData = equipmentMapper.copy(equipment);
         equipmentMapper.updateEntity(equipment, request);
         equipmentRepository.save(equipment);
+        audit(BatchAuditAction.UPDATED, oldData, equipmentMapper.copy(equipment));
 
-        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entity("Equipment")
-                .action(BatchAuditAction.UPDATED)
-                .module(ModuleType.PLANT_MODEL)
-                .oldData(oldData)
-                .newData(equipmentMapper.copy(equipment))
-                .build();
-        batchAuditService.save(batchAuditRequest);
     }
 
     @Override
@@ -113,16 +101,7 @@ public class EquipmentServiceImpl implements EquipmentService {
             throw new BadRequestException(
                     "Main equipment cannot be deleted directly. Delete the creator unit to remove this equipment.");
         }
-
-        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entity("Equipment")
-                .action(BatchAuditAction.DELETED)
-                .module(ModuleType.PLANT_MODEL)
-                .oldData(equipmentMapper.copy(equipment))
-                .newData(null)
-                .build();
-        batchAuditService.save(batchAuditRequest);
-
+        audit(BatchAuditAction.DELETED, equipmentMapper.copy(equipment), null);
         equipmentRepository.delete(equipment);
     }
 
@@ -168,6 +147,17 @@ public class EquipmentServiceImpl implements EquipmentService {
         }
 
         equipmentRepository.save(equipment);
+    }
+
+    private void audit(BatchAuditAction action, EquipmentAudit oldData, EquipmentAudit newData) {
+        batchAuditService.save(
+                BatchAuditRequest.builder()
+                        .entity(EntityType.EQUIPMENT)
+                        .module(ModuleType.PLANT_MODEL)
+                        .action(action)
+                        .oldData(oldData)
+                        .newData(newData)
+                        .build());
     }
 
 }

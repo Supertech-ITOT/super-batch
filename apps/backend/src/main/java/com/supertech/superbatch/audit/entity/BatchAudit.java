@@ -10,6 +10,7 @@ import com.supertech.superbatch.manager.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import com.supertech.superbatch.manager.module.entity.Module;
+import com.supertech.superbatch.manager.module.enums.EntityType;
 
 @Entity
 @Getter
@@ -23,7 +24,7 @@ public class BatchAudit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String entity;
+    private EntityType entity;
 
     @Enumerated(EnumType.STRING)
     private BatchAuditAction action;

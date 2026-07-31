@@ -10,6 +10,7 @@ import com.supertech.superbatch.audit.enums.BatchAuditAction;
 import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.permission.entity.Permission;
 import com.supertech.superbatch.manager.permission.service.PermissionService;
@@ -22,7 +23,6 @@ import com.supertech.superbatch.manager.role.entity.Role;
 import com.supertech.superbatch.manager.role.mapper.RoleMapper;
 import com.supertech.superbatch.manager.role.repository.RoleRepository;
 import com.supertech.superbatch.manager.role.service.RoleService;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -69,16 +69,7 @@ public class RoleServiceImpl implements RoleService {
         Role role = roleMapper.toEntity(roleRequest);
         roleRepository.save(role);
         permissionService.savePermissions(role, request.permissions());
-
-        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entity("Role")
-                .action(BatchAuditAction.CREATED)
-                .module(ModuleType.MANAGER)
-                .oldData(null)
-                .newData(roleMapper.copy(role))
-                .build();
-        batchAuditService.save(batchAuditRequest);
-
+        audit(BatchAuditAction.CREATED, null, roleMapper.copy(role));
     }
 
     @Transactional
@@ -89,43 +80,35 @@ public class RoleServiceImpl implements RoleService {
         if (roleRepository.existsByNameAndIdNot(request.name(), id)) {
             throw new DuplicateResourceException("Role already exists with name: " + request.name());
         }
-
         RoleRequest roleRequest = RoleRequest.builder()
                 .name(request.name())
                 .description(request.description())
                 .build();
-
         RoleAudit oldData = roleMapper.copy(role);
-
         roleMapper.updateEntity(role, roleRequest);
         permissionService.deletePermissions(id);
         permissionService.savePermissions(role, request.permissions());
         roleRepository.save(role);
-
-        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entity("Role")
-                .action(BatchAuditAction.UPDATED)
-                .module(ModuleType.MANAGER)
-                .oldData(oldData)
-                .newData(roleMapper.copy(role))
-                .build();
-        batchAuditService.save(batchAuditRequest);
+        audit(BatchAuditAction.UPDATED, oldData, roleMapper.copy(role));
     }
 
     @Override
     public void delete(Long id) {
         Role role = roleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Role not found."));
-        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entity("Role")
-                .action(BatchAuditAction.DELETED)
-                .module(ModuleType.MANAGER)
-                .oldData(roleMapper.copy(role))
-                .newData(null)
-                .build();
-        batchAuditService.save(batchAuditRequest);
-
+        audit(BatchAuditAction.DELETED, roleMapper.copy(role), null);
         permissionService.deletePermissions(id);
         roleRepository.delete(role);
+    }
+
+    private void audit(BatchAuditAction action, RoleAudit oldData, RoleAudit newData) {
+        batchAuditService.save(
+                BatchAuditRequest.builder()
+                        .entity(EntityType.ROLE)
+                        .module(ModuleType.MANAGER)
+                        .action(action)
+                        .oldData(oldData)
+                        .newData(newData)
+                        .build());
     }
 
 }

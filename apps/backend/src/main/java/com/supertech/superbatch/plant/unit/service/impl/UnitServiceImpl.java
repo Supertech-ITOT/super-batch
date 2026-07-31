@@ -10,6 +10,7 @@ import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.plant.area.entity.Area;
 import com.supertech.superbatch.plant.area.repository.AreaRepository;
@@ -71,22 +72,8 @@ public class UnitServiceImpl implements UnitService {
                                 EquipmentType.MAIN_EQUIPMENT);
                 equipmentRepository.save(equipment);
 
-                BatchAuditRequest unitBatchAuditRequest = BatchAuditRequest.builder()
-                                .entity("Unit")
-                                .action(BatchAuditAction.CREATED)
-                                .module(ModuleType.PLANT_MODEL)
-                                .oldData(null)
-                                .newData(unitMapper.copy(unit))
-                                .build();
-                batchAuditService.save(unitBatchAuditRequest);
-                BatchAuditRequest equipmentBatchAuditRequest = BatchAuditRequest.builder()
-                                .entity("Equipment")
-                                .action(BatchAuditAction.CREATED)
-                                .module(ModuleType.PLANT_MODEL)
-                                .oldData(null)
-                                .newData(equipmentMapper.copy(equipment))
-                                .build();
-                batchAuditService.save(equipmentBatchAuditRequest);
+                audit(BatchAuditAction.CREATED, null, unitMapper.copy(unit));
+                audit(BatchAuditAction.CREATED, null, equipmentMapper.copy(equipment));
 
         }
 
@@ -143,22 +130,8 @@ public class UnitServiceImpl implements UnitService {
                 equipmentMapper.updateEntity(mainEquipment, updateEquipmentRequest);
                 equipmentRepository.save(mainEquipment);
 
-                BatchAuditRequest unitBatchAuditRequest = BatchAuditRequest.builder()
-                                .entity("Unit")
-                                .action(BatchAuditAction.UPDATED)
-                                .module(ModuleType.PLANT_MODEL)
-                                .oldData(unitOldData)
-                                .newData(unitMapper.copy(unit))
-                                .build();
-                batchAuditService.save(unitBatchAuditRequest);
-                BatchAuditRequest equipmentBatchAuditRequest = BatchAuditRequest.builder()
-                                .entity("Equipment")
-                                .action(BatchAuditAction.UPDATED)
-                                .module(ModuleType.PLANT_MODEL)
-                                .oldData(equipmentOldData)
-                                .newData(equipmentMapper.copy(mainEquipment))
-                                .build();
-                batchAuditService.save(equipmentBatchAuditRequest);
+                audit(BatchAuditAction.UPDATED, unitOldData, unitMapper.copy(unit));
+                audit(BatchAuditAction.UPDATED, equipmentOldData, equipmentMapper.copy(mainEquipment));
 
         }
 
@@ -185,33 +158,34 @@ public class UnitServiceImpl implements UnitService {
                                         "Main equipment is assigned to other units. Unassign it first.");
                 }
 
-                BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                                .entity("Unit")
-                                .action(BatchAuditAction.DELETED)
-                                .module(ModuleType.PLANT_MODEL)
-                                .oldData(unitMapper.copy(unit))
-                                .newData(null)
-                                .build();
-                batchAuditService.save(batchAuditRequest);
-                BatchAuditRequest equipmentBatchAuditRequest = BatchAuditRequest.builder()
-                                .entity("Equipment")
-                                .action(BatchAuditAction.DELETED)
-                                .module(ModuleType.PLANT_MODEL)
-                                .oldData(equipmentMapper.copy(mainEquipment))
-                                .newData(null)
-                                .build();
-                batchAuditService.save(equipmentBatchAuditRequest);
+                audit(BatchAuditAction.DELETED, unitMapper.copy(unit), null);
+                audit(BatchAuditAction.DELETED, equipmentMapper.copy(mainEquipment), null);
 
                 equipmentRepository.delete(mainEquipment);
                 unitRepository.delete(unit);
 
         }
 
-        @Override
-        public Unit getUnitById(Long id) {
-                Unit unit = unitRepository.findById(id)
-                                .orElseThrow(() -> new ResourceNotFoundException("Unit not found."));
-                return unit;
+        private void audit(BatchAuditAction action, UnitAudit oldData, UnitAudit newData) {
+                batchAuditService.save(
+                                BatchAuditRequest.builder()
+                                                .entity(EntityType.UNIT)
+                                                .module(ModuleType.PLANT_MODEL)
+                                                .action(action)
+                                                .oldData(oldData)
+                                                .newData(newData)
+                                                .build());
+        }
+
+        private void audit(BatchAuditAction action, EquipmentAudit oldData, EquipmentAudit newData) {
+                batchAuditService.save(
+                                BatchAuditRequest.builder()
+                                                .entity(EntityType.EQUIPMENT)
+                                                .module(ModuleType.PLANT_MODEL)
+                                                .action(action)
+                                                .oldData(oldData)
+                                                .newData(newData)
+                                                .build());
         }
 
 }

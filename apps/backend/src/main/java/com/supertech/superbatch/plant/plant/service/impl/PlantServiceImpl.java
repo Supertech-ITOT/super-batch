@@ -6,6 +6,7 @@ import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.plant.area.repository.AreaRepository;
 import com.supertech.superbatch.plant.plant.dto.CreatePlantRequest;
@@ -38,14 +39,7 @@ public class PlantServiceImpl implements PlantService {
         }
         Plant plant = plantMapper.toEntity(request);
         plantRepository.save(plant);
-        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entity("Plant")
-                .action(BatchAuditAction.CREATED)
-                .module(ModuleType.PLANT_MODEL)
-                .oldData(null)
-                .newData(plantMapper.copy(plant))
-                .build();
-        batchAuditService.save(batchAuditRequest);
+        audit(BatchAuditAction.CREATED, null, plantMapper.copy(plant));
 
     }
 
@@ -72,14 +66,8 @@ public class PlantServiceImpl implements PlantService {
         PlantAudit oldData = plantMapper.copy(plant);
         plantMapper.updateEntity(plant, request);
         plantRepository.save(plant);
-        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entity("Plant")
-                .action(BatchAuditAction.UPDATED)
-                .module(ModuleType.PLANT_MODEL)
-                .oldData(oldData)
-                .newData(plantMapper.copy(plant))
-                .build();
-        batchAuditService.save(batchAuditRequest);
+        audit(BatchAuditAction.UPDATED, oldData, plantMapper.copy(plant));
+
     }
 
     @Override
@@ -88,16 +76,19 @@ public class PlantServiceImpl implements PlantService {
             throw new BadRequestException("Cannot delete plant with areas");
         }
         Plant plant = plantRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Plant not found"));
-        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entity("Plant")
-                .action(BatchAuditAction.DELETED)
-                .module(ModuleType.PLANT_MODEL)
-                .oldData(plantMapper.copy(plant))
-                .newData(null)
-                .build();
-
-        batchAuditService.save(batchAuditRequest);
+        audit(BatchAuditAction.DELETED, plantMapper.copy(plant), null);
         plantRepository.delete(plant);
+    }
+
+    private void audit(BatchAuditAction action, PlantAudit oldData, PlantAudit newData) {
+        batchAuditService.save(
+                BatchAuditRequest.builder()
+                        .entity(EntityType.PLANT)
+                        .module(ModuleType.PLANT_MODEL)
+                        .action(action)
+                        .oldData(oldData)
+                        .newData(newData)
+                        .build());
     }
 
 }

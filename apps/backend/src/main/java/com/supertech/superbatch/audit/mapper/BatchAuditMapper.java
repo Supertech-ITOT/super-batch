@@ -20,7 +20,7 @@ public class BatchAuditMapper {
                 .performedAt(audit.getPerformedAt())
                 .oldData(audit.getOldData())
                 .newData(audit.getNewData())
-                .entity(audit.getEntity())
+                .entity(audit.getEntity().name())
                 .build();
 
     }

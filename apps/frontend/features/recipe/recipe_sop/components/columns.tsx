@@ -105,7 +105,7 @@ export const columns: ColumnDef<RecipeSOPResponse>[] = [
                     {
                         header: "Std Value",
                         cellClassName: "text-right",
-                        render: (i) => i.stdValue,
+                        render: (i) => i.stdValue.toFixed(2),
                     },
                 ]}
             />
@@ -131,7 +131,7 @@ export const columns: ColumnDef<RecipeSOPResponse>[] = [
                     {
                         header: "Std Qty",
                         cellClassName: "text-right",
-                        render: (i) => i.stdQty,
+                        render: (i) => i.stdQty.toFixed(2),
                     },
                 ]}
             />

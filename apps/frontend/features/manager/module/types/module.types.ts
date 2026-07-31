@@ -1,4 +1,4 @@
-import { CalendarClock, BookOpenText, Factory, Users, ShieldCheck, ClipboardList, Settings, LucideIcon, UserCogIcon, Building, Boxes, Cpu, PackageCheckIcon, Gauge, ArrowRightLeft, Play, MessageSquareQuote, Hash } from "lucide-react";
+import { CalendarClock, BookOpenText, Factory, Users, ShieldCheck, ClipboardList, Settings, LucideIcon, UserCogIcon, Building, Boxes, Cpu, PackageCheckIcon, Gauge, ArrowRightLeft, Play, MessageSquareQuote, Hash, CalendarClockIcon, PackageCheck, Package } from "lucide-react";
 
 export enum ModuleType {
     MANAGER = "MANAGER",
@@ -64,59 +64,28 @@ export const ConfigurationRoutes: RouteType[] = [
     },
 ];
 
-export const EntityItems  = [
+export const EntityItems = [
+    { type: "PLANT", label: "Plant", icon: Factory },
+    { type: "AREA", label: "Area", icon: Building },
+    { type: "UNIT", label: "Unit", icon: Boxes },
+    { type: "EQUIPMENT", label: "Equipment", icon: Cpu },
 
-    {
-        label: "Plant",
-        icon: Factory
-    },
-    {
-        label: "Area",
-        icon: Building
-    },
-    {
-        label: "Unit",
-        icon: Boxes
-    },
-    {
-        label: "Equipment",
-        icon: Cpu
-    },
-    {
-        label: "Material",
-        icon:PackageCheckIcon
-    },
-    {
-        label: "Parameter",
-        icon: Gauge
-    },
-    {
-        label: "Transition",
-        icon: ArrowRightLeft
-    },
-    {
-        label: "Action",
-        icon: Play
-    },
-    {
-        label: "Message",
-        icon: MessageSquareQuote
-    },
-    {
-        label:"Recipe",
-        icon: BookOpenText
-    },
-    {
-        label:"Recipe_SOP",
-        icon: Hash
-    },
-    {
-        label:"Role",
-        icon: ShieldCheck
-    },
-    {
-        label:"User",
-        icon: Users
-    }
-    
-]
+    { type: "MATERIAL", label: "Material", icon: PackageCheck },
+    { type: "PARAMETER", label: "Parameter", icon: Gauge },
+    { type: "TRANSITION", label: "Transition", icon: ArrowRightLeft },
+    { type: "ACTION", label: "Action", icon: Play },
+
+    { type: "RECIPE", label: "Recipe", icon: BookOpenText },
+    { type: "RECIPE_SOP", label: "Recipe SOP", icon: Hash },
+    { type: "CONTROL_RECIPE", label: "Control Recipe", icon: CalendarClock },
+    { type: "CONTROL_RECIPE_SOP", label: "Control Recipe SOP", icon: Hash },
+
+    { type: "ROLE", label: "Role", icon: ShieldCheck },
+    { type: "USER", label: "User", icon: Users },
+
+    { type: "BATCH", label: "Batch", icon: Package },
+];
+
+export const EntityItemMap = Object.fromEntries(
+    EntityItems.map((item) => [item.type, item])
+);

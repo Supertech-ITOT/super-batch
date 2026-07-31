@@ -15,6 +15,7 @@ import com.supertech.superbatch.audit.enums.BatchAuditAction;
 import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.permission.entity.Permission;
 import com.supertech.superbatch.manager.permission.service.PermissionService;
@@ -72,14 +73,8 @@ public class UserServiceImpl implements UserService {
                                 passwordEncoder.encode(request.password()));
 
                 userRepository.save(user);
-                BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                                .entity("User")
-                                .action(BatchAuditAction.CREATED)
-                                .module(ModuleType.MANAGER)
-                                .oldData(null)
-                                .newData(userMapper.copy(user))
-                                .build();
-                batchAuditService.save(batchAuditRequest);
+                audit(BatchAuditAction.CREATED, null, userMapper.copy(user));
+
         }
 
         @Override
@@ -99,14 +94,7 @@ public class UserServiceImpl implements UserService {
                 userMapper.updateEntity(user, request, role);
 
                 userRepository.save(user);
-                BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                                .entity("User")
-                                .action(BatchAuditAction.UPDATED)
-                                .module(ModuleType.MANAGER)
-                                .oldData(oldData)
-                                .newData(userMapper.copy(user))
-                                .build();
-                batchAuditService.save(batchAuditRequest);
+                audit(BatchAuditAction.UPDATED, oldData, userMapper.copy(user));
 
         }
 
@@ -115,14 +103,7 @@ public class UserServiceImpl implements UserService {
 
                 User user = userRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
-                BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                                .entity("User")
-                                .action(BatchAuditAction.DELETED)
-                                .module(ModuleType.MANAGER)
-                                .oldData(userMapper.copy(user))
-                                .newData(null)
-                                .build();
-                batchAuditService.save(batchAuditRequest);
+                audit(BatchAuditAction.DELETED, userMapper.copy(user), null);
                 userRepository.delete(user);
         }
 
@@ -134,4 +115,16 @@ public class UserServiceImpl implements UserService {
                 return userMapper.toResponse(user, permissions);
 
         }
+
+        private void audit(BatchAuditAction action, UserAudit oldData, UserAudit newData) {
+                batchAuditService.save(
+                                BatchAuditRequest.builder()
+                                                .entity(EntityType.USER)
+                                                .module(ModuleType.MANAGER)
+                                                .action(action)
+                                                .oldData(oldData)
+                                                .newData(newData)
+                                                .build());
+        }
+
 }

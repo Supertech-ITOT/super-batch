@@ -10,6 +10,7 @@ import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.plant.area.dto.AreaAudit;
 import com.supertech.superbatch.plant.area.dto.AreaResponse;
@@ -47,14 +48,8 @@ public class AreaServiceImpl implements AreaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Plant not found"));
         Area area = areaMapper.toEntity(request, plant);
         areaRepository.save(area);
-        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entity("Area")
-                .action(BatchAuditAction.CREATED)
-                .module(ModuleType.PLANT_MODEL)
-                .oldData(null)
-                .newData(areaMapper.copy(area))
-                .build();
-        batchAuditService.save(batchAuditRequest);
+        audit(BatchAuditAction.UPDATED, null, areaMapper.copy(area));
+
     }
 
     @Override
@@ -88,14 +83,8 @@ public class AreaServiceImpl implements AreaService {
         AreaAudit oldData = areaMapper.copy(area);
         areaMapper.updateEntity(area, request, plant);
         areaRepository.save(area);
-        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entity("Area")
-                .action(BatchAuditAction.UPDATED)
-                .module(ModuleType.PLANT_MODEL)
-                .oldData(oldData)
-                .newData(areaMapper.copy(area))
-                .build();
-        batchAuditService.save(batchAuditRequest);
+        audit(BatchAuditAction.UPDATED, oldData, areaMapper.copy(area));
+
     }
 
     @Override
@@ -104,16 +93,19 @@ public class AreaServiceImpl implements AreaService {
             throw new BadRequestException("Cannot delete area with units");
         }
         Area area = areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area not found"));
-        BatchAuditRequest batchAuditRequest = BatchAuditRequest.builder()
-                .entity("Area")
-                .action(BatchAuditAction.DELETED)
-                .module(ModuleType.PLANT_MODEL)
-                .oldData(areaMapper.copy(area))
-                .newData(null)
-                .build();
-
-        batchAuditService.save(batchAuditRequest);
+        audit(BatchAuditAction.DELETED, areaMapper.copy(area), null);
         areaRepository.delete(area);
+    }
+
+    private void audit(BatchAuditAction action, AreaAudit oldData, AreaAudit newData) {
+        batchAuditService.save(
+                BatchAuditRequest.builder()
+                        .entity(EntityType.AREA)
+                        .module(ModuleType.PLANT_MODEL)
+                        .action(action)
+                        .oldData(oldData)
+                        .newData(newData)
+                        .build());
     }
 
 }
