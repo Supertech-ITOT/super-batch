@@ -9,20 +9,23 @@ import com.supertech.superbatch.manager.user.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-        boolean existsByName(String name);
+        boolean existsByNameAndDeletedFalse(String name);
 
-        boolean existsByEmail(String email);
+        boolean existsByEmailAndDeletedFalse(String email);
 
-        @EntityGraph(attributePaths = { "role", "createdBy" })
-        Optional<User> findByEmail(String email);
+        boolean existsByEmailAndIdNotAndDeletedFalse(String email, Long id);
+
+        long countByRoleIdAndDeletedFalse(Long roleId);
 
         boolean existsByEmailAndIdNot(String email, Long id);
 
-        @Override
         @EntityGraph(attributePaths = { "role", "createdBy" })
-        List<User> findAll();
+        Optional<User> findByEmailAndDeletedFalse(String email);
 
-        @Override
-        @EntityGraph(attributePaths = { "role", "createdBy" })
-        Optional<User> findById(Long id);
+        @EntityGraph(attributePaths = { "role", "role.permissions", "role.permissions.module", "createdBy" })
+        Optional<User> findByIdAndDeletedFalse(Long id);
+
+        @EntityGraph(attributePaths = { "role", "role.permissions", "role.permissions.module", "createdBy" })
+        List<User> findByDeletedFalseAndSystemAccountFalse();
+
 }

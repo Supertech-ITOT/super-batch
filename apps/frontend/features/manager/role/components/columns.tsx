@@ -10,7 +10,8 @@ import { RoleResponse } from "@/features/manager/role/types/role.types";
 
 
 export const columns = (
-    setDialog: React.Dispatch<React.SetStateAction<DialogProp>>
+    setDialog: React.Dispatch<React.SetStateAction<DialogProp>>,
+    totalModules: number
 ): ColumnDef<RoleResponse>[] => [
         {
             id: "srNo",
@@ -24,9 +25,10 @@ export const columns = (
         {
             accessorKey: "description",
             header: "Description",
+            size: 300,
             cell: ({ row }) => (
                 <div
-                    className="max-w-sm wrap-break-word whitespace-normal line-clamp-2"
+                    className="w-full wrap-break-word whitespace-normal line-clamp-2"
                     title={row.original.description}
                 >
                     {row.original.description}
@@ -41,8 +43,7 @@ export const columns = (
                 const assigned = permissions.reduce(
                     (count, p) => count + (p.access ? 1 : 0), 0
                 );
-                const total = permissions.length * 2;
-                return `${assigned}/${total}`;
+                return `${assigned}/${totalModules}`;
             },
         },
         {

@@ -52,7 +52,7 @@ export default function RoleView() {
             <Separator className="my-4" />
             <div className="flex-1 min-h-0 ">
                 <DataTable
-                    columns={columns(setDialog)}
+                    columns={columns(setDialog,modules.length)}
                     data={roles}
                     setDialog={setDialog}
                 />

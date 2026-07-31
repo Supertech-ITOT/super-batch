@@ -59,7 +59,9 @@ const DataTable = <TData extends { id: number }, TValue>({ columns, data, setDia
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id}>
+                                        <TableHead
+                                            style={{ width: header.getSize() }}
+                                            key={header.id}>
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(

@@ -1,11 +1,9 @@
 package com.supertech.superbatch.manager.user.service.impl;
 
 import com.supertech.superbatch.manager.user.dto.UserAudit;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,12 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.supertech.superbatch.audit.dto.BatchAuditRequest;
 import com.supertech.superbatch.audit.enums.BatchAuditAction;
 import com.supertech.superbatch.audit.service.BatchAuditService;
+import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
-import com.supertech.superbatch.manager.permission.entity.Permission;
-import com.supertech.superbatch.manager.permission.service.PermissionService;
 import com.supertech.superbatch.manager.role.entity.Role;
 import com.supertech.superbatch.manager.role.repository.RoleRepository;
 import com.supertech.superbatch.manager.user.dto.UpdateUserRequest;
@@ -39,39 +36,31 @@ public class UserServiceImpl implements UserService {
         private final RoleRepository roleRepository;
         private final UserMapper userMapper;
         private final PasswordEncoder passwordEncoder;
-        private final PermissionService permissionService;
         private final BatchAuditService batchAuditService;
 
         @Override
+        @Transactional(readOnly = true)
         public List<UserResponse> getAll() {
-                List<User> users = userRepository.findAll();
-                Map<Long, List<Permission>> permissionMap = users.stream()
-                                .map(user -> user.getRole().getId())
-                                .distinct()
-                                .collect(Collectors.toMap(Function.identity(), permissionService::getByRoleId));
-
-                return users.stream()
-                                .map(user -> userMapper.toResponse(user, permissionMap.get(user.getRole().getId())))
+                return userRepository.findByDeletedFalseAndSystemAccountFalse()
+                                .stream()
+                                .map(user -> userMapper.toResponse(user, List.copyOf(user.getRole().getPermissions())))
                                 .toList();
         }
 
         @Override
         public void create(UserRequest request, Long userId) {
-                if (userRepository.existsByEmail(request.email())) {
+                if (userRepository.existsByEmailAndDeletedFalse(request.email())) {
                         throw new DuplicateResourceException("Email already exists.");
                 }
-
                 Role role = roleRepository.findById(request.roleId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Role not found."));
                 User createdBy = userRepository.findById(userId)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
-
                 User user = userMapper.toEntity(
                                 request,
                                 role,
                                 createdBy,
                                 passwordEncoder.encode(request.password()));
-
                 userRepository.save(user);
                 audit(BatchAuditAction.CREATED, null, userMapper.copy(user));
 
@@ -79,41 +68,45 @@ public class UserServiceImpl implements UserService {
 
         @Override
         public void update(Long id, UpdateUserRequest request) {
-
-                User user = userRepository.findById(id)
+                User user = userRepository.findByIdAndDeletedFalse(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
-
-                if (userRepository.existsByEmailAndIdNot(request.email(), id)) {
+                if (user.isSystemAccount()) {
+                        throw new BadRequestException("System user cannot be modified.");
+                }
+                if (userRepository.existsByEmailAndIdNotAndDeletedFalse(request.email(), id)) {
                         throw new DuplicateResourceException("Email already exists.");
                 }
-
                 Role role = roleRepository.findById(request.roleId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Role not found."));
-
                 UserAudit oldData = userMapper.copy(user);
                 userMapper.updateEntity(user, request, role);
-
                 userRepository.save(user);
                 audit(BatchAuditAction.UPDATED, oldData, userMapper.copy(user));
 
         }
 
         @Override
-        public void delete(Long id) {
-
-                User user = userRepository.findById(id)
+        public void delete(Long id, Long currentUserId) {
+                User user = userRepository.findByIdAndDeletedFalse(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+                if (user.isSystemAccount()) {
+                        throw new BadRequestException("System user cannot be deleted.");
+                }
+                User deletedBy = userRepository.findById(currentUserId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Current user not found."));
                 audit(BatchAuditAction.DELETED, userMapper.copy(user), null);
-                userRepository.delete(user);
+                user.setDeleted(true);
+                user.setDeletedAt(LocalDateTime.now());
+                user.setDeletedBy(deletedBy);
+                userRepository.save(user);
         }
 
         @Override
+        @Transactional(readOnly = true)
         public UserResponse getById(Long id) {
-                User user = userRepository.findById(id)
+                User user = userRepository.findByIdAndDeletedFalse(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
-                List<Permission> permissions = permissionService.getByRoleId(user.getRole().getId());
-                return userMapper.toResponse(user, permissions);
-
+                return userMapper.toResponse(user, List.copyOf(user.getRole().getPermissions()));
         }
 
         private void audit(BatchAuditAction action, UserAudit oldData, UserAudit newData) {

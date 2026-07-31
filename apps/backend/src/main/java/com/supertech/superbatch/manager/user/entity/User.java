@@ -3,6 +3,7 @@ package com.supertech.superbatch.manager.user.entity;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.supertech.superbatch.manager.role.entity.Role;
@@ -17,6 +18,11 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLDelete(sql = """
+            UPDATE users
+            SET deleted = true, deleted_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        """)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,5 +50,18 @@ public class User {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User createdBy;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean systemAccount = false;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean deleted = false;
+
+    private LocalDateTime deletedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User deletedBy;
 
 }

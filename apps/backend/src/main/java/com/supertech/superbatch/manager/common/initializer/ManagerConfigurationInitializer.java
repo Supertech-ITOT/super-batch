@@ -48,17 +48,18 @@ public class ManagerConfigurationInitializer implements CommandLineRunner {
     }
 
     private void seedRole() {
-        if (!roleRepository.existsByName("System")) {
+        if (!roleRepository.existsByNameAndDeletedFalse("System")) {
             Role role = Role.builder()
                     .name("System")
                     .description("Full system access")
+                    .systemRole(true)
                     .build();
             roleRepository.save(role);
         }
     }
 
     private void seedPermission() {
-        Role role = roleRepository.findByName("System")
+        Role role = roleRepository.findByNameAndDeletedFalse("System")
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found."));
         for (ModuleType type : ModuleType.values()) {
             Module module = moduleRepository.findById(type.getId())
@@ -75,14 +76,15 @@ public class ManagerConfigurationInitializer implements CommandLineRunner {
     }
 
     private void seedUser() {
-        if (!userRepository.existsByName("Super Admin")) {
-            Role role = roleRepository.findByName("System")
+        if (!userRepository.existsByNameAndDeletedFalse("Super Admin")) {
+            Role role = roleRepository.findByNameAndDeletedFalse("System")
                     .orElseThrow(() -> new ResourceNotFoundException("Role not found."));
             User user = User.builder()
                     .name("Super Admin")
                     .email("itotsoftware@supertech.co.in")
                     .password(passwordEncoder.encode("Super@123"))
                     .role(role)
+                    .systemAccount(true)
                     .build();
             user = userRepository.save(user);
             user.setCreatedBy(user);

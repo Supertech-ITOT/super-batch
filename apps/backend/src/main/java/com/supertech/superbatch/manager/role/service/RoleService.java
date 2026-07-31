@@ -15,5 +15,5 @@ public interface RoleService {
 
     void update(Long id, RoleUpdateRequest request);
 
-    void delete(Long id);
+    void delete(Long id, Long currentUserId);
 }
