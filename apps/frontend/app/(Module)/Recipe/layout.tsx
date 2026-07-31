@@ -1,9 +1,9 @@
-import RecipeNav from "@/features/recipe/common/components/recipe-nav";
+import ModuleHeader from "@/common/components/module-header";
 
 export default function RecipeLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
     return (
         <div className="h-full flex flex-col overflow-hidden">
-            <RecipeNav />
+            <ModuleHeader />
             <main className="flex-1 min-h-0 overflow-hidden">
                 {children}
             </main>

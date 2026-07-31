@@ -5,7 +5,6 @@ import { Separator } from "./ui/separator";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { useState } from "react";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
 import { useLogout } from "@/features/manager/auth/hooks/use-auth";
@@ -58,7 +57,8 @@ export default function SideBar() {
                                 {OperationRoutes
                                     .filter(route => hasReadPermission(route.module))
                                     .map((el) => {
-                                        const active = pathname.startsWith(el.path);
+                                        const getBasePath = (path: string) => "/" + path.split("/")[1];
+                                        const active = getBasePath(pathname) === getBasePath(el.path);
                                         const Icon = el.icon;
                                         return (
                                             <Link

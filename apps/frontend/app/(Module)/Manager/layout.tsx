@@ -1,9 +1,8 @@
-import ManagerNav from "@/features/manager/common/components/manager-nav";
-
+import ModuleHeader from "@/common/components/module-header";
 export default function ManagerLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
     return (
         <div className="h-full flex flex-col overflow-hidden">
-            <ManagerNav />
+            <ModuleHeader />
             <main className="flex-1 min-h-0 overflow-hidden">
                 {children}
             </main>

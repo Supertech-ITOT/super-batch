@@ -19,6 +19,7 @@ type RouteType = {
     path: string;
     icon: LucideIcon;
     module?: ModuleType;
+    description: string;
 }
 
 export const OperationRoutes: RouteType[] = [
@@ -26,41 +27,51 @@ export const OperationRoutes: RouteType[] = [
         label: "Batch Manager",
         path: "/Manager/roles",
         icon: UserCogIcon,
-        module: ModuleType.MANAGER
+        module: ModuleType.MANAGER,
+        description:
+            "Manage users, roles, and module permissions for secure system access.",
     },
     {
         label: "Plant Model",
         path: "/PlantModel",
         icon: Factory,
-        module: ModuleType.PLANT_MODEL
+        module: ModuleType.PLANT_MODEL,
+        description:
+            "Configure the ISA-88 plant hierarchy, equipment, and process resources.",
     },
     {
         label: "Recipe Engine",
         path: "/Recipe",
         icon: BookOpenText,
-        module: ModuleType.RECIPE
+        module: ModuleType.RECIPE,
+        description:
+            "Create and maintain recipes, procedures, operations, and phases.",
     },
-
     {
         label: "Batch Scheduler",
         path: "/Scheduler",
         icon: CalendarClock,
-        module: ModuleType.SCHEDULER
+        module: ModuleType.SCHEDULER,
+        description:
+            "Schedule, execute, and monitor production batches in real time.",
     },
     {
         label: "Batch Audit",
         path: "/Audit",
         icon: ClipboardList,
-        module: ModuleType.AUDIT
+        module: ModuleType.AUDIT,
+        description:
+            "Review audit trails, user activities, and system change history.",
     },
 ];
 
 export const ConfigurationRoutes: RouteType[] = [
-
     {
-        label: "Setting",
+        label: "Settings",
         path: "/Setting",
         icon: Settings,
+        description:
+            "Configure system preferences, application settings, and defaults.",
     },
 ];
 
