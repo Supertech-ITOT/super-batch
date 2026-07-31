@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.supertech.superbatch.plant.parameter.entity.Parameter;
 import com.supertech.superbatch.recipe.recipe_sop_parameter.entity.RecipeSOPParameter;
 import com.supertech.superbatch.scheduler.control_recipe_sop.entity.ControlRecipeSOP;
+import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.dto.ControlRecipeSOPParameterAudit;
 import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.dto.ControlRecipeSOPParameterRequest;
 import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.dto.ControlRecipeSOPParameterResponse;
 import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.entity.ControlRecipeSOPParameter;
@@ -44,6 +45,14 @@ public class ControlRecipeSOPParameterMapper {
                 .controlRecipeSOP(controlRecipeSOP)
                 .parameter(recipeSOPParameter.getParameter())
                 .stdValue(recipeSOPParameter.getStdValue())
+                .build();
+    }
+
+    public ControlRecipeSOPParameterAudit copy(ControlRecipeSOPParameter controlRecipeSOPParameter) {
+        return ControlRecipeSOPParameterAudit.builder()
+                .id(controlRecipeSOPParameter.getId())
+                .name(controlRecipeSOPParameter.getParameter().getName())
+                .stdValue(controlRecipeSOPParameter.getStdValue())
                 .build();
     }
 

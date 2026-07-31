@@ -9,18 +9,16 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.supertech.superbatch.audit.dto.BatchAuditRequest;
+import com.supertech.superbatch.audit.enums.BatchAuditAction;
+import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
-import com.supertech.superbatch.plant.action.entity.Action;
-import com.supertech.superbatch.plant.action.repository.ActionRepository;
-import com.supertech.superbatch.plant.equipment.entity.Equipment;
-import com.supertech.superbatch.plant.equipment.repository.EquipmentRepository;
-import com.supertech.superbatch.plant.transition.entity.Transition;
-import com.supertech.superbatch.plant.transition.enums.TransitionType;
-import com.supertech.superbatch.plant.transition.repository.TransitionRepository;
+import com.supertech.superbatch.manager.module.enums.EntityType;
+import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.scheduler.control_recipe.entity.ControlRecipe;
-import com.supertech.superbatch.scheduler.control_recipe.enums.ControlRecipeStatus;
 import com.supertech.superbatch.scheduler.control_recipe.repository.ControlRecipeRepository;
+import com.supertech.superbatch.scheduler.control_recipe_sop.dto.ControlRecipeSOPAudit;
 import com.supertech.superbatch.scheduler.control_recipe_sop.dto.ControlRecipeSOPDependencies;
 import com.supertech.superbatch.scheduler.control_recipe_sop.dto.ControlRecipeSOPMaterialSummaryResponse;
 import com.supertech.superbatch.scheduler.control_recipe_sop.dto.ControlRecipeSOPResponse;
@@ -28,15 +26,13 @@ import com.supertech.superbatch.scheduler.control_recipe_sop.dto.ControlRecipeSO
 import com.supertech.superbatch.scheduler.control_recipe_sop.dto.CreateControlRecipeSOPRequest;
 import com.supertech.superbatch.scheduler.control_recipe_sop.dto.UpdateControlRecipeSOPRequest;
 import com.supertech.superbatch.scheduler.control_recipe_sop.entity.ControlRecipeSOP;
+import com.supertech.superbatch.scheduler.control_recipe_sop.helper.ControlRecipeSOPLookupService;
+import com.supertech.superbatch.scheduler.control_recipe_sop.loader.ControlRecipeSOPDependencyLoader;
 import com.supertech.superbatch.scheduler.control_recipe_sop.mapper.ControlRecipeSOPMapper;
 import com.supertech.superbatch.scheduler.control_recipe_sop.repository.ControlRecipeSOPRepository;
 import com.supertech.superbatch.scheduler.control_recipe_sop.service.ControlRecipeSOPService;
-import com.supertech.superbatch.scheduler.control_recipe_sop_material.dto.ControlRecipeSOPMaterialRequest;
+import com.supertech.superbatch.scheduler.control_recipe_sop.validation.ControlRecipeSOPValidator;
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.entity.ControlRecipeSOPMaterial;
-import com.supertech.superbatch.scheduler.control_recipe_sop_material.repository.ControlRecipeSOPMaterialRepository;
-import com.supertech.superbatch.scheduler.control_recipe_sop_material.service.ControlRecipeSOPMaterialService;
-import com.supertech.superbatch.scheduler.control_recipe_sop_parameter.service.ControlRecipeSOPParameterService;
-
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -46,17 +42,14 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
         private final ControlRecipeSOPRepository controlRecipeSOPRepository;
         private final ControlRecipeRepository controlRecipeRepository;
         private final ControlRecipeSOPMapper controlRecipeSOPMapper;
-        private final ActionRepository actionRepository;
-        private final EquipmentRepository equipmentRepository;
-        private final TransitionRepository transitionRepository;
-        private final ControlRecipeSOPParameterService controlRecipeSOPParameterService;
-        private final ControlRecipeSOPMaterialService controlRecipeSOPMaterialService;
-        private final ControlRecipeSOPMaterialRepository controlRecipeSOPMaterialRepository;
+        private final ControlRecipeSOPDependencyLoader controlRecipeSOPDependencyLoader;
+        private final BatchAuditService batchAuditService;
+        private final ControlRecipeSOPValidator controlRecipeSOPValidator;
+        private final ControlRecipeSOPLookupService controlRecipeSOPLookupService;
 
         @Override
         public ControlRecipeSOPResponse getById(Long id) {
-                ControlRecipeSOP controlRecipeSOP = controlRecipeSOPRepository.findWithRelationsById(id)
-                                .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
+                ControlRecipeSOP controlRecipeSOP = getControlRecipeSOP(id);
                 return controlRecipeSOPMapper.toResponse(controlRecipeSOP, controlRecipeSOP.getMaterials(),
                                 controlRecipeSOP.getParameters());
         }
@@ -75,19 +68,12 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
 
         @Override
         public void create(CreateControlRecipeSOPRequest request) {
-                ControlRecipe controlRecipe = controlRecipeRepository.findByIdWithRelations(request.controlRecipeId())
-                                .orElseThrow(() -> new ResourceNotFoundException("Control Recipe not found."));
-                if (controlRecipe.getStatus().equals(ControlRecipeStatus.TRANSFERRED)) {
-                        throw new BadRequestException("Transferred batch cannot be edit again.");
-                }
+                ControlRecipe controlRecipe = getControlRecipe(request.controlRecipeId());
+                controlRecipeSOPValidator.validateEditable(controlRecipe);
                 List<ControlRecipeSOP> steps = controlRecipeSOPRepository
                                 .findAllByControlRecipeId(request.controlRecipeId());
                 Integer stepNo = steps.isEmpty() ? 1 : steps.size() + 1;
-                ControlRecipeSOPDependencies deps = loadInsertDependencies(request.actionId(),
-                                request.transitionId(),
-                                request.fromEquipmentId(),
-                                request.toEquipmentId(),
-                                request.materials(),
+                ControlRecipeSOPDependencies deps = controlRecipeSOPDependencyLoader.loadInsertDependencies(request,
                                 controlRecipe, null);
                 ControlRecipeSOP controlRecipeSOP = controlRecipeSOPMapper.toEntity(
                                 request,
@@ -96,48 +82,41 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                                 deps.action(),
                                 deps.transition(),
                                 deps.fromEquipment(),
-                                deps.toEquipment());
+                                deps.toEquipment(),
+                                controlRecipeSOPLookupService.getMaterialMap(request.materials()),
+                                controlRecipeSOPLookupService.getParameterMap(request.parameters()));
                 controlRecipeSOPRepository.save(controlRecipeSOP);
-                controlRecipeSOPParameterService.create(controlRecipeSOP, request.parameters());
-                controlRecipeSOPMaterialService.create(controlRecipeSOP, request.materials());
+                audit(BatchAuditAction.CREATED, null, controlRecipeSOPMapper.copy(controlRecipeSOP));
         }
 
         @Transactional
         @Override
         public void update(UpdateControlRecipeSOPRequest request) {
-                ControlRecipeSOP controlRecipeSOP = controlRecipeSOPRepository.findById(request.id())
-                                .orElseThrow(() -> new ResourceNotFoundException("Step not found"));
-                ControlRecipe controlRecipe = controlRecipeRepository.findByIdWithRelations(request.controlRecipeId())
-                                .orElseThrow(() -> new ResourceNotFoundException("Control Recipe not found."));
-                if (controlRecipe.getStatus().equals(ControlRecipeStatus.TRANSFERRED)) {
-                        throw new BadRequestException("Transferred batch connot be edit again.");
-                }
-                ControlRecipeSOPDependencies deps = loadInsertDependencies(request.actionId(),
-                                request.transitionId(),
-                                request.fromEquipmentId(),
-                                request.toEquipmentId(),
-                                request.materials(),
+                ControlRecipeSOP controlRecipeSOP = getControlRecipeSOP(request.id());
+                ControlRecipe controlRecipe = getControlRecipe(request.controlRecipeId());
+                controlRecipeSOPValidator.validateEditable(controlRecipe);
+                ControlRecipeSOPDependencies deps = controlRecipeSOPDependencyLoader.loadInsertDependencies(request,
                                 controlRecipe, controlRecipeSOP.getId());
+                ControlRecipeSOPAudit oldData = controlRecipeSOPMapper.copy(controlRecipeSOP);
                 controlRecipeSOPMapper.updateEntity(
                                 request,
                                 controlRecipeSOP,
                                 deps.action(),
                                 deps.transition(),
                                 deps.fromEquipment(),
-                                deps.toEquipment());
-                controlRecipeSOPParameterService.update(controlRecipeSOP, request.parameters());
-                controlRecipeSOPMaterialService.update(controlRecipeSOP, request.materials());
+                                deps.toEquipment(),
+                                controlRecipeSOPLookupService.getMaterialMap(request.materials()),
+                                controlRecipeSOPLookupService.getParameterMap(request.parameters()));
                 controlRecipeSOPRepository.save(controlRecipeSOP);
+                audit(BatchAuditAction.UPDATED, oldData, controlRecipeSOPMapper.copy(controlRecipeSOP));
         }
 
         @Transactional
         @Override
         public void delete(Long id) {
-                ControlRecipeSOP controlRecipeSOP = controlRecipeSOPRepository.findById(id)
-                                .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
-                if (controlRecipeSOP.getControlRecipe().getStatus().equals(ControlRecipeStatus.TRANSFERRED)) {
-                        throw new BadRequestException("Transferred batch cannot be edit again.");
-                }
+                ControlRecipeSOP controlRecipeSOP = getControlRecipeSOP(id);
+                controlRecipeSOPValidator.validateEditable(controlRecipeSOP.getControlRecipe());
+                audit(BatchAuditAction.DELETED, controlRecipeSOPMapper.copy(controlRecipeSOP), null);
                 controlRecipeSOPRepository.decrementStepNumbers(
                                 controlRecipeSOP.getControlRecipe().getId(),
                                 controlRecipeSOP.getStepNo());
@@ -146,210 +125,33 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
 
         @Transactional
         @Override
-        public void moveUp(Long controlRecipeId) {
-                ControlRecipeSOP current = controlRecipeSOPRepository.findById(controlRecipeId)
-                                .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
-                if (current.getControlRecipe().getStatus().equals(ControlRecipeStatus.TRANSFERRED)) {
-                        throw new BadRequestException("Transferred batch cannot be edit again.");
-                }
-                if (current.getStepNo() == 1) {
-                        throw new BadRequestException("Step 1 cannot be moved up.");
-                }
-                ControlRecipeSOP previous = controlRecipeSOPRepository.findByControlRecipeIdAndStepNo(
-                                current.getControlRecipe().getId(),
-                                current.getStepNo() - 1)
-                                .orElseThrow(() -> new ResourceNotFoundException("Previous step not found."));
-                int temp = current.getStepNo();
-                current.setStepNo(previous.getStepNo());
-                previous.setStepNo(temp);
-                controlRecipeSOPRepository.save(current);
-                controlRecipeSOPRepository.save(previous);
+        public void moveUp(Long controlRecipeSOPId) {
+                move(controlRecipeSOPId, -1);
         }
 
         @Transactional
         @Override
-        public void moveDown(Long controlRecipeId) {
-                ControlRecipeSOP current = controlRecipeSOPRepository.findById(controlRecipeId)
-                                .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
-                if (current.getControlRecipe().getStatus().equals(ControlRecipeStatus.TRANSFERRED)) {
-                        throw new BadRequestException("Transferred batch cannot be edit again.");
-                }
-                ControlRecipeSOP next = controlRecipeSOPRepository.findByControlRecipeIdAndStepNo(
-                                current.getControlRecipe().getId(),
-                                current.getStepNo() + 1)
-                                .orElseThrow(() -> new ResourceNotFoundException("Next step not found."));
-                int temp = current.getStepNo();
-                current.setStepNo(next.getStepNo());
-                next.setStepNo(temp);
-                controlRecipeSOPRepository.save(current);
-                controlRecipeSOPRepository.save(next);
+        public void moveDown(Long controlRecipeSOPId) {
+                move(controlRecipeSOPId, 1);
         }
 
         @Transactional
         @Override
-        public void insertAbove(Long controlRecipeId, CreateControlRecipeSOPRequest request) {
-                ControlRecipeSOP controlRecipeSOP = controlRecipeSOPRepository.findById(controlRecipeId)
-                                .orElseThrow(() -> new ResourceNotFoundException("Step not found"));
-                ControlRecipe controlRecipe = controlRecipeRepository.findByIdWithRelations(request.controlRecipeId())
-                                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
-                if (controlRecipe.getStatus().equals(ControlRecipeStatus.TRANSFERRED)) {
-                        throw new BadRequestException("Transferred batch cannot be edit again.");
-                }
-                ControlRecipeSOPDependencies deps = loadInsertDependencies(request.actionId(),
-                                request.transitionId(),
-                                request.fromEquipmentId(),
-                                request.toEquipmentId(),
-                                request.materials(),
-                                controlRecipe, null);
-                controlRecipeSOPRepository.incrementStepNumbersFrom(
-                                controlRecipeSOP.getControlRecipe().getId(),
-                                controlRecipeSOP.getStepNo());
-                ControlRecipeSOP newControlRecipeSOP = controlRecipeSOPMapper.toEntity(
-                                request,
-                                controlRecipeSOP.getStepNo(),
-                                controlRecipeSOP.getControlRecipe(),
-                                deps.action(),
-                                deps.transition(),
-                                deps.fromEquipment(),
-                                deps.toEquipment());
-                controlRecipeSOPRepository.save(newControlRecipeSOP);
+        public void insertAbove(Long controlRecipeSOPId,
+                        CreateControlRecipeSOPRequest request) {
+                insert(controlRecipeSOPId, request, true);
         }
 
         @Transactional
         @Override
-        public void insertBelow(Long controlRecipeId, CreateControlRecipeSOPRequest request) {
-                ControlRecipeSOP controlRecipeSOP = controlRecipeSOPRepository.findById(controlRecipeId)
-                                .orElseThrow(() -> new ResourceNotFoundException("Step not found"));
-                ControlRecipe controlRecipe = controlRecipeRepository.findByIdWithRelations(request.controlRecipeId())
-                                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
-                if (controlRecipe.getStatus().equals(ControlRecipeStatus.TRANSFERRED)) {
-                        throw new BadRequestException("Transferred batch cannot be edit again.");
-                }
-
-                ControlRecipeSOPDependencies deps = loadInsertDependencies(request.actionId(),
-                                request.transitionId(),
-                                request.fromEquipmentId(),
-                                request.toEquipmentId(),
-                                request.materials(),
-                                controlRecipe, null);
-                controlRecipeSOPRepository.incrementStepNumbersAfter(
-                                controlRecipeSOP.getControlRecipe().getId(),
-                                controlRecipeSOP.getStepNo());
-                ControlRecipeSOP newControlRecipeSOP = controlRecipeSOPMapper.toEntity(
-                                request,
-                                controlRecipeSOP.getStepNo() + 1,
-                                controlRecipeSOP.getControlRecipe(),
-                                deps.action(),
-                                deps.transition(),
-                                deps.fromEquipment(),
-                                deps.toEquipment());
-                controlRecipeSOPRepository.save(newControlRecipeSOP);
-        }
-
-        private ControlRecipeSOPDependencies loadInsertDependencies(
-                        Long actionId,
-                        Long transitionId,
-                        Long fromEquipmentId,
-                        Long toEquipmentId,
-                        List<ControlRecipeSOPMaterialRequest> materials,
-                        ControlRecipe controlRecipe,
-                        Long recipeSOPId) {
-
-                Action action = actionRepository.findById(actionId)
-                                .orElseThrow(() -> new ResourceNotFoundException("Action not found."));
-
-                Transition transition = transitionRepository.findById(transitionId)
-                                .orElseThrow(() -> new ResourceNotFoundException("Transition not found."));
-
-                Equipment fromEquipment = null;
-
-                if (fromEquipmentId != null) {
-                        fromEquipment = equipmentRepository.findById(fromEquipmentId)
-                                        .orElseThrow(() -> new ResourceNotFoundException("From Equipment not found."));
-                }
-
-                Equipment toEquipment = equipmentRepository.findById(toEquipmentId)
-                                .orElseThrow(() -> new ResourceNotFoundException("To Equipment not found."));
-
-                validateEquipment(transition, fromEquipment, toEquipment, controlRecipe.getUnit().getId());
-                validateMaterial(controlRecipe.getId(), recipeSOPId, transition, materials,
-                                controlRecipe.getBatchSize());
-
-                return ControlRecipeSOPDependencies.builder()
-                                .action(action)
-                                .transition(transition)
-                                .fromEquipment(fromEquipment)
-                                .toEquipment(toEquipment)
-                                .build();
-        }
-
-        private void validateEquipment(Transition transition, Equipment fromEquipment, Equipment toEquipment,
-                        Long unitId) {
-                if (fromEquipment != null) {
-                        if (fromEquipment.getId().equals(toEquipment.getId())) {
-                                throw new BadRequestException("From Equipment and To Equipment cannot be same.");
-                        }
-
-                }
-                if (fromEquipment == null
-                                && transition.getName().equals(TransitionType.AUTO_MATERIAL_CHARGE.getDisplayName())) {
-                        throw new BadRequestException("From Equipment is required in Auto Material Charge transition.");
-                }
-                if (!transition.getName().equals(TransitionType.TRANSFER.getDisplayName())
-                                && (toEquipment.getCreatorUnit() == null
-                                                || toEquipment.getCreatorUnit().getId() != unitId)) {
-                        throw new BadRequestException(
-                                        "To Equipment must be recipe main equipment in selected transition.");
-                }
-                if (transition.getName().equals(TransitionType.TRANSFER.getDisplayName())
-                                && (fromEquipment == null || fromEquipment.getCreatorUnit() == null
-                                                || fromEquipment.getCreatorUnit().getId() != unitId)) {
-                        throw new BadRequestException(
-                                        "From Equipment must be recipe main equipment in Transfer transition.");
-                }
-
-        }
-
-        private void validateMaterial(Long recipeId, Long recipeSOPId, Transition transition,
-                        List<ControlRecipeSOPMaterialRequest> materials,
-                        Integer batchSize) {
-
-                materials = materials == null ? List.of() : materials;
-
-                if (TransitionType.AUTO_MATERIAL_CHARGE.getDisplayName().equals(transition.getName())
-                                && materials.size() != 1) {
-                        throw new BadRequestException("Auto material charging step must contain exactly one material.");
-                }
-
-                if (TransitionType.MANUAL_MATERIAL_CHARGE.getDisplayName().equals(transition.getName())
-                                && materials.isEmpty()) {
-                        throw new BadRequestException(
-                                        "Manual material charging step must contain at least one material.");
-                }
-
-                double requestedQty = materials.stream().mapToDouble(ControlRecipeSOPMaterialRequest::stdQty).sum();
-                double existingQty = controlRecipeSOPMaterialRepository.getTotalMaterialQtyByControlRecipeId(recipeId);
-
-                if (recipeSOPId != null) {
-                        existingQty -= controlRecipeSOPMaterialRepository
-                                        .getTotalMaterialQtyByControlRecipeSOPId(recipeSOPId);
-                }
-
-                double finalQty = existingQty + requestedQty;
-
-                if (finalQty > batchSize) {
-                        throw new BadRequestException(String.format(
-                                        "Total material quantity (%.2f kg) exceeds recipe batch size (%d kg).",
-                                        finalQty, batchSize));
-                }
-
+        public void insertBelow(Long controlRecipeSOPId,
+                        CreateControlRecipeSOPRequest request) {
+                insert(controlRecipeSOPId, request, false);
         }
 
         @Override
         public ControlRecipeSOPSummaryResponse getSummaryByControlRecipeId(Long controlRecipeId) {
-                ControlRecipe controlRecipe = controlRecipeRepository.findByIdWithRelations(controlRecipeId)
-                                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found"));
-
+                ControlRecipe controlRecipe = getControlRecipe(controlRecipeId);
                 Integer batchSize = controlRecipe.getBatchSize();
                 List<ControlRecipeSOP> controlRecipeSOPs = controlRecipeSOPRepository
                                 .findWithRelationsByControlRecipeId(controlRecipe.getId());
@@ -377,9 +179,78 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                                                                 existing.stdQty() + current.stdQty())));
 
                 List<ControlRecipeSOPMaterialSummaryResponse> materials = new ArrayList<>(materialMap.values());
-
                 return new ControlRecipeSOPSummaryResponse(batchSize, totalSteps, materials.size(), totalDuration,
                                 materials);
+        }
+
+        private void move(Long controlRecipeSOPId, int direction) {
+                ControlRecipeSOP current = getControlRecipeSOP(controlRecipeSOPId);
+                controlRecipeSOPValidator.validateEditable(current.getControlRecipe());
+                if (direction < 0 && current.getStepNo() == 1) {
+                        throw new BadRequestException("Step 1 cannot be moved up.");
+                }
+
+                ControlRecipeSOP other = controlRecipeSOPRepository.findByControlRecipeIdAndStepNo(
+                                current.getControlRecipe().getId(),
+                                current.getStepNo() + direction)
+                                .orElseThrow(() -> new ResourceNotFoundException("Adjacent step not found."));
+
+                int stepNo = current.getStepNo();
+                current.setStepNo(other.getStepNo());
+                other.setStepNo(stepNo);
+                controlRecipeSOPRepository.saveAll(List.of(current, other));
+        }
+
+        private void insert(Long controlRecipeSOPId, CreateControlRecipeSOPRequest request, boolean above) {
+                ControlRecipeSOP current = getControlRecipeSOP(controlRecipeSOPId);
+                ControlRecipe controlRecipe = getControlRecipe(request.controlRecipeId());
+                controlRecipeSOPValidator.validateEditable(controlRecipe);
+                ControlRecipeSOPDependencies deps = controlRecipeSOPDependencyLoader.loadInsertDependencies(
+                                request,
+                                controlRecipe,
+                                null);
+
+                int stepNo = current.getStepNo();
+                if (above) {
+                        controlRecipeSOPRepository.incrementStepNumbersFrom(current.getControlRecipe().getId(), stepNo);
+                } else {
+                        controlRecipeSOPRepository.incrementStepNumbersAfter(current.getControlRecipe().getId(),
+                                        stepNo);
+                        stepNo++;
+                }
+
+                ControlRecipeSOP newStep = controlRecipeSOPMapper.toEntity(
+                                request,
+                                stepNo,
+                                current.getControlRecipe(),
+                                deps.action(),
+                                deps.transition(),
+                                deps.fromEquipment(),
+                                deps.toEquipment(),
+                                controlRecipeSOPLookupService.getMaterialMap(request.materials()),
+                                controlRecipeSOPLookupService.getParameterMap(request.parameters()));
+                controlRecipeSOPRepository.save(newStep);
+        }
+
+        private void audit(BatchAuditAction action, ControlRecipeSOPAudit oldData, ControlRecipeSOPAudit newData) {
+                batchAuditService.save(
+                                BatchAuditRequest.builder()
+                                                .entity(EntityType.CONTROL_RECIPE_SOP)
+                                                .module(ModuleType.SCHEDULER)
+                                                .action(action)
+                                                .oldData(oldData)
+                                                .newData(newData)
+                                                .build());
+        }
+
+        private ControlRecipeSOP getControlRecipeSOP(Long id) {
+                return controlRecipeSOPRepository.findWithRelationsById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
+        }
+
+        private ControlRecipe getControlRecipe(Long id) {
+                return controlRecipeRepository.findByIdWithRelations(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Control recipe not found."));
         }
 
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.supertech.superbatch.plant.material.entity.Material;
 import com.supertech.superbatch.recipe.recipe_sop_material.enitiy.RecipeSOPMaterial;
 import com.supertech.superbatch.scheduler.control_recipe_sop.entity.ControlRecipeSOP;
+import com.supertech.superbatch.scheduler.control_recipe_sop_material.dto.ControlRecipeSOPMaterialAudit;
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.dto.ControlRecipeSOPMaterialRequest;
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.dto.ControlRecipeSOPMaterialResponse;
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.entity.ControlRecipeSOPMaterial;
@@ -42,6 +43,14 @@ public class ControlRecipeSOPMaterialMapper {
                 .controlRecipeSOP(controlRecipeSOP)
                 .material(recipeSOPMaterial.getMaterial())
                 .stdQty(recipeSOPMaterial.getStdQty())
+                .build();
+    }
+
+    public ControlRecipeSOPMaterialAudit copy(ControlRecipeSOPMaterial controlRecipeSOPMaterial) {
+        return ControlRecipeSOPMaterialAudit.builder()
+                .id(controlRecipeSOPMaterial.getId())
+                .name(controlRecipeSOPMaterial.getMaterial().getName())
+                .stdQty(controlRecipeSOPMaterial.getStdQty())
                 .build();
     }
 
