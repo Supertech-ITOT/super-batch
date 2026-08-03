@@ -14,10 +14,15 @@ import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.common.exception.UnauthorizedException;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
+import com.supertech.superbatch.manager.role.entity.DefaultRole;
 import com.supertech.superbatch.manager.role.entity.Role;
 import com.supertech.superbatch.manager.role.repository.RoleRepository;
+import com.supertech.superbatch.manager.user.dto.ChangePasswordRequest;
+import com.supertech.superbatch.manager.user.dto.ResetFirstPasswordRequest;
+import com.supertech.superbatch.manager.user.dto.ResetPasswordRequest;
 import com.supertech.superbatch.manager.user.dto.UpdateUserRequest;
 import com.supertech.superbatch.manager.user.dto.UserRequest;
 import com.supertech.superbatch.manager.user.dto.UserResponse;
@@ -49,7 +54,8 @@ public class UserServiceImpl implements UserService {
 
         @Override
         public void create(UserRequest request, Long userId) {
-                if (userRepository.existsByEmailAndDeletedFalse(request.email())) {
+                String email = request.email().trim().toLowerCase();
+                if (userRepository.existsByEmailAndDeletedFalse(email)) {
                         throw new DuplicateResourceException("Email already exists.");
                 }
                 Role role = roleRepository.findById(request.roleId())
@@ -68,17 +74,29 @@ public class UserServiceImpl implements UserService {
 
         @Override
         public void update(Long id, UpdateUserRequest request) {
+                String email = request.email().trim().toLowerCase();
                 User user = userRepository.findByIdAndDeletedFalse(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
                 if (user.isSystemAccount()) {
                         throw new BadRequestException("System user cannot be modified.");
                 }
-                if (userRepository.existsByEmailAndIdNotAndDeletedFalse(request.email(), id)) {
+                if (userRepository.existsByEmailAndIdNotAndDeletedFalse(email, id)) {
                         throw new DuplicateResourceException("Email already exists.");
                 }
                 Role role = roleRepository.findById(request.roleId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Role not found."));
                 UserAudit oldData = userMapper.copy(user);
+
+                boolean removingLastAdministrator = DefaultRole.ADMINISTRATOR.equals(user.getRole().getName())
+                                && !DefaultRole.ADMINISTRATOR.equals(role.getName());
+
+                if (removingLastAdministrator) {
+                        long adminCount = userRepository.countByRoleNameAndDeletedFalse(DefaultRole.ADMINISTRATOR);
+                        if (adminCount <= 1) {
+                                throw new BadRequestException("At least one administrator must remain.");
+                        }
+                }
+
                 userMapper.updateEntity(user, request, role);
                 userRepository.save(user);
                 audit(BatchAuditAction.UPDATED, oldData, userMapper.copy(user));
@@ -91,6 +109,13 @@ public class UserServiceImpl implements UserService {
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
                 if (user.isSystemAccount()) {
                         throw new BadRequestException("System user cannot be deleted.");
+                }
+
+                if ("Administrator".equals(user.getRole().getName())) {
+                        long adminCount = userRepository.countByRoleNameAndDeletedFalse("Administrator");
+                        if (adminCount <= 1) {
+                                throw new BadRequestException("The last administrator cannot be deleted.");
+                        }
                 }
                 User deletedBy = userRepository.findById(currentUserId)
                                 .orElseThrow(() -> new ResourceNotFoundException("Current user not found."));
@@ -118,6 +143,64 @@ public class UserServiceImpl implements UserService {
                                                 .oldData(oldData)
                                                 .newData(newData)
                                                 .build());
+        }
+
+        @Override
+        public void resetFirstPassword(ResetFirstPasswordRequest request, Long currentUserId) {
+
+                User user = userRepository.findByIdAndDeletedFalse(currentUserId)
+                                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
+                if (user.isSystemAccount()) {
+                        throw new BadRequestException("System user password cannot be reset.");
+                }
+                if (!user.isPasswordChangeRequired()) {
+                        throw new BadRequestException("Password reset is not required.");
+                }
+                if (passwordEncoder.matches(request.password(), user.getPassword())) {
+                        throw new BadRequestException(
+                                        "New password must be different from the current password.");
+                }
+                user.setPassword(passwordEncoder.encode(request.password()));
+                user.setPasswordChangeRequired(false);
+
+                userRepository.save(user);
+        }
+
+        @Override
+        public void changePassword(ChangePasswordRequest request, Long id) {
+                User user = userRepository.findByIdAndDeletedFalse(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
+                if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+                        throw new BadRequestException("Current password is incorrect.");
+                }
+
+                if (passwordEncoder.matches(request.newPassword(), user.getPassword())) {
+                        throw new BadRequestException("New password must be different from the current password.");
+                }
+
+                user.setPassword(passwordEncoder.encode(request.newPassword()));
+                userRepository.save(user);
+        }
+
+        @Override
+        public void resetPassword(ResetPasswordRequest request, Long id) {
+                User user = userRepository.findByIdAndDeletedFalse(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+                if (user.isSystemAccount()) {
+                        throw new BadRequestException("System user password cannot be reset.");
+                }
+                user.setPassword(passwordEncoder.encode(request.password()));
+                user.setPasswordChangeRequired(true);
+                userRepository.save(user);
+        }
+
+        @Override
+        public UserResponse getCurrentUser(Long currentUserId) {
+                User user = userRepository.findByIdAndDeletedFalse(currentUserId)
+                                .orElseThrow(() -> new UnauthorizedException("TOKEN_EXPIRED"));
+                return userMapper.toResponse(user, List.copyOf(user.getRole().getPermissions()));
         }
 
 }

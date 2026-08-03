@@ -10,9 +10,10 @@ import CreateUserDialog from "./create-user-dialog";
 import UpdateUserDialog from "./update-user-dialog";
 import DeleteUserDialog from "./delete-user-dialog";
 import { Separator } from "@/common/components/ui/separator";
+import ResetPasswordUserDialog from "./reset-password-user-dialog";
 
 export type DialogProp = {
-    action: "create" | "edit" | "delete" | null;
+    action: "create" | "edit" | "delete" | "reset" | null;
     id: number | null;
     open: boolean
 }
@@ -61,6 +62,8 @@ export default function UserView() {
                         <CreateUserDialog open onClose={closeDialog} />)}
                     {dialog.action === "edit" && dialog.id !== null && (
                         <UpdateUserDialog open={dialog.open} userId={dialog.id} onClose={closeDialog} />)}
+                    {dialog.action === "reset" && dialog.id !== null && (
+                        <ResetPasswordUserDialog open={dialog.open} userId={dialog.id} onClose={closeDialog} />)}
                     {dialog.action === "delete" && dialog.id !== null && (
                         <DeleteUserDialog open={dialog.open} userId={dialog.id} onClose={closeDialog} />)}
                 </>

@@ -25,6 +25,7 @@ import com.supertech.superbatch.manager.role.dto.RoleCreateRequest;
 import com.supertech.superbatch.manager.role.dto.RoleRequest;
 import com.supertech.superbatch.manager.role.dto.RoleResponse;
 import com.supertech.superbatch.manager.role.dto.RoleUpdateRequest;
+import com.supertech.superbatch.manager.role.entity.DefaultRole;
 import com.supertech.superbatch.manager.role.entity.Role;
 import com.supertech.superbatch.manager.role.mapper.RoleMapper;
 import com.supertech.superbatch.manager.role.repository.RoleRepository;
@@ -86,12 +87,13 @@ public class RoleServiceImpl implements RoleService {
         Role role = roleRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
 
+        if (role.isSystemRole() || DefaultRole.ADMINISTRATOR.equals(role.getName())) {
+            throw new BadRequestException("This role cannot be modified.");
+        }
         if (roleRepository.existsByNameAndIdNotAndDeletedFalse(request.name(), id)) {
             throw new DuplicateResourceException("Role already exists with name: " + request.name());
         }
-        if (role.isSystemRole()) {
-            throw new BadRequestException("System role is not editable.");
-        }
+
         RoleRequest roleRequest = RoleRequest.builder()
                 .name(request.name())
                 .description(request.description())
@@ -108,8 +110,8 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public void delete(Long id, Long currentUserId) {
         Role role = roleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Role not found."));
-        if (role.isSystemRole()) {
-            throw new BadRequestException("System role cannot be deleted.");
+        if (role.isSystemRole() || DefaultRole.ADMINISTRATOR.equals(role.getName())) {
+            throw new BadRequestException("This role cannot be deleted.");
         }
         long userCount = userRepository.countByRoleIdAndDeletedFalse(id);
 

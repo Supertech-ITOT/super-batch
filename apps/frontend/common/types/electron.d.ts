@@ -2,7 +2,7 @@ export { };
 
 declare global {
     interface Window {
-        electron: {
+        electron?: {
             minimize(): void;
             maximize(): void;
             close(): void;

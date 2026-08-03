@@ -24,7 +24,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse login(LoginRequest request) {
-        User user = userRepository.findByEmailAndDeletedFalse(request.email())
+        String email = request.email().trim().toLowerCase();
+        User user = userRepository.findByEmailAndDeletedFalse(email)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Invalid email or password"));
 
@@ -43,6 +44,7 @@ public class AuthServiceImpl implements AuthService {
                 .email(user.getEmail())
                 .role(user.getRole().getName())
                 .accessToken(token)
+                .passwordChangeRequired(user.isPasswordChangeRequired())
                 .build();
 
         return loginResponse;

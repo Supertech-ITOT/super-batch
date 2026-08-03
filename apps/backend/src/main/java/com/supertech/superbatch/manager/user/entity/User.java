@@ -3,26 +3,18 @@ package com.supertech.superbatch.manager.user.entity;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import com.supertech.superbatch.manager.role.entity.Role;
-
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = { "email", "deleted" }))
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@SQLDelete(sql = """
-            UPDATE users
-            SET deleted = true, deleted_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-        """)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +22,7 @@ public class User {
 
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
@@ -63,5 +55,9 @@ public class User {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User deletedBy;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean passwordChangeRequired = false;
 
 }

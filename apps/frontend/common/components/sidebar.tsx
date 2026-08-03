@@ -1,5 +1,5 @@
 "use client";
-import { ChevronUp, LogOut, PanelLeftOpen, Loader, Clock3 } from "lucide-react";
+import { ChevronUp, LogOut, PanelLeftOpen, Loader, Clock3, PanelLeftClose } from "lucide-react";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import Link from "next/link";
@@ -13,13 +13,14 @@ import { ConfigurationRoutes, ModuleType, OperationRoutes } from "@/features/man
 import SidebarSkeleton from "./sidebar-skeleton";
 import SessionCard from "./session-card";
 import { useSidebar } from "./sidebar-provider";
+import { useIsElectron } from "../hooks/use-is-electron";
 
 
 
 export default function SideBar() {
     const pathname = usePathname();
     const router = useRouter();
-    const { open } = useSidebar();
+    const { open, setOpen } = useSidebar();
     const { mutateAsync: logout, isPending: logoutIsPending } = useLogout();
     const { data: user, isLoading: userIsLoading } = useGetCurrentUser();
     const loading = !user || userIsLoading;
@@ -42,6 +43,8 @@ export default function SideBar() {
             showApiError(error);
         }
     }
+
+    const isElectron = useIsElectron();
     return (
         <>
             <aside className={`h-full z-50 border-r transition-all duration-300 bg-card overflow-hidden flex flex-col  ${open ? "w-60 p-4" : "w-12 items-center"}`}>
@@ -50,10 +53,31 @@ export default function SideBar() {
                     : (
                         <>
                             {/* Plant Operation */}
-                            {open && <div>
-                                <h1 className="font-semibold text-sm uppercase">Operation</h1>
-                            </div>}
+                            {open && (
+                                <div className="flex items-center justify-between">
+                                    <h1 className="font-semibold text-sm uppercase">
+                                        Operation
+                                    </h1>
+
+                                    {!isElectron && (
+                                        <button
+                                            onClick={() => setOpen(false)}
+                                            className="rounded-sm p-2 text-muted-foreground"
+                                        >
+                                            <PanelLeftClose className="h-5 w-5" />
+                                        </button>
+                                    )}
+                                </div>
+                            )}
                             <div className="flex flex-col space-y-2 mt-2">
+                                {!open && !isElectron && (
+                                    <button
+                                        onClick={() => setOpen(true)}
+                                        className="rounded-sm p-2 text-muted-foreground"
+                                    >
+                                        <PanelLeftOpen className="h-5 w-5" />
+                                    </button>
+                                )}
                                 {OperationRoutes
                                     .filter(route => hasReadPermission(route.module))
                                     .map((el) => {

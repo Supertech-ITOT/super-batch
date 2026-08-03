@@ -10,6 +10,7 @@ import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.module.repository.ModuleRepository;
 import com.supertech.superbatch.manager.permission.entity.Permission;
 import com.supertech.superbatch.manager.permission.repository.PermissionRepository;
+import com.supertech.superbatch.manager.role.entity.DefaultRole;
 import com.supertech.superbatch.manager.role.entity.Role;
 import com.supertech.superbatch.manager.role.repository.RoleRepository;
 import com.supertech.superbatch.manager.user.entity.User;
@@ -47,27 +48,32 @@ public class ManagerConfigurationInitializer implements CommandLineRunner {
         }
     }
 
-    private void seedRole() {
-        if (!roleRepository.existsByNameAndDeletedFalse("System")) {
-            Role role = Role.builder()
-                    .name("System")
-                    .description("Full system access")
-                    .systemRole(true)
-                    .build();
-            roleRepository.save(role);
+    private void createRoleIfNotExists(String name, String description, boolean systemRole) {
+        if (!roleRepository.existsByNameAndDeletedFalse(name)) {
+            roleRepository.save(Role.builder().name(name).description(description).systemRole(systemRole).build());
         }
     }
 
+    private void seedRole() {
+        createRoleIfNotExists("System", "Internal system account", true);
+        createRoleIfNotExists("Administrator", "Full administrative access", false);
+    }
+
     private void seedPermission() {
-        Role role = roleRepository.findByNameAndDeletedFalse("System")
-                .orElseThrow(() -> new ResourceNotFoundException("Role not found."));
+        seedPermissionsForRole(DefaultRole.SYSTEM);
+        seedPermissionsForRole(DefaultRole.ADMINISTRATOR);
+    }
+
+    private void seedPermissionsForRole(String roleName) {
+        Role role = roleRepository.findByNameAndDeletedFalse(roleName)
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found: " + roleName));
         for (ModuleType type : ModuleType.values()) {
             Module module = moduleRepository.findById(type.getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Module not found."));
             if (!permissionRepository.existsByRoleIdAndModuleId(role.getId(), module.getId())) {
                 Permission permission = Permission.builder()
-                        .module(module)
                         .role(role)
+                        .module(module)
                         .access(true)
                         .build();
                 permissionRepository.save(permission);

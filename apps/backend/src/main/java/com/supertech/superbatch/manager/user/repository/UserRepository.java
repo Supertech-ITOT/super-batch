@@ -17,6 +17,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
         long countByRoleIdAndDeletedFalse(Long roleId);
 
+        long countByRoleNameAndDeletedFalse(String roleName);
+
         boolean existsByEmailAndIdNot(String email, Long id);
 
         @EntityGraph(attributePaths = { "role", "createdBy" })
@@ -28,4 +30,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
         @EntityGraph(attributePaths = { "role", "role.permissions", "role.permissions.module", "createdBy" })
         List<User> findByDeletedFalseAndSystemAccountFalse();
 
+        boolean existsByDeletedFalseAndSystemAccountFalse();
 }

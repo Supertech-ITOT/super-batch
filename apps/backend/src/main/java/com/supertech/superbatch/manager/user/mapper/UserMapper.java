@@ -45,16 +45,17 @@ public class UserMapper {
     public User toEntity(UserRequest request, Role role, User createdBy, String encodedPassword) {
         return User.builder()
                 .name(request.name())
-                .email(request.email())
+                .email(request.email().trim().toLowerCase())
                 .password(encodedPassword)
                 .role(role)
                 .createdBy(createdBy)
+                .passwordChangeRequired(true)
                 .build();
     }
 
     public void updateEntity(User user, UpdateUserRequest request, Role role) {
         user.setName(request.name());
-        user.setEmail(request.email());
+        user.setEmail(request.email().trim().toLowerCase());
         user.setRole(role);
     }
 
@@ -67,7 +68,7 @@ public class UserMapper {
                 .name(user.getName())
                 .email(user.getEmail())
                 .role(user.getRole().getName())
-                .createdBy(user.getCreatedBy().getName())
+                .createdBy(user.getCreatedBy() != null ? user.getCreatedBy().getName() : null)
                 .build();
 
     }

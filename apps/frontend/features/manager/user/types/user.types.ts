@@ -26,3 +26,16 @@ export interface UpdateUserRequest {
     email: string,
     roleId: number,
 }
+
+export interface ChangePasswordRequest {
+    currentPassword: string;
+    newPassword: string;
+}
+
+export interface ResetFirstPasswordRequest {
+    password: string;
+}
+
+export interface ResetPasswordRequest {
+    password: string;
+}

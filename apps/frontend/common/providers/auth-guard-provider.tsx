@@ -1,34 +1,47 @@
-
 "use client";
 
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 const ROUTE = {
-    public: ["/"],
+    login: "/",
+    resetPassword: "/reset-first-password",
     protected: ["/PlantModel", "/Recipe", "/Roles", "/Users"],
 };
 
-export default function AuthGuardProvider({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
+export default function AuthGuardProvider({ children, }: { children: React.ReactNode; }) {
     const router = useRouter();
+    const getBasePath = (path: string) => "/" + path.split("/")[1];
     const pathname = usePathname();
 
     useEffect(() => {
-        const user = localStorage.getItem("user");
+        const storedUser = localStorage.getItem("user");
+        const user = storedUser ? JSON.parse(storedUser) : null;
 
-        const isProtected = ROUTE.protected.some((route) =>
-            pathname.startsWith(route)
+        const currentRoute = getBasePath(pathname);
+
+        const isProtected = ROUTE.protected.some(
+            (route) => currentRoute === getBasePath(route)
         );
 
-        if (isProtected && !user) {
-            router.replace("/");
+        if (!user) {
+            if (isProtected || currentRoute === getBasePath(ROUTE.resetPassword)) {
+                router.replace(ROUTE.login);
+            }
+            return;
         }
 
-        if (pathname === "/" && user) {
+        if (user.passwordChangeRequired) {
+            if (currentRoute !== getBasePath(ROUTE.resetPassword)) {
+                router.replace(ROUTE.resetPassword);
+            }
+            return;
+        }
+
+        if (
+            currentRoute === getBasePath(ROUTE.login) ||
+            currentRoute === getBasePath(ROUTE.resetPassword)
+        ) {
             router.replace("/PlantModel");
         }
     }, [pathname, router]);

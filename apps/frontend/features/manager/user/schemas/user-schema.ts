@@ -32,24 +32,20 @@ const userBaseSchema = z.object({
 
     password: z
         .string()
-        .min(
-            UserSchemaLimit.password.min,
-            `Password must be at least ${UserSchemaLimit.password.min} characters`
-        )
-        .max(
-            UserSchemaLimit.password.max,
-            `Password cannot exceed ${UserSchemaLimit.password.max} characters`
+        .trim()
+        .min(1, "Password is required.")
+        .regex(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/,
+            "Password must be at least 8 characters long and contain an uppercase letter, a lowercase letter, a number, and a special character."
         ),
 
     confirmPassword: z
         .string()
-        .min(
-            UserSchemaLimit.password.min,
-            `Confirm Password must be at least ${UserSchemaLimit.password.min} characters`
-        )
-        .max(
-            UserSchemaLimit.password.max,
-            `Confirm Password cannot exceed ${UserSchemaLimit.password.max} characters`
+        .trim()
+        .min(1, "Confirm password is required.")
+        .regex(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/,
+            "Password must be at least 8 characters long and contain an uppercase letter, a lowercase letter, a number, and a special character."
         ),
 
     roleId: z

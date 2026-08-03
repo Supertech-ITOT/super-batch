@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.supertech.superbatch.common.dto.ApiResponse;
 import com.supertech.superbatch.common.security.UserContextService;
+import com.supertech.superbatch.manager.user.dto.ChangePasswordRequest;
+import com.supertech.superbatch.manager.user.dto.ResetFirstPasswordRequest;
+import com.supertech.superbatch.manager.user.dto.ResetPasswordRequest;
 import com.supertech.superbatch.manager.user.dto.UpdateUserRequest;
 import com.supertech.superbatch.manager.user.dto.UserRequest;
 import com.supertech.superbatch.manager.user.dto.UserResponse;
@@ -37,7 +40,8 @@ public class UserController {
         @GetMapping("/me")
         public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser() {
                 Long id = userContextService.getCurrentUserId();
-                return ResponseEntity.ok(ApiResponse.success("User fetched successfully", userService.getById(id)));
+                return ResponseEntity
+                                .ok(ApiResponse.success("User fetched successfully", userService.getCurrentUser(id)));
         }
 
         @PostMapping
@@ -59,5 +63,30 @@ public class UserController {
                 Long currentUserId = userContextService.getCurrentUserId();
                 userService.delete(id, currentUserId);
                 return ResponseEntity.ok(ApiResponse.success("User deleted successfully", null));
+        }
+
+        @PutMapping("/me/change-password")
+        public ResponseEntity<ApiResponse<Void>> changePassword(
+                        @Validated @RequestBody ChangePasswordRequest request) {
+                Long currentUserId = userContextService.getCurrentUserId();
+                userService.changePassword(request, currentUserId);
+                return ResponseEntity.ok(ApiResponse.success("Password changed successfully.", null));
+        }
+
+        @PutMapping("/me/reset-first-password")
+        public ResponseEntity<ApiResponse<Void>> resetFirstPassword(
+                        @Validated @RequestBody ResetFirstPasswordRequest request) {
+                Long currentUserId = userContextService.getCurrentUserId();
+                userService.resetFirstPassword(request, currentUserId);
+                return ResponseEntity.ok(ApiResponse.success("Password reset successfully.", null));
+        }
+
+        @PutMapping("/{id}/reset-password")
+        public ResponseEntity<ApiResponse<Void>> resetPassword(
+                        @PathVariable Long id,
+                        @Validated @RequestBody ResetPasswordRequest request) {
+
+                userService.resetPassword(request, id);
+                return ResponseEntity.ok(ApiResponse.success("Password reset successfully.", null));
         }
 }

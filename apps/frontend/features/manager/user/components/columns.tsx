@@ -96,15 +96,16 @@ export const columns = (
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={(e) => {
-                                e.stopPropagation(); setDialog({ action: "edit", id: user.id, open: true });;
-                            }}>
-                                Edit</DropdownMenuItem>
+                            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setDialog({ action: "edit", id: user.id, open: true });; }}>
+                                Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setDialog({ action: "reset", id: user.id, open: true });; }}>
+                                Reset Password
+                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem variant="destructive" onClick={(e) => {
-                                e.stopPropagation(); setDialog({ action: "delete", id: user.id, open: true });
-                            }}>
-                                Delete</DropdownMenuItem>
+                            <DropdownMenuItem variant="destructive" onClick={(e) => { e.stopPropagation(); setDialog({ action: "delete", id: user.id, open: true }); }}>
+                                Delete
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )

@@ -1,9 +1,17 @@
 import FeatureCard from "@/common/components/featurecard";
 import FooterCard from "@/common/components/footercard";
-import LoginCard from "@/features/manager/auth/components/logincard";
+import LoginCard from "@/features/manager/auth/components/login-form";
+import SetupView from "@/features/manager/setup/component/setup-view";
 
 import { Activity, BadgeCheck, FileText, Layers3, ShieldCheck } from "lucide-react";
 import Image from "next/image";
+const finfo = [
+  { icon: Layers3, title: "ISA-88", subtitle: "Compliant" },
+  { icon: Activity, title: "Real-time", subtitle: "Monitoring" },
+  { icon: FileText, title: "Recipe", subtitle: "Management" },
+  { icon: ShieldCheck, title: "Audit", subtitle: "Compliance" },
+  { icon: BadgeCheck, title: "Scalable", subtitle: "Secure" },
+]
 
 export default function Home() {
   return (
@@ -63,40 +71,19 @@ export default function Home() {
           </div>
           {/* Features */}
           <div className="mt-12 flex flex-wrap gap-6">
-            <FeatureCard
-              icon={Layers3}
-              title="ISA-88"
-              subtitle="Compliant"
-            />
-
-            <FeatureCard
-              icon={Activity}
-              title="Real-time"
-              subtitle="Monitoring"
-            />
-
-            <FeatureCard
-              icon={FileText}
-              title="Recipe"
-              subtitle="Management"
-            />
-
-            <FeatureCard
-              icon={ShieldCheck}
-              title="Audit"
-              subtitle="Compliance"
-            />
-
-            <FeatureCard
-              icon={BadgeCheck}
-              title="Scalable"
-              subtitle="Secure"
-            />
+            {finfo.map((item) => (
+              <FeatureCard
+                key={item.title}
+                icon={item.icon}
+                title={item.title}
+                subtitle={item.subtitle}
+              />
+            ))}
           </div>
         </div>
       </div>
       <div className="flex flex-1 flex-col gap-4 justify-center items-center p-2">
-        <LoginCard />
+        <SetupView />
       </div>
       <FooterCard />
     </div >
