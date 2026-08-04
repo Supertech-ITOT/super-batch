@@ -2,7 +2,6 @@
 
 import { useGetRoles } from "@/features/manager/role/hooks/use-role";
 import columns from "./columns";
-import DataTable from "./data-table";
 import RoleStat from "./role-stat";
 import { useState } from "react";
 
@@ -12,6 +11,12 @@ import CreateRoleDialog from "./create-role-dialog";
 import { Separator } from "@/common/components/ui/separator";
 import { Skeleton } from "@/common/components/ui/skeleton";
 import { useGetModules } from "../../module/hooks/use-module";
+import { DataTable } from "@/common/components/data-table/data-table";
+import { Button } from "@/common/components/ui/button";
+import { Plus } from "lucide-react";
+import DataTableSearch from "@/common/components/data-table/data-table-search";
+import RoleSkeleton from "./role-skeleton";
+import FeedbackState from "../../../../common/components/feedback-state";
 
 export type DialogProp = {
     action: "create" | "edit" | "delete" | null;
@@ -19,42 +24,39 @@ export type DialogProp = {
     open: boolean
 }
 export default function RoleView() {
-    const { data: roles, isLoading: rolesIsLoading } = useGetRoles();
-    const { data: modules, isLoading: modulesIsLoading } = useGetModules();
+    const { data: roles, isLoading: rolesIsLoading, isError: rolesIsError } = useGetRoles();
+    const { data: modules, isLoading: modulesIsLoading, isError: modulesIsError } = useGetModules();
     const [dialog, setDialog] = useState<DialogProp>({ action: null, id: null, open: false });
     const closeDialog = () => setDialog({ open: false, id: null, action: null })
-    const loading = !roles || !modules || rolesIsLoading || modulesIsLoading;
+    const loading = rolesIsLoading || modulesIsLoading;
+    const error = rolesIsError || modulesIsError;
     if (loading) {
-        return (
-            <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none flex flex-col">
-                {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-                    {Array.from({ length: 4 }).map((_, index) => (
-                        <Skeleton
-                            key={index}
-                            className="h-28 rounded-lg"
-                        />
-                    ))}
-                </div>
-
-                <Separator className="my-4" />
-
-                {/* Full Table Skeleton */}
-                <div className="flex-1 min-h-0">
-                    <Skeleton className="h-full w-full rounded-lg" />
-                </div>
-            </div>
-        );
+        return <RoleSkeleton />;
+    }
+    if (error) {
+        return <FeedbackState variant="error" />;
+    }
+    if (!roles || !modules) {
+        return <FeedbackState variant="empty" />;
     }
     return (
-        <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none flex-col">
+        <div className="sm:flex-1 rounded-2xl border shadow sm:h-full bg-card p-2 sm:p-4 flex-col">
             <RoleStat totalRole={roles.length} totalModule={modules.length} />
-            <Separator className="my-4" />
+            <Separator className="my-2" />
             <div className="flex-1 min-h-0 ">
                 <DataTable
-                    columns={columns(setDialog,modules.length)}
+                    columns={columns(setDialog, modules.length)}
                     data={roles}
-                    setDialog={setDialog}
+                    pageSize={10}
+                    toolbar={(table) => (
+                        <div className="flex items-center gap-2">
+                            <DataTableSearch table={table} column="name" placeholder="Search roles..." />
+                            <Button className="ml-auto text-white h-8 sm:h-10" onClick={() => setDialog({ action: "create", id: null, open: true, })}>
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add Role
+                            </Button>
+                        </div>
+                    )}
                 />
             </div>
             {

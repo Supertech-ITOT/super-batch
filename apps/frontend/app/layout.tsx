@@ -7,7 +7,7 @@ import QueryProvider from "@/common/providers/query-provider";
 import ThemeProvider from "@/common/providers/theme-provider";
 import AuthGuardProvider from "@/common/providers/auth-guard-provider";
 import TitleBar from "@/common/components/title-bar";
-import { SidebarProvider } from "@/common/components/sidebar-provider";
+import { SidebarProvider } from "@/common/components/navigation/sidebar-provider";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
   return (
     <html lang="en" suppressHydrationWarning className={cn("antialiased", "font-sans", inter.variable)}>
-      <body className="h-screen  overflow-hidden">
+      <body className="min-h-screen sm:h-screen sm:overflow-hidden">
         <ThemeProvider>
           <QueryProvider>
             <AuthGuardProvider>

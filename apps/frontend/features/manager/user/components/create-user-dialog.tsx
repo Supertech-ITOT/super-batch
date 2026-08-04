@@ -1,39 +1,31 @@
 "use client";
-import { Button } from "@/common/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
-import { Input } from "@/common/components/ui/input";
-import { Label } from "@/common/components/ui/label";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Loader, Lock } from "lucide-react";
+import { Mail, ShieldCheck, User, Users } from "lucide-react";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
-import CharacterProgress from "@/common/components/form/character-progress";
 import { userSchema, UserSchema, UserSchemaLimit } from "@/features/manager/user/schemas/user-schema";
 import { useCreateUser } from "@/features/manager/user/hooks/use-user";
-import { useState } from "react";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/common/components/ui/select";
 import { useGetRoles } from "@/features/manager/role/hooks/use-role";
+import FormDialog from "@/common/components/form/form-dialog";
+import FormLoadingButton from "@/common/components/form/form-loading-button";
+import { TextInput } from "@/common/components/form/text-input";
+import { showFormError } from "@/common/lib/show-form-error";
+import { PasswordInput } from "@/common/components/form/password-input";
+import { Label } from "@/common/components/ui/label";
+import SearchableSelect from "@/common/components/form/searchable-select";
 type Props = { open: boolean; onClose: () => void; };
 export default function CreateUserDialog({ open, onClose }: Props) {
     const { mutateAsync: createUser, isPending: isCreating } = useCreateUser();
     const { data: roles, isLoading: rolesIsLoading } = useGetRoles();
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const { register, handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty } } = useForm<UserSchema>({
         resolver: zodResolver(userSchema),
-        defaultValues: { name: "", email: "", confirmPassword: "", password: "", roleId: "" }
+        defaultValues: { name: "", email: "", confirmPassword: "", password: "", roleId: 0 }
     });
-    const loading = isCreating || isSubmitting || rolesIsLoading;
+    const loading = !roles || isSubmitting || rolesIsLoading;
     const onSubmit = async (formData: UserSchema) => {
         try {
-            const res = await createUser({
-                name: formData.name,
-                email: formData.email,
-                password: formData.password,
-                roleId: Number(formData.roleId),
-
-            });
+            const res = await createUser(formData);
             toast.success(res.message ?? "User created successfully.");
             handleClose();
         } catch (error) {
@@ -41,155 +33,91 @@ export default function CreateUserDialog({ open, onClose }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ name: "", email: "", confirmPassword: "", password: "", roleId: "" });
+        reset({ name: "", email: "", confirmPassword: "", password: "", roleId: 0 });
         onClose();
     };
     const onInvalid = (errors: FieldErrors<UserSchema>) => {
-        const firstError = Object.values(errors)[0];
-        if (firstError?.message) {
-            toast.error(firstError.message.toString());
-        }
+        toast.error(showFormError(errors));
     };
 
     return (
-        <Dialog open={open} onOpenChange={(value) => { if (!value) handleClose() }}>
-            <DialogContent className="sm:max-w-md">
-                <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
-                    <DialogHeader>
-                        <DialogTitle>Create User</DialogTitle>
-                        <DialogDescription>Create a new user account.</DialogDescription>
-                    </DialogHeader>
-                    <div className="py-4 space-y-4">
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Name</Label>
-                                <CharacterProgress value={watch("name")} max={UserSchemaLimit.name.max} />
-                            </div>
-                            <Input
-                                type="text"
-                                disabled={loading}
-                                placeholder="Jhon"
-                                maxLength={UserSchemaLimit.name.max}
-                                {...register("name")}
-                            />
-                        </div>
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Email</Label>
-                                <CharacterProgress value={watch("email")} max={UserSchemaLimit.email.max} />
-                            </div>
-                            <Input
-                                type="email"
-                                disabled={loading}
-                                placeholder="abc@gmail.com"
-                                maxLength={UserSchemaLimit.email.max}
-                                {...register("email")}
-                            />
-                        </div>
-                        <div className="relative space-y-2">
-                            <div className="flex items-center justify-between">
-                                <Label>Password</Label>
-                                <CharacterProgress
-                                    value={watch("password")}
-                                    max={UserSchemaLimit.password.max}
-                                />
-                            </div>
+        <FormDialog
+            open={open}
+            loading={loading}
+            onClose={handleClose}
+            title="Create User"
+            description="Create a new user accounts."
+            footer={
+                <FormLoadingButton form="create-user-form" type="submit" loading={isSubmitting || isCreating} disabled={!isDirty}>
+                    Create
+                </FormLoadingButton>
+            }
+            icon={Users}
+        >
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="create-user-form">
+                <div className="space-y-4">
+                    <TextInput
+                        label="Name"
+                        icon={User}
+                        counter
+                        maxCharacters={UserSchemaLimit.name.max}
+                        placeholder="Jhon Joe"
+                        maxLength={UserSchemaLimit.name.max}
+                        disabled={loading}
+                        value={watch("name")}
+                        {...register("name")}
+                    />
+                    <TextInput
+                        label="Email"
+                        icon={Mail}
+                        counter
+                        maxCharacters={UserSchemaLimit.email.max}
+                        placeholder="abc@gmail.com"
+                        maxLength={UserSchemaLimit.email.max}
+                        disabled={loading}
+                        value={watch("email")}
+                        {...register("email")}
+                    />
 
-                            <div className="sapce-y-2 relative">
-                                <Lock className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4" />
-                                <Input
+                    <PasswordInput
+                        label="Password"
+                        placeholder="Password"
+                        disabled={loading}
+                        value={watch("password")}
+                        {...register("password")}
+                    />
+                    <PasswordInput
+                        label="Confirm Password"
+                        placeholder="Confirm Password"
+                        disabled={loading}
+                        value={watch("confirmPassword")}
+                        {...register("confirmPassword")}
+                    />
+
+                    <div className="min-w-0 flex-1 space-y-2">
+                        <Label>Role</Label>
+                        <Controller
+                            control={control}
+                            name="roleId"
+                            render={({ field }) => (
+                                <SearchableSelect
+                                    value={field.value}
+                                    icon={ShieldCheck}
+                                    onChange={field.onChange}
+                                    options={roles?.map((a) => ({
+                                        value: a.id,
+                                        label: a.name,
+                                    })) ?? []}
+                                    placeholder="Select Role"
+                                    searchPlaceholder="Search Roles..."
                                     disabled={loading}
-                                    placeholder="Password"
-                                    type={showPassword ? "text" : "password"}
-                                    maxLength={UserSchemaLimit.password.max}
-                                    {...register("password")}
-                                    className="pl-8 pr-10"
                                 />
-
-                                <Button
-                                    variant="ghost"
-                                    type="button"
-                                    size="icon"
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
-                                    onClick={() => setShowPassword((prev) => !prev)}
-                                >
-                                    {showPassword ? (
-                                        <EyeOff className="h-4 w-4" />
-                                    ) : (
-                                        <Eye className="h-4 w-4" />
-                                    )}
-                                </Button>
-                            </div>
-                        </div>
-
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Confirm Password</Label>
-                                <CharacterProgress
-                                    value={watch("confirmPassword")}
-                                    max={UserSchemaLimit.password.max}
-                                />
-                            </div>
-
-                            <div className="relative">
-                                <Lock className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 " />
-                                <Input
-                                    disabled={loading}
-                                    placeholder="Confirm Password"
-                                    type={showConfirmPassword ? "text" : "password"}
-                                    {...register("confirmPassword")}
-                                    className="pl-8 pr-10"
-                                />
-
-                                <Button
-                                    variant="ghost"
-                                    type="button"
-                                    size="icon"
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
-                                    onClick={() => setShowConfirmPassword((prev) => !prev)}
-                                >
-                                    {showConfirmPassword ? (
-                                        <EyeOff className="h-4 w-4" />
-                                    ) : (
-                                        <Eye className="h-4 w-4" />
-                                    )}
-                                </Button>
-                            </div>
-                        </div>
-                        <div className="relative space-y-2">
-                            <Label>Select Role Type</Label>
-                            <Controller
-                                control={control}
-                                name="roleId"
-                                render={({ field }) => (
-                                    <Select
-                                        disabled={loading}
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                    >
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select Role Type" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {roles?.map((e) => (
-                                                    <SelectItem key={e.id} value={String(e.id)}>{e.name}</SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
-                        </div>
+                            )}
+                        />
                     </div>
-                    <DialogFooter>
-                        <DialogClose asChild>
-                            <Button disabled={loading} type="button" variant="outline" onClick={handleClose}>Cancel</Button>
-                        </DialogClose>
-                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Create User"}</Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+
+                </div>
+            </form>
+        </FormDialog>
     );
 }

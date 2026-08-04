@@ -1,23 +1,20 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Controller, FieldErrors, useForm } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/common/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/common/components/ui/dialog";
-import { Input } from "@/common/components/ui/input";
-import { Label } from "@/common/components/ui/label";
-import { Textarea } from "@/common/components/ui/textarea";
-import { Checkbox } from "@/common/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger, } from "@/common/components/ui/tabs";
-import CharacterProgress from "@/common/components/form/character-progress";
 import { showApiError } from "@/common/lib/show-api-error";
 import { roleSchema, RoleSchema, RoleSchemaLimit, } from "@/features/manager/role/schemas/role-schema";
 import { useCreateRole } from "@/features/manager/role/hooks/use-role";
 import { useGetModules } from "@/features/manager/module/hooks/use-module";
-import { toDisplayText } from "@/common/lib/format-enum";
 import { showFormError } from "@/common/lib/show-form-error";
+import FormDialog from "@/common/components/form/form-dialog";
+import { TextInput } from "@/common/components/form/text-input";
+import { TextAreaInput } from "@/common/components/form/text-area-input";
+import PermissionTable from "./permission-table";
+import FormLoadingButton from "@/common/components/form/form-loading-button";
 
 type Props = { open: boolean; onClose: () => void; };
 type tab = "role" | "permissions";
@@ -29,7 +26,7 @@ export default function CreateRoleDialog({ open, onClose, }: Props) {
         resolver: zodResolver(roleSchema),
         defaultValues: { name: "", description: "", permissions: [] },
     });
-    const loading = isCreating || isSubmitting || modulesIsLoading;
+    const loading = modulesIsLoading;
 
     useEffect(() => {
         if (!modules) return;
@@ -64,102 +61,73 @@ export default function CreateRoleDialog({ open, onClose, }: Props) {
         }
     };
 
-
-
     const onInvalid = (errors: FieldErrors<RoleSchema>) => {
-        const message = showFormError(errors);
-        if (message) {
-            toast.error(message);
-        }
+        toast.error(showFormError(errors));
     };
 
     return (
-        <Dialog open={open} onOpenChange={(value) => { if (!value) handleClose(); }}>
-            <DialogContent className="max-w-3xl">
-                <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
-                    <DialogHeader>
-                        <DialogTitle>Create Role</DialogTitle>
-                        <DialogDescription>
-                            Create a role and assign module permissions.
-                        </DialogDescription>
-                    </DialogHeader>
+        <FormDialog
+            open={open}
+            loading={loading}
+            onClose={handleClose}
+            title="Create Role"
+            description="Create a role and assign module permissions."
+            footer={
+                tab === "permissions" && (
+                    <FormLoadingButton form="create-role-form" type="submit" loading={isSubmitting || isCreating} disabled={!isDirty}>
+                        Create
+                    </FormLoadingButton>
+                )
+            }
+            icon={ShieldCheck}
+        >
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="create-role-form">
+                <Tabs value={tab} className="mt-4">
+                    <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger onClick={() => setTab("role")} value="role">
+                            Role Details
+                        </TabsTrigger>
+                        <TabsTrigger onClick={() => setTab("permissions")} value="permissions">
+                            Permissions
+                        </TabsTrigger>
+                    </TabsList>
 
-                    <Tabs value={tab} className="mt-4">
-                        <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger onClick={() => setTab("role")} value="role">
-                                Role Details
-                            </TabsTrigger>
-                            <TabsTrigger onClick={() => setTab("permissions")} value="permissions">
-                                Permissions
-                            </TabsTrigger>
-                        </TabsList>
+                    <TabsContent value="role" className="space-y-4 pt-4">
+                        <TextInput
+                            label="Name"
+                            counter
+                            maxCharacters={RoleSchemaLimit.name.max}
+                            placeholder="Operator"
+                            maxLength={RoleSchemaLimit.name.max}
+                            disabled={loading}
+                            value={watch("name")}
+                            {...register("name")}
+                        />
+                        <TextAreaInput
+                            label="Description"
+                            placeholder="Brief role overview"
+                            counter
+                            maxCharacters={RoleSchemaLimit.description.max}
+                            maxLength={RoleSchemaLimit.description.max}
+                            value={watch("description")}
+                            disabled={loading}
+                            {...register("description")}
+                        />
+                    </TabsContent>
 
-                        <TabsContent value="role" className="space-y-4 pt-4">
-                            <div className="space-y-2 relative">
-                                <div className="flex items-center justify-between">
-                                    <Label>Name</Label>
-                                    <CharacterProgress value={watch("name")} max={RoleSchemaLimit.name.max} />
-                                </div>
-                                <Input
-                                    placeholder="Operator"
-                                    maxLength={RoleSchemaLimit.name.max}
-                                    disabled={loading}
-                                    {...register("name")}
-                                />
-                            </div>
+                    <TabsContent
+                        value="permissions"
+                        className="pt-4"
+                    >
+                        <PermissionTable
+                            modules={modules}
+                            control={control}
+                            name="permissions"
+                        />
+                    </TabsContent>
+                </Tabs>
+            </form>
+        </FormDialog>
 
-                            <div className="space-y-2 relative">
-                                <div className="flex items-center justify-between">
-                                    <Label>Description</Label>
-                                    <CharacterProgress value={watch("description")} max={RoleSchemaLimit.description.max} />
-                                </div>
-                                <Textarea
-                                    placeholder="Brief role overview"
-                                    className="min-h-28 resize-none"
-                                    maxLength={RoleSchemaLimit.description.max}
-                                    disabled={loading}
-                                    {...register("description")}
-                                />
-                            </div>
-                        </TabsContent>
-
-                        <TabsContent
-                            value="permissions"
-                            className="pt-4"
-                        >
-                            <div className="rounded-md border">
-                                <div className="grid grid-cols-2 border-b bg-muted/50 p-3 font-medium">
-                                    <div>Module</div>
-                                    <div>Access</div>
-                                </div>
-
-                                {modules?.map((module, index) => (
-                                    <div key={module.id} className="grid grid-cols-2 items-center border-b p-3 last:border-0">
-                                        <div>{toDisplayText(module.name)}</div>
-                                        <div>
-                                            <Controller
-                                                control={control}
-                                                name={`permissions.${index}.access`}
-                                                render={({ field }) => (
-                                                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                                                )}
-                                            />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </TabsContent>
-                    </Tabs>
-
-                    <DialogFooter className="mt-6 flex-1">
-                        {tab === "permissions" && (
-                            <Button type="submit" disabled={loading || !isDirty} className="w-full text-white">
-                                {loading ? (<Loader2 className="h-4 w-4 animate-spin" />) : ("Create")}
-                            </Button>
-                        )}
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
     );
 }

@@ -2,7 +2,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { minutesToADuration } from "@/common/utils/duration.util";
 import { Badge } from "@/common/components/ui/badge";
 import { getColorByText } from "@/common/utils/color.util";
-import { CollapsibleDataTable } from "@/common/components/collapsible-data-table";
+import { CollapsibleDataTable } from "@/common/components/data-table/collapsible-data-table";
 import { ArrowRightLeft, Circle, Play } from "lucide-react";
 import { RecipeSOPResponse } from "../types/recipe-sop-types";
 

@@ -43,7 +43,7 @@ export default function PlantTab() {
     ];
 
     return (
-        <div className="max-w-fit rounded-lg border bg-card overflow-hidden shadow h-12">
+        <div className="max-w-fit rounded-2xl border bg-card overflow-hidden shadow h-12">
             <Carousel
                 opts={{
                     align: "start",

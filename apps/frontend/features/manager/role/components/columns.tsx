@@ -17,10 +17,16 @@ export const columns = (
             id: "srNo",
             header: "Sr. No.",
             cell: ({ row }) => row.index + 1,
+            meta: {
+                align: "center",
+            },
         },
         {
             accessorKey: "name",
             header: "Name",
+            meta: {
+                align: "center",
+            },
         },
         {
             accessorKey: "description",
@@ -45,6 +51,9 @@ export const columns = (
                 );
                 return `${assigned}/${totalModules}`;
             },
+            meta: {
+                align: "center",
+            },
         },
         {
             id: "lastModified",
@@ -57,6 +66,9 @@ export const columns = (
                 }
 
                 return format(new Date(value), "dd MMM yyyy hh:mm a");
+            },
+            meta: {
+                align: "center",
             },
         },
         {
@@ -96,6 +108,9 @@ export const columns = (
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )
+            },
+            meta: {
+                align: "center",
             },
         },
     ];

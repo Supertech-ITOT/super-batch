@@ -31,7 +31,7 @@ export function TextInput({ icon: Icon, className, counter, maxCharacters, value
       <div className="relative">
         {Icon && (<Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />)}
         <Input
-          className={cn("bg-background border-input", "text-sm font-medium",
+          className={cn("bg-card border-input", "text-sm font-medium",
             "focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-input",
             "focus:outline-none", Icon && "pl-10", className)}
           value={value}

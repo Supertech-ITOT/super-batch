@@ -49,8 +49,7 @@ const userBaseSchema = z.object({
         ),
 
     roleId: z
-        .string({ error: "Role is required" })
-        .trim()
+        .number({ error: "Role is required" })
         .min(1, "Role is required"),
 });
 

@@ -1,5 +1,5 @@
-import { Separator } from "./ui/separator";
-import { Skeleton } from "./ui/skeleton";
+import { Separator } from "../ui/separator";
+import { Skeleton } from "../ui/skeleton";
 
 export default function SidebarSkeleton({ open }: { open: boolean }) {
     return (

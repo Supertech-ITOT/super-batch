@@ -18,6 +18,9 @@ export const columns = (
             id: "srNo",
             header: "Sr. No.",
             cell: ({ row }) => row.index + 1,
+            meta: {
+                align: "center",
+            },
         },
         {
             id: "name",
@@ -46,6 +49,9 @@ export const columns = (
         {
             accessorKey: "role",
             header: "Role",
+            meta: {
+                align: "center",
+            },
             cell: ({ row }) => (
                 <Badge variant={"outline"} className={getColorByText(row.original.roleName)}>
                     <Circle className="size-2.5 fill-current" />
@@ -56,6 +62,9 @@ export const columns = (
         {
             accessorKey: "lastLogin",
             header: "Last Login",
+            meta: {
+                align: "center",
+            },
             cell: ({ row }) => {
                 const value = row.original.lastLoginAt;
 
@@ -69,6 +78,9 @@ export const columns = (
         {
             id: "lastModified",
             header: "Last Modified",
+            meta: {
+                align: "center",
+            },
             cell: ({ row }) => {
                 const value = row.original.updatedAt || row.original.createdAt;
 
@@ -82,6 +94,9 @@ export const columns = (
         {
             id: "actions",
             header: "Actions",
+            meta: {
+                align: "center",
+            },
             cell: ({ row }) => {
                 const user = row.original
 

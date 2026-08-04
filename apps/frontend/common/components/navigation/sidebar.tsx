@@ -1,19 +1,20 @@
 "use client";
 import { ChevronUp, LogOut, PanelLeftOpen, Loader, Clock3, PanelLeftClose } from "lucide-react";
-import { Button } from "./ui/button";
-import { Separator } from "./ui/separator";
+import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
 import { useLogout } from "@/features/manager/auth/hooks/use-auth";
 import { useGetCurrentUser } from "@/features/manager/user/hooks/use-user";
 import { ConfigurationRoutes, ModuleType, OperationRoutes } from "@/features/manager/module/types/module.types";
-import SidebarSkeleton from "./sidebar-skeleton";
-import SessionCard from "./session-card";
+import SessionCard from "../session-card";
+import { useIsElectron } from "../../hooks/use-is-electron";
 import { useSidebar } from "./sidebar-provider";
-import { useIsElectron } from "../hooks/use-is-electron";
+import SidebarSkeleton from "./sidebar-skeleton";
+import UserAvatar from "../user-avatar";
 
 
 
@@ -24,7 +25,6 @@ export default function SideBar() {
     const { mutateAsync: logout, isPending: logoutIsPending } = useLogout();
     const { data: user, isLoading: userIsLoading } = useGetCurrentUser();
     const loading = !user || userIsLoading;
-    const initials = user?.name?.split(" ").map((word) => word[0]).join("").toUpperCase() ?? "U";
     const hasReadPermission = (module?: ModuleType) => {
         if (!module) return true;
         return user?.permissions?.some(
@@ -73,7 +73,7 @@ export default function SideBar() {
                                 {!open && !isElectron && (
                                     <button
                                         onClick={() => setOpen(true)}
-                                        className="rounded-sm p-2 text-muted-foreground"
+                                        className="rounded-lg p-2 text-muted-foreground"
                                     >
                                         <PanelLeftOpen className="h-5 w-5" />
                                     </button>
@@ -88,7 +88,7 @@ export default function SideBar() {
                                             <Link
                                                 key={el.label}
                                                 href={el.path}
-                                                className={`flex flex-row gap-2 rounded-sm items-end  text-muted-foreground px-2 py-2 text-sm transition-all duration-300  ${active ? "bg-primary text-white" : "hover:bg-background hover:shadow"}`}>
+                                                className={`flex flex-row gap-2 rounded-xl items-end  text-muted-foreground px-2 py-2 text-sm transition-all duration-300  ${active ? "bg-primary text-white" : "hover:bg-background hover:shadow"}`}>
                                                 <Icon className="w-5 h-5" />
                                                 {open && <span>{el.label}</span>}
                                             </Link>
@@ -110,7 +110,7 @@ export default function SideBar() {
                                             <Link
                                                 key={el.label}
                                                 href={el.path}
-                                                className={`flex flex-row gap-2 rounded-sm items-end  text-muted-foreground px-2 py-2 text-sm transition-all duration-300  ${active ? "bg-primary text-white" : "hover:bg-background hover:shadow"}`}>
+                                                className={`flex flex-row gap-2 rounded-xl items-end  text-muted-foreground px-2 py-2 text-sm transition-all duration-300  ${active ? "bg-primary text-white" : "hover:bg-background hover:shadow"}`}>
                                                 <Icon className="w-5 h-5" />
                                                 {open && <span>{el.label}</span>}
                                             </Link>
@@ -126,9 +126,7 @@ export default function SideBar() {
                                         <Button className="w-full flex bg-card! items-center justify-between rounded-xl  hover:bg-muted transition-all">
                                             <div className="flex items-center gap-3">
                                                 {/* Avatar */}
-                                                <div className={`${open ? "size-11" : "size-8"} rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold text-sm`}>
-                                                    {initials}
-                                                </div>
+                                                <UserAvatar name={user.name ?? ""} className={open ? "size-12" : "size-8"} />
                                                 {/* User Info */}
                                                 {open && <div className="flex flex-col text-left">
                                                     <span className="text-sm font-medium text-foreground">{user?.name ?? "-"}</span>

@@ -2,7 +2,7 @@
 
 import { Minus, Square, X, RefreshCw, PanelLeft } from "lucide-react";
 import Image from "next/image";
-import { useSidebar } from "./sidebar-provider";
+import { useSidebar } from "./navigation/sidebar-provider";
 import { useIsElectron } from "../hooks/use-is-electron";
 export default function TitleBar() {
     const { setOpen } = useSidebar();

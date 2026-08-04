@@ -16,6 +16,7 @@ export interface ModuleResponse {
 
 type RouteType = {
     label: string;
+    short: string;
     path: string;
     icon: LucideIcon;
     module?: ModuleType;
@@ -25,6 +26,7 @@ type RouteType = {
 export const OperationRoutes: RouteType[] = [
     {
         label: "Batch Manager",
+        short: "Manager",
         path: "/Manager/roles",
         icon: UserCogIcon,
         module: ModuleType.MANAGER,
@@ -33,6 +35,7 @@ export const OperationRoutes: RouteType[] = [
     },
     {
         label: "Plant Model",
+        short: "Model",
         path: "/PlantModel",
         icon: Factory,
         module: ModuleType.PLANT_MODEL,
@@ -41,6 +44,7 @@ export const OperationRoutes: RouteType[] = [
     },
     {
         label: "Recipe Engine",
+        short: "Recipe",
         path: "/Recipe",
         icon: BookOpenText,
         module: ModuleType.RECIPE,
@@ -49,6 +53,7 @@ export const OperationRoutes: RouteType[] = [
     },
     {
         label: "Batch Scheduler",
+        short: "Scheduler",
         path: "/Scheduler",
         icon: CalendarClock,
         module: ModuleType.SCHEDULER,
@@ -57,6 +62,7 @@ export const OperationRoutes: RouteType[] = [
     },
     {
         label: "Batch Audit",
+        short: "Audit",
         path: "/Audit",
         icon: ClipboardList,
         module: ModuleType.AUDIT,
@@ -68,6 +74,7 @@ export const OperationRoutes: RouteType[] = [
 export const ConfigurationRoutes: RouteType[] = [
     {
         label: "Settings",
+        short: "Settings",
         path: "/Setting",
         icon: Settings,
         description:

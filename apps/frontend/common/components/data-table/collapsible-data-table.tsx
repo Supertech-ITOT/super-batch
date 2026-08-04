@@ -3,7 +3,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/common/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger, } from "@/common/components/ui/collapsible";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/common/components/ui/table";
-import { Badge } from "./ui/badge";
+import { Badge } from "../ui/badge";
 
 export interface CollapsibleTableColumn<T> {
     header: string;

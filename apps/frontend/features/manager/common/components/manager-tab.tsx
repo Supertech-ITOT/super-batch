@@ -31,46 +31,37 @@ export default function ManagerTab() {
     ];
 
     return (
-        <div className="max-w-fit rounded-lg border bg-card overflow-hidden shadow h-12">
-            <Carousel
-                opts={{
-                    align: "start",
-                    dragFree: true,
-                }}
-                className="w-full"
-            >
-                <CarouselContent className="ml-0">
-                    {tabs.map((tab) => {
-                        const Icon = tab.icon;
-                        const active = pathname === tab.path;
-
-                        return (
-                            <CarouselItem
-                                key={tab.label}
-                                className="basis-auto pl-0"
+        <Carousel opts={{ align: "start", dragFree: true, }} className="w-full max-w-fit rounded-2xl border bg-card overflow-hidden shadow">
+            <CarouselContent className="m-0! h-12! ">
+                {tabs.map((tab) => {
+                    const Icon = tab.icon;
+                    const active = pathname === tab.path;
+                    return (
+                        <CarouselItem
+                            key={tab.label}
+                            className="basis-auto pl-0 h-full!"
+                        >
+                            <Link
+                                href={tab.path}
+                                className={cn(
+                                    "relative flex h-full! items-center gap-2 px-4 text-sm font-medium transition-colors whitespace-nowrap",
+                                    active
+                                        ? "bg-primary/5 text-primary"
+                                        : "text-muted-foreground hover:text-foreground"
+                                )}
                             >
-                                <Link
-                                    href={tab.path}
-                                    className={cn(
-                                        "relative flex h-12 items-center gap-2 px-4 text-sm font-medium transition-colors whitespace-nowrap",
-                                        active
-                                            ? "bg-primary/5 text-primary"
-                                            : "text-muted-foreground hover:text-foreground"
-                                    )}
-                                >
-                                    <Icon className="size-4 shrink-0" />
+                                <Icon className="size-4 shrink-0" />
 
-                                    <span>{tab.label}</span>
+                                <span>{tab.label}</span>
 
-                                    {active && (
-                                        <span className="absolute bottom-0 left-0 h-0.5 w-full bg-primary" />
-                                    )}
-                                </Link>
-                            </CarouselItem>
-                        );
-                    })}
-                </CarouselContent>
-            </Carousel>
-        </div>
+                                {active && (
+                                    <span className="absolute bottom-0 left-0 h-0.5 w-full bg-primary" />
+                                )}
+                            </Link>
+                        </CarouselItem>
+                    );
+                })}
+            </CarouselContent>
+        </Carousel>
     );
 }

@@ -32,12 +32,12 @@ export function ModuleBreadcrumb() {
         }));
     }, [pathname]);
     return (
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+        <div className="flex items-center gap-0.5 sm:gap-1  text-[10px] sm:text-xs text-muted-foreground">
             <Link href="/">Home</Link>
 
             {breadcrumbs.map(({ href, label, isLast }) => (
-                <div key={href} className="flex items-center gap-1">
-                    <ChevronRight className="h-3 w-3" />
+                <div key={href} className="flex items-center gap-0.5 sm:gap-1">
+                    <ChevronRight className="size-2 shrink-0 sm:size-3" />
                     <Link
                         href={href}
                         className={isLast ? "font-medium text-foreground" : ""}

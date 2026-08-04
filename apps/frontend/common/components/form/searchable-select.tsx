@@ -1,5 +1,5 @@
 import { memo, useMemo, useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, LucideIcon } from "lucide-react";
 import { Button } from "@/common/components/ui/button";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/common/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger, } from "@/common/components/ui/popover";
@@ -19,9 +19,11 @@ interface SearchableSelectProps {
     emptyText?: string;
     disabled?: boolean;
     className?: string;
+    icon?: LucideIcon;
+
 }
 
-function SearchableSelect({ value, onChange, options, placeholder = "Select", searchPlaceholder = "Search...", emptyText = "No results found.", disabled, className, }: SearchableSelectProps) {
+function SearchableSelect({ icon: Icon, value, onChange, options, placeholder = "Select", searchPlaceholder = "Search...", emptyText = "No results found.", disabled, className, }: SearchableSelectProps) {
     const [open, setOpen] = useState(false);
     const selected = useMemo(
         () => options.find((o) => o.value === value),
@@ -38,14 +40,20 @@ function SearchableSelect({ value, onChange, options, placeholder = "Select", se
                     disabled={disabled}
                     aria-expanded={open}
                     className={cn(
-                        "w-full justify-between font-normal bg-card!",
+                        "w-full justify-between font-normal bg-background",
                         !selected && "text-muted-foreground",
                         className
                     )}
                 >
-                    <span className="flex-1 truncate text-left">
-                        {selected?.label ?? placeholder}
-                    </span>
+                    <div className="flex flex-1 items-center gap-2 overflow-hidden">
+                        {Icon && (
+                            <Icon className="h-4 w-4 text-muted-foreground" />
+                        )}
+
+                        <span className="truncate">
+                            {selected?.label ?? placeholder}
+                        </span>
+                    </div>
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
