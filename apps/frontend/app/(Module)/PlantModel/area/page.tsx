@@ -6,7 +6,7 @@ export default function AreaPage() {
     const searchParams = useSearchParams();
     const id = Number(searchParams.get("id"));
     return (
-        <div className="flex h-full overflow-hidden p-4">
+        <div className="flex flex-col p-1 sm:h-full sm:overflow-hidden sm:p-2 gap-1">
             <AreaView id={id} />
         </div>
     );

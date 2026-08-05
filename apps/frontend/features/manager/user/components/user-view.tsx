@@ -38,7 +38,7 @@ export default function UserView() {
         return <FeedbackState variant="empty" />;
     }
     return (
-        <div className="sm:flex-1 rounded-2xl border shadow sm:h-full bg-card p-2 sm:p-4 overflow-y-auto scrollbar-none flex-col">
+        <div className="sm:flex-1 flex flex-col rounded-2xl border shadow sm:h-full bg-card p-2 sm:p-4">
             <UserStat data={users} />
             <Separator className="my-2" />
             <div className="flex-1 min-h-0">

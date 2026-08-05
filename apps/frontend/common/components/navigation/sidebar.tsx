@@ -47,7 +47,7 @@ export default function SideBar() {
     const isElectron = useIsElectron();
     return (
         <>
-            <aside className={`h-full z-50 border-r transition-all duration-300 bg-card overflow-hidden flex flex-col  ${open ? "w-60 p-4" : "w-12 items-center"}`}>
+            <aside className={`h-full z-50 border-r shrink-0 transition-all duration-300 bg-card overflow-hidden flex flex-col  ${open ? "w-60 p-4" : "w-12 items-center"}`}>
                 {loading
                     ? (<SidebarSkeleton open={open} />)
                     : (

@@ -20,7 +20,7 @@ export default function TreeSearch({ onSearch, }: Props) {
                     type="search"
                     value={value}
                     placeholder="Search plant hierarchy..."
-                    className="pl-9"
+                    className="pl-9 rounded-full text-xs sm:text-sm"
                     onChange={(e) =>
                         setValue(e.target.value)
                     }

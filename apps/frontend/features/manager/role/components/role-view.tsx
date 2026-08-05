@@ -40,10 +40,10 @@ export default function RoleView() {
         return <FeedbackState variant="empty" />;
     }
     return (
-        <div className="sm:flex-1 rounded-2xl border shadow sm:h-full bg-card p-2 sm:p-4 overflow-y-auto scrollbar-none flex-col">
+        <div className="sm:flex-1 flex flex-col rounded-2xl border shadow sm:h-full bg-card p-2 sm:p-4">
             <RoleStat totalRole={roles.length} totalModule={modules.length} />
             <Separator className="my-2" />
-            <div className="flex-1 min-h-0 ">
+            <div className="flex-1 min-h-0">
                 <DataTable
                     columns={columns(setDialog, modules.length)}
                     data={roles}

@@ -35,7 +35,6 @@ export type ProcessDialogState = {
 
 export default function ProcessView() {
     const [dialog, setDialog] = useState<ProcessDialogState>({ open: false, entity: null, action: null, id: null, });
-
     const { data: parameters, isLoading: parametersLoading } = useGetParameters();
     const { data: transitions, isLoading: transitionsLoading } = useGetTransitions();
     const { data: actions, isLoading: actionsLoading } = useGetActions();
@@ -47,7 +46,7 @@ export default function ProcessView() {
     const loading = parametersLoading || transitionsLoading || actionsLoading || !parameters || !transitions || !actions;
     if (loading) {
         return (
-            <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none">
+            <div className="flex-1 border shadow h-full overflow-y-auto scrollbar-none">
                 <div className="grid grid-cols-1 gap-4 2xl:grid-cols-3 2xl:h-full ">
                     {Array.from({ length: 3 }).map((_, index) => (
                         <div
@@ -121,18 +120,14 @@ export default function ProcessView() {
         },
     ];
     return (
-        <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none">
-            <div className="grid grid-cols-1 gap-4 2xl:grid-cols-3 2xl:h-full ">
+        <div className="flex-1 h-full overflow-y-auto scrollbar-none">
+            <div className="grid grid-cols-1 gap-2 2xl:grid-cols-3 2xl:h-full overflow-hidden ">
                 {cards.map((p) => {
                     const Icon = p.icon;
                     return (
                         <div
                             key={p.entity}
                             className="relative flex min-h-0 flex-col overflow-hidden rounded-2xl border bg-card shadow-sm p-2 transition-all hover:shadow-lg"
-                            style={{
-                                backgroundColor: `${p.color}02`,
-                                borderColor: `${p.color}20`,
-                            }}
                         >
                             {/* Watermark */}
                             <Icon

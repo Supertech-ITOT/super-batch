@@ -7,58 +7,72 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { DialogType } from "@/features/plant/common/types/plant-hierarchy.types";
 import { UnitResponse } from "../../unit/types/unit.types";
 
-type Props = {
-    setDialog: React.Dispatch<
-        React.SetStateAction<
-            DialogType & { redirect?: boolean }
-        >
-    >;
-};
 
-export const columns = ({
-    setDialog,
-}: Props): ColumnDef<UnitResponse>[] => [
-        {
-            accessorKey: "name",
-            header: "Unit Name",
+export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogType & { redirect?: boolean }>>): ColumnDef<UnitResponse>[] => [
+    {
+        id: "srNo",
+        header: "Sr. No.",
+        cell: ({ row }) => row.index + 1,
+        meta: {
+            align: "center",
         },
-        {
-            accessorKey: "code",
-            header: "Unit Code",
+    },
+    {
+        accessorKey: "name",
+        header: "Name",
+        meta: {
+            align: "center",
         },
-        {
-            accessorKey: "capacity",
-            header: "Unit Capacity",
+    },
+    {
+        accessorKey: "code",
+        header: "Code",
+        meta: {
+            align: "center",
         },
-        {
-            accessorKey: "totalEquipment",
-            header: "Equipment",
+    },
+    {
+        accessorKey: "capacity",
+        header: "Capacity",
+        meta: {
+            align: "center",
         },
-        {
-            id: "actions",
-            header: "Actions",
-            cell: ({ row }) => {
-                const unit = row.original
+    },
+    {
+        accessorKey: "totalEquipment",
+        header: "Equipment",
+        meta: {
+            align: "center",
+        },
+    },
+    {
+        id: "actions",
+        header: "Actions",
+        meta: {
+            align: "center",
+        },
+        cell: ({ row }) => {
+            const unit = row.original
 
-                return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0"
-                                onClick={(e) => e.stopPropagation()}>
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setDialog({ type: "unit", mode: "edit", node: { id: unit.id, name: unit.name, type: "unit" }, redirect: false }) }}>
-                                Edit</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem variant="destructive" onClick={(e) => { e.stopPropagation(); setDialog({ type: "unit", mode: "delete", node: { id: unit.id, name: unit.name, type: "unit" }, redirect: false }) }}>
-                                Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                )
-            },
+            return (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0"
+                            onClick={(e) => e.stopPropagation()}>
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setDialog({ type: "unit", mode: "edit", node: { id: unit.id, name: unit.name, type: "unit" }, redirect: false }) }}>
+                            Edit</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem variant="destructive" onClick={(e) => { e.stopPropagation(); setDialog({ type: "unit", mode: "delete", node: { id: unit.id, name: unit.name, type: "unit" }, redirect: false }) }}>
+                            Delete</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            )
         },
-    ];
+    },
+];

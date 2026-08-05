@@ -13,8 +13,8 @@ export default function PlantMenu() {
         <>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button className="h-12 gap-2 bg-card hover:bg-card shadow rounded-lg!" >
-                        <div className="bg-primary/20 rounded-md p-2">
+                    <Button className="h-12 gap-2 bg-card hover:bg-card shadow! rounded-2xl! border!" >
+                        <div className="bg-primary/20 rounded-2xl p-2">
                             <Plus className="w-4! h-4! text-primary" />
                         </div>
                         <span className="text-primary">Add Entity</span>

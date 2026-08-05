@@ -8,7 +8,7 @@ import DataTablePagination from "./data-table-pagination";
 import { useState } from "react";
 
 const alignClass = { left: "text-left", center: "text-center", right: "text-right", };
-export function DataTable<TData, TValue>({ columns, data, pageSize = 10, toolbar, emptyMessage = "No data available.", className, rowClassName = "h-12", tableClassName = "h-125" }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, pageSize = 10, toolbar, emptyMessage = "No data available.", className, rowClassName = "h-12", tableClassName = "min-h-125" }: DataTableProps<TData, TValue>) {
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const table = useReactTable({
         data,
@@ -28,10 +28,10 @@ export function DataTable<TData, TValue>({ columns, data, pageSize = 10, toolbar
     const emptyRows = Math.max(0, pageSize - rows.length);
 
     return (
-        <div className={`flex flex-col gap-2 ${className ?? ""}`}>
+        <div className={`flex flex-col gap-2 h-full ${className ?? ""}`}>
             {toolbar?.(table)}
-            <div className="rounded-xl border overflow-hidden">
-                <div className={`${tableClassName} overflow-auto scrollbar-none`}>
+            <div className="rounded-xl border overflow-hidden flex-1 min-h-0 h-full">
+                <div className={`h-full overflow-auto scrollbar-none ${tableClassName}`}>
                     <Table>
                         <TableHeader className="sticky top-0 bg-primary">
                             {table.getHeaderGroups().map(group => (

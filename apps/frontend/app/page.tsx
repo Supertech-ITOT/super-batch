@@ -15,7 +15,7 @@ const finfo = [
 
 export default function Home() {
   return (
-    <div className="h-full w-full flex flex-row overflow-hidden relative">
+    <div className="h-full min-h-0 w-full flex flex-row overflow-hidden relative">
       <div className="absolute inset-0">
         <Image
           src="/light-bg.png"
