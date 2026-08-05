@@ -45,3 +45,8 @@ export const roleSchema = z.object({
 });
 
 export type RoleSchema = z.infer<typeof roleSchema>;
+export const roleDefaultValues: RoleSchema = {
+    name: "",
+    description: "",
+    permissions: []
+};

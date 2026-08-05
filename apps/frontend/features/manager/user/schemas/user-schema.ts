@@ -68,3 +68,11 @@ export const updateUserSchema = userBaseSchema.omit({
 
 export type UserSchema = z.infer<typeof userSchema>;
 export type UpdateUserSchema = z.infer<typeof updateUserSchema>;
+
+export const userDefaultValues: UserSchema = {
+    email: "",
+    name: "",
+    password: "",
+    confirmPassword: "",
+    roleId: 0
+}

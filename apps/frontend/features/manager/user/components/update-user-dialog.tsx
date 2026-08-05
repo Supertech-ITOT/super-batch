@@ -23,7 +23,7 @@ export default function UpdateUserDialog({ open, onClose, userId }: Props) {
         resolver: zodResolver(updateUserSchema),
         defaultValues: { name: "", email: "", roleId: 0 }
     });
-    const loading = isCreating || isSubmitting || rolesIsLoading || userIsLoading;
+    const loading = rolesIsLoading || userIsLoading || isCreating || isSubmitting;
     useEffect(() => {
         if (loading || !user)
             return;
@@ -54,7 +54,7 @@ export default function UpdateUserDialog({ open, onClose, userId }: Props) {
             title="Update User"
             description="Update a existing user accounts."
             footer={
-                <FormLoadingButton form="update-user-form" type="submit" loading={isSubmitting || isCreating} disabled={!isDirty}>
+                <FormLoadingButton form="update-user-form" type="submit" loading={loading} disabled={!isDirty}>
                     Update
                 </FormLoadingButton>
             }

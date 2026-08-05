@@ -31,7 +31,7 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
                 </div>
               </SidebarProvider>
             </AuthGuardProvider>
-            <Toaster richColors position="top-center" />
+            <Toaster richColors position="bottom-right" />
           </QueryProvider>
         </ThemeProvider>
       </body>

@@ -2,16 +2,9 @@
 
 import { ReactNode } from "react";
 import { Loader2, LucideIcon } from "lucide-react";
-
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/common/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/common/components/ui/dialog";
 import { cn } from "@/common/lib/utils";
+import SuccessOverlay from "./success-overlay";
 
 type FormDialogProps = {
     open: boolean;
@@ -23,28 +16,29 @@ type FormDialogProps = {
     icon?: LucideIcon;
     className?: string;
     loading?: boolean;
+    completed?: boolean;
+    variant?: "create" | "update" | "delete" | "payment";
 };
 
-export default function FormDialog({ open, onClose, title, description, children, footer, icon: Icon, className, loading }: FormDialogProps) {
+export default function FormDialog({ open, onClose, title, description, children, footer, icon: Icon, className, loading, completed, variant }: FormDialogProps) {
     return (
         <Dialog open={open} onOpenChange={(value) => {
-            if (!loading && !value) {
+            if (!loading && !completed && !value) {
                 onClose();
             }
         }}>
             <DialogContent
                 className={cn(
-                    "overflow-hidden rounded-2xl border border-border/50 p-0 shadow-xl",
+                    "overflow-hidden rounded-2xl p-0! shadow-xl",
                     className
                 )}
-                showCloseButton={!loading}
+                showCloseButton={!loading && !completed}
             >
                 <div className="relative p-6">
                     {Icon && (
                         <>
                             {/* Primary Glow */}
                             <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
-
                             {/* Decorative Watermark */}
                             <Icon
                                 className="pointer-events-none absolute right-4 top-4 h-28 w-28 text-primary/10"
@@ -63,18 +57,10 @@ export default function FormDialog({ open, onClose, title, description, children
                         <DialogTitle className="text-xl font-semibold tracking-tight">
                             {title}
                         </DialogTitle>
-
-                        {description && (
-                            <DialogDescription>{description}</DialogDescription>
-                        )}
+                        {description && (<DialogDescription>{description}</DialogDescription>)}
                     </DialogHeader>
 
-                    <div
-                        className={cn(
-                            "relative z-10 mt-6",
-                            loading && "pointer-events-none opacity-60"
-                        )}
-                    >
+                    <div className={cn("relative z-10 mt-6", loading && "pointer-events-none opacity-60")}>
                         {children}
                     </div>
 
@@ -84,6 +70,13 @@ export default function FormDialog({ open, onClose, title, description, children
                         </DialogFooter>
                     )}
                 </div>
+
+                {/* Success Animation Overlay */}
+                <SuccessOverlay
+                    open={!!completed}
+                    variant={variant ?? "create"}
+                    onFinish={onClose}
+                />
             </DialogContent>
         </Dialog>
     );

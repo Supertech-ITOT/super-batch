@@ -6,7 +6,7 @@ import { ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger, } from "@/common/components/ui/tabs";
 import { showApiError } from "@/common/lib/show-api-error";
-import { roleSchema, RoleSchema, RoleSchemaLimit, } from "@/features/manager/role/schemas/role-schema";
+import { roleDefaultValues, roleSchema, RoleSchema, RoleSchemaLimit, } from "@/features/manager/role/schemas/role-schema";
 import { useGetRolesById, useUpdateRole } from "@/features/manager/role/hooks/use-role";
 import { useGetModules } from "@/features/manager/module/hooks/use-module";
 import { showFormError } from "@/common/lib/show-form-error";
@@ -20,14 +20,14 @@ type Props = { open: boolean; onClose: () => void; roleId: number };
 type tab = "role" | "permissions";
 export default function UpdateRoleDialog({ open, onClose, roleId }: Props) {
     const [tab, setTab] = useState<tab>("role");
-    const { mutateAsync: updateRole, isPending: isUpdating } = useUpdateRole();
+    const { mutateAsync: updateRole, isPending: isUpdating, isSuccess } = useUpdateRole();
     const { data: role, isLoading: roleIsLoading } = useGetRolesById(roleId);
     const { data: modules, isLoading: modulesIsLoading } = useGetModules();
     const { register, control, handleSubmit, reset, watch, formState: { isSubmitting, isDirty, }, } = useForm<RoleSchema>({
         resolver: zodResolver(roleSchema),
-        defaultValues: { name: "", description: "", permissions: [] },
+        defaultValues: roleDefaultValues,
     });
-    const loading = modulesIsLoading || roleIsLoading;
+    const loading = roleIsLoading || modulesIsLoading || isSubmitting || isUpdating;
 
     useEffect(() => {
         if (!modules || !role) return;
@@ -49,7 +49,7 @@ export default function UpdateRoleDialog({ open, onClose, roleId }: Props) {
 
     const handleClose = () => {
         setTab("role");
-        reset({ name: "", description: "", permissions: [] });
+        reset(roleDefaultValues);
         onClose();
     };
 
@@ -66,7 +66,6 @@ export default function UpdateRoleDialog({ open, onClose, roleId }: Props) {
                 }
             });
             toast.success(res.message ?? "Role updated successfully.");
-            handleClose();
         } catch (error) {
             showApiError(error);
         }
@@ -81,12 +80,14 @@ export default function UpdateRoleDialog({ open, onClose, roleId }: Props) {
         <FormDialog
             open={open}
             onClose={handleClose}
+            completed={isSuccess}
+            variant="update"
             loading={loading}
             title="Update Role"
             description="Update a role and assign module permissions."
             footer={
                 tab === "permissions" && (
-                    <FormLoadingButton form="create-role-form" type="submit" loading={isUpdating || isSubmitting} disabled={!isDirty}>
+                    <FormLoadingButton form="create-role-form" type="submit" loading={loading} disabled={!isDirty}>
                         Update
                     </FormLoadingButton>
                 )

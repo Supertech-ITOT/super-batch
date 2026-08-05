@@ -8,21 +8,23 @@ import { ModuleBreadcrumb } from "./module-breadcrumb";
 import { useGetCurrentUser } from "@/features/manager/user/hooks/use-user";
 import Link from "next/link";
 import UserAvatar from "./user-avatar";
+import { useIsElectron } from "../hooks/use-is-electron";
 
 
 export default function ModuleHeader() {
     const router = useRouter();
+    const isElectron = useIsElectron();
     const pathname = usePathname();
     const getBasePath = (path: string) => "/" + path.split("/")[1];
     const routes = [...OperationRoutes, ...ConfigurationRoutes];
     const current = routes.find(route => getBasePath(pathname) === getBasePath(route.path));
     const { data: user } = useGetCurrentUser();
-
     if (!current) return null;
     const Icon = current.icon;
-    const isRoot = pathname === current.path;
+    const normalize = (path: string) => path.replace(/\/+$/, "") || "/";
+    const isRoot = normalize(pathname) === normalize(current.path);
     return (
-        <header className="fixed top-0 z-40 border-b bg-card/95 backdrop-blur supports-backdrop-filter:bg-card/80 p-2 sm:p-4 h-20 w-full">
+        <header className={`fixed ${isElectron ? "top-8" : "top-0"} z-40 border-b bg-card/95 backdrop-blur supports-backdrop-filter:bg-card/80 p-2 sm:p-4 h-20 w-full`}>
             <div className="flex items-center gap-1.5 sm:gap-4">
                 {!isRoot && (
                     <Button

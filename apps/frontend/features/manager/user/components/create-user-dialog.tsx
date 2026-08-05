@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, ShieldCheck, User, Users } from "lucide-react";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
-import { userSchema, UserSchema, UserSchemaLimit } from "@/features/manager/user/schemas/user-schema";
+import { userDefaultValues, userSchema, UserSchema, UserSchemaLimit } from "@/features/manager/user/schemas/user-schema";
 import { useCreateUser } from "@/features/manager/user/hooks/use-user";
 import { useGetRoles } from "@/features/manager/role/hooks/use-role";
 import FormDialog from "@/common/components/form/form-dialog";
@@ -20,9 +20,9 @@ export default function CreateUserDialog({ open, onClose }: Props) {
     const { data: roles, isLoading: rolesIsLoading } = useGetRoles();
     const { register, handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty } } = useForm<UserSchema>({
         resolver: zodResolver(userSchema),
-        defaultValues: { name: "", email: "", confirmPassword: "", password: "", roleId: 0 }
+        defaultValues: userDefaultValues
     });
-    const loading = !roles || isSubmitting || rolesIsLoading;
+    const loading = rolesIsLoading || isCreating || isSubmitting;
     const onSubmit = async (formData: UserSchema) => {
         try {
             const res = await createUser(formData);
@@ -33,7 +33,7 @@ export default function CreateUserDialog({ open, onClose }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ name: "", email: "", confirmPassword: "", password: "", roleId: 0 });
+        reset(userDefaultValues);
         onClose();
     };
     const onInvalid = (errors: FieldErrors<UserSchema>) => {
@@ -48,7 +48,7 @@ export default function CreateUserDialog({ open, onClose }: Props) {
             title="Create User"
             description="Create a new user accounts."
             footer={
-                <FormLoadingButton form="create-user-form" type="submit" loading={isSubmitting || isCreating} disabled={!isDirty}>
+                <FormLoadingButton form="create-user-form" type="submit" loading={loading} disabled={!isDirty}>
                     Create
                 </FormLoadingButton>
             }

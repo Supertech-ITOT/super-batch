@@ -7,15 +7,14 @@ import ConfirmDialog from "@/common/components/form/confirm-dialog";
 
 type Props = { open: boolean; onClose: () => void; roleId?: number };
 export default function DeleteRoleDialog({ open, onClose, roleId }: Props) {
-    const { mutateAsync: deleteRole, isPending: deleteRoleIsPending } = useDeleteRole();
+    const { mutateAsync: deleteRole, isPending: deleteRoleIsPending, isSuccess } = useDeleteRole();
     const { data: role, isLoading: roleIsLoading } = useGetRolesById(roleId);
-    const loading = deleteRoleIsPending || roleIsLoading || !role;
+    const loading = roleIsLoading || deleteRoleIsPending;
     const handleDelete = async () => {
         if (!role || !roleId) return;
         try {
             const res = await deleteRole({ id: roleId });
             toast.success(res.message ?? `${role.name} deleted successfully.`);
-            onClose();
         } catch (error) {
             showApiError(error);
         }
@@ -27,10 +26,12 @@ export default function DeleteRoleDialog({ open, onClose, roleId }: Props) {
             onConfirm={handleDelete}
             loading={loading}
             icon={ShieldCheck}
-            variant="destructive"
+            dialogVariant="destructive"
+            successVariant="delete"
             title="Delete Role"
             description={`Are you sure you want to delete "${role?.name ?? "-"}"? This action cannot be undone.`}
             confirmText="Delete"
+            completed={isSuccess}
         />
     );
 }

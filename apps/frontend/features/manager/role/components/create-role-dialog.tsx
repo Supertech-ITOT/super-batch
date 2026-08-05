@@ -6,7 +6,7 @@ import { ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger, } from "@/common/components/ui/tabs";
 import { showApiError } from "@/common/lib/show-api-error";
-import { roleSchema, RoleSchema, RoleSchemaLimit, } from "@/features/manager/role/schemas/role-schema";
+import { roleDefaultValues, roleSchema, RoleSchema, RoleSchemaLimit, } from "@/features/manager/role/schemas/role-schema";
 import { useCreateRole } from "@/features/manager/role/hooks/use-role";
 import { useGetModules } from "@/features/manager/module/hooks/use-module";
 import { showFormError } from "@/common/lib/show-form-error";
@@ -20,13 +20,13 @@ type Props = { open: boolean; onClose: () => void; };
 type tab = "role" | "permissions";
 export default function CreateRoleDialog({ open, onClose, }: Props) {
     const [tab, setTab] = useState<tab>("role");
-    const { mutateAsync: createRole, isPending: isCreating } = useCreateRole();
+    const { mutateAsync: createRole, isPending: isCreating, isSuccess } = useCreateRole();
     const { data: modules, isLoading: modulesIsLoading } = useGetModules();
     const { register, control, handleSubmit, reset, watch, formState: { isSubmitting, isDirty, }, } = useForm<RoleSchema>({
         resolver: zodResolver(roleSchema),
-        defaultValues: { name: "", description: "", permissions: [] },
+        defaultValues: roleDefaultValues,
     });
-    const loading = modulesIsLoading;
+    const loading = modulesIsLoading || isCreating || isSubmitting;
 
     useEffect(() => {
         if (!modules) return;
@@ -40,7 +40,7 @@ export default function CreateRoleDialog({ open, onClose, }: Props) {
 
     const handleClose = () => {
         setTab("role");
-        reset({ name: "", description: "", permissions: [] });
+        reset(roleDefaultValues);
         onClose();
     };
 
@@ -55,7 +55,6 @@ export default function CreateRoleDialog({ open, onClose, }: Props) {
                 })),
             });
             toast.success(res.message ?? "Role created successfully.");
-            handleClose();
         } catch (error) {
             showApiError(error);
         }
@@ -69,12 +68,14 @@ export default function CreateRoleDialog({ open, onClose, }: Props) {
         <FormDialog
             open={open}
             loading={loading}
+            completed={isSuccess}
+            variant="create"
             onClose={handleClose}
             title="Create Role"
             description="Create a role and assign module permissions."
             footer={
                 tab === "permissions" && (
-                    <FormLoadingButton form="create-role-form" type="submit" loading={isSubmitting || isCreating} disabled={!isDirty}>
+                    <FormLoadingButton form="create-role-form" type="submit" loading={loading} disabled={!isDirty}>
                         Create
                     </FormLoadingButton>
                 )
