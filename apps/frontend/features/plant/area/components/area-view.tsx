@@ -2,7 +2,6 @@ import StatsCards from "@/common/components/stats-card";
 import { Button } from "@/common/components/ui/button";
 import { Separator } from "@/common/components/ui/separator";
 import { Boxes, Building, Cpu, PenLineIcon, Plus, Trash2 } from "lucide-react";
-import { Skeleton } from "@/common/components/ui/skeleton";
 import { format } from "date-fns";
 import { useState } from "react";
 import { useGetAreaById } from "@/features/plant/area/hooks/use-areas";
@@ -17,55 +16,25 @@ import { useGetUnitsByAreaId } from "../../unit/hooks/use-units";
 import { columns } from "./columns";
 import DataTableSearch from "@/common/components/data-table/data-table-search";
 import { DataTable } from "@/common/components/data-table/data-table";
+import AreaSkeleton from "./area-skeleton";
+import FeedbackState from "@/common/components/feedback-state";
+import { useRouter } from "next/navigation";
 
 export default function AreaView({ id }: { id: number }) {
-    const { data: area, isLoading: areaIsLoading } = useGetAreaById(id);
-    const { data: units, isLoading: unitsIsLoading } = useGetUnitsByAreaId(id);
+    const { data: area, isLoading: areaIsLoading, isError: areaIsError } = useGetAreaById(id);
+    const { data: units, isLoading: unitsIsLoading, isError: unitsIsError } = useGetUnitsByAreaId(id);
+    const router = useRouter();
     const [dialog, setDialog] = useState<DialogType & { redirect?: boolean }>({ type: null, mode: null, node: null, redirect: false });
-    const loading = unitsIsLoading || areaIsLoading || !area || !units
+    const loading = unitsIsLoading || areaIsLoading
+    const error = areaIsError || unitsIsError;
     if (loading) {
-        return (
-            <div className="sm:flex-1 flex flex-col rounded-2xl border shadow sm:h-full bg-card p-2 sm:p-4">
-                {/* Header */}
-                <div className="flex justify-between flex-wrap gap-2 my-4">
-                    <div className="flex gap-3">
-                        <Skeleton className="size-28 rounded-md shrink-0" />
-
-                        <div className="flex flex-col gap-2">
-                            <Skeleton className="h-6 w-48" />
-                            <Skeleton className="h-4 w-40" />
-                            <Skeleton className="h-4 w-56" />
-                            <Skeleton className="h-4 w-72" />
-                            <Skeleton className="h-4 w-80" />
-                        </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                        <Skeleton className="h-10 w-28" />
-                        <Skeleton className="h-10 w-28" />
-                    </div>
-                </div>
-
-                <Separator className="my-4" />
-
-                {/* Stats */}
-                <div className="flex gap-4 overflow-hidden">
-                    {Array.from({ length: 3 }).map((_, index) => (
-                        <Skeleton
-                            key={index}
-                            className="h-28 w-72 rounded-lg shrink-0"
-                        />
-                    ))}
-                </div>
-
-                <Separator className="my-4" />
-
-                {/* Table */}
-                <div className="flex-1 min-h-0">
-                    <Skeleton className="h-full w-full rounded-lg" />
-                </div>
-            </div>
-        );
+        return (<AreaSkeleton />);
+    }
+    if (error) {
+        return <FeedbackState variant="error" />;
+    }
+    if (!area || Object.keys(area).length === 0) {
+        return <FeedbackState variant="empty" />;
     }
 
     const stats = [
@@ -95,23 +64,24 @@ export default function AreaView({ id }: { id: number }) {
                         <Building className="size-16 text-primary" />
                     </div>
                     <div className="flex flex-col">
-                        <h1 className="font-bold text-xl uppercase tracking-wider text-primary">{area.name}</h1>
-                        <h1 className="text-muted-foreground text-sm ">Area Type: {" "}
-                            <span className="font-semibold text-sm text-foreground">{area.areaType}</span>
+                        <h1 className="font-bold text-xl uppercase tracking-wider text-primary">{area.name ?? "-"}</h1>
+                        <h1 className="text-muted-foreground text-sm ">Type: {" "}
+                            <span className="font-semibold text-sm text-foreground">{area.areaType ?? "-"}</span>
                         </h1>
                         <h1 className="text-muted-foreground text-sm ">Parent: {" "}
-                            <span className="font-semibold text-sm text-foreground">{area.plantName}</span>
+                            <span className="font-semibold text-sm text-foreground">{area.plantName ?? "-"}</span>
                         </h1>
-                        <h1 className="text-muted-foreground text-sm ">Description: {" "}
-                            <span className="font-semibold text-sm text-foreground">{area.description}</span>
+                        <h1 className="text-muted-foreground text-sm line-clamp-2 text-ellipsis ">Description: {" "}
+                            <span className="font-semibold text-sm text-foreground " title={area.description ?? "-"}>{area.description ?? "-"}</span>
                         </h1>
                         <h1 className="text-sm text-muted-foreground">
                             Last Modified:{" "}
                             <span className="font-semibold text-foreground">
-                                {format(area.updatedAt ?? area.createdAt, "dd MMM yy hh:mm a")}
+                                {area.updatedAt || area.createdAt
+                                    ? format(area.updatedAt ?? area.createdAt, "dd MMM yy hh:mm a")
+                                    : "-"}
                             </span>
                         </h1>
-
                     </div>
                 </div>
                 <div className="flex flex-row gap-2 w-full sm:w-100">
@@ -125,12 +95,12 @@ export default function AreaView({ id }: { id: number }) {
                     </Button>
 
                     <Button
-                        variant="outline"
-                        className="bg-card! flex-1"
+                        variant="destructive"
+                        className="flex-1 text-white"
                         onClick={() => setDialog({ type: "area", mode: "delete", node: { id: area.id, name: area.name, type: "area" }, redirect: true })}
                     >
-                        <Trash2 className="w-4 h-4 text-destructive" />
-                        <span className="text-destructive">Delete</span>
+                        <Trash2 className="w-4 h-4" />
+                        Delete
                     </Button>
                     <TreeDialogs dialog={dialog} redirect={dialog.redirect} onClose={() => setDialog({ type: null, mode: null, node: null, redirect: false })} />
                 </div>
@@ -158,8 +128,8 @@ export default function AreaView({ id }: { id: number }) {
 
             <div className="flex-1 min-h-0">
                 <DataTable
-                    columns={columns(setDialog)}
-                    data={units}
+                    columns={columns(setDialog,router)}
+                    data={units ?? []}
                     pageSize={10}
                     toolbar={(table) => (
                         <div className="flex items-center gap-2">

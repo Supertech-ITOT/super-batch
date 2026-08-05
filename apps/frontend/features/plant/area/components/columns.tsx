@@ -6,9 +6,10 @@ import { Button } from "@/common/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/common/components/ui/dropdown-menu"
 import { DialogType } from "@/features/plant/common/types/plant-hierarchy.types";
 import { UnitResponse } from "../../unit/types/unit.types";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 
-export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogType & { redirect?: boolean }>>): ColumnDef<UnitResponse>[] => [
+export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogType & { redirect?: boolean }>>, router: AppRouterInstance): ColumnDef<UnitResponse>[] => [
     {
         id: "srNo",
         header: "Sr. No.",
@@ -34,6 +35,7 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogTyp
     {
         accessorKey: "capacity",
         header: "Capacity",
+        cell: ({ row }) => `${row.original.capacity} KG`,
         meta: {
             align: "center",
         },
@@ -65,6 +67,13 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogTyp
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/PlantModel/unit/?id=${unit.id}`);
+                        }}
+                        >
+                            View
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setDialog({ type: "unit", mode: "edit", node: { id: unit.id, name: unit.name, type: "unit" }, redirect: false }) }}>
                             Edit</DropdownMenuItem>
                         <DropdownMenuSeparator />

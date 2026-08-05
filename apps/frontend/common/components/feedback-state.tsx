@@ -26,7 +26,7 @@ export default function FeedbackState({ variant = "empty", icon, title, message,
     const config = DEFAULTS[variant];
     const Icon = icon ?? config.Icon;
     return (
-        <div className={`flex-1 rounded border shadow h-full bg-card flex flex-col items-center justify-center gap-4 text-center ${className}`}>
+        <div className={`flex-1 rounded-2xl border shadow h-full bg-card flex flex-col items-center justify-center gap-4 text-center ${className}`}>
             <div className="flex size-20 items-center justify-center rounded-full bg-muted">
                 <Icon className="size-10 text-muted-foreground" />
             </div>
