@@ -57,7 +57,7 @@ export default function AreaView({ id }: { id: number }) {
     ]
 
     return (
-        <div className="sm:flex-1 flex flex-col rounded-2xl border shadow sm:h-full bg-card p-2 sm:p-4">
+        <div className="flex flex-col rounded-2xl border shadow  bg-card p-2 sm:p-4 flex-1">
             <div className="flex justify-between flex-wrap gap-2">
                 <div className="flex gap-3">
                     <div className="size-28 flex items-center justify-center border rounded-2xl shadow shrink-0">
@@ -125,23 +125,20 @@ export default function AreaView({ id }: { id: number }) {
                 </CarouselContent>
             </Carousel>
             <Separator className="my-2" />
-
-            <div className="flex-1 min-h-0">
-                <DataTable
-                    columns={columns(setDialog,router)}
-                    data={units ?? []}
-                    pageSize={10}
-                    toolbar={(table) => (
-                        <div className="flex items-center gap-2">
-                            <DataTableSearch table={table} column="name" placeholder="Search units..." />
-                            <Button className="ml-auto text-white h-8 sm:h-10" onClick={() => setDialog({ type: "unit", mode: "create", node: { id: area.id, name: area.name, type: "area" }, redirect: false })}>
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add Unit
-                            </Button>
-                        </div>
-                    )}
-                />
-            </div>
+            <DataTable
+                columns={columns(setDialog, router)}
+                data={units ?? []}
+                pageSize={10}
+                toolbar={(table) => (
+                    <div className="flex items-center gap-2">
+                        <DataTableSearch table={table} column="name" placeholder="Search units..." />
+                        <Button className="ml-auto text-white h-8 sm:h-10" onClick={() => setDialog({ type: "unit", mode: "create", node: { id: area.id, name: area.name, type: "area" }, redirect: false })}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Unit
+                        </Button>
+                    </div>
+                )}
+            />
         </div>
     )
 } 

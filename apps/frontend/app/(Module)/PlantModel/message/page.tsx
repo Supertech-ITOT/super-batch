@@ -4,8 +4,10 @@ import MessageView from "@/features/plant/message/components/message-view";
 
 export default function MessagePage() {
     return (
-        <div className="flex flex-col p-1 h-full w-full min-h-0 flex-1 overflow-hidden sm:p-2 gap-1">
-            <PlantTab />
+        <div className="flex flex-col gap-1 p-1 sm:p-2 min-h-full">
+            <div className="shrink-0 max-w-fit">
+                <PlantTab />
+            </div>
             <MessageView />
         </div>
     );

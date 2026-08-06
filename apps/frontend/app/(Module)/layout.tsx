@@ -2,11 +2,11 @@ import Navigation from "@/common/components/navigation/navigation";
 
 export default function ModuleLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
     return (
-        <main className="flex mb-14 sm:m-0 min-h-full flex-col sm:h-full sm:flex-row">
+        <div className="flex mb-14 sm:mb-0 h-full flex-col sm:flex-row">
             <Navigation />
-            <section className="flex-1 overflow-hidden min-h-0">
+            <section className="flex-1 min-h-0 min-w-0 overflow-hidden">
                 {children}
             </section>
-        </main>
+        </div>
     )
 }

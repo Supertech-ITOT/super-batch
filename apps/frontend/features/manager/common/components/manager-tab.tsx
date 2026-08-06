@@ -1,18 +1,10 @@
 "use client";
 
-import {
-    ShieldCheck,
-    Users,
-} from "lucide-react";
+import { ShieldCheck, Users, } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/common/lib/utils";
-
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-} from "@/common/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, } from "@/common/components/ui/carousel";
 
 export default function ManagerTab() {
     const pathname = usePathname();
@@ -31,20 +23,20 @@ export default function ManagerTab() {
     ];
 
     return (
-        <Carousel opts={{ align: "start", dragFree: true, }} className="w-full max-w-fit rounded-2xl border bg-card overflow-hidden shadow">
-            <CarouselContent className="m-0! h-12! ">
+        <Carousel opts={{ align: "start", dragFree: true, }} className="rounded-2xl border bg-card shadow overflow-hidden">
+            <CarouselContent className="m-0! h-12!">
                 {tabs.map((tab) => {
                     const Icon = tab.icon;
                     const active = pathname === tab.path;
                     return (
                         <CarouselItem
                             key={tab.label}
-                            className="basis-auto pl-0 h-full!"
+                            className="basis-auto pl-0"
                         >
                             <Link
                                 href={tab.path}
                                 className={cn(
-                                    "relative flex h-full! items-center gap-2 px-4 text-sm font-medium transition-colors whitespace-nowrap",
+                                    "relative flex h-12 items-center gap-2 px-4 text-sm font-medium transition-colors whitespace-nowrap",
                                     active
                                         ? "bg-primary/5 text-primary"
                                         : "text-muted-foreground hover:text-foreground"

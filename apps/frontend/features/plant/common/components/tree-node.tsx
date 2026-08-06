@@ -68,7 +68,7 @@ function TreeNode({ node, level = 0, onSelect, onAction, selectedNodeKey }: Prop
                             )}
                         >
                             <Icon className={`w-4! h-4! ${isActive ? "text-primary" : "text-muted-foreground"}`} />
-                            <span className={`text-sm ${isActive ? "text-primary" : "text-muted-foreground"}`}>{node.name}</span>
+                            <span className={`text-sm w-44 text-left truncate ${isActive ? "text-primary" : "text-muted-foreground"}`}>{node.name}</span>
                         </Button>
                     </ContextMenuTrigger>
                     <ContextMenuContent>

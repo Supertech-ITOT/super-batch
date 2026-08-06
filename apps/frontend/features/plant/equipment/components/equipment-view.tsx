@@ -65,7 +65,7 @@ export default function EquipmentView({ id }: { id: number }) {
     }
 
     return (
-        <div className="sm:flex-1 flex flex-col rounded-2xl border shadow sm:h-full bg-card p-2 sm:p-4">
+        <div className="flex flex-col rounded-2xl border shadow  bg-card p-2 sm:p-4 flex-1">
             <div className="flex justify-between flex-wrap gap-2">
                 <div className="flex gap-3">
                     <div className="size-28 flex items-center justify-center border rounded-2xl shadow shrink-0">

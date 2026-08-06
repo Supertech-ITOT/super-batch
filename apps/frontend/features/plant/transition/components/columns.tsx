@@ -13,12 +13,26 @@ export const columns = (
     setDialog: React.Dispatch<React.SetStateAction<ProcessDialogState>>
 ): ColumnDef<TransitionResponse>[] => [
         {
+            id: "srNo",
+            header: "Sr. No.",
+            cell: ({ row }) => row.index + 1,
+            meta: {
+                align: "center",
+            },
+        },
+        {
             accessorKey: "id",
             header: "Id",
+            meta: {
+                align: "center",
+            },
         },
         {
             accessorKey: "name",
             header: "Name",
+            meta: {
+                align: "left",
+            },
         },
         {
             id: "actions",
@@ -59,6 +73,9 @@ export const columns = (
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )
+            },
+            meta: {
+                align: "center",
             },
         },
     ];

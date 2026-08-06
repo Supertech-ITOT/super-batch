@@ -9,63 +9,64 @@ import { MessageDialogState } from "./message-view";
 
 
 
-export const columns = (
-    setDialog: React.Dispatch<React.SetStateAction<MessageDialogState>>
-): ColumnDef<MessageResponse>[] => [
-        {
-            id: "srNo",
-            header: "Sr. No.",
-            cell: ({ row }) => row.index + 1,
+export const columns = (setDialog: React.Dispatch<React.SetStateAction<MessageDialogState>>): ColumnDef<MessageResponse>[] => [
+    {
+        id: "srNo",
+        header: "Sr. No.",
+        cell: ({ row }) => row.index + 1,
+        meta: {
+            align: "center",
         },
-        {
-            accessorKey: "name",
-            header: "Message",
-            cell: ({ row }) => (
-                <div
-                    className="wrap-break-word whitespace-normal line-clamp-2"
-                    title={row.original.name}
-                >
-                    {row.original.name}
-                </div>
-            ),
-        },
-        {
-            id: "actions",
-            header: "Actions",
-            cell: ({ row }) => {
-                const unit = row.original
+    },
+    {
+        accessorKey: "name",
+        header: "Message",
+        cell: ({ row }) => (
+            <div
+                className="wrap-break-word whitespace-normal line-clamp-2 leading-5"
+                title={row.original.name}
+            >
+                {row.original.name}
+            </div>
+        ),
+    },
+    {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => {
+            const unit = row.original
 
-                return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0"
-                                onClick={(e) => e.stopPropagation()}>
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={(e) => {
-                                e.stopPropagation(); setDialog({
-                                    open: true,
-                                    action: "edit",
-                                    messageId: row.original.id,
-                                });
-                            }}>
-                                Edit</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem variant="destructive" onClick={(e) => {
-                                e.stopPropagation(); setDialog({
-                                    open: true,
-                                    action: "delete",
-                                    messageId: row.original.id,
-                                });
-                            }}>
-                                Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                )
-            },
+            return (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0"
+                            onClick={(e) => e.stopPropagation()}>
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={(e) => {
+                            e.stopPropagation(); setDialog({
+                                open: true,
+                                action: "edit",
+                                messageId: row.original.id,
+                            });
+                        }}>
+                            Edit</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem variant="destructive" onClick={(e) => {
+                            e.stopPropagation(); setDialog({
+                                open: true,
+                                action: "delete",
+                                messageId: row.original.id,
+                            });
+                        }}>
+                            Delete</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            )
         },
-    ];
+    },
+];

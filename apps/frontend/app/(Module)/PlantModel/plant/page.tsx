@@ -6,7 +6,7 @@ export default function PlantPage() {
     const searchParams = useSearchParams();
     const id = Number(searchParams.get("id"));
     return (
-        <div className="flex flex-col p-1 h-full w-full min-h-0 flex-1 overflow-hidden sm:p-2 gap-1">
+        <div className="flex flex-col gap-1 p-1 sm:p-2 min-h-full">
             <PlantView id={id} />
         </div>
     );

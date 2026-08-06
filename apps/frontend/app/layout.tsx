@@ -18,14 +18,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
   return (
     <html lang="en" suppressHydrationWarning className={cn("antialiased", "font-sans", inter.variable)}>
-      <body className="min-h-screen sm:h-screen sm:overflow-hidden">
+      <body className="h-dvh overflow-hidden">
         <ThemeProvider>
           <QueryProvider>
             <AuthGuardProvider>
               <SidebarProvider>
                 <div className="flex h-full flex-col">
                   <TitleBar />
-                  <main className="flex-1 overflow-hidden">
+                  <main className="min-h-0 flex-1 overflow-y-auto">
                     {children}
                   </main>
                 </div>

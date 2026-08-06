@@ -11,13 +11,29 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 export const columns = (
     setDialog: React.Dispatch<React.SetStateAction<ProcessDialogState>>
 ): ColumnDef<ActionResponse>[] => [
+
+        {
+            id: "srNo",
+            header: "Sr. No.",
+            cell: ({ row }) => row.index + 1,
+            meta: {
+                align: "center",
+            },
+        },
         {
             accessorKey: "id",
             header: "Id",
+            meta: {
+                align: "center",
+            },
         },
+
         {
             accessorKey: "name",
             header: "Name",
+            meta: {
+                align: "left",
+            },
         },
         {
             id: "actions",
@@ -58,6 +74,9 @@ export const columns = (
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )
+            },
+            meta: {
+                align: "center",
             },
         },
     ];

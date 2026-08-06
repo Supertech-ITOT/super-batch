@@ -1,31 +1,20 @@
 "use client";
-import { Separator } from "@/common/components/ui/separator";
-import { ArrowLeftRightIcon, Gauge, LucideIcon, Play, Plus } from "lucide-react";
+
+import { useState } from "react";
+import { Gauge, ArrowLeftRightIcon, Play } from "lucide-react";
 import { Skeleton } from "@/common/components/ui/skeleton";
-import ParameterDataTable from "../../parameter/components/data-table";
-import TransitionDataTable from "../../transition/components/data-table";
-import ActionDataTable from "../../action/components/data-table";
+import { useGetParameters } from "../../parameter/hooks/use-parameters";
+import { useGetTransitions } from "../../transition/hooks/use-transitions";
+import { useGetActions } from "../../action/hooks/use-actions";
 import ParameterColumns from "../../parameter/components/columns";
 import TransitionColumns from "../../transition/components/columns";
 import ActionColumns from "../../action/components/columns";
-import { useGetTransitions } from "../../transition/hooks/use-transitions";
-import { useGetActions } from "../../action/hooks/use-actions";
-import { useState } from "react";
-import { Button } from "@/common/components/ui/button";
-import ProcessDialogs from "./process-dialog";
-import { useGetParameters } from "../../parameter/hooks/use-parameters";
+import ProcessCard from "./process-card";
+import FeedbackState from "@/common/components/feedback-state";
+import ProcessSkeleton from "./process-skeleton";
 
-type ProcessCardConfig = {
-    entity: ProcessEntity;
-    label: string;
-    desc: string;
-    icon: LucideIcon;
-    count: number;
-    color: string;
-    table: React.ReactNode;
-}
-type ProcessEntity = "parameter" | "transition" | "action";
-type ProcessAction = "create" | "edit" | "delete";
+export type ProcessEntity = | "parameter" | "transition" | "action";
+export type ProcessAction = | "create" | "edit" | "delete";
 export type ProcessDialogState = {
     open: boolean;
     entity: ProcessEntity | null;
@@ -35,154 +24,66 @@ export type ProcessDialogState = {
 
 export default function ProcessView() {
     const [dialog, setDialog] = useState<ProcessDialogState>({ open: false, entity: null, action: null, id: null, });
-    const { data: parameters, isLoading: parametersLoading } = useGetParameters();
-    const { data: transitions, isLoading: transitionsLoading } = useGetTransitions();
-    const { data: actions, isLoading: actionsLoading } = useGetActions();
-    const closeDialog = () =>
-        setDialog({ open: false, entity: null, action: null, id: null, });
-    const openDialog = (entity: ProcessEntity, action: ProcessAction, id: number | null = null) => {
-        setDialog({ open: true, entity, action, id });
-    };
-    const loading = parametersLoading || transitionsLoading || actionsLoading || !parameters || !transitions || !actions;
+    const { data: parameters, isLoading: parametersLoading, isError: parametersIsError } = useGetParameters();
+    const { data: transitions, isLoading: transitionsLoading, isError: transitionsIsError } = useGetTransitions();
+    const { data: actions, isLoading: actionsLoading, isError: actionsIsError } = useGetActions();
+    const closeDialog = () => setDialog({ open: false, entity: null, action: null, id: null, });
+    const openDialog = (entity: ProcessEntity, action: ProcessAction, id: number | null = null) => setDialog({ open: true, entity, action, id, });
+
+    const loading = parametersLoading || transitionsLoading || actionsLoading ;
+    const error = parametersIsError || transitionsIsError || actionsIsError;
+    
     if (loading) {
-        return (
-            <div className="flex-1 border shadow h-full overflow-y-auto scrollbar-none">
-                <div className="grid grid-cols-1 gap-4 2xl:grid-cols-3 2xl:h-full ">
-                    {Array.from({ length: 3 }).map((_, index) => (
-                        <div
-                            key={index}
-                            className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none flex-col"
-                        >
-                            <div className="flex justify-between">
-                                <div className="flex gap-4">
-                                    <Skeleton className="size-28 flex items-center justify-center border rounded-md shadow shrink-0" />
-                                    <div className="flex flex-col gap-2">
-                                        <Skeleton className="h-6 w-40" />
-                                        <Skeleton className="h-6 w-70" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <Separator className="my-4" />
-
-                            <Skeleton className="h-full" />
-                        </div>
-                    ))}
-
-                </div>
-            </div>
-
-        );
+        return (<ProcessSkeleton/>);
+    }
+    if (error) {
+        return <FeedbackState variant="error" />;
+    }
+    if (!parameters || !transitions || !actions) {
+        return <FeedbackState variant="empty" />;
     }
 
-    const cards: ProcessCardConfig[] = [
-        {
-            entity: "parameter",
-            label: "Parameter",
-            desc: "Manage process parameters and their units.",
-            icon: Gauge,
-            color: "#15803D",
-            count: parameters.length,
-            table: (
-                <ParameterDataTable
-                    columns={ParameterColumns(setDialog)}
-                    data={parameters}
-                />
-            ),
-        },
-        {
-            entity: "transition",
-            label: "Transition",
-            desc: "Manage step completion condition.",
-            icon: ArrowLeftRightIcon,
-            color: "#1D4ED8",
-            count: transitions.length,
-            table: (
-                <TransitionDataTable
-                    columns={TransitionColumns(setDialog)}
-                    data={transitions}
-                />
-            ),
-        },
-        {
-            entity: "action",
-            label: "Action",
-            desc: "Manage process actions and operations.",
-            icon: Play,
-            color: "#BE185D",
-            count: actions.length,
-            table: (
-                <ActionDataTable
-                    columns={ActionColumns(setDialog)}
-                    data={actions}
-                />
-            ),
-        },
-    ];
     return (
-        <div className="flex-1 h-full overflow-y-auto scrollbar-none">
-            <div className="grid grid-cols-1 gap-2 2xl:grid-cols-3 2xl:h-full overflow-hidden ">
-                {cards.map((p) => {
-                    const Icon = p.icon;
-                    return (
-                        <div
-                            key={p.entity}
-                            className="relative flex min-h-0 flex-col overflow-hidden rounded-2xl border bg-card shadow-sm p-2 transition-all hover:shadow-lg"
-                        >
-                            {/* Watermark */}
-                            <Icon
-                                className="pointer-events-none absolute -bottom-10 -right-10 size-44 opacity-[0.05]"
-                                style={{ color: p.color }}
-                            />
-
-                            {/* Header */}
-                            <div className="flex items-center justify-between p-5 gap-2">
-                                <div className="flex items-start gap-4 h-full">
-                                    <div style={{ backgroundColor: p.color }} className="size-24 flex items-center justify-center border rounded-md shadow shrink-0">
-                                        <Icon className="size-16 text-white" />
-                                    </div>
-                                    <div className="flex justify-between flex-col h-full">
-                                        <div>
-                                            <h2 className="text-lg font-semibold">
-                                                {p.label}
-                                            </h2>
-                                            <p className="text-xs text-muted-foreground">
-                                                {p.desc}
-                                            </p>
-                                        </div>
-                                        <Button className="text-white" style={{ backgroundColor: p.color }} onClick={() => openDialog(p.entity, "create", null)}>
-                                            <Plus className="size-5!" />
-                                            Add {p.label}
-                                        </Button>
-                                        <ProcessDialogs dialog={dialog} onClose={closeDialog} />
-                                    </div>
-                                </div>
-
-
-                                <div className="flex  h-full item-center flex-col">
-                                    <p
-                                        className="text-2xl font-bold text-right"
-                                        style={{ color: p.color }}
-                                    >
-                                        {p.count}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">
-                                        Records
-                                    </p>
-                                </div>
-
-
-
-                            </div>
-                            <Separator className="my-4" />
-                            {/* Table */}
-                            <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
-                                {p.table}
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
+        <div className="grid grid-cols-1 gap-2 2xl:grid-cols-3 flex-1">
+            <ProcessCard
+                entity="parameter"
+                label="Parameter"
+                desc="Manage process parameters and their units."
+                icon={Gauge}
+                color="#15803D"
+                count={parameters.length}
+                columns={ParameterColumns(setDialog)}
+                data={parameters}
+                dialog={dialog}
+                onClose={closeDialog}
+                openDialog={openDialog}
+            />
+            <ProcessCard
+                entity="transition"
+                label="Transition"
+                desc="Manage step completion condition."
+                icon={ArrowLeftRightIcon}
+                color="#1D4ED8"
+                count={transitions.length}
+                columns={TransitionColumns(setDialog)}
+                data={transitions}
+                dialog={dialog}
+                onClose={closeDialog}
+                openDialog={openDialog}
+            />
+            <ProcessCard
+                entity="action"
+                label="Action"
+                desc="Manage process actions and operations."
+                icon={Play}
+                color="#BE185D"
+                count={actions.length}
+                columns={ActionColumns(setDialog)}
+                data={actions}
+                dialog={dialog}
+                onClose={closeDialog}
+                openDialog={openDialog}
+            />
         </div>
     );
 }
