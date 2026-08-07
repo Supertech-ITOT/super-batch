@@ -40,7 +40,7 @@ function SearchableSelect({ icon: Icon, value, onChange, options, placeholder = 
                     disabled={disabled}
                     aria-expanded={open}
                     className={cn(
-                        "w-full justify-between font-normal bg-background",
+                        "w-full justify-between font-normal bg-card",
                         !selected && "text-muted-foreground",
                         className
                     )}

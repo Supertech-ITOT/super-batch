@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, ShieldCheck, User, Users } from "lucide-react";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
-import { UpdateUserSchema, UserSchemaLimit, updateUserSchema } from "@/features/manager/user/schemas/user-schema";
+import { UpdateUserSchema, UserSchemaLimit, updateUserSchema, userDefaultValues } from "@/features/manager/user/schemas/user-schema";
 import { useGetUsersById, useUpdateUser } from "@/features/manager/user/hooks/use-user";
 import { useEffect } from "react";
 import { useGetRoles } from "@/features/manager/role/hooks/use-role";
@@ -21,7 +21,7 @@ export default function UpdateUserDialog({ open, onClose, userId }: Props) {
     const { data: roles, isLoading: rolesIsLoading } = useGetRoles();
     const { register, handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty } } = useForm<UpdateUserSchema>({
         resolver: zodResolver(updateUserSchema),
-        defaultValues: { name: "", email: "", roleId: 0 }
+        defaultValues: userDefaultValues,
     });
     const loading = rolesIsLoading || userIsLoading || isCreating || isSubmitting;
     useEffect(() => {
@@ -39,7 +39,7 @@ export default function UpdateUserDialog({ open, onClose, userId }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ name: "", email: "", roleId: 0 });
+        reset(userDefaultValues);
         onClose();
     };
     const onInvalid = (errors: FieldErrors<UpdateUserSchema>) => {

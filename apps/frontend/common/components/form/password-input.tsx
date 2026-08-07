@@ -33,7 +33,7 @@ export function PasswordInput({ className, counter, maxCharacters, value, label,
                     type={showPassword ? "text" : "password"}
                     value={value}
                     className={cn(
-                        "bg-background border-input text-sm font-medium pr-10",
+                        "bg-card border-input text-sm font-medium pr-10",
                         "focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-input",
                         "focus:outline-none",
                         "pl-10",

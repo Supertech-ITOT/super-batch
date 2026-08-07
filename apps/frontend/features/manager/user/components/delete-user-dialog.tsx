@@ -14,6 +14,7 @@ export default function DeleteUserDialog({ open, onClose, userId }: Props) {
         try {
             const res = await deleteUser({ id: userId });
             toast.success(res.message ?? `${user.name} deleted successfully.`);
+            onClose();
         } catch (error) {
             showApiError(error);
         }
@@ -26,11 +27,9 @@ export default function DeleteUserDialog({ open, onClose, userId }: Props) {
             loading={loading}
             icon={Users}
             dialogVariant="destructive"
-            successVariant="delete"
             title="Delete User"
             description={`Are you sure you want to delete "${user?.name ?? "-"}"? This action cannot be undone.`}
             confirmText="Delete"
-            completed={isSuccess}
         />
     );
 }

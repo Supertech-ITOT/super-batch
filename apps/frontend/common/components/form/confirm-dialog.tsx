@@ -5,7 +5,6 @@ import { Loader2, LucideIcon, TriangleAlert } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/common/components/ui/dialog";
 import { Button } from "@/common/components/ui/button";
 import { cn } from "@/common/lib/utils";
-import SuccessOverlay from "./success-overlay";
 
 type ConfirmDialogProps = {
     open: boolean;
@@ -18,13 +17,10 @@ type ConfirmDialogProps = {
     loading?: boolean;
     icon?: LucideIcon;
     className?: string;
-    completed?: boolean;
     dialogVariant?: "default" | "destructive";
-    successVariant?: "create" | "update" | "delete" | "payment";
 };
 
-export default function ConfirmDialog({ open, onClose, onConfirm, title, description, confirmText = "Confirm", cancelText = "Cancel", loading = false, icon: Icon = TriangleAlert, dialogVariant = "default",
-    successVariant = "delete", className, completed = false, }: ConfirmDialogProps) {
+export default function ConfirmDialog({ open, onClose, onConfirm, title, description, confirmText = "Confirm", cancelText = "Cancel", loading = false, icon: Icon = TriangleAlert, dialogVariant = "default", className, }: ConfirmDialogProps) {
     return (
         <Dialog
             open={open}
@@ -97,12 +93,6 @@ export default function ConfirmDialog({ open, onClose, onConfirm, title, descrip
                         </Button>
                     </DialogFooter>
                 </div>
-                {/* Success Animation Overlay */}
-                <SuccessOverlay
-                    open={!!completed}
-                    variant={successVariant ?? "delete"}
-                    onFinish={onClose}
-                />
             </DialogContent>
         </Dialog>
     );

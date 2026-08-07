@@ -66,6 +66,7 @@ export default function UpdateRoleDialog({ open, onClose, roleId }: Props) {
                 }
             });
             toast.success(res.message ?? "Role updated successfully.");
+            handleClose();
         } catch (error) {
             showApiError(error);
         }
@@ -80,8 +81,6 @@ export default function UpdateRoleDialog({ open, onClose, roleId }: Props) {
         <FormDialog
             open={open}
             onClose={handleClose}
-            completed={isSuccess}
-            variant="update"
             loading={loading}
             title="Update Role"
             description="Update a role and assign module permissions."

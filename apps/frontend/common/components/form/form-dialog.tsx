@@ -4,7 +4,6 @@ import { ReactNode } from "react";
 import { Loader2, LucideIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/common/components/ui/dialog";
 import { cn } from "@/common/lib/utils";
-import SuccessOverlay from "./success-overlay";
 
 type FormDialogProps = {
     open: boolean;
@@ -16,14 +15,12 @@ type FormDialogProps = {
     icon?: LucideIcon;
     className?: string;
     loading?: boolean;
-    completed?: boolean;
-    variant?: "create" | "update" | "delete" | "payment";
 };
 
-export default function FormDialog({ open, onClose, title, description, children, footer, icon: Icon, className, loading, completed, variant }: FormDialogProps) {
+export default function FormDialog({ open, onClose, title, description, children, footer, icon: Icon, className, loading }: FormDialogProps) {
     return (
         <Dialog open={open} onOpenChange={(value) => {
-            if (!loading && !completed && !value) {
+            if (!loading && !value) {
                 onClose();
             }
         }}>
@@ -32,7 +29,7 @@ export default function FormDialog({ open, onClose, title, description, children
                     "overflow-hidden rounded-2xl p-0! shadow-xl",
                     className
                 )}
-                showCloseButton={!loading && !completed}
+                showCloseButton={!loading}
             >
                 <div className="relative p-6">
                     {Icon && (
@@ -70,13 +67,6 @@ export default function FormDialog({ open, onClose, title, description, children
                         </DialogFooter>
                     )}
                 </div>
-
-                {/* Success Animation Overlay */}
-                <SuccessOverlay
-                    open={!!completed}
-                    variant={variant ?? "create"}
-                    onFinish={onClose}
-                />
             </DialogContent>
         </Dialog>
     );

@@ -55,6 +55,7 @@ export default function CreateRoleDialog({ open, onClose, }: Props) {
                 })),
             });
             toast.success(res.message ?? "Role created successfully.");
+            handleClose();
         } catch (error) {
             showApiError(error);
         }
@@ -68,8 +69,6 @@ export default function CreateRoleDialog({ open, onClose, }: Props) {
         <FormDialog
             open={open}
             loading={loading}
-            completed={isSuccess}
-            variant="create"
             onClose={handleClose}
             title="Create Role"
             description="Create a role and assign module permissions."

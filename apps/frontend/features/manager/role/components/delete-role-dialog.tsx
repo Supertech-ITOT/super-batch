@@ -15,6 +15,7 @@ export default function DeleteRoleDialog({ open, onClose, roleId }: Props) {
         try {
             const res = await deleteRole({ id: roleId });
             toast.success(res.message ?? `${role.name} deleted successfully.`);
+            onClose()
         } catch (error) {
             showApiError(error);
         }
@@ -27,11 +28,9 @@ export default function DeleteRoleDialog({ open, onClose, roleId }: Props) {
             loading={loading}
             icon={ShieldCheck}
             dialogVariant="destructive"
-            successVariant="delete"
             title="Delete Role"
             description={`Are you sure you want to delete "${role?.name ?? "-"}"? This action cannot be undone.`}
             confirmText="Delete"
-            completed={isSuccess}
         />
     );
 }
