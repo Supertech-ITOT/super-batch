@@ -19,16 +19,18 @@ import jakarta.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ControlRecipeSOPParameter {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "control_recipesop_id", nullable = false)
     private ControlRecipeSOP controlRecipeSOP;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "parameter_id", nullable = false)
     private Parameter parameter;
 
     private Double stdValue;
-
 }

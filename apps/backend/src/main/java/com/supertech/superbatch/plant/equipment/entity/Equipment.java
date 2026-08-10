@@ -14,8 +14,8 @@ import com.supertech.superbatch.plant.unit.entity.Unit;
 import jakarta.persistence.*;
 
 import lombok.*;
-
 @Entity
+@Table(name = "equipment")
 @Getter
 @Setter
 @Builder
@@ -27,18 +27,23 @@ public class Equipment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String name;
 
+    @Column(nullable = false, length = 50)
     private String code;
 
+    @Column(length = 500)
     private String description;
 
     private Integer capacity;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private EquipmentType equipmentType;
 
     @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
@@ -46,10 +51,15 @@ public class Equipment {
 
     @Builder.Default
     @ManyToMany
-    @JoinTable(name = "equipment_unit", joinColumns = @JoinColumn(name = "equipment_id"), inverseJoinColumns = @JoinColumn(name = "unit_id"))
+    @JoinTable(
+        name = "equipment_unit",
+        joinColumns = @JoinColumn(name = "equipment_id"),
+        inverseJoinColumns = @JoinColumn(name = "unit_id")
+    )
     @JsonIgnore
     private Set<Unit> units = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "creator_unit_id", nullable = false)
     private Unit creatorUnit;
 }

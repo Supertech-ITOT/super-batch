@@ -14,14 +14,17 @@ import com.supertech.superbatch.plant.parameter.entity.Parameter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BatchSOPParameter {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "batchsop_id", nullable = false)
     private BatchSOP batchSOP;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "parameter_id", nullable = false)
     private Parameter parameter;
 
     private Double stdValue;

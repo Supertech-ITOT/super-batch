@@ -14,6 +14,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "area")
 @Getter
 @Setter
 @Builder
@@ -25,9 +26,11 @@ public class Area {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "plant_id", nullable = false)
     @JsonIgnore
     private Plant plant;
 
@@ -35,11 +38,14 @@ public class Area {
     @OrderBy("name ASC")
     private Set<Unit> units;
 
+    @Column(length = 500)
     private String description;
 
+    @Column(nullable = false, length = 50)
     private String areaType;
 
     @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp

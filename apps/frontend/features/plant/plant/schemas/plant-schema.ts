@@ -2,8 +2,8 @@ import { z } from "zod";
 
 export const PlantSchemaLimit = {
     name: { min: 3, max: 100, },
-    description: { min: 2, max: 100, },
-    location: { min: 2, max: 100, },
+    description: { min: 2, max: 255, },
+    location: { min: 2, max: 255, },
     plantType: { min: 2, max: 50, },
 } as const;
 

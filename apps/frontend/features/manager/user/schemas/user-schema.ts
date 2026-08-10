@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const UserSchemaLimit = {
     name: { min: 2, max: 100 },
-    email: { min: 5, max: 100 },
+    email: { min: 5, max: 255 },
     password: { min: 8, max: 50 },
 } as const;
 

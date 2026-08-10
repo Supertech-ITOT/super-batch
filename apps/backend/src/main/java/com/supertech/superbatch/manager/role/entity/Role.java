@@ -14,6 +14,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "role")
 @Getter
 @Setter
 @Builder
@@ -25,11 +26,14 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String name;
 
+    @Column(length = 500)
     private String description;
 
     @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
@@ -46,6 +50,7 @@ public class Role {
     private LocalDateTime deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deleted_by_id")
     private User deletedBy;
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -61,5 +66,4 @@ public class Role {
         permissions.forEach(permission -> permission.setRole(null));
         permissions.clear();
     }
-
 }

@@ -7,15 +7,14 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "permission", uniqueConstraints = {
-        @UniqueConstraint(name = "uk_role_module", columnNames = { "role_id", "module_id" })
-})
+@Table(name = "permission")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Permission {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,7 +27,7 @@ public class Permission {
     @JoinColumn(name = "module_id", nullable = false)
     private Module module;
 
+    @Column(nullable = false)
     @Builder.Default
     private boolean access = false;
-
 }

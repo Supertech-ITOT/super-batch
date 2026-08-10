@@ -14,14 +14,17 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BatchSOPMaterial {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "batchsop_id", nullable = false)
     private BatchSOP batchSOP;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "material_id", nullable = false)
     private Material material;
 
     private Double stdQty;

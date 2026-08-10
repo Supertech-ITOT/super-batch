@@ -16,33 +16,45 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "batch")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Batch {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 50)
     private String batchNo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "master_recipe_id", nullable = false)
     private Recipe masterRecipe;
-    @ManyToOne(fetch = FetchType.LAZY)
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "unit_id", nullable = false)
     private Unit unit;
+
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "control_recipe_id")
     private ControlRecipe controlRecipe;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
     private BatchStatus status;
 
     private LocalDateTime startDateTime;
+
     private LocalDateTime endDateTime;
 
     @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
@@ -50,5 +62,4 @@ public class Batch {
     @OrderBy("stepNo ASC")
     @Builder.Default
     private Set<BatchSOP> sops = new LinkedHashSet<>();
-
 }

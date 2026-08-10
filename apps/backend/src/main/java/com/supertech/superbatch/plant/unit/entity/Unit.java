@@ -16,6 +16,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "unit")
 @Getter
 @Setter
 @Builder
@@ -27,13 +28,17 @@ public class Unit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String name;
 
+    @Column(nullable = false, length = 50)
     private String code;
 
+    @Column(length = 500)
     private String description;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "area_id", nullable = false)
     @JsonIgnore
     private Area area;
 
@@ -45,9 +50,9 @@ public class Unit {
     private Integer capacity;
 
     @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
 }

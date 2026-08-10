@@ -8,7 +8,6 @@ import com.supertech.superbatch.license.enums.LicenseStatus;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 @Entity
 @Table(name = "license")
 @Getter
@@ -22,24 +21,24 @@ public class License {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 255)
     private String licenseKey;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private LicensePlan plan;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String machineId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String customerName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String companyName;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private LicenseStatus status;
 
     @Column(nullable = false)
@@ -50,7 +49,9 @@ public class License {
 
     private LocalDateTime lastValidatedAt;
 
+    @Column(nullable = false)
     private Integer maxClients;
 
+    @Column(length = 20)
     private String version;
 }

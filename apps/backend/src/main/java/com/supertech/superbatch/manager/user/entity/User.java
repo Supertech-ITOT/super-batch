@@ -9,30 +9,33 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = { "email", "deleted" }))
+@Table(name = "users")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String password;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
     @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
@@ -41,6 +44,7 @@ public class User {
     private LocalDateTime lastLoginAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by_id")
     private User createdBy;
 
     @Column(nullable = false)
@@ -49,15 +53,15 @@ public class User {
 
     @Column(nullable = false)
     @Builder.Default
+    private boolean passwordChangeRequired = false;
+
+    @Column(nullable = false)
+    @Builder.Default
     private boolean deleted = false;
 
     private LocalDateTime deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deleted_by_id")
     private User deletedBy;
-
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean passwordChangeRequired = false;
-
 }

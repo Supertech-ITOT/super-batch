@@ -26,25 +26,32 @@ public class RecipeSOP {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private Integer stepNo;
 
     private Double stdTime;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "recipe_id", nullable = false)
     private Recipe recipe;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "transition_id", nullable = false)
     private Transition transition;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "action_id", nullable = false)
     private Action action;
 
+    @Column(length = 500)
     private String message;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "from_equipment_id")
     private Equipment fromEquipment;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "to_equipment_id")
     private Equipment toEquipment;
 
     @OneToMany(mappedBy = "recipeSOP", cascade = CascadeType.ALL, orphanRemoval = true)

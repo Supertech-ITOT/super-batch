@@ -69,7 +69,7 @@ public class ControlRecipeMapper {
                                 .createdBy(createdBy)
                                 .shiftIncharge(shiftIncharge)
                                 .scheduledAt(request.scheduledAt())
-                                .status(ControlRecipeStatus.SHEDULED)
+                                .status(ControlRecipeStatus.SCHEDULED)
                                 .build();
 
                 Map<Long, Long> equipmentMapping = request.equipmentMappings() == null

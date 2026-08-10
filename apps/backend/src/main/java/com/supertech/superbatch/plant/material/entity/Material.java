@@ -8,28 +8,34 @@ import com.supertech.superbatch.plant.material.enums.MaterialType;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 @Entity
+@Table(name = "material")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Material {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String name;
 
+    @Column(nullable = false, length = 50)
     private String code;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
     private MaterialType materialType;
 
+    @Column(length = 500)
     private String description;
 
     @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp

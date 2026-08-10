@@ -19,10 +19,12 @@ public class RecipeSOPParameter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "recipesop_id", nullable = false)
     private RecipeSOP recipeSOP;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "parameter_id", nullable = false)
     private Parameter parameter;
 
     private Double stdValue;
