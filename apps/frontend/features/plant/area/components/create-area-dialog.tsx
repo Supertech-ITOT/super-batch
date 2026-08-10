@@ -1,39 +1,38 @@
 "use client";
-import { Button } from "@/common/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
-import { Input } from "@/common/components/ui/input";
-import { Label } from "@/common/components/ui/label";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader } from "lucide-react";
+import { Building, Factory, Feather } from "lucide-react";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/common/components/ui/select";
 import { useCreateArea } from "../hooks/use-areas";
 import { useEffect } from "react";
-import { areaSchema, AreaSchema, AreaSchemaLimit } from "../schemas/area-schema";
-import CharacterProgress from "@/common/components/form/character-progress";
-import { Textarea } from "@/common/components/ui/textarea";
+import { areaDefaultValues, areaSchema, AreaSchema, AreaSchemaLimit } from "../schemas/area-schema";
 import { useGetPlants } from "../../plant/hooks/use-plants";
+import FormDialog from "@/common/components/form/form-dialog";
+import FormLoadingButton from "@/common/components/form/form-loading-button";
+import { TextInput } from "@/common/components/form/text-input";
+import { TextAreaInput } from "@/common/components/form/text-area-input";
+import SearchableSelect from "@/common/components/form/searchable-select";
+import { showFormError } from "@/common/lib/show-form-error";
 
 type Props = { open: boolean; onClose: () => void; plantId?: number };
 export default function CreateAreaDialog({ open, onClose, plantId }: Props) {
     const { mutateAsync: createArea, isPending: isCreating } = useCreateArea();
     const { data: plants, isLoading: plantsLoading } = useGetPlants(open);
-    const { register, handleSubmit, reset, control, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<AreaSchema>({
+    const { register, handleSubmit, reset, control, watch, formState: { isSubmitting, isDirty } } = useForm<AreaSchema>({
         resolver: zodResolver(areaSchema),
-        defaultValues: { name: "", plantId: undefined, description: "", areaType: "" }
+        defaultValues: areaDefaultValues,
     });
 
     useEffect(() => {
         if (!open || !plantId) return;
-        reset({ name: "", plantId: String(plantId), description: "", areaType: "" })
+        reset({ ...areaDefaultValues, plantId: plantId })
     }, [open, plantId, reset]);
 
     const loading = isCreating || plantsLoading || isSubmitting;
     const onSubmit = async (formData: AreaSchema) => {
         try {
-            const res = await createArea({ name: formData.name, plantId: Number(formData.plantId), description: formData.description, areaType: formData.areaType });
+            const res = await createArea(formData);
             toast.success(res.message ?? "Area created successfully.");
             handleClose();
         } catch (error) {
@@ -41,102 +40,75 @@ export default function CreateAreaDialog({ open, onClose, plantId }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ name: "", plantId: undefined, description: "", areaType: "" });
+        reset(areaDefaultValues);
         onClose();
     };
 
     const onInvalid = (errors: FieldErrors<AreaSchema>) => {
-        const firstError = Object.values(errors)[0];
-        if (firstError?.message) {
-            toast.error(firstError.message.toString());
-        }
+        toast.error(showFormError(errors));
     };
 
     return (
-        <Dialog open={open} onOpenChange={(value) => { if (!value) handleClose() }}>
-            <DialogContent className="sm:max-w-md">
-                <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
-                    <DialogHeader>
-                        <DialogTitle>Create Area</DialogTitle>
-                        <DialogDescription>Create a new area entity.</DialogDescription>
-                    </DialogHeader>
-                    <div className="py-4 space-y-6">
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Name</Label>
-                                <CharacterProgress value={watch("name")} max={AreaSchemaLimit.name.max} />
-                            </div>
-                            <Input
-                                type="text"
-                                disabled={loading}
-                                placeholder="GreenLand Area"
-                                maxLength={AreaSchemaLimit.name.max}
-                                {...register("name")}
-                            />
-                        </div>
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Description</Label>
-                                <CharacterProgress value={watch("description")} max={AreaSchemaLimit.description.max} />
-                            </div>
-                            <Textarea
-                                disabled={loading}
-                                placeholder="Brief area overview"
-                                className="min-h-30 w-full resize-none break-all overflow-hidden"
-                                maxLength={AreaSchemaLimit.description.max}
-                                {...register("description")}
-                            />
-                        </div>
-                        <div className="flex gap-2">
-                            <div className="space-y-2 relative flex-1">
-                                <div className="flex items-center justify-between">
-                                    <Label>Area Type</Label>
-                                    <CharacterProgress value={watch("areaType")} max={AreaSchemaLimit.areaType.max} />
-                                </div>
-                                <Input
-                                    type="text"
+        <FormDialog
+            open={open}
+            loading={loading}
+            onClose={handleClose}
+            title="Create Area"
+            description="Create a area entity."
+            footer={
+                <FormLoadingButton form="create-area-form" type="submit" loading={loading} disabled={!isDirty}>
+                    Create
+                </FormLoadingButton>
+            }
+            icon={Building}
+        >
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="create-area-form">
+                <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                        <TextInput
+                            label="Name"
+                            counter
+                            maxCharacters={AreaSchemaLimit.name.max}
+                            icon={Building}
+                            placeholder="Area Name"
+                            maxLength={AreaSchemaLimit.name.max}
+                            disabled={loading}
+                            value={watch("name")}
+                            {...register("name")}
+                        />
+                        <Controller
+                            control={control}
+                            name="plantId"
+                            render={({ field }) => (
+                                <SearchableSelect
+                                    value={field.value}
+                                    label="Plant"
+                                    icon={Factory}
+                                    onChange={field.onChange}
+                                    options={plants?.map((a) => ({
+                                        value: a.id,
+                                        label: a.name,
+                                    })) ?? []}
+                                    placeholder="Select Plant"
+                                    searchPlaceholder="Search Plants..."
                                     disabled={loading}
-                                    placeholder="Chemical Area"
-                                    maxLength={AreaSchemaLimit.areaType.max}
-                                    {...register("areaType")}
                                 />
-                            </div>
-                            <div className="space-y-2 flex-1 min-w-0">
-                                <Label>Select Plant</Label>
-                                <Controller
-                                    control={control}
-                                    name="plantId"
-                                    render={({ field }) => (
-                                        <Select
-                                            disabled={loading || !!plantId}
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Plant" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {plants?.map((p) => (
-                                                        <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                            </div>
-                        </div>
+                            )}
+                        />
                     </div>
-
-                    <DialogFooter>
-                        <DialogClose asChild>
-                            <Button disabled={loading} type="button" variant="outline" onClick={handleClose}>Cancel</Button>
-                        </DialogClose>
-                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Create Area"}</Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+                    <TextAreaInput
+                        label="Description"
+                        placeholder="Brief Area Overview"
+                        icon={Feather}
+                        counter
+                        maxCharacters={AreaSchemaLimit.description.max}
+                        maxLength={AreaSchemaLimit.description.max}
+                        value={watch("description")}
+                        disabled={loading}
+                        {...register("description")}
+                    />
+                </div>
+            </form>
+        </FormDialog>
     );
 }

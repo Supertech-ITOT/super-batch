@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { ActionType, addParentIds, DialogType, PlantHierarchyResponse } from "../types/plant-hierarchy.types";
-import { usePlantHierarchy } from "../hooks/use-plant-hierarchy";
+import { ActionType, addParentIds, DialogType, PlantHierarchyResponse } from "../../types/plant-hierarchy.types";
+import { usePlantHierarchy } from "../../hooks/use-plant-hierarchy";
 import { Skeleton } from "@/common/components/ui/skeleton";
-import TreeDialogs from "./tree-dialogs";
-import TreeNode from "./tree-node";
-import TreeSearch from "./tree-search";
-import { useFilterTree } from "../hooks/use-filter-tree";
-import { TREE_CONFIG } from "../constants/tree-config";
+import TreeDialogs from "./plant-dialogs";
+import TreeNode from "../tree/tree-node";
+import TreeSearch from "../tree/tree-search";
+import { useFilterTree } from "../../hooks/use-filter-tree";
+import { TREE_CONFIG } from "../../constants/tree-config";
 
-export default function PlantTree() {
+export default function PlantTreeView() {
     const { data, isLoading, isError } = usePlantHierarchy();
     const hierarchy = data ? addParentIds(data) : [];
     const [selectedNodeKey, setSelectedNodeKey] = useState<string | null>(null);

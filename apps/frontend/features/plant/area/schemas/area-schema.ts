@@ -2,8 +2,7 @@ import { z } from "zod";
 
 export const AreaSchemaLimit = {
     name: { min: 2, max: 100 },
-    description: { min: 2, max: 100 },
-    areaType: { min: 2, max: 50 },
+    description: { min: 2, max: 255 },
 } as const;
 
 export const areaSchema = z.object({
@@ -35,25 +34,9 @@ export const areaSchema = z.object({
             `Description cannot exceed ${AreaSchemaLimit.description.max} characters`
         ),
 
-
-
-    areaType: z
-        .string()
-        .trim()
-        .min(
-            AreaSchemaLimit.areaType.min,
-            `Area type must be at least ${AreaSchemaLimit.areaType.min} characters`
-        )
-        .max(
-            AreaSchemaLimit.areaType.max,
-            `Area type cannot exceed ${AreaSchemaLimit.areaType.max} characters`
-        )
-        .regex(
-            /^[a-zA-Z0-9\s\-_/]+$/,
-            "Area type contains invalid characters"
-        ),
-
-    plantId: z.string({ error: "Plant is required" }).trim()
+    plantId: z.number({ error: "Plant is required" }).min(1, "Plant is required")
 });
 
 export type AreaSchema = z.infer<typeof areaSchema>;
+
+export const areaDefaultValues: AreaSchema = { name: "", plantId: 0, description: "" }

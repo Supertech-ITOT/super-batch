@@ -8,10 +8,6 @@ import { AreaResponse } from "@/features/plant/area/types/area.types";
 import { DialogType } from "@/features/plant/common/types/plant-hierarchy.types";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-
-
-
-
 export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogType & { redirect?: boolean }>>, router: AppRouterInstance): ColumnDef<AreaResponse>[] => [
     {
         id: "srNo",
@@ -24,13 +20,6 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogTyp
     {
         accessorKey: "name",
         header: "Name",
-        meta: {
-            align: "center",
-        },
-    },
-    {
-        accessorKey: "areaType",
-        header: "Type",
         meta: {
             align: "center",
         },

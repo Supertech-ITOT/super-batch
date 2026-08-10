@@ -1,18 +1,19 @@
 "use client";
-import { Button } from "@/common/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
-import { Input } from "@/common/components/ui/input";
-import { Label } from "@/common/components/ui/label";
-import { FieldErrors, useForm } from "react-hook-form";
+import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader } from "lucide-react";
+import { Building, Factory, Feather } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
 import { useGetAreaById, useUpdateArea } from "../hooks/use-areas";
-import { areaSchema, AreaSchema, AreaSchemaLimit } from "../schemas/area-schema";
-import CharacterProgress from "@/common/components/form/character-progress";
-import { Textarea } from "@/common/components/ui/textarea";
+import { areaDefaultValues, areaSchema, AreaSchema, AreaSchemaLimit } from "../schemas/area-schema";
+import { TextInput } from "@/common/components/form/text-input";
+import FormLoadingButton from "@/common/components/form/form-loading-button";
+import FormDialog from "@/common/components/form/form-dialog";
+import { TextAreaInput } from "@/common/components/form/text-area-input";
+import { showFormError } from "@/common/lib/show-form-error";
+import SearchableSelect from "@/common/components/form/searchable-select";
+import { Label } from "@/common/components/ui/label";
 import { useGetPlants } from "../../plant/hooks/use-plants";
 
 type Props = { open: boolean; onClose: () => void; areaId?: number };
@@ -20,27 +21,20 @@ export default function UpdateAreaDialog({ open, onClose, areaId }: Props) {
     const { mutateAsync: updateArea, isPending: isUpdating } = useUpdateArea();
     const { data: plants, isLoading: plantsLoading } = useGetPlants(open);
     const { data: area, isLoading: areaLoading } = useGetAreaById(areaId);
-    const { register, handleSubmit, reset, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<AreaSchema>({
+    const { register, handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty } } = useForm<AreaSchema>({
         resolver: zodResolver(areaSchema),
-        defaultValues: { name: "", plantId: undefined, description: "", areaType: "" }
+        defaultValues: areaDefaultValues
     });
 
     useEffect(() => {
-        if (!open || !area || !plants) return;
-        reset({ name: area.name, plantId: String(area.plantId), areaType: area.areaType, description: area.description });
-    }, [open, area, plants, reset]);
-    const loading = isUpdating || plantsLoading || areaLoading || isSubmitting;
+        if (!open || !area) return;
+        reset({ name: area.name, plantId: area.plantId, description: area.description });
+    }, [open, area, reset]);
+    const loading = isUpdating || areaLoading || plantsLoading || isSubmitting;
 
     const onSubmit = async (formData: AreaSchema) => {
         try {
-            const res = await updateArea({
-                id: areaId!, data: {
-                    name: formData.name,
-                    plantId: Number(formData.plantId),
-                    areaType: formData.areaType,
-                    description: formData.description,
-                }
-            });
+            const res = await updateArea({ id: areaId!, data: formData });
             toast.success(res.message ?? "Area updated successfully.");
             handleClose();
         } catch (error) {
@@ -49,84 +43,77 @@ export default function UpdateAreaDialog({ open, onClose, areaId }: Props) {
     };
 
     const handleClose = () => {
-        reset({ name: "", plantId: undefined, description: "", areaType: "" });
+        reset(areaDefaultValues);
         onClose();
     };
 
     const onInvalid = (errors: FieldErrors<AreaSchema>) => {
-        const firstError = Object.values(errors)[0];
-        if (firstError?.message) {
-            toast.error(firstError.message.toString());
-        }
+        toast.error(showFormError(errors));
     };
 
     return (
-        <Dialog open={open} onOpenChange={(value) => { if (!value) handleClose() }}>
-            <DialogContent className="sm:max-w-md">
-                <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
-                    <DialogHeader>
-                        <DialogTitle>Update Area</DialogTitle>
-                        <DialogDescription> Update Area information</DialogDescription>
-                    </DialogHeader>
-                    <div className="py-4 space-y-6">
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Name</Label>
-                                <CharacterProgress value={watch("name")} max={AreaSchemaLimit.name.max} />
-                            </div>
-                            <Input
-                                type="text"
-                                disabled={loading}
-                                placeholder="GreenLand Area"
-                                maxLength={AreaSchemaLimit.name.max}
-                                {...register("name")}
-                            />
-                        </div>
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Description</Label>
-                                <CharacterProgress value={watch("description")} max={AreaSchemaLimit.description.max} />
-                            </div>
-                            <Textarea
-                                disabled={loading}
-                                placeholder="Brief area overview"
-                                className="min-h-30 w-full resize-none break-all overflow-hidden"
-                                maxLength={AreaSchemaLimit.description.max}
-                                {...register("description")}
-                            />
-                        </div>
-                        <div className="flex gap-2">
-                            <div className="space-y-2 relative flex-1">
-                                <div className="flex items-center justify-between">
-                                    <Label>Area Type</Label>
-                                    <CharacterProgress value={watch("areaType")} max={AreaSchemaLimit.areaType.max} />
-                                </div>
-                                <Input
-                                    type="text"
+        <FormDialog
+            open={open}
+            loading={loading}
+            onClose={handleClose}
+            title="Update Area"
+            description="Update a area entity."
+            footer={
+                <FormLoadingButton form="update-area-form" type="submit" loading={loading} disabled={!isDirty}>
+                    Update
+                </FormLoadingButton>
+            }
+            icon={Building}
+        >
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="update-area-form">
+                <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                        <TextInput
+                            label="Name"
+                            counter
+                            maxCharacters={AreaSchemaLimit.name.max}
+                            icon={Building}
+                            placeholder="Area Name"
+                            maxLength={AreaSchemaLimit.name.max}
+                            disabled={loading}
+                            value={watch("name")}
+                            {...register("name")}
+                        />
+                        <Controller
+                            control={control}
+                            name="plantId"
+                            render={({ field }) => (
+                                <SearchableSelect
+                                    value={field.value}
+                                    label="Plant"
+                                    icon={Factory}
+                                    onChange={field.onChange}
+                                    options={plants?.map((a) => ({
+                                        value: a.id,
+                                        label: a.name,
+                                    })) ?? []}
+                                    placeholder="Select Plant"
+                                    searchPlaceholder="Search Plants..."
                                     disabled={loading}
-                                    placeholder="Chemical Area"
-                                    maxLength={AreaSchemaLimit.areaType.max}
-                                    {...register("areaType")}
                                 />
-                            </div>
-                            <div className="space-y-2 flex-1">
-                                <Label>Plant</Label>
-                                <Input
-                                    type="text"
-                                    disabled
-                                    value={plants?.find((p) => p.id === area?.plantId)?.name ?? ""}
-                                />
-                            </div>
-                        </div>
+                            )}
+                        />
                     </div>
-                    <DialogFooter>
-                        <DialogClose asChild>
-                            <Button disabled={loading} type="button" variant="outline" onClick={handleClose}>Cancel</Button>
-                        </DialogClose>
-                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Update Area"}</Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+                    <TextAreaInput
+                        label="Description"
+                        placeholder="Brief Area Overview"
+                        icon={Feather}
+                        counter
+                        maxCharacters={AreaSchemaLimit.description.max}
+                        maxLength={AreaSchemaLimit.description.max}
+                        disabled={loading}
+                        value={watch("description")}
+                        {...register("description")}
+                    />
+
+
+                </div>
+            </form>
+        </FormDialog>
     );
 }

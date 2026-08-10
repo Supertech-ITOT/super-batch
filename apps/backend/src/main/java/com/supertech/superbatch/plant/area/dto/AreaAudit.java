@@ -6,6 +6,5 @@ import lombok.Builder;
 public record AreaAudit(
         Long id,
         String name,
-        String description,
-        String areaType) {
+        String description) {
 }

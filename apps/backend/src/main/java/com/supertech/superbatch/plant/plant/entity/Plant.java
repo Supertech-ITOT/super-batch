@@ -37,9 +37,6 @@ public class Plant {
     @Column(length = 255)
     private String location;
 
-    @Column(nullable = false, length = 50)
-    private String plantType;
-
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

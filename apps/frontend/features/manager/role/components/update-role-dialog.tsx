@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ShieldCheck } from "lucide-react";
+import { Feather, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger, } from "@/common/components/ui/tabs";
 import { showApiError } from "@/common/lib/show-api-error";
@@ -110,6 +110,7 @@ export default function UpdateRoleDialog({ open, onClose, roleId }: Props) {
                             label="Name"
                             counter
                             maxCharacters={RoleSchemaLimit.name.max}
+                            icon={ShieldCheck}
                             placeholder="Operator"
                             maxLength={RoleSchemaLimit.name.max}
                             disabled={loading}
@@ -118,6 +119,7 @@ export default function UpdateRoleDialog({ open, onClose, roleId }: Props) {
                         />
                         <TextAreaInput
                             label="Description"
+                            icon={Feather}
                             placeholder="Brief role overview"
                             counter
                             maxCharacters={RoleSchemaLimit.description.max}

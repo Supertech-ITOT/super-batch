@@ -41,9 +41,6 @@ public class Area {
     @Column(length = 500)
     private String description;
 
-    @Column(nullable = false, length = 50)
-    private String areaType;
-
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

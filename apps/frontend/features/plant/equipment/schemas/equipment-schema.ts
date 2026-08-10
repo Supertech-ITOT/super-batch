@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const EquipmentSchemaLimit = {
     name: { min: 2, max: 100 },
-    description: { min: 2, max: 100 },
+    description: { min: 2, max: 255 },
     code: { min: 2, max: 50 },
 } as const;
 
@@ -51,10 +51,9 @@ export const equipmentSchema = z.object({
             "code must contain only uppercase letters, numbers, hyphen, or underscore"
         ),
 
+    capacity: z.number({ error: "Capacity is required." }).min(1, "Capacity is required"),
 
-    capacity: z.string({ error: "Capacity is required." }).min(1, "Capacity is required").trim(),
-
-    unitId: z.string({ error: "Unit is required." }).trim()
+    unitId: z.number({ error: "Unit is required." }).min(1, "Unit is required")
 });
 
 export type EquipmentSchema = z.infer<typeof equipmentSchema>;
@@ -70,11 +69,13 @@ export type UpdateEquipmentSchema = z.infer<
 
 
 export const equipmentAssignmentSchema = z.object({
-    equipmentId: z.string({ error: "Equipment is required." }).trim(),
-    unitId: z.string({ error: "Unit is required." }).trim(),
+    equipmentId: z.number({ error: "Equipment is required." }).min(1, "Equipment is required"),
+    unitId: z.number({ error: "Unit is required." }).min(1, "Unit is required")
 });
 
 export type EquipmentAssignmentSchema = z.infer<typeof equipmentAssignmentSchema>;
 
 export type AssignEquipmentSchema = EquipmentAssignmentSchema;
 export type UnAssignEquipmentSchema = EquipmentAssignmentSchema;
+
+export const equipmentDefaultValues: EquipmentSchema = { name: "", unitId: 0, capacity: 0, description: "", code: "" };

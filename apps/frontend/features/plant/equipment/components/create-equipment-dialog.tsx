@@ -1,20 +1,20 @@
 "use client";
-import { Button } from "@/common/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
-import { Input } from "@/common/components/ui/input";
-import { Label } from "@/common/components/ui/label";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader } from "lucide-react";
+import { Boxes, Cpu, Feather, Hash, Scale } from "lucide-react";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/common/components/ui/select";
 import { useEffect } from "react";
 import { useCreateEquipment } from "../hooks/use-equipment";
-import { equipmentSchema, EquipmentSchema, EquipmentSchemaLimit } from "../schemas/equipment-schema";
-import CharacterProgress from "@/common/components/form/character-progress";
-import { Textarea } from "@/common/components/ui/textarea";
+import { equipmentDefaultValues, equipmentSchema, EquipmentSchema, EquipmentSchemaLimit } from "../schemas/equipment-schema";
 import { useGetUnits } from "../../unit/hooks/use-units";
+import FormDialog from "@/common/components/form/form-dialog";
+import FormLoadingButton from "@/common/components/form/form-loading-button";
+import { TextInput } from "@/common/components/form/text-input";
+import { TextAreaInput } from "@/common/components/form/text-area-input";
+import SearchableSelect from "@/common/components/form/searchable-select";
+import { NumberInput } from "@/common/components/form/number-input";
+import { showFormError } from "@/common/lib/show-form-error";
 
 type Props = { open: boolean; onClose: () => void; unitId?: number };
 export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) {
@@ -22,25 +22,18 @@ export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) 
     const { data: units, isLoading: unitsLoading } = useGetUnits(open);
     const { register, handleSubmit, reset, control, watch, formState: { isSubmitting, isDirty } } = useForm<EquipmentSchema>({
         resolver: zodResolver(equipmentSchema),
-        defaultValues: { name: "", unitId: "", capacity: "", description: "", code: "" }
+        defaultValues: equipmentDefaultValues
     });
 
     useEffect(() => {
         if (!open || !unitId) return;
-
-        reset({ name: "", unitId: String(unitId), capacity: "", description: "", code: "" })
+        reset({ ...equipmentDefaultValues, unitId: unitId })
     }, [open, unitId, reset]);
 
     const loading = isCreating || unitsLoading || isSubmitting;
     const onSubmit = async (formData: EquipmentSchema) => {
         try {
-            const res = await createEquipment({
-                name: formData.name,
-                description: formData.description,
-                capacity: Number(formData.capacity),
-                code: formData.code,
-                unitId: Number(formData.unitId),
-            });
+            const res = await createEquipment(formData);
             toast.success(res.message ?? "Equipment created successfully.");
             handleClose();
         } catch (error) {
@@ -48,119 +41,98 @@ export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) 
         }
     };
     const handleClose = () => {
-        reset({ name: "", unitId: "", capacity: "", description: "", code: "" });
+        reset(equipmentDefaultValues);
         onClose();
     };
     const onInvalid = (errors: FieldErrors<EquipmentSchema>) => {
-        const firstError = Object.values(errors)[0];
-        if (firstError?.message) {
-            toast.error(firstError.message.toString());
-        }
+        toast.error(showFormError(errors));
     };
 
     return (
-        <Dialog open={open} onOpenChange={(value) => { if (!value) handleClose() }}>
-            <DialogContent className="sm:max-w-md">
-                <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
-                    <DialogHeader>
-                        <DialogTitle>Create Equipment</DialogTitle>
-                        <DialogDescription>Create a new equipment entity.</DialogDescription>
-                    </DialogHeader>
-                    <div className="py-4 space-y-4">
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Name</Label>
-                                <CharacterProgress value={watch("name")} max={EquipmentSchemaLimit.name.max} />
-                            </div>
-                            <Input
-                                type="text"
-                                disabled={loading}
-                                placeholder="Tank 101"
-                                maxLength={EquipmentSchemaLimit.name.max}
-                                {...register("name")}
-                            />
-                        </div>
-                        <div className="flex gap-2">
-                            <div className="space-y-2 relative flex-1">
-                                <div className="flex items-center justify-between">
-                                    <Label>Code</Label>
-                                    <CharacterProgress value={watch("code")} max={EquipmentSchemaLimit.code.max} />
-                                </div>
-                                <Input
-                                    type="text"
-                                    disabled={loading}
-                                    placeholder="T101"
-                                    maxLength={EquipmentSchemaLimit.code.max}
-                                    {...register("code")}
-                                />
-                            </div>
-                            <div className="space-y-2 flex-1">
-                                <div className="flex items-center justify-between">
-                                    <Label>Capacity</Label>
-                                </div>
-                                <div className="flex">
-                                    <Input
-                                        type="number"
-                                        placeholder="1000"
-                                        className="rounded-r-none"
-                                        {...register("capacity")}
-                                    />
-                                    <div className="flex items-center px-3 border border-l-0 rounded-r-md bg-muted text-sm">
-                                        kg
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Description</Label>
-                                <CharacterProgress value={watch("description")} max={EquipmentSchemaLimit.description.max} />
-                            </div>
-                            <Textarea
-                                disabled={loading}
-                                placeholder="Brief equipment overview"
-                                className="min-h-30 w-full resize-none break-all overflow-hidden"
-                                maxLength={EquipmentSchemaLimit.description.max}
-                                {...register("description")}
-                            />
-                        </div>
-                        <div className="flex gap-2">
-                            <div className="space-y-2 flex-1">
-                                <Label>Select Unit</Label>
-                                <Controller
-                                    control={control}
-                                    name="unitId"
-                                    render={({ field }) => (
-                                        <Select
-                                            disabled={loading || !!unitId}
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Unit" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {units?.map((u) => (
-                                                        <SelectItem key={u.id} value={String(u.id)}>{u.name}</SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                            </div>
-                        </div>
+        <FormDialog
+            open={open}
+            loading={loading}
+            onClose={handleClose}
+            title="Create Equipment"
+            description="Create a equipment entity."
+            footer={
+                <FormLoadingButton form="create-equipment-form" type="submit" loading={loading} disabled={!isDirty}>
+                    Create
+                </FormLoadingButton>
+            }
+            icon={Cpu}
+        >
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="create-equipment-form">
+                <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                        <TextInput
+                            label="Name"
+                            counter
+                            maxCharacters={EquipmentSchemaLimit.name.max}
+                            icon={Cpu}
+                            placeholder="Equipment Name"
+                            maxLength={EquipmentSchemaLimit.name.max}
+                            disabled={loading}
+                            value={watch("name")}
+                            {...register("name")}
+                        />
+                        <TextInput
+                            label="Code"
+                            counter
+                            maxCharacters={EquipmentSchemaLimit.code.max}
+                            icon={Hash}
+                            placeholder="Equipment Code"
+                            maxLength={EquipmentSchemaLimit.code.max}
+                            disabled={loading}
+                            value={watch("code")}
+                            {...register("code")}
+                        />
                     </div>
-                    <DialogFooter>
-                        <DialogClose asChild>
-                            <Button disabled={loading} type="button" variant="outline" onClick={handleClose}>Cancel</Button>
-                        </DialogClose>
-                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Create Equipment"}</Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+                    <TextAreaInput
+                        label="Description"
+                        placeholder="Brief Equipment Overview"
+                        icon={Feather}
+                        counter
+                        maxCharacters={EquipmentSchemaLimit.description.max}
+                        maxLength={EquipmentSchemaLimit.description.max}
+                        value={watch("description")}
+                        disabled={loading}
+                        {...register("description")}
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                        <Controller
+                            control={control}
+                            name="unitId"
+                            render={({ field }) => (
+                                <SearchableSelect
+                                    value={field.value}
+                                    icon={Boxes}
+                                    label="Unit"
+                                    onChange={field.onChange}
+                                    options={units?.map((a) => ({
+                                        value: a.id,
+                                        label: a.name,
+                                    })) ?? []}
+                                    placeholder="Select Unit"
+                                    searchPlaceholder="Search Units..."
+                                    disabled={loading}
+                                />
+                            )}
+                        />
+                        <NumberInput
+                            label="Capacity"
+                            icon={Scale}
+                            suffix="KG"
+                            placeholder="Equipment Capacity"
+                            disabled={loading}
+                            value={watch("capacity")}
+                            {...register("capacity", {
+                                valueAsNumber: true,
+                            })}
+                        />
+                    </div>
+                </div>
+            </form>
+        </FormDialog>
     );
 }

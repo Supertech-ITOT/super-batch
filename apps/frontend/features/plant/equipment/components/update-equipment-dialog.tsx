@@ -1,49 +1,46 @@
 "use client";
-import { Button } from "@/common/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
-import { Input } from "@/common/components/ui/input";
-import { Label } from "@/common/components/ui/label";
 import { FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader } from "lucide-react";
+import { Cpu, Feather, Hash, Scale } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
 import { useGetEquipmentById, useUpdateEquipment } from "../hooks/use-equipment";
-import { EquipmentSchemaLimit, updateEquipmentSchema, UpdateEquipmentSchema } from "../schemas/equipment-schema";
-import CharacterProgress from "@/common/components/form/character-progress";
-import { Textarea } from "@/common/components/ui/textarea";
+import { equipmentDefaultValues, EquipmentSchemaLimit, updateEquipmentSchema, UpdateEquipmentSchema } from "../schemas/equipment-schema";
+import { NumberInput } from "@/common/components/form/number-input";
+import { TextAreaInput } from "@/common/components/form/text-area-input";
+import { TextInput } from "@/common/components/form/text-input";
+import FormLoadingButton from "@/common/components/form/form-loading-button";
+import FormDialog from "@/common/components/form/form-dialog";
+import { showFormError } from "@/common/lib/show-form-error";
+import { useGetUnits } from "../../unit/hooks/use-units";
 
 type Props = { open: boolean; onClose: () => void; equipmentId?: number };
 export default function UpdateEquipmentDialog({ open, onClose, equipmentId }: Props) {
     const { mutateAsync: updateEquipment, isPending: isUpdating } = useUpdateEquipment();
+    const { data: units, isLoading: unitsLoading } = useGetUnits(open);
     const { data: equipment, isLoading: equipmentLoading } = useGetEquipmentById(equipmentId);
-    const { register, handleSubmit, reset, watch, formState: { isSubmitting, isDirty } } = useForm<UpdateEquipmentSchema>({
+    const { register, handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty } } = useForm<UpdateEquipmentSchema>({
         resolver: zodResolver(updateEquipmentSchema),
-        defaultValues: { name: "", capacity: "", description: "", code: "" }
+        defaultValues: equipmentDefaultValues
     });
 
     useEffect(() => {
         if (!open || !equipment) return;
         reset({
             name: equipment.name,
-            capacity: String(equipment.capacity),
+            capacity: equipment.capacity,
             description: equipment.description,
             code: equipment.code,
         });
 
     }, [open, equipment, reset]);
-    const loading = isUpdating || equipmentLoading || isSubmitting;
+    const loading = isUpdating || equipmentLoading || unitsLoading || isSubmitting;
 
     const onSubmit = async (formData: UpdateEquipmentSchema) => {
         try {
             const res = await updateEquipment({
-                id: equipmentId!, data: {
-                    name: formData.name,
-                    capacity: Number(formData.capacity),
-                    description: formData.description,
-                    code: formData.code,
-                }
+                id: equipmentId!, data: formData
             });
             toast.success(res.message ?? "Equipment updated successfully.");
             handleClose();
@@ -53,92 +50,78 @@ export default function UpdateEquipmentDialog({ open, onClose, equipmentId }: Pr
     };
 
     const handleClose = () => {
-        reset({ name: "", capacity: "", description: "", code: "" });
+        reset(equipmentDefaultValues);
         onClose();
     };
 
     const onInvalid = (errors: FieldErrors<UpdateEquipmentSchema>) => {
-        const firstError = Object.values(errors)[0];
-        if (firstError?.message) {
-            toast.error(firstError.message.toString());
-        }
+        toast.error(showFormError(errors));
     };
 
     return (
-        <Dialog open={open} onOpenChange={(value) => { if (!value) handleClose() }}>
-            <DialogContent className="sm:max-w-md">
-                <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
-                    <DialogHeader>
-                        <DialogTitle>Update Equipment</DialogTitle>
-                        <DialogDescription> Update Equipment information</DialogDescription>
-                    </DialogHeader>
-                    <div className="py-4 space-y-4">
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Name</Label>
-                                <CharacterProgress value={watch("name")} max={EquipmentSchemaLimit.name.max} />
-                            </div>
-                            <Input
-                                type="text"
-                                disabled={loading}
-                                placeholder="Tank 101"
-                                maxLength={EquipmentSchemaLimit.name.max}
-                                {...register("name")}
-                            />
-                        </div>
-                        <div className="flex gap-2">
-                            <div className="space-y-2 relative flex-1">
-                                <div className="flex items-center justify-between">
-                                    <Label>Code</Label>
-                                    <CharacterProgress value={watch("code")} max={EquipmentSchemaLimit.code.max} />
-                                </div>
-                                <Input
-                                    type="text"
-                                    disabled={loading}
-                                    placeholder="T101"
-                                    maxLength={EquipmentSchemaLimit.code.max}
-                                    {...register("code")}
-                                />
-                            </div>
-                            <div className="space-y-2 flex-1">
-                                <div className="flex items-center justify-between">
-                                    <Label>Capacity</Label>
-                                </div>
-                                <div className="flex">
-                                    <Input
-                                        type="number"
-                                        placeholder="1000"
-                                        className="rounded-r-none"
-                                        {...register("capacity")}
-                                    />
-                                    <div className="flex items-center px-3 border border-l-0 rounded-r-md bg-muted text-sm">
-                                        kg
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Description</Label>
-                                <CharacterProgress value={watch("description")} max={EquipmentSchemaLimit.description.max} />
-                            </div>
-                            <Textarea
-                                disabled={loading}
-                                placeholder="Brief equipment overview"
-                                className="min-h-30 w-full resize-none break-all overflow-hidden"
-                                maxLength={EquipmentSchemaLimit.description.max}
-                                {...register("description")}
-                            />
-                        </div>
+        <FormDialog
+            open={open}
+            loading={loading}
+            onClose={handleClose}
+            title="Update Equipment"
+            description="Update a equipment entity."
+            footer={
+                <FormLoadingButton form="update-equipment-form" type="submit" loading={loading} disabled={!isDirty}>
+                    Update
+                </FormLoadingButton>
+            }
+            icon={Cpu}
+        >
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="update-equipment-form">
+                <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                        <TextInput
+                            label="Name"
+                            counter
+                            maxCharacters={EquipmentSchemaLimit.name.max}
+                            icon={Cpu}
+                            placeholder="Equipment Name"
+                            maxLength={EquipmentSchemaLimit.name.max}
+                            disabled={loading}
+                            value={watch("name")}
+                            {...register("name")}
+                        />
+                        <TextInput
+                            label="Code"
+                            counter
+                            maxCharacters={EquipmentSchemaLimit.code.max}
+                            icon={Hash}
+                            placeholder="Equipment Code"
+                            maxLength={EquipmentSchemaLimit.code.max}
+                            disabled={loading}
+                            value={watch("code")}
+                            {...register("code")}
+                        />
                     </div>
-                    <DialogFooter>
-                        <DialogClose asChild>
-                            <Button disabled={loading} type="button" variant="outline" onClick={handleClose}>Cancel</Button>
-                        </DialogClose>
-                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Update Equipment"}</Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+                    <TextAreaInput
+                        label="Description"
+                        placeholder="Brief Equipment Overview"
+                        icon={Feather}
+                        counter
+                        maxCharacters={EquipmentSchemaLimit.description.max}
+                        maxLength={EquipmentSchemaLimit.description.max}
+                        value={watch("description")}
+                        disabled={loading}
+                        {...register("description")}
+                    />
+                    <NumberInput
+                        label="Capacity"
+                        icon={Scale}
+                        suffix="KG"
+                        placeholder="Equipment Capacity"
+                        disabled={loading}
+                        value={watch("capacity")}
+                        {...register("capacity", {
+                            valueAsNumber: true,
+                        })}
+                    />
+                </div>
+            </form>
+        </FormDialog>
     );
 }

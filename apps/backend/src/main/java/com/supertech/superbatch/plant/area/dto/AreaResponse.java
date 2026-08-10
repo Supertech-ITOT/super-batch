@@ -8,7 +8,6 @@ public record AreaResponse(
                 Long plantId,
                 String plantName,
                 String description,
-                String areaType,
                 Integer totalUnit,
                 Integer totalEquipment,
                 LocalDateTime createdAt,

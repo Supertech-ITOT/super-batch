@@ -14,6 +14,7 @@ public interface AreaRepository extends JpaRepository<Area, Long> {
     @Query("""
                 SELECT DISTINCT a
                 FROM Area a
+                LEFT JOIN FETCH a.plant p
                 LEFT JOIN FETCH a.units u
                 LEFT JOIN FETCH u.equipments
                 WHERE a.id = :id
@@ -23,6 +24,7 @@ public interface AreaRepository extends JpaRepository<Area, Long> {
     @Query("""
                 SELECT DISTINCT a
                 FROM Area a
+                LEFT JOIN FETCH a.plant p
                 LEFT JOIN FETCH a.units u
                 LEFT JOIN FETCH u.equipments
                 WHERE a.plant.id = :plantId
@@ -32,6 +34,7 @@ public interface AreaRepository extends JpaRepository<Area, Long> {
     @Query("""
                 SELECT DISTINCT a
                 FROM Area a
+                LEFT JOIN FETCH a.plant p
                 LEFT JOIN FETCH a.units u
                 LEFT JOIN FETCH u.equipments e
             """)

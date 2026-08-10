@@ -2,13 +2,12 @@ import StatsCards from "@/common/components/stats-card";
 import { Button } from "@/common/components/ui/button";
 import { Separator } from "@/common/components/ui/separator";
 import { Boxes, Cpu, PenLineIcon, Plus, Trash2 } from "lucide-react";
-import { Skeleton } from "@/common/components/ui/skeleton";
 import { format } from "date-fns";
 import { useState } from "react";
 import { useGetEquipmentsByUnitId } from "@/features/plant/equipment/hooks/use-equipment";
 import { DialogType } from "@/features/plant/common/types/plant-hierarchy.types";
 import { columns } from "./columns";
-import TreeDialogs from "../../common/components/tree-dialogs";
+import TreeDialogs from "../../common/components/plant/plant-dialogs";
 import {
     Carousel,
     CarouselContent,

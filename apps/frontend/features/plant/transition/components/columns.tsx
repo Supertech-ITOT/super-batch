@@ -1,6 +1,6 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import { ProcessDialogState } from "../../common/components/process-view";
+import { ProcessDialogState } from "../../common/components/process/process-view";
 import { MoreHorizontal } from "lucide-react"
 import { Button } from "@/common/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/common/components/ui/dropdown-menu"

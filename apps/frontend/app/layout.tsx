@@ -25,7 +25,7 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
               <SidebarProvider>
                 <div className="flex h-full flex-col">
                   <TitleBar />
-                  <main className="min-h-0 flex-1 overflow-y-auto">
+                  <main className="min-h-0 flex-1 overflow-hidden">
                     {children}
                   </main>
                 </div>

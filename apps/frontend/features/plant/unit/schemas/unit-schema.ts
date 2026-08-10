@@ -2,8 +2,8 @@ import { z } from "zod";
 
 export const UnitSchemaLimit = {
     name: { min: 3, max: 100 },
-    code: { min: 2, max: 30 },
-    description: { min: 2, max: 100 },
+    code: { min: 2, max: 50 },
+    description: { min: 2, max: 255 },
 } as const;
 
 export const unitSchema = z.object({
@@ -51,9 +51,10 @@ export const unitSchema = z.object({
             `Description cannot exceed ${UnitSchemaLimit.description.max} characters`
         ),
 
-    capacity: z.string({ error: "Capacity is required." }).min(1, "Capacity is required").trim(),
+    capacity: z.number({ error: "Capacity is required." }).min(1, "Capacity is required"),
 
-    areaId: z.string({ error: "Area is required." }).min(1, "Area is required").trim()
+    areaId: z.number({ error: "Area is required." }).min(1, "Area is required")
 });
 
 export type UnitSchema = z.infer<typeof unitSchema>;
+export const unitDefaultValues: UnitSchema = { name: "", areaId: 0, capacity: 0, code: "", description: "" }

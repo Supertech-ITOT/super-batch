@@ -1,18 +1,17 @@
 "use client";
-import { Button } from "@/common/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
-import { Input } from "@/common/components/ui/input";
-import { Label } from "@/common/components/ui/label";
 import { FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader } from "lucide-react";
+import { Factory, Feather, MapPin } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
-import { Textarea } from "@/common/components/ui/textarea";
-import CharacterProgress from "@/common/components/form/character-progress";
-import { PlantSchema, plantSchema, PlantSchemaLimit } from "@/features/plant/plant/schemas/plant-schema";
+import { plantDefaultValues, PlantSchema, plantSchema, PlantSchemaLimit } from "@/features/plant/plant/schemas/plant-schema";
 import { useGetPlantById, useUpdatePlant } from "../hooks/use-plants";
+import FormDialog from "@/common/components/form/form-dialog";
+import FormLoadingButton from "@/common/components/form/form-loading-button";
+import { TextInput } from "@/common/components/form/text-input";
+import { TextAreaInput } from "@/common/components/form/text-area-input";
+import { showFormError } from "@/common/lib/show-form-error";
 
 type Props = { open: boolean; onClose: () => void; plantId?: number };
 export default function UpdatePlantDialog({ open, onClose, plantId }: Props) {
@@ -20,12 +19,11 @@ export default function UpdatePlantDialog({ open, onClose, plantId }: Props) {
     const { data: plant, isLoading: plantLoading } = useGetPlantById(plantId);
     const { register, handleSubmit, reset, watch, formState: { isSubmitting, isDirty } } = useForm<PlantSchema>({
         resolver: zodResolver(plantSchema),
-        defaultValues: { name: "", description: "", location: "", plantType: "" }
+        defaultValues: plantDefaultValues,
     });
-
     useEffect(() => {
         if (!open || !plant) return;
-        reset({ name: plant.name, description: plant.description, location: plant.location, plantType: plant.plantType });
+        reset({ name: plant.name, description: plant.description, location: plant.location });
     }, [open, plant, reset]);
     const loading = isUpdating || plantLoading || isSubmitting;
 
@@ -38,89 +36,67 @@ export default function UpdatePlantDialog({ open, onClose, plantId }: Props) {
             showApiError(error);
         }
     };
-
     const handleClose = () => {
-        reset({ name: "" });
+        reset(plantDefaultValues);
         onClose();
     };
-
     const onInvalid = (errors: FieldErrors<PlantSchema>) => {
-        const firstError = Object.values(errors)[0];
-        if (firstError?.message) {
-            toast.error(firstError.message.toString());
-        }
+        toast.error(showFormError(errors));
     };
 
     return (
-        <Dialog open={open} onOpenChange={(value) => { if (!value) handleClose() }}>
-            <DialogContent className="sm:max-w-md overflow-hidden">
-                <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
-                    <DialogHeader>
-                        <DialogTitle>Update Plant</DialogTitle>
-                        <DialogDescription> Update Plant Information</DialogDescription>
-                    </DialogHeader>
-                    <div className="py-4 space-y-4">
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Name</Label>
-                                <CharacterProgress value={watch("name")} max={PlantSchemaLimit.name.max} />
-                            </div>
-
-                            <Input
-                                type="text"
-                                disabled={loading}
-                                placeholder="Alpha Plant"
-                                maxLength={100}
-                                {...register("name")}
-                            />
-                        </div>
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Description</Label>
-                                <CharacterProgress value={watch("description")} max={PlantSchemaLimit.description.max} />
-                            </div>
-                            <Textarea
-                                disabled={loading}
-                                placeholder="Brief plant overview"
-                                className="min-h-30 w-full resize-none break-all overflow-hidden"
-                                {...register("description")}
-                            />
-                        </div>
-                        <div className="flex gap-2">
-                            <div className="space-y-2 relative">
-                                <div className="flex items-center justify-between">
-                                    <Label>Location</Label>
-                                    <CharacterProgress value={watch("location")} max={PlantSchemaLimit.location.max} />
-                                </div>
-                                <Input
-                                    type="text"
-                                    disabled={loading}
-                                    placeholder="Mumbai, India"
-                                    {...register("location")}
-                                />
-                            </div>
-                            <div className="space-y-2 relative">
-                                <div className="flex items-center justify-between">
-                                    <Label>Plant Type</Label>
-                                    <CharacterProgress value={watch("plantType")} max={PlantSchemaLimit.plantType.max} />
-                                </div>
-                                <Input
-                                    type="text"
-                                    disabled={loading}
-                                    placeholder="Manufacturing"
-                                    {...register("plantType")}
-                                />
-                            </div>
-                        </div>
+        <FormDialog
+            open={open}
+            loading={loading}
+            onClose={handleClose}
+            title="Update Plant"
+            description="Update a plant entity."
+            footer={
+                <FormLoadingButton form="update-plant-form" type="submit" loading={loading} disabled={!isDirty}>
+                    Update
+                </FormLoadingButton>
+            }
+            icon={Factory}
+        >
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="update-plant-form">
+                <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                        <TextInput
+                            label="Name"
+                            counter
+                            maxCharacters={PlantSchemaLimit.name.max}
+                            placeholder="Plant Name"
+                            maxLength={PlantSchemaLimit.name.max}
+                            disabled={loading}
+                            icon={Factory}
+                            value={watch("name")}
+                            {...register("name")}
+                        />
+                        <TextInput
+                            label="Location"
+                            counter
+                            icon={MapPin}
+                            maxCharacters={PlantSchemaLimit.location.max}
+                            placeholder="Location"
+                            maxLength={PlantSchemaLimit.location.max}
+                            disabled={loading}
+                            value={watch("location")}
+                            {...register("location")}
+                        />
                     </div>
-                    <DialogFooter>
-                        <DialogClose asChild>
-                            <Button disabled={loading} type="button" variant="outline" onClick={handleClose}>Cancel</Button>
-                        </DialogClose>
-                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Update Plant"}</Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+                    <TextAreaInput
+                        label="Description"
+                        placeholder="Brief Plant Overview"
+                        counter
+                        icon={Feather}
+                        maxCharacters={PlantSchemaLimit.description.max}
+                        maxLength={PlantSchemaLimit.description.max}
+                        value={watch("description")}
+                        disabled={loading}
+                        {...register("description")}
+                    />
+                </div>
+            </form>
+        </FormDialog>
     );
 }

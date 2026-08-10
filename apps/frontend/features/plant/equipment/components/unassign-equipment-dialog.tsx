@@ -4,32 +4,33 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Cpu } from "lucide-react";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
-import { AssignEquipmentSchema, equipmentAssignmentSchema, } from "../schemas/equipment-schema";
-import { useAssignEquipment, useGetEquipment, } from "../hooks/use-equipment";
-import FormLoadingButton from "@/common/components/form/form-loading-button";
+import { UnAssignEquipmentSchema, equipmentAssignmentSchema, } from "../schemas/equipment-schema";
+import { useUnAssignEquipment, useGetEquipmentsByUnitId, } from "../hooks/use-equipment";
 import FormDialog from "@/common/components/form/form-dialog";
-import { showFormError } from "@/common/lib/show-form-error";
+import FormLoadingButton from "@/common/components/form/form-loading-button";
 import SearchableSelect from "@/common/components/form/searchable-select";
+import { showFormError } from "@/common/lib/show-form-error";
 
 type Props = {
     open: boolean;
     onClose: () => void;
     unitId?: number;
+    equipmentId?: number;
 };
 
-export default function AssignEquipmentDialog({ open, onClose, unitId }: Props) {
-    const { mutateAsync: assignEquipment, isPending } = useAssignEquipment();
-    const { data: equipments, isLoading: equipmentsLoading, } = useGetEquipment();
-    const { handleSubmit, reset, control, formState: { isSubmitting, isDirty }, } = useForm<AssignEquipmentSchema>({
+export default function UnAssignEquipmentDialog({ open, onClose, unitId, equipmentId }: Props) {
+    const { mutateAsync: unAssignEquipment, isPending } = useUnAssignEquipment();
+    const { data: equipments, isLoading: equipmentsLoading, } = useGetEquipmentsByUnitId(unitId);
+    const { handleSubmit, reset, control, formState: { isSubmitting, isDirty }, } = useForm<UnAssignEquipmentSchema>({
         resolver: zodResolver(equipmentAssignmentSchema),
-        defaultValues: { equipmentId: 0, unitId: unitId },
+        defaultValues: { equipmentId: equipmentId, unitId: unitId }
     });
-
     const loading = isPending || equipmentsLoading || isSubmitting;
-    const onSubmit = async (formData: AssignEquipmentSchema) => {
+
+    const onSubmit = async (formData: UnAssignEquipmentSchema) => {
         try {
-            const res = await assignEquipment(formData);
-            toast.success(res.message ?? "Equipment assigned successfully.");
+            const res = await unAssignEquipment(formData);
+            toast.success(res.message ?? "Equipment UnAssigned successfully.");
             handleClose();
         } catch (error) {
             showApiError(error);
@@ -41,7 +42,7 @@ export default function AssignEquipmentDialog({ open, onClose, unitId }: Props) 
         onClose();
     };
 
-    const onInvalid = (errors: FieldErrors<AssignEquipmentSchema>) => {
+    const onInvalid = (errors: FieldErrors<UnAssignEquipmentSchema>) => {
         toast.error(showFormError(errors));
     };
 
@@ -50,16 +51,16 @@ export default function AssignEquipmentDialog({ open, onClose, unitId }: Props) 
             open={open}
             loading={loading}
             onClose={handleClose}
-            title="Assign Equipment"
-            description="Assign a equipment to unit."
+            title="UnAssign Equipment"
+            description="UnAssign a equipment to unit."
             footer={
-                <FormLoadingButton form="assign-equipment-form" type="submit" loading={loading} disabled={!isDirty}>
-                    Assign
+                <FormLoadingButton form="unassign-equipment-form" type="submit" loading={loading} disabled={!isDirty && !equipmentId}>
+                    UnAssign
                 </FormLoadingButton>
             }
             icon={Cpu}
         >
-            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="assign-equipment-form">
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="unassign-equipment-form">
                 <Controller
                     control={control}
                     name="equipmentId"

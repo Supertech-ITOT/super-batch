@@ -4,7 +4,6 @@ export const PlantSchemaLimit = {
     name: { min: 3, max: 100, },
     description: { min: 2, max: 255, },
     location: { min: 2, max: 255, },
-    plantType: { min: 2, max: 50, },
 } as const;
 
 export const plantSchema = z.object({
@@ -47,22 +46,8 @@ export const plantSchema = z.object({
             PlantSchemaLimit.location.max,
             `Location cannot exceed ${PlantSchemaLimit.location.max} characters`
         ),
-
-    plantType: z
-        .string()
-        .trim()
-        .min(
-            PlantSchemaLimit.plantType.min,
-            `Plant type must be at least ${PlantSchemaLimit.plantType.min} characters`
-        )
-        .max(
-            PlantSchemaLimit.plantType.max,
-            `Plant type cannot exceed ${PlantSchemaLimit.plantType.max} characters`
-        )
-        .regex(
-            /^[a-zA-Z0-9\s\-_/]+$/,
-            "Plant type contains invalid characters"
-        ),
 });
 
 export type PlantSchema = z.infer<typeof plantSchema>;
+
+export const plantDefaultValues: PlantSchema = { name: "", description: "", location: "" }

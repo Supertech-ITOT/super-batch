@@ -84,28 +84,25 @@ export default function UpdateUserDialog({ open, onClose, userId }: Props) {
                         value={watch("email")}
                         {...register("email")}
                     />
-
-                    <div className="min-w-0 flex-1 space-y-2">
-                        <Label>Role</Label>
-                        <Controller
-                            control={control}
-                            name="roleId"
-                            render={({ field }) => (
-                                <SearchableSelect
-                                    value={field.value}
-                                    icon={ShieldCheck}
-                                    onChange={field.onChange}
-                                    options={roles?.map((a) => ({
-                                        value: a.id,
-                                        label: a.name,
-                                    })) ?? []}
-                                    placeholder="Select Role"
-                                    searchPlaceholder="Search Roles..."
-                                    disabled={loading}
-                                />
-                            )}
-                        />
-                    </div>
+                    <Controller
+                        control={control}
+                        name="roleId"
+                        render={({ field }) => (
+                            <SearchableSelect
+                                value={field.value}
+                                icon={ShieldCheck}
+                                label="Role"
+                                onChange={field.onChange}
+                                options={roles?.map((a) => ({
+                                    value: a.id,
+                                    label: a.name,
+                                })) ?? []}
+                                placeholder="Select Role"
+                                searchPlaceholder="Search Roles..."
+                                disabled={loading}
+                            />
+                        )}
+                    />
 
                 </div>
             </form>

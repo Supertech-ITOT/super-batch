@@ -1,6 +1,6 @@
-import PlantMenu from "@/features/plant/common/components/plant-menu";
-import PlantTab from "@/features/plant/common/components/plant-tab";
-import PlantTree from "@/features/plant/common/components/plant-tree";
+import PlantMenu from "@/features/plant/common/components/plant/plant-menu";
+import PlantTab from "@/features/plant/common/components/plant/plant-tab";
+import PlantTreeView from "@/features/plant/common/components/plant/plant-tree-view";
 import { Boxes } from "lucide-react";
 
 
@@ -14,7 +14,7 @@ export default function PlantModelPage() {
             <div className="flex flex-1 min-h-0 gap-2 flex-col sm:flex-row">
                 {/* Tree */}
                 <div className="h-full flex-1 sm:min-h-0 rounded-2xl border bg-card p-1 sm:p-2 flex overflow-hidden">
-                    <PlantTree />
+                    <PlantTreeView />
                 </div>
                 {/* Details */}
                 <div className="h-full flex-4 items-center justify-center rounded-2xl border bg-card p-6 hidden sm:flex overflow-hidden">

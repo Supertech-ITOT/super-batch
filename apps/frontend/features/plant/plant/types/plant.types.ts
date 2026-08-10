@@ -4,7 +4,6 @@ export interface PlantResponse {
     name: string;
     description: string;
     location: string;
-    plantType: string;
     totalArea: number;
     totalUnit: number;
     totalEquipment: number;
@@ -15,12 +14,10 @@ export interface CreatePlantRequest {
     name: string;
     description: string;
     location: string;
-    plantType: string;
 }
 export interface UpdatePlantRequest {
     name: string;
     description: string;
     location: string;
-    plantType: string;
 }
 

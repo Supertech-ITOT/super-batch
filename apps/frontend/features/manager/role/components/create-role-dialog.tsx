@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ShieldCheck } from "lucide-react";
+import { Feather, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger, } from "@/common/components/ui/tabs";
 import { showApiError } from "@/common/lib/show-api-error";
@@ -95,6 +95,7 @@ export default function CreateRoleDialog({ open, onClose, }: Props) {
                     <TabsContent value="role" className="space-y-4 pt-4">
                         <TextInput
                             label="Name"
+                            icon={ShieldCheck}
                             counter
                             maxCharacters={RoleSchemaLimit.name.max}
                             placeholder="Operator"
@@ -105,6 +106,7 @@ export default function CreateRoleDialog({ open, onClose, }: Props) {
                         />
                         <TextAreaInput
                             label="Description"
+                            icon={Feather}
                             placeholder="Brief role overview"
                             counter
                             maxCharacters={RoleSchemaLimit.description.max}

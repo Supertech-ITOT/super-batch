@@ -43,7 +43,7 @@ public class EquipmentMapper {
                 .description(request.description())
                 .capacity(request.capacity())
                 .equipmentType(equipmentType)
-                .creatorUnit(equipmentType == EquipmentType.MAIN_EQUIPMENT ? unit : null)
+                .creatorUnit(unit)
                 .build();
 
         equipment.getUnits().add(unit);

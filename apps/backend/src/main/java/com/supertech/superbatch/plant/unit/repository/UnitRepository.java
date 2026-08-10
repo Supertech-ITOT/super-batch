@@ -13,6 +13,7 @@ public interface UnitRepository extends JpaRepository<Unit, Long> {
     @Query("""
                 SELECT DISTINCT u
                 FROM Unit u
+                LEFT JOIN FETCH u.area
                 LEFT JOIN FETCH u.equipments
                 WHERE u.id = :id
             """)
@@ -21,6 +22,7 @@ public interface UnitRepository extends JpaRepository<Unit, Long> {
     @Query("""
                 SELECT DISTINCT u
                 FROM Unit u
+                LEFT JOIN FETCH u.area
                 LEFT JOIN FETCH u.equipments
                 WHERE u.area.id = :areaId
             """)
@@ -29,6 +31,7 @@ public interface UnitRepository extends JpaRepository<Unit, Long> {
     @Query("""
                 SELECT DISTINCT u
                 FROM Unit u
+                LEFT JOIN FETCH u.area
                 LEFT JOIN FETCH u.equipments e
             """)
     List<Unit> findAllHierarchy();

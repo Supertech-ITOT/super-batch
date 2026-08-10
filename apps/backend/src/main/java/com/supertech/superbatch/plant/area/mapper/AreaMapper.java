@@ -32,7 +32,6 @@ public class AreaMapper {
                                 area.getPlant().getId(),
                                 area.getPlant().getName(),
                                 area.getDescription(),
-                                area.getAreaType(),
                                 totalUnit,
                                 totalEquipment,
                                 area.getCreatedAt(),
@@ -43,7 +42,6 @@ public class AreaMapper {
                 return Area.builder()
                                 .name(request.name())
                                 .description(request.description())
-                                .areaType(request.areaType())
                                 .plant(plant)
                                 .build();
         }
@@ -51,7 +49,6 @@ public class AreaMapper {
         public void updateEntity(Area area, UpdateAreaRequest request, Plant plant) {
                 area.setName(request.name());
                 area.setDescription(request.description());
-                area.setAreaType(request.areaType());
                 area.setPlant(plant);
         }
 
@@ -63,7 +60,6 @@ public class AreaMapper {
                                 .id(area.getId())
                                 .name(area.getName())
                                 .description(area.getDescription())
-                                .areaType(area.getAreaType())
                                 .build();
         }
 }

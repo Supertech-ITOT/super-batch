@@ -4,8 +4,7 @@ export default function AuditLayout({ children }: Readonly<{ children: React.Rea
     return (
         <div className="flex h-full flex-col pt-20">
             <ModuleHeader />
-
-            <main className="flex-1 min-h-0 overflow-y-auto">
+            <main className="flex-1 min-h-0 overflow-y-auto pb-14 sm:pb-0">
                 {children}
             </main>
         </div>

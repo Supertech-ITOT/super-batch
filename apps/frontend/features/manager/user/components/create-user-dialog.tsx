@@ -78,7 +78,6 @@ export default function CreateUserDialog({ open, onClose }: Props) {
                         value={watch("email")}
                         {...register("email")}
                     />
-
                     <PasswordInput
                         label="Password"
                         placeholder="Password"
@@ -93,28 +92,26 @@ export default function CreateUserDialog({ open, onClose }: Props) {
                         value={watch("confirmPassword")}
                         {...register("confirmPassword")}
                     />
+                    <Controller
+                        control={control}
+                        name="roleId"
+                        render={({ field }) => (
+                            <SearchableSelect
+                                label="Role"
+                                value={field.value}
+                                icon={ShieldCheck}
+                                onChange={field.onChange}
+                                options={roles?.map((a) => ({
+                                    value: a.id,
+                                    label: a.name,
+                                })) ?? []}
+                                placeholder="Select Role"
+                                searchPlaceholder="Search Roles..."
+                                disabled={loading}
+                            />
+                        )}
+                    />
 
-                    <div className="min-w-0 flex-1 space-y-2">
-                        <Label>Role</Label>
-                        <Controller
-                            control={control}
-                            name="roleId"
-                            render={({ field }) => (
-                                <SearchableSelect
-                                    value={field.value}
-                                    icon={ShieldCheck}
-                                    onChange={field.onChange}
-                                    options={roles?.map((a) => ({
-                                        value: a.id,
-                                        label: a.name,
-                                    })) ?? []}
-                                    placeholder="Select Role"
-                                    searchPlaceholder="Search Roles..."
-                                    disabled={loading}
-                                />
-                            )}
-                        />
-                    </div>
 
                 </div>
             </form>

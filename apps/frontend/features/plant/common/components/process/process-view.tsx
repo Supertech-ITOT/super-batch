@@ -2,13 +2,12 @@
 
 import { useState } from "react";
 import { Gauge, ArrowLeftRightIcon, Play } from "lucide-react";
-import { Skeleton } from "@/common/components/ui/skeleton";
-import { useGetParameters } from "../../parameter/hooks/use-parameters";
-import { useGetTransitions } from "../../transition/hooks/use-transitions";
-import { useGetActions } from "../../action/hooks/use-actions";
-import ParameterColumns from "../../parameter/components/columns";
-import TransitionColumns from "../../transition/components/columns";
-import ActionColumns from "../../action/components/columns";
+import { useGetParameters } from "../../../parameter/hooks/use-parameters";
+import { useGetTransitions } from "../../../transition/hooks/use-transitions";
+import { useGetActions } from "../../../action/hooks/use-actions";
+import ParameterColumns from "../../../parameter/components/columns";
+import TransitionColumns from "../../../transition/components/columns";
+import ActionColumns from "../../../action/components/columns";
 import ProcessCard from "./process-card";
 import FeedbackState from "@/common/components/feedback-state";
 import ProcessSkeleton from "./process-skeleton";
@@ -30,11 +29,11 @@ export default function ProcessView() {
     const closeDialog = () => setDialog({ open: false, entity: null, action: null, id: null, });
     const openDialog = (entity: ProcessEntity, action: ProcessAction, id: number | null = null) => setDialog({ open: true, entity, action, id, });
 
-    const loading = parametersLoading || transitionsLoading || actionsLoading ;
+    const loading = parametersLoading || transitionsLoading || actionsLoading;
     const error = parametersIsError || transitionsIsError || actionsIsError;
-    
+
     if (loading) {
-        return (<ProcessSkeleton/>);
+        return (<ProcessSkeleton />);
     }
     if (error) {
         return <FeedbackState variant="error" />;

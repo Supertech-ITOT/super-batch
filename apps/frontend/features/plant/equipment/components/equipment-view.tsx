@@ -5,7 +5,7 @@ import { useGetEquipmentById } from "../hooks/use-equipment";
 import { format } from "date-fns";
 import { useState } from "react";
 import { DialogType } from "../../common/types/plant-hierarchy.types";
-import TreeDialogs from "../../common/components/tree-dialogs";
+import TreeDialogs from "../../common/components/plant/plant-dialogs";
 import FeedbackState from "@/common/components/feedback-state";
 import EquipmentSkeleton from "./equipment-skeleton";
 

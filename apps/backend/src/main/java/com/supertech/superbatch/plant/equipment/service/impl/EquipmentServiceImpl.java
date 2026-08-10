@@ -134,7 +134,8 @@ public class EquipmentServiceImpl implements EquipmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
 
         if (equipment.getCreatorUnit() != null &&
-                equipment.getCreatorUnit().getId().equals(request.unitId())) {
+                equipment.getCreatorUnit().getId().equals(request.unitId())
+                && equipment.getEquipmentType().equals(EquipmentType.MAIN_EQUIPMENT)) {
             throw new BadRequestException("Main equipment cannot be unassigned from its creator unit.");
         }
 

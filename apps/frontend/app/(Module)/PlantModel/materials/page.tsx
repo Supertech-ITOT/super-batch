@@ -1,4 +1,4 @@
-import PlantTab from "@/features/plant/common/components/plant-tab";
+import PlantTab from "@/features/plant/common/components/plant/plant-tab";
 import MaterialView from "@/features/plant/material/components/material-view";
 
 export default function MaterialsPage() {

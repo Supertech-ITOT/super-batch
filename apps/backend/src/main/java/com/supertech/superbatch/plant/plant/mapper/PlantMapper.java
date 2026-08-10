@@ -39,7 +39,6 @@ public class PlantMapper {
                                 plant.getName(),
                                 plant.getDescription(),
                                 plant.getLocation(),
-                                plant.getPlantType(),
                                 totalArea,
                                 totalUnit,
                                 totalEquipment,
@@ -52,7 +51,6 @@ public class PlantMapper {
                                 .name(request.name())
                                 .description(request.description())
                                 .location(request.location())
-                                .plantType(request.plantType())
                                 .build();
         }
 
@@ -60,7 +58,6 @@ public class PlantMapper {
                 plant.setName(request.name());
                 plant.setDescription(request.description());
                 plant.setLocation(request.location());
-                plant.setPlantType(request.plantType());
         }
 
         public PlantAudit copy(Plant plant) {
@@ -72,7 +69,6 @@ public class PlantMapper {
                                 .name(plant.getName())
                                 .description(plant.getDescription())
                                 .location(plant.getLocation())
-                                .plantType(plant.getPlantType())
                                 .build();
         }
 }

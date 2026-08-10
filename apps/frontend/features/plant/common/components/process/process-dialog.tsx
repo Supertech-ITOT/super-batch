@@ -1,12 +1,12 @@
-import CreateActionDialog from "../../action/components/create-action-dialog";
-import DeleteActionDialog from "../../action/components/delete-action-dialog";
-import UpdateActionDialog from "../../action/components/update-action-dialog";
-import CreateParameterDialog from "../../parameter/components/create-parameter-dialog";
-import DeleteParameterDialog from "../../parameter/components/delete-parameter-dialog";
-import UpdateParameterDialog from "../../parameter/components/update-parameter-dialog";
-import CreateTransitionDialog from "../../transition/components/create-transition-dialog";
-import DeleteTransitionDialog from "../../transition/components/delete-transition-dialog";
-import UpdateTransitionDialog from "../../transition/components/update-transition-dialog";
+import CreateActionDialog from "../../../action/components/create-action-dialog";
+import DeleteActionDialog from "../../../action/components/delete-action-dialog";
+import UpdateActionDialog from "../../../action/components/update-action-dialog";
+import CreateParameterDialog from "../../../parameter/components/create-parameter-dialog";
+import DeleteParameterDialog from "../../../parameter/components/delete-parameter-dialog";
+import UpdateParameterDialog from "../../../parameter/components/update-parameter-dialog";
+import CreateTransitionDialog from "../../../transition/components/create-transition-dialog";
+import DeleteTransitionDialog from "../../../transition/components/delete-transition-dialog";
+import UpdateTransitionDialog from "../../../transition/components/update-transition-dialog";
 import { ProcessDialogState } from "./process-view";
 
 type Prop = {

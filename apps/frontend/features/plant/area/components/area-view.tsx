@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { useState } from "react";
 import { useGetAreaById } from "@/features/plant/area/hooks/use-areas";
 import { DialogType } from "@/features/plant/common/types/plant-hierarchy.types";
-import TreeDialogs from "../../common/components/tree-dialogs";
+import TreeDialogs from "../../common/components/plant/plant-dialogs";
 import {
     Carousel,
     CarouselContent,
@@ -65,9 +65,6 @@ export default function AreaView({ id }: { id: number }) {
                     </div>
                     <div className="flex flex-col">
                         <h1 className="font-bold text-xl uppercase tracking-wider text-primary">{area.name ?? "-"}</h1>
-                        <h1 className="text-muted-foreground text-sm ">Type: {" "}
-                            <span className="font-semibold text-sm text-foreground">{area.areaType ?? "-"}</span>
-                        </h1>
                         <h1 className="text-muted-foreground text-sm ">Parent: {" "}
                             <span className="font-semibold text-sm text-foreground">{area.plantName ?? "-"}</span>
                         </h1>
