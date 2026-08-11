@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.supertech.superbatch.common.dto.ApiResponse;
+import com.supertech.superbatch.common.security.UserContextService;
 import com.supertech.superbatch.plant.material.dto.CreateMaterialRequest;
 import com.supertech.superbatch.plant.material.dto.MaterialResponse;
 import com.supertech.superbatch.plant.material.dto.UpdateMaterialRequest;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin("*")
 public class MaterialController {
     private final MaterialService materialService;
+    private final UserContextService userContextService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> create(@Valid @RequestBody CreateMaterialRequest request) {
@@ -51,7 +53,9 @@ public class MaterialController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
-        materialService.delete(id);
+        Long userId = userContextService.getCurrentUserId();
+
+        materialService.delete(id, userId);
         return ResponseEntity.ok(
                 ApiResponse.success("Material deleted successfully", null));
     }

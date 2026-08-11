@@ -12,19 +12,12 @@ import com.supertech.superbatch.plant.plant.entity.Plant;
 public class PlantMapper {
 
         public PlantResponse toResponse(Plant plant) {
-
-                int totalArea = plant.getAreas() != null
-                                ? plant.getAreas().size()
-                                : 0;
-
+                int totalArea = plant.getAreas() != null ? plant.getAreas().size() : 0;
                 int totalUnit = plant.getAreas() != null
                                 ? plant.getAreas().stream()
-                                                .mapToInt(area -> area.getUnits() != null
-                                                                ? area.getUnits().size()
-                                                                : 0)
+                                                .mapToInt(area -> area.getUnits() != null ? area.getUnits().size() : 0)
                                                 .sum()
                                 : 0;
-
                 int totalEquipment = plant.getAreas() != null
                                 ? plant.getAreas().stream()
                                                 .flatMap(area -> area.getUnits().stream())
@@ -34,16 +27,17 @@ public class PlantMapper {
                                                 .sum()
                                 : 0;
 
-                return new PlantResponse(
-                                plant.getId(),
-                                plant.getName(),
-                                plant.getDescription(),
-                                plant.getLocation(),
-                                totalArea,
-                                totalUnit,
-                                totalEquipment,
-                                plant.getCreatedAt(),
-                                plant.getUpdatedAt());
+                return PlantResponse.builder()
+                                .id(plant.getId())
+                                .name(plant.getName())
+                                .description(plant.getDescription())
+                                .location(plant.getLocation())
+                                .totalArea(totalArea)
+                                .totalUnit(totalUnit)
+                                .totalEquipment(totalEquipment)
+                                .createdAt(plant.getCreatedAt())
+                                .updatedAt(plant.getUpdatedAt())
+                                .build();
         }
 
         public Plant toEntity(CreatePlantRequest request) {

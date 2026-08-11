@@ -15,5 +15,5 @@ public interface MaterialService {
 
     void update(Long id, UpdateMaterialRequest request);
 
-    void delete(Long id);
+    void delete(Long id, Long currentUserId);
 }

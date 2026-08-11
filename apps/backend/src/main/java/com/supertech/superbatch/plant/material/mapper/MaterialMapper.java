@@ -14,14 +14,15 @@ import lombok.RequiredArgsConstructor;
 public class MaterialMapper {
 
     public MaterialResponse toResponse(Material material) {
-        return new MaterialResponse(
-                material.getId(),
-                material.getCode(),
-                material.getName(),
-                material.getMaterialType(),
-                material.getDescription(),
-                material.getCreatedAt(),
-                material.getUpdatedAt());
+        return MaterialResponse.builder()
+                .id(material.getId())
+                .code(material.getCode())
+                .name(material.getName())
+                .materialType(material.getMaterialType())
+                .description(material.getDescription())
+                .createdAt(material.getCreatedAt())
+                .updatedAt(material.getUpdatedAt())
+                .build();
     }
 
     public Material toEntity(CreateMaterialRequest request) {

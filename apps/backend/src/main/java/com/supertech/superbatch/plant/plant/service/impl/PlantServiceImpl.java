@@ -50,7 +50,7 @@ public class PlantServiceImpl implements PlantService {
 
     @Override
     public PlantResponse getById(Long id) {
-        Plant plant = plantRepository.findByIdWithHierarchy(id)
+        Plant plant = plantRepository.findWithHierarchyById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Plant not found"));
         return plantMapper.toResponse(plant);
     }

@@ -65,7 +65,7 @@ public class RecipeServiceImpl implements RecipeService {
                 Material material = materialRepository.findById(request.materialId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Product not found."));
 
-                Unit unit = unitRepository.findByIdWithHierarchy(request.unitId())
+                Unit unit = unitRepository.findWithHierarchyById(request.unitId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
                 if (request.batchSize() > unit.getCapacity()) {
                         throw new BadRequestException("Batch size must be below unit capacity.");

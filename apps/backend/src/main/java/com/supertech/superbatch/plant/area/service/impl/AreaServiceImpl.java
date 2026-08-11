@@ -59,7 +59,7 @@ public class AreaServiceImpl implements AreaService {
 
     @Override
     public AreaResponse getById(Long id) {
-        Area area = areaRepository.findByIdWithHierarchy(id)
+        Area area = areaRepository.findWithHierarchyById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
         return areaMapper.toResponse(area);
     }

@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 
 import com.supertech.superbatch.plant.material.enums.MaterialType;
 
+import lombok.Builder;
+
+@Builder
 public record MaterialResponse(
         Long id,
         String code,

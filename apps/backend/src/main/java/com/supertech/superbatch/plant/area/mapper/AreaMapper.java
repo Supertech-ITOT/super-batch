@@ -26,16 +26,17 @@ public class AreaMapper {
                                                 .sum()
                                 : 0;
 
-                return new AreaResponse(
-                                area.getId(),
-                                area.getName(),
-                                area.getPlant().getId(),
-                                area.getPlant().getName(),
-                                area.getDescription(),
-                                totalUnit,
-                                totalEquipment,
-                                area.getCreatedAt(),
-                                area.getUpdatedAt());
+                return AreaResponse.builder()
+                                .id(area.getId())
+                                .name(area.getName())
+                                .plantId(area.getPlant().getId())
+                                .plantName(area.getPlant().getName())
+                                .description(area.getDescription())
+                                .totalUnit(totalUnit)
+                                .totalEquipment(totalEquipment)
+                                .createdAt(area.getCreatedAt())
+                                .updatedAt(area.getUpdatedAt())
+                                .build();
         }
 
         public Area toEntity(CreateAreaRequest request, Plant plant) {

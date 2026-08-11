@@ -84,7 +84,7 @@ public class UnitServiceImpl implements UnitService {
 
         @Override
         public UnitResponse getById(Long id) {
-                Unit unit = unitRepository.findByIdWithHierarchy(id)
+                Unit unit = unitRepository.findWithHierarchyById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
                 return unitMapper.toResponse(unit);
         }
