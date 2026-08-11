@@ -84,64 +84,58 @@ export default function UpdateRoleDialog({ open, onClose, roleId }: Props) {
             loading={loading}
             title="Update Role"
             description="Update a role and assign module permissions."
-            footer={
-                tab === "permissions" && (
-                    <FormLoadingButton form="create-role-form" type="submit" loading={loading} disabled={!isDirty}>
-                        Update
-                    </FormLoadingButton>
-                )
-            }
+            showFooter={tab === "permissions"}
+            submitDisabled={!isDirty}
+            submitLabel="Create"
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
             icon={ShieldCheck}
         >
-            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="create-role-form">
+            <Tabs value={tab} className="mt-4">
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger onClick={() => setTab("role")} value="role">
+                        Role Details
+                    </TabsTrigger>
+                    <TabsTrigger onClick={() => setTab("permissions")} value="permissions">
+                        Permissions
+                    </TabsTrigger>
+                </TabsList>
 
-                <Tabs value={tab} className="mt-4">
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger onClick={() => setTab("role")} value="role">
-                            Role Details
-                        </TabsTrigger>
-                        <TabsTrigger onClick={() => setTab("permissions")} value="permissions">
-                            Permissions
-                        </TabsTrigger>
-                    </TabsList>
+                <TabsContent value="role" className="space-y-2 pt-4">
+                    <TextInput
+                        label="Name"
+                        counter
+                        maxCharacters={RoleSchemaLimit.name.max}
+                        icon={ShieldCheck}
+                        placeholder="Operator"
+                        maxLength={RoleSchemaLimit.name.max}
+                        disabled={loading}
+                        value={watch("name")}
+                        {...register("name")}
+                    />
+                    <TextAreaInput
+                        label="Description"
+                        icon={Feather}
+                        placeholder="Brief role overview"
+                        counter
+                        maxCharacters={RoleSchemaLimit.description.max}
+                        maxLength={RoleSchemaLimit.description.max}
+                        value={watch("description")}
+                        disabled={loading}
+                        {...register("description")}
+                    />
+                </TabsContent>
 
-                    <TabsContent value="role" className="space-y-4 pt-4">
-                        <TextInput
-                            label="Name"
-                            counter
-                            maxCharacters={RoleSchemaLimit.name.max}
-                            icon={ShieldCheck}
-                            placeholder="Operator"
-                            maxLength={RoleSchemaLimit.name.max}
-                            disabled={loading}
-                            value={watch("name")}
-                            {...register("name")}
-                        />
-                        <TextAreaInput
-                            label="Description"
-                            icon={Feather}
-                            placeholder="Brief role overview"
-                            counter
-                            maxCharacters={RoleSchemaLimit.description.max}
-                            maxLength={RoleSchemaLimit.description.max}
-                            value={watch("description")}
-                            disabled={loading}
-                            {...register("description")}
-                        />
-                    </TabsContent>
-
-                    <TabsContent
-                        value="permissions"
-                        className="pt-4"
-                    >
-                        <PermissionTable
-                            modules={modules}
-                            control={control}
-                            name="permissions"
-                        />
-                    </TabsContent>
-                </Tabs>
-            </form>
+                <TabsContent
+                    value="permissions"
+                    className="pt-4"
+                >
+                    <PermissionTable
+                        modules={modules}
+                        control={control}
+                        name="permissions"
+                    />
+                </TabsContent>
+            </Tabs>
         </FormDialog>
     );
 }

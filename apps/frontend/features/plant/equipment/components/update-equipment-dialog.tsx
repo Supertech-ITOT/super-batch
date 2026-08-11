@@ -65,63 +65,59 @@ export default function UpdateEquipmentDialog({ open, onClose, equipmentId }: Pr
             onClose={handleClose}
             title="Update Equipment"
             description="Update a equipment entity."
-            footer={
-                <FormLoadingButton form="update-equipment-form" type="submit" loading={loading} disabled={!isDirty}>
-                    Update
-                </FormLoadingButton>
-            }
+            submitDisabled={!isDirty}
+            submitLabel="Update"
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
             icon={Cpu}
         >
-            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="update-equipment-form">
-                <div className="space-y-2">
-                    <div className="grid grid-cols-2 gap-2">
-                        <TextInput
-                            label="Name"
-                            counter
-                            maxCharacters={EquipmentSchemaLimit.name.max}
-                            icon={Cpu}
-                            placeholder="Equipment Name"
-                            maxLength={EquipmentSchemaLimit.name.max}
-                            disabled={loading}
-                            value={watch("name")}
-                            {...register("name")}
-                        />
-                        <TextInput
-                            label="Code"
-                            counter
-                            maxCharacters={EquipmentSchemaLimit.code.max}
-                            icon={Hash}
-                            placeholder="Equipment Code"
-                            maxLength={EquipmentSchemaLimit.code.max}
-                            disabled={loading}
-                            value={watch("code")}
-                            {...register("code")}
-                        />
-                    </div>
-                    <TextAreaInput
-                        label="Description"
-                        placeholder="Brief Equipment Overview"
-                        icon={Feather}
+            <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                    <TextInput
+                        label="Name"
                         counter
-                        maxCharacters={EquipmentSchemaLimit.description.max}
-                        maxLength={EquipmentSchemaLimit.description.max}
-                        value={watch("description")}
+                        maxCharacters={EquipmentSchemaLimit.name.max}
+                        icon={Cpu}
+                        placeholder="Equipment Name"
+                        maxLength={EquipmentSchemaLimit.name.max}
                         disabled={loading}
-                        {...register("description")}
+                        value={watch("name")}
+                        {...register("name")}
                     />
-                    <NumberInput
-                        label="Capacity"
-                        icon={Scale}
-                        suffix="KG"
-                        placeholder="Equipment Capacity"
+                    <TextInput
+                        label="Code"
+                        counter
+                        maxCharacters={EquipmentSchemaLimit.code.max}
+                        icon={Hash}
+                        placeholder="Equipment Code"
+                        maxLength={EquipmentSchemaLimit.code.max}
                         disabled={loading}
-                        value={watch("capacity")}
-                        {...register("capacity", {
-                            valueAsNumber: true,
-                        })}
+                        value={watch("code")}
+                        {...register("code")}
                     />
                 </div>
-            </form>
+                <TextAreaInput
+                    label="Description"
+                    placeholder="Brief Equipment Overview"
+                    icon={Feather}
+                    counter
+                    maxCharacters={EquipmentSchemaLimit.description.max}
+                    maxLength={EquipmentSchemaLimit.description.max}
+                    value={watch("description")}
+                    disabled={loading}
+                    {...register("description")}
+                />
+                <NumberInput
+                    label="Capacity"
+                    icon={Scale}
+                    suffix="KG"
+                    placeholder="Equipment Capacity"
+                    disabled={loading}
+                    value={watch("capacity")}
+                    {...register("capacity", {
+                        valueAsNumber: true,
+                    })}
+                />
+            </div>
         </FormDialog>
     );
 }

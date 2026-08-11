@@ -1,15 +1,15 @@
-import { Button } from "@/common/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
-import { Loader } from "lucide-react";
+"use client";
 import { toast } from "sonner";
 import { useDeleteTransition, useGetTransitionById } from "@/features/plant/transition/hooks/use-transitions";
 import { showApiError } from "@/common/lib/show-api-error";
+import ConfirmDialog from "@/common/components/form/confirm-dialog";
+import { ArrowRightLeft } from "lucide-react";
 
 type Props = { open: boolean; onClose: () => void; transitionId?: number };
 export default function DeleteTransitionDialog({ open, onClose, transitionId }: Props) {
     const { mutateAsync: deleteTransition, isPending: deleteTransitionIsPending } = useDeleteTransition();
     const { data: transition, isLoading: transitionIsLoading } = useGetTransitionById(transitionId);
-    const loading = deleteTransitionIsPending || transitionIsLoading || !transition;
+    const loading = deleteTransitionIsPending || transitionIsLoading;
     const handleDelete = async () => {
         if (!transition || !transitionId) return;
         try {
@@ -21,21 +21,16 @@ export default function DeleteTransitionDialog({ open, onClose, transitionId }: 
         }
     };
     return (
-        <Dialog open={open} onOpenChange={(value) => { if (!value) onClose() }}>
-            <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                    <DialogTitle>Delete {transition?.name}</DialogTitle>
-                    <DialogDescription>
-                        {`Are you sure you want to delete transition "${transition?.name}"?`}
-                    </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                    <DialogClose asChild>
-                        <Button disabled={loading} variant="outline" onClick={onClose}>Cancel</Button>
-                    </DialogClose>
-                    <Button onClick={handleDelete} variant="destructive" className="min-w-34 bg-destructive!  text-white" disabled={loading}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Delete"}</Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+        <ConfirmDialog
+            open={open}
+            onClose={onClose}
+            onConfirm={handleDelete}
+            loading={loading}
+            icon={ArrowRightLeft}
+            dialogVariant="destructive"
+            title="Delete Transition"
+            description={`Are you sure you want to delete "${transition?.name ?? "-"}"? This action cannot be undone.`}
+            confirmText="Delete"
+        />
     );
 }

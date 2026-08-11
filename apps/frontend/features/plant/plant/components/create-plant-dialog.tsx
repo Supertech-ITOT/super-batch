@@ -45,52 +45,48 @@ export default function CreatePlantDialog({ open, onClose }: Props) {
             onClose={handleClose}
             title="Create Plant"
             description="Create a plant entity."
-            footer={
-                <FormLoadingButton form="create-plant-form" type="submit" loading={loading} disabled={!isDirty}>
-                    Create
-                </FormLoadingButton>
-            }
+            submitDisabled={!isDirty}
+            submitLabel="Create"
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
             icon={Factory}
         >
-            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="create-plant-form">
-                <div className="space-y-2">
-                    <div className="grid grid-cols-2 gap-2">
-                        <TextInput
-                            label="Name"
-                            counter
-                            maxCharacters={PlantSchemaLimit.name.max}
-                            placeholder="Plant Name"
-                            maxLength={PlantSchemaLimit.name.max}
-                            disabled={loading}
-                            icon={Factory}
-                            value={watch("name")}
-                            {...register("name")}
-                        />
-                        <TextInput
-                            label="Location"
-                            counter
-                            icon={MapPin}
-                            maxCharacters={PlantSchemaLimit.location.max}
-                            placeholder="Location"
-                            maxLength={PlantSchemaLimit.location.max}
-                            disabled={loading}
-                            value={watch("location")}
-                            {...register("location")}
-                        />
-                    </div>
-                    <TextAreaInput
-                        label="Description"
-                        placeholder="Brief Plant Overview"
+            <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                    <TextInput
+                        label="Name"
                         counter
-                        icon={Feather}
-                        maxCharacters={PlantSchemaLimit.description.max}
-                        maxLength={PlantSchemaLimit.description.max}
-                        value={watch("description")}
+                        maxCharacters={PlantSchemaLimit.name.max}
+                        placeholder="Plant Name"
+                        maxLength={PlantSchemaLimit.name.max}
                         disabled={loading}
-                        {...register("description")}
+                        icon={Factory}
+                        value={watch("name")}
+                        {...register("name")}
+                    />
+                    <TextInput
+                        label="Location"
+                        counter
+                        icon={MapPin}
+                        maxCharacters={PlantSchemaLimit.location.max}
+                        placeholder="Location"
+                        maxLength={PlantSchemaLimit.location.max}
+                        disabled={loading}
+                        value={watch("location")}
+                        {...register("location")}
                     />
                 </div>
-            </form>
+                <TextAreaInput
+                    label="Description"
+                    placeholder="Brief Plant Overview"
+                    counter
+                    icon={Feather}
+                    maxCharacters={PlantSchemaLimit.description.max}
+                    maxLength={PlantSchemaLimit.description.max}
+                    value={watch("description")}
+                    disabled={loading}
+                    {...register("description")}
+                />
+            </div>
         </FormDialog>
     );
 }

@@ -55,60 +55,56 @@ export default function CreateAreaDialog({ open, onClose, plantId }: Props) {
             onClose={handleClose}
             title="Create Area"
             description="Create a area entity."
-            footer={
-                <FormLoadingButton form="create-area-form" type="submit" loading={loading} disabled={!isDirty}>
-                    Create
-                </FormLoadingButton>
-            }
+            submitDisabled={!isDirty}
+            submitLabel="Create"
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
             icon={Building}
         >
-            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="create-area-form">
-                <div className="space-y-2">
-                    <div className="grid grid-cols-2 gap-2">
-                        <TextInput
-                            label="Name"
-                            counter
-                            maxCharacters={AreaSchemaLimit.name.max}
-                            icon={Building}
-                            placeholder="Area Name"
-                            maxLength={AreaSchemaLimit.name.max}
-                            disabled={loading}
-                            value={watch("name")}
-                            {...register("name")}
-                        />
-                        <Controller
-                            control={control}
-                            name="plantId"
-                            render={({ field }) => (
-                                <SearchableSelect
-                                    value={field.value}
-                                    label="Plant"
-                                    icon={Factory}
-                                    onChange={field.onChange}
-                                    options={plants?.map((a) => ({
-                                        value: a.id,
-                                        label: a.name,
-                                    })) ?? []}
-                                    placeholder="Select Plant"
-                                    searchPlaceholder="Search Plants..."
-                                    disabled={loading}
-                                />
-                            )}
-                        />
-                    </div>
-                    <TextAreaInput
-                        label="Description"
-                        placeholder="Brief Area Overview"
-                        icon={Feather}
+            <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                    <TextInput
+                        label="Name"
                         counter
-                        maxCharacters={AreaSchemaLimit.description.max}
-                        maxLength={AreaSchemaLimit.description.max}
-                        value={watch("description")}
+                        maxCharacters={AreaSchemaLimit.name.max}
+                        icon={Building}
+                        placeholder="Area Name"
+                        maxLength={AreaSchemaLimit.name.max}
                         disabled={loading}
-                        {...register("description")}
+                        value={watch("name")}
+                        {...register("name")}
+                    />
+                    <Controller
+                        control={control}
+                        name="plantId"
+                        render={({ field }) => (
+                            <SearchableSelect
+                                value={field.value}
+                                label="Plant"
+                                icon={Factory}
+                                onChange={field.onChange}
+                                options={plants?.map((a) => ({
+                                    value: a.id,
+                                    label: a.name,
+                                })) ?? []}
+                                placeholder="Select Plant"
+                                searchPlaceholder="Search Plants..."
+                                disabled={loading}
+                            />
+                        )}
                     />
                 </div>
-            </form>
+                <TextAreaInput
+                    label="Description"
+                    placeholder="Brief Area Overview"
+                    icon={Feather}
+                    counter
+                    maxCharacters={AreaSchemaLimit.description.max}
+                    maxLength={AreaSchemaLimit.description.max}
+                    value={watch("description")}
+                    disabled={loading}
+                    {...register("description")}
+                />
+            </div>
         </FormDialog>
     );
 }

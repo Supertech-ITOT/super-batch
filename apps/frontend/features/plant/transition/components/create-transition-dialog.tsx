@@ -1,22 +1,20 @@
 "use client";
-import { Button } from "@/common/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
-import { Input } from "@/common/components/ui/input";
-import { Label } from "@/common/components/ui/label";
 import { FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader } from "lucide-react";
+import { ArrowRightLeft } from "lucide-react";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
 import { useCreateTransition } from "../hooks/use-transitions";
-import { transitionSchema, TransitionSchema, TransitionSchemaLimit } from "../schemas/transition-schema";
-import CharacterProgress from "@/common/components/form/character-progress";
+import { transitionDefaultValues, transitionSchema, TransitionSchema, TransitionSchemaLimit } from "../schemas/transition-schema";
+import FormDialog from "@/common/components/form/form-dialog";
+import { TextInput } from "@/common/components/form/text-input";
+import { showFormError } from "@/common/lib/show-form-error";
 type Props = { open: boolean; onClose: () => void; };
 export default function CreateTransitionDialog({ open, onClose }: Props) {
     const { mutateAsync: createTransition, isPending: isCreating } = useCreateTransition();
-    const { register, handleSubmit, reset, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<TransitionSchema>({
+    const { register, handleSubmit, reset, watch, formState: { isSubmitting, isDirty } } = useForm<TransitionSchema>({
         resolver: zodResolver(transitionSchema),
-        defaultValues: { name: "" }
+        defaultValues: transitionDefaultValues,
     });
     const loading = isCreating || isSubmitting;
     const onSubmit = async (formData: TransitionSchema) => {
@@ -29,47 +27,36 @@ export default function CreateTransitionDialog({ open, onClose }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ name: "" });
+        reset(transitionDefaultValues);
         onClose();
     };
     const onInvalid = (errors: FieldErrors<TransitionSchema>) => {
-        const firstError = Object.values(errors)[0];
-        if (firstError?.message) {
-            toast.error(firstError.message.toString());
-        }
+        toast.error(showFormError(errors));
     };
 
     return (
-        <Dialog open={open} onOpenChange={(value) => { if (!value) handleClose() }}>
-            <DialogContent className="sm:max-w-md">
-                <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
-                    <DialogHeader>
-                        <DialogTitle>Create Transition</DialogTitle>
-                        <DialogDescription>Create a new transition entity.</DialogDescription>
-                    </DialogHeader>
-                    <div className="py-4 space-y-4">
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Name</Label>
-                                <CharacterProgress value={watch("name")} max={TransitionSchemaLimit.name.max} />
-                            </div>
-                            <Input
-                                type="text"
-                                disabled={loading}
-                                placeholder="Equal"
-                                maxLength={TransitionSchemaLimit.name.max}
-                                {...register("name")}
-                            />
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <DialogClose asChild>
-                            <Button disabled={loading} type="button" variant="outline" onClick={handleClose}>Cancel</Button>
-                        </DialogClose>
-                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Create Transition"}</Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+        <FormDialog
+            open={open}
+            loading={loading}
+            onClose={handleClose}
+            title="Create Transition"
+            description="Create a Transition entity."
+            icon={ArrowRightLeft}
+            submitDisabled={!isDirty}
+            submitLabel="Create"
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
+        >
+            <TextInput
+                label="Name"
+                counter
+                maxCharacters={TransitionSchemaLimit.name.max}
+                icon={ArrowRightLeft}
+                placeholder="Action Name"
+                maxLength={TransitionSchemaLimit.name.max}
+                disabled={loading}
+                value={watch("name")}
+                {...register("name")}
+            />
+        </FormDialog>
     );
 }

@@ -24,3 +24,4 @@ export const transitionSchema = z.object({
 });
 
 export type TransitionSchema = z.infer<typeof transitionSchema>;
+export const transitionDefaultValues: TransitionSchema = { name: "" };

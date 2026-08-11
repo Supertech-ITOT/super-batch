@@ -8,11 +8,9 @@ import { userDefaultValues, userSchema, UserSchema, UserSchemaLimit } from "@/fe
 import { useCreateUser } from "@/features/manager/user/hooks/use-user";
 import { useGetRoles } from "@/features/manager/role/hooks/use-role";
 import FormDialog from "@/common/components/form/form-dialog";
-import FormLoadingButton from "@/common/components/form/form-loading-button";
 import { TextInput } from "@/common/components/form/text-input";
 import { showFormError } from "@/common/lib/show-form-error";
 import { PasswordInput } from "@/common/components/form/password-input";
-import { Label } from "@/common/components/ui/label";
 import SearchableSelect from "@/common/components/form/searchable-select";
 type Props = { open: boolean; onClose: () => void; };
 export default function CreateUserDialog({ open, onClose }: Props) {
@@ -47,74 +45,70 @@ export default function CreateUserDialog({ open, onClose }: Props) {
             onClose={handleClose}
             title="Create User"
             description="Create a new user accounts."
-            footer={
-                <FormLoadingButton form="create-user-form" type="submit" loading={loading} disabled={!isDirty}>
-                    Create
-                </FormLoadingButton>
-            }
+            submitDisabled={!isDirty}
+            submitLabel="Create"
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
             icon={Users}
         >
-            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="create-user-form">
-                <div className="space-y-4">
-                    <TextInput
-                        label="Name"
-                        icon={User}
-                        counter
-                        maxCharacters={UserSchemaLimit.name.max}
-                        placeholder="Jhon Joe"
-                        maxLength={UserSchemaLimit.name.max}
-                        disabled={loading}
-                        value={watch("name")}
-                        {...register("name")}
-                    />
-                    <TextInput
-                        label="Email"
-                        icon={Mail}
-                        counter
-                        maxCharacters={UserSchemaLimit.email.max}
-                        placeholder="abc@gmail.com"
-                        maxLength={UserSchemaLimit.email.max}
-                        disabled={loading}
-                        value={watch("email")}
-                        {...register("email")}
-                    />
-                    <PasswordInput
-                        label="Password"
-                        placeholder="Password"
-                        disabled={loading}
-                        value={watch("password")}
-                        {...register("password")}
-                    />
-                    <PasswordInput
-                        label="Confirm Password"
-                        placeholder="Confirm Password"
-                        disabled={loading}
-                        value={watch("confirmPassword")}
-                        {...register("confirmPassword")}
-                    />
-                    <Controller
-                        control={control}
-                        name="roleId"
-                        render={({ field }) => (
-                            <SearchableSelect
-                                label="Role"
-                                value={field.value}
-                                icon={ShieldCheck}
-                                onChange={field.onChange}
-                                options={roles?.map((a) => ({
-                                    value: a.id,
-                                    label: a.name,
-                                })) ?? []}
-                                placeholder="Select Role"
-                                searchPlaceholder="Search Roles..."
-                                disabled={loading}
-                            />
-                        )}
-                    />
+            <div className="space-y-2">
+                <TextInput
+                    label="Name"
+                    icon={User}
+                    counter
+                    maxCharacters={UserSchemaLimit.name.max}
+                    placeholder="Jhon Joe"
+                    maxLength={UserSchemaLimit.name.max}
+                    disabled={loading}
+                    value={watch("name")}
+                    {...register("name")}
+                />
+                <TextInput
+                    label="Email"
+                    icon={Mail}
+                    counter
+                    maxCharacters={UserSchemaLimit.email.max}
+                    placeholder="abc@gmail.com"
+                    maxLength={UserSchemaLimit.email.max}
+                    disabled={loading}
+                    value={watch("email")}
+                    {...register("email")}
+                />
+                <PasswordInput
+                    label="Password"
+                    placeholder="Password"
+                    disabled={loading}
+                    value={watch("password")}
+                    {...register("password")}
+                />
+                <PasswordInput
+                    label="Confirm Password"
+                    placeholder="Confirm Password"
+                    disabled={loading}
+                    value={watch("confirmPassword")}
+                    {...register("confirmPassword")}
+                />
+                <Controller
+                    control={control}
+                    name="roleId"
+                    render={({ field }) => (
+                        <SearchableSelect
+                            label="Role"
+                            value={field.value}
+                            icon={ShieldCheck}
+                            onChange={field.onChange}
+                            options={roles?.map((a) => ({
+                                value: a.id,
+                                label: a.name,
+                            })) ?? []}
+                            placeholder="Select Role"
+                            searchPlaceholder="Search Roles..."
+                            disabled={loading}
+                        />
+                    )}
+                />
 
 
-                </div>
-            </form>
+            </div>
         </FormDialog>
     );
 }

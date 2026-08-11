@@ -1,9 +1,10 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, SubmitEventHandler } from "react";
 import { Loader2, LucideIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/common/components/ui/dialog";
 import { cn } from "@/common/lib/utils";
+import FormLoadingButton from "./form-loading-button";
 
 type FormDialogProps = {
     open: boolean;
@@ -11,13 +12,16 @@ type FormDialogProps = {
     title: string;
     description?: string;
     children: ReactNode;
-    footer?: ReactNode;
+    submitLabel?: string;
+    submitDisabled?: boolean;
     icon?: LucideIcon;
     className?: string;
     loading?: boolean;
+    onSubmit?: SubmitEventHandler<HTMLFormElement>;
+    showFooter?: boolean;
 };
 
-export default function FormDialog({ open, onClose, title, description, children, footer, icon: Icon, className, loading }: FormDialogProps) {
+export default function FormDialog({ open, onClose, title, description, children, showFooter = true, submitLabel = "Create", icon: Icon, className, loading, submitDisabled, onSubmit, }: FormDialogProps) {
     return (
         <Dialog open={open} onOpenChange={(value) => {
             if (!loading && !value) {
@@ -50,22 +54,32 @@ export default function FormDialog({ open, onClose, title, description, children
                         </div>
                     )}
 
-                    <DialogHeader className="relative z-10 space-y-2">
-                        <DialogTitle className="text-xl font-semibold tracking-tight">
-                            {title}
-                        </DialogTitle>
-                        {description && (<DialogDescription>{description}</DialogDescription>)}
-                    </DialogHeader>
+                    <form onSubmit={onSubmit}>
+                        <DialogHeader className="relative z-10 space-y-2">
+                            <DialogTitle className="text-xl font-semibold tracking-tight">
+                                {title}
+                            </DialogTitle>
+                            {description && (
+                                <DialogDescription>
+                                    {description}
+                                </DialogDescription>
+                            )}
+                        </DialogHeader>
 
-                    <div className={cn("relative z-10 mt-6", loading && "pointer-events-none opacity-60")}>
-                        {children}
-                    </div>
+                        <div className={cn("relative z-10 mt-6", loading && "pointer-events-none opacity-60")}>
+                            {children}
+                        </div>
 
-                    {footer && (
-                        <DialogFooter className="relative z-10 mt-6">
-                            {footer}
-                        </DialogFooter>
-                    )}
+                        {showFooter && <DialogFooter className="relative z-10 mt-6">
+                            <FormLoadingButton
+                                type="submit"
+                                loading={loading}
+                                disabled={submitDisabled}
+                            >
+                                {submitLabel}
+                            </FormLoadingButton>
+                        </DialogFooter>}
+                    </form>
                 </div>
             </DialogContent>
         </Dialog>

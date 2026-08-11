@@ -18,6 +18,7 @@ export interface EquipmentResponse {
     code: string;
     description: string;
     capacity: number;
+    equipmentType: EquipmentType;
     units: UnitSummaryResponse[];
     creatorUnitId: number;
     creatorUnitName: string;
@@ -38,3 +39,16 @@ export interface UpdateEquipmentRequest {
     code: string;
     capacity: number;
 }
+
+export enum EquipmentType {
+    MAIN_EQUIPMENT = "MAIN_EQUIPMENT",
+    SUB_EQUIPMENT = "SUB_EQUIPMENT",
+}
+
+export const EquipmentTypeBadgeStyles = {
+    MAIN_EQUIPMENT:
+        "text-green-700 bg-green-100 border-green-200 dark:text-green-400 dark:bg-green-950 dark:border-green-800",
+
+    SUB_EQUIPMENT:
+        "text-gray-700 bg-gray-100 border-gray-200 dark:text-gray-300 dark:bg-gray-900 dark:border-gray-700",
+} as const;

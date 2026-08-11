@@ -8,11 +8,9 @@ import { useGetUomTypes } from "@/features/common/hooks/useMetadata";
 import { parameterDefaultValues, parameterSchema, ParameterSchema, ParameterSchemaLimit } from "../schemas/parameter-schema";
 import { useCreateParameter } from "../hooks/use-parameters";
 import FormDialog from "@/common/components/form/form-dialog";
-import FormLoadingButton from "@/common/components/form/form-loading-button";
 import { TextInput } from "@/common/components/form/text-input";
 import SearchableSelect from "@/common/components/form/searchable-select";
 import { showFormError } from "@/common/lib/show-form-error";
-import { toDisplayText } from "@/common/lib/format-enum";
 
 
 type Props = { open: boolean; onClose: () => void; };
@@ -48,47 +46,43 @@ export default function CreateParameterDialog({ open, onClose }: Props) {
             onClose={handleClose}
             title="Create Parameter"
             description="Create a parameter entity."
-            footer={
-                <FormLoadingButton form="create-parameter-form" type="submit" loading={loading} disabled={!isDirty}>
-                    Create
-                </FormLoadingButton>
-            }
+            submitDisabled={!isDirty}
+            submitLabel="Create"
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
             icon={Gauge}
         >
-            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="create-parameter-form">
-                <div className="space-y-2">
-                    <TextInput
-                        label="Name"
-                        counter
-                        maxCharacters={ParameterSchemaLimit.name.max}
-                        icon={Gauge}
-                        placeholder="Parameter Name"
-                        maxLength={ParameterSchemaLimit.name.max}
-                        disabled={loading}
-                        value={watch("name")}
-                        {...register("name")}
-                    />
-                    <Controller
-                        control={control}
-                        name="uom"
-                        render={({ field }) => (
-                            <SearchableSelect
-                                value={field.value}
-                                icon={Ruler}
-                                label="Uom"
-                                onChange={field.onChange}
-                                options={uomTypes?.map((a) => ({
-                                    value: a.value,
-                                    label: toDisplayText(a.label),
-                                })) ?? []}
-                                placeholder="Select Uom Type"
-                                searchPlaceholder="Search Uom Type..."
-                                disabled={loading}
-                            />
-                        )}
-                    />
-                </div>
-            </form>
+            <div className="space-y-2">
+                <TextInput
+                    label="Name"
+                    counter
+                    maxCharacters={ParameterSchemaLimit.name.max}
+                    icon={Gauge}
+                    placeholder="Parameter Name"
+                    maxLength={ParameterSchemaLimit.name.max}
+                    disabled={loading}
+                    value={watch("name")}
+                    {...register("name")}
+                />
+                <Controller
+                    control={control}
+                    name="uom"
+                    render={({ field }) => (
+                        <SearchableSelect
+                            value={field.value}
+                            icon={Ruler}
+                            label="Uom"
+                            onChange={field.onChange}
+                            options={uomTypes?.map((a) => ({
+                                value: a.value,
+                                label: a.label,
+                            })) ?? []}
+                            placeholder="Select Uom Type"
+                            searchPlaceholder="Search Uom Type..."
+                            disabled={loading}
+                        />
+                    )}
+                />
+            </div>
         </FormDialog>
     );
 }

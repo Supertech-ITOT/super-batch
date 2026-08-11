@@ -60,84 +60,80 @@ export default function UpdateUnitDialog({ open, onClose, unitId }: Props) {
             onClose={handleClose}
             title="Update Unit"
             description="Update a unit entity."
-            footer={
-                <FormLoadingButton form="update-unit-form" type="submit" loading={loading} disabled={!isDirty}>
-                    Update
-                </FormLoadingButton>
-            }
+            submitDisabled={!isDirty}
+            submitLabel="Update"
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
             icon={Boxes}
         >
-            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="update-unit-form">
-                <div className="space-y-2">
-                    <div className="grid grid-cols-2 gap-2">
-                        <TextInput
-                            label="Name"
-                            counter
-                            maxCharacters={UnitSchemaLimit.name.max}
-                            icon={Boxes}
-                            placeholder="Unit Name"
-                            maxLength={UnitSchemaLimit.name.max}
-                            disabled={loading}
-                            value={watch("name")}
-                            {...register("name")}
-                        />
-                        <TextInput
-                            label="Code"
-                            counter
-                            maxCharacters={UnitSchemaLimit.code.max}
-                            icon={Hash}
-                            placeholder="Unit Code"
-                            maxLength={UnitSchemaLimit.code.max}
-                            disabled={loading}
-                            value={watch("code")}
-                            {...register("code")}
-                        />
-                    </div>
-                    <TextAreaInput
-                        label="Description"
-                        placeholder="Brief Unit Overview"
-                        icon={Feather}
+            <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                    <TextInput
+                        label="Name"
                         counter
-                        maxCharacters={UnitSchemaLimit.description.max}
-                        maxLength={UnitSchemaLimit.description.max}
-                        value={watch("description")}
+                        maxCharacters={UnitSchemaLimit.name.max}
+                        icon={Boxes}
+                        placeholder="Unit Name"
+                        maxLength={UnitSchemaLimit.name.max}
                         disabled={loading}
-                        {...register("description")}
+                        value={watch("name")}
+                        {...register("name")}
                     />
-                    <div className="grid grid-cols-2 gap-2">
-                        <Controller
-                            control={control}
-                            name="areaId"
-                            render={({ field }) => (
-                                <SearchableSelect
-                                    value={field.value}
-                                    icon={Building}
-                                    label="Area"
-                                    onChange={field.onChange}
-                                    options={areas?.map((a) => ({
-                                        value: a.id,
-                                        label: a.name,
-                                    })) ?? []}
-                                    placeholder="Select Area"
-                                    searchPlaceholder="Search Areas..."
-                                    disabled={loading}
-                                />
-                            )}
-                        />
-                        <NumberInput
-                            label="Capacity"
-                            icon={Scale}
-                            suffix="KG"
-                            placeholder="Unit Capacity"
-                            disabled={loading}
-                            value={watch("capacity")}
-                            {...register("capacity", {
-                                valueAsNumber: true,
-                            })}
-                        />
-                    </div>
+                    <TextInput
+                        label="Code"
+                        counter
+                        maxCharacters={UnitSchemaLimit.code.max}
+                        icon={Hash}
+                        placeholder="Unit Code"
+                        maxLength={UnitSchemaLimit.code.max}
+                        disabled={loading}
+                        value={watch("code")}
+                        {...register("code")}
+                    />
                 </div>
-            </form>
+                <TextAreaInput
+                    label="Description"
+                    placeholder="Brief Unit Overview"
+                    icon={Feather}
+                    counter
+                    maxCharacters={UnitSchemaLimit.description.max}
+                    maxLength={UnitSchemaLimit.description.max}
+                    value={watch("description")}
+                    disabled={loading}
+                    {...register("description")}
+                />
+                <div className="grid grid-cols-2 gap-2">
+                    <Controller
+                        control={control}
+                        name="areaId"
+                        render={({ field }) => (
+                            <SearchableSelect
+                                value={field.value}
+                                icon={Building}
+                                label="Area"
+                                onChange={field.onChange}
+                                options={areas?.map((a) => ({
+                                    value: a.id,
+                                    label: a.name,
+                                })) ?? []}
+                                placeholder="Select Area"
+                                searchPlaceholder="Search Areas..."
+                                disabled={loading}
+                            />
+                        )}
+                    />
+                    <NumberInput
+                        label="Capacity"
+                        icon={Scale}
+                        suffix="KG"
+                        placeholder="Unit Capacity"
+                        disabled={loading}
+                        value={watch("capacity")}
+                        {...register("capacity", {
+                            valueAsNumber: true,
+                        })}
+                    />
+                </div>
+            </div>
         </FormDialog>
     );
 }

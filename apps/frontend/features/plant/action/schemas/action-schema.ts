@@ -24,3 +24,4 @@ export const actionSchema = z.object({
 });
 
 export type ActionSchema = z.infer<typeof actionSchema>;
+export const actionDefaultValues: ActionSchema = { name: "" };

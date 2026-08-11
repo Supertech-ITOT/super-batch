@@ -8,6 +8,7 @@ import { DialogType } from "../../common/types/plant-hierarchy.types";
 import TreeDialogs from "../../common/components/plant/plant-dialogs";
 import FeedbackState from "@/common/components/feedback-state";
 import EquipmentSkeleton from "./equipment-skeleton";
+import { toDisplayText } from "@/common/lib/format-enum";
 
 export default function EquipmentView({ id }: { id: number }) {
     const { data: equipment, isLoading: equipmentIsLoading, isError: equipmentIsError } = useGetEquipmentById(id);
@@ -27,6 +28,16 @@ export default function EquipmentView({ id }: { id: number }) {
             icon: BadgeInfo,
         },
         {
+            label: "Code",
+            value: equipment?.code ?? "-",
+            icon: ScanLine,
+        },
+        {
+            label: "Type",
+            value: toDisplayText(equipment?.equipmentType) ?? "-",
+            icon: ScanLine,
+        },
+        {
             label: "Assigned Units",
             value: equipment?.units?.length ?? 0,
             icon: Package,
@@ -36,11 +47,6 @@ export default function EquipmentView({ id }: { id: number }) {
             value:
                 equipment?.capacity != null ? `${equipment.capacity} KG` : "-",
             icon: Weight,
-        },
-        {
-            label: "Code",
-            value: equipment?.code ?? "-",
-            icon: ScanLine,
         },
         {
             label: "Last Modified",

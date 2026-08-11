@@ -60,71 +60,67 @@ export default function UpdateMaterialDialog({ open, onClose, materialId }: Prop
             onClose={handleClose}
             title="Update Material"
             description="Update a material entity."
-            footer={
-                <FormLoadingButton form="update-material-form" type="submit" loading={loading} disabled={!isDirty}>
-                    Update
-                </FormLoadingButton>
-            }
+            submitDisabled={!isDirty}
+            submitLabel="Update"
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
             icon={PackageCheckIcon}
         >
-            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="update-material-form">
-                <div className="space-y-2">
-                    <div className="grid grid-cols-2 gap-2">
-                        <TextInput
-                            label="Name"
-                            counter
-                            maxCharacters={MaterialSchemaLimit.name.max}
-                            icon={PackageCheckIcon}
-                            placeholder="Material Name"
-                            maxLength={MaterialSchemaLimit.name.max}
-                            disabled={loading}
-                            value={watch("name")}
-                            {...register("name")}
-                        />
-                        <TextInput
-                            label="Code"
-                            counter
-                            maxCharacters={MaterialSchemaLimit.code.max}
-                            icon={Hash}
-                            placeholder="Material Code"
-                            maxLength={MaterialSchemaLimit.code.max}
-                            disabled={loading}
-                            value={watch("code")}
-                            {...register("code")}
-                        />
-                    </div>
-                    <TextAreaInput
-                        label="Description"
-                        placeholder="Brief Material Overview"
-                        icon={Feather}
+            <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                    <TextInput
+                        label="Name"
                         counter
-                        maxCharacters={MaterialSchemaLimit.description.max}
-                        maxLength={MaterialSchemaLimit.description.max}
-                        value={watch("description")}
+                        maxCharacters={MaterialSchemaLimit.name.max}
+                        icon={PackageCheckIcon}
+                        placeholder="Material Name"
+                        maxLength={MaterialSchemaLimit.name.max}
                         disabled={loading}
-                        {...register("description")}
+                        value={watch("name")}
+                        {...register("name")}
                     />
-                    <Controller
-                        control={control}
-                        name="materialType"
-                        render={({ field }) => (
-                            <SearchableSelect
-                                value={field.value}
-                                icon={PackageSearch}
-                                label="Type"
-                                onChange={field.onChange}
-                                options={materialTypes?.map((a) => ({
-                                    value: a.value,
-                                    label: a.label,
-                                })) ?? []}
-                                placeholder="Select Material Type"
-                                searchPlaceholder="Search Material Type..."
-                                disabled={loading}
-                            />
-                        )}
+                    <TextInput
+                        label="Code"
+                        counter
+                        maxCharacters={MaterialSchemaLimit.code.max}
+                        icon={Hash}
+                        placeholder="Material Code"
+                        maxLength={MaterialSchemaLimit.code.max}
+                        disabled={loading}
+                        value={watch("code")}
+                        {...register("code")}
                     />
                 </div>
-            </form>
+                <TextAreaInput
+                    label="Description"
+                    placeholder="Brief Material Overview"
+                    icon={Feather}
+                    counter
+                    maxCharacters={MaterialSchemaLimit.description.max}
+                    maxLength={MaterialSchemaLimit.description.max}
+                    value={watch("description")}
+                    disabled={loading}
+                    {...register("description")}
+                />
+                <Controller
+                    control={control}
+                    name="materialType"
+                    render={({ field }) => (
+                        <SearchableSelect
+                            value={field.value}
+                            icon={PackageSearch}
+                            label="Type"
+                            onChange={field.onChange}
+                            options={materialTypes?.map((a) => ({
+                                value: a.value,
+                                label: a.label,
+                            })) ?? []}
+                            placeholder="Select Material Type"
+                            searchPlaceholder="Search Material Type..."
+                            disabled={loading}
+                        />
+                    )}
+                />
+            </div>
         </FormDialog>
     );
 }

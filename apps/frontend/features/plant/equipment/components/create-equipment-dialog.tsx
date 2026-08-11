@@ -55,84 +55,80 @@ export default function CreateEquipmentDialog({ open, onClose, unitId }: Props) 
             onClose={handleClose}
             title="Create Equipment"
             description="Create a equipment entity."
-            footer={
-                <FormLoadingButton form="create-equipment-form" type="submit" loading={loading} disabled={!isDirty}>
-                    Create
-                </FormLoadingButton>
-            }
+            submitDisabled={!isDirty}
+            submitLabel="Create"
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
             icon={Cpu}
         >
-            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="create-equipment-form">
-                <div className="space-y-2">
-                    <div className="grid grid-cols-2 gap-2">
-                        <TextInput
-                            label="Name"
-                            counter
-                            maxCharacters={EquipmentSchemaLimit.name.max}
-                            icon={Cpu}
-                            placeholder="Equipment Name"
-                            maxLength={EquipmentSchemaLimit.name.max}
-                            disabled={loading}
-                            value={watch("name")}
-                            {...register("name")}
-                        />
-                        <TextInput
-                            label="Code"
-                            counter
-                            maxCharacters={EquipmentSchemaLimit.code.max}
-                            icon={Hash}
-                            placeholder="Equipment Code"
-                            maxLength={EquipmentSchemaLimit.code.max}
-                            disabled={loading}
-                            value={watch("code")}
-                            {...register("code")}
-                        />
-                    </div>
-                    <TextAreaInput
-                        label="Description"
-                        placeholder="Brief Equipment Overview"
-                        icon={Feather}
+            <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                    <TextInput
+                        label="Name"
                         counter
-                        maxCharacters={EquipmentSchemaLimit.description.max}
-                        maxLength={EquipmentSchemaLimit.description.max}
-                        value={watch("description")}
+                        maxCharacters={EquipmentSchemaLimit.name.max}
+                        icon={Cpu}
+                        placeholder="Equipment Name"
+                        maxLength={EquipmentSchemaLimit.name.max}
                         disabled={loading}
-                        {...register("description")}
+                        value={watch("name")}
+                        {...register("name")}
                     />
-                    <div className="grid grid-cols-2 gap-2">
-                        <Controller
-                            control={control}
-                            name="unitId"
-                            render={({ field }) => (
-                                <SearchableSelect
-                                    value={field.value}
-                                    icon={Boxes}
-                                    label="Unit"
-                                    onChange={field.onChange}
-                                    options={units?.map((a) => ({
-                                        value: a.id,
-                                        label: a.name,
-                                    })) ?? []}
-                                    placeholder="Select Unit"
-                                    searchPlaceholder="Search Units..."
-                                    disabled={loading}
-                                />
-                            )}
-                        />
-                        <NumberInput
-                            label="Capacity"
-                            icon={Scale}
-                            suffix="KG"
-                            placeholder="Equipment Capacity"
-                            disabled={loading}
-                            value={watch("capacity")}
-                            {...register("capacity", {
-                                valueAsNumber: true,
-                            })}
-                        />
-                    </div>
+                    <TextInput
+                        label="Code"
+                        counter
+                        maxCharacters={EquipmentSchemaLimit.code.max}
+                        icon={Hash}
+                        placeholder="Equipment Code"
+                        maxLength={EquipmentSchemaLimit.code.max}
+                        disabled={loading}
+                        value={watch("code")}
+                        {...register("code")}
+                    />
                 </div>
-            </form>
+                <TextAreaInput
+                    label="Description"
+                    placeholder="Brief Equipment Overview"
+                    icon={Feather}
+                    counter
+                    maxCharacters={EquipmentSchemaLimit.description.max}
+                    maxLength={EquipmentSchemaLimit.description.max}
+                    value={watch("description")}
+                    disabled={loading}
+                    {...register("description")}
+                />
+                <div className="grid grid-cols-2 gap-2">
+                    <Controller
+                        control={control}
+                        name="unitId"
+                        render={({ field }) => (
+                            <SearchableSelect
+                                value={field.value}
+                                icon={Boxes}
+                                label="Unit"
+                                onChange={field.onChange}
+                                options={units?.map((a) => ({
+                                    value: a.id,
+                                    label: a.name,
+                                })) ?? []}
+                                placeholder="Select Unit"
+                                searchPlaceholder="Search Units..."
+                                disabled={loading}
+                            />
+                        )}
+                    />
+                    <NumberInput
+                        label="Capacity"
+                        icon={Scale}
+                        suffix="KG"
+                        placeholder="Equipment Capacity"
+                        disabled={loading}
+                        value={watch("capacity")}
+                        {...register("capacity", {
+                            valueAsNumber: true,
+                        })}
+                    />
+                </div>
+            </div>
         </FormDialog>
     );
 }

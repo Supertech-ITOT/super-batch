@@ -51,52 +51,48 @@ export default function UpdatePlantDialog({ open, onClose, plantId }: Props) {
             onClose={handleClose}
             title="Update Plant"
             description="Update a plant entity."
-            footer={
-                <FormLoadingButton form="update-plant-form" type="submit" loading={loading} disabled={!isDirty}>
-                    Update
-                </FormLoadingButton>
-            }
+            submitDisabled={!isDirty}
+            submitLabel="Update"
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
             icon={Factory}
         >
-            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="update-plant-form">
-                <div className="space-y-2">
-                    <div className="grid grid-cols-2 gap-2">
-                        <TextInput
-                            label="Name"
-                            counter
-                            maxCharacters={PlantSchemaLimit.name.max}
-                            placeholder="Plant Name"
-                            maxLength={PlantSchemaLimit.name.max}
-                            disabled={loading}
-                            icon={Factory}
-                            value={watch("name")}
-                            {...register("name")}
-                        />
-                        <TextInput
-                            label="Location"
-                            counter
-                            icon={MapPin}
-                            maxCharacters={PlantSchemaLimit.location.max}
-                            placeholder="Location"
-                            maxLength={PlantSchemaLimit.location.max}
-                            disabled={loading}
-                            value={watch("location")}
-                            {...register("location")}
-                        />
-                    </div>
-                    <TextAreaInput
-                        label="Description"
-                        placeholder="Brief Plant Overview"
+            <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                    <TextInput
+                        label="Name"
                         counter
-                        icon={Feather}
-                        maxCharacters={PlantSchemaLimit.description.max}
-                        maxLength={PlantSchemaLimit.description.max}
-                        value={watch("description")}
+                        maxCharacters={PlantSchemaLimit.name.max}
+                        placeholder="Plant Name"
+                        maxLength={PlantSchemaLimit.name.max}
                         disabled={loading}
-                        {...register("description")}
+                        icon={Factory}
+                        value={watch("name")}
+                        {...register("name")}
+                    />
+                    <TextInput
+                        label="Location"
+                        counter
+                        icon={MapPin}
+                        maxCharacters={PlantSchemaLimit.location.max}
+                        placeholder="Location"
+                        maxLength={PlantSchemaLimit.location.max}
+                        disabled={loading}
+                        value={watch("location")}
+                        {...register("location")}
                     />
                 </div>
-            </form>
-        </FormDialog>
+                <TextAreaInput
+                    label="Description"
+                    placeholder="Brief Plant Overview"
+                    counter
+                    icon={Feather}
+                    maxCharacters={PlantSchemaLimit.description.max}
+                    maxLength={PlantSchemaLimit.description.max}
+                    value={watch("description")}
+                    disabled={loading}
+                    {...register("description")}
+                />
+            </div>
+        </FormDialog >
     );
 }

@@ -53,59 +53,54 @@ export default function UpdateUserDialog({ open, onClose, userId }: Props) {
             onClose={handleClose}
             title="Update User"
             description="Update a existing user accounts."
-            footer={
-                <FormLoadingButton form="update-user-form" type="submit" loading={loading} disabled={!isDirty}>
-                    Update
-                </FormLoadingButton>
-            }
+            submitDisabled={!isDirty}
+            submitLabel="Update"
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
             icon={Users}
         >
-            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="update-user-form">
-                <div className="space-y-4">
-                    <TextInput
-                        label="Name"
-                        icon={User}
-                        counter
-                        maxCharacters={UserSchemaLimit.name.max}
-                        placeholder="Jhon Joe"
-                        maxLength={UserSchemaLimit.name.max}
-                        disabled={loading}
-                        value={watch("name")}
-                        {...register("name")}
-                    />
-                    <TextInput
-                        label="Email"
-                        icon={Mail}
-                        counter
-                        maxCharacters={UserSchemaLimit.email.max}
-                        placeholder="abc@gmail.com"
-                        maxLength={UserSchemaLimit.email.max}
-                        disabled={loading}
-                        value={watch("email")}
-                        {...register("email")}
-                    />
-                    <Controller
-                        control={control}
-                        name="roleId"
-                        render={({ field }) => (
-                            <SearchableSelect
-                                value={field.value}
-                                icon={ShieldCheck}
-                                label="Role"
-                                onChange={field.onChange}
-                                options={roles?.map((a) => ({
-                                    value: a.id,
-                                    label: a.name,
-                                })) ?? []}
-                                placeholder="Select Role"
-                                searchPlaceholder="Search Roles..."
-                                disabled={loading}
-                            />
-                        )}
-                    />
-
-                </div>
-            </form>
+            <div className="space-y-2">
+                <TextInput
+                    label="Name"
+                    icon={User}
+                    counter
+                    maxCharacters={UserSchemaLimit.name.max}
+                    placeholder="Jhon Joe"
+                    maxLength={UserSchemaLimit.name.max}
+                    disabled={loading}
+                    value={watch("name")}
+                    {...register("name")}
+                />
+                <TextInput
+                    label="Email"
+                    icon={Mail}
+                    counter
+                    maxCharacters={UserSchemaLimit.email.max}
+                    placeholder="abc@gmail.com"
+                    maxLength={UserSchemaLimit.email.max}
+                    disabled={loading}
+                    value={watch("email")}
+                    {...register("email")}
+                />
+                <Controller
+                    control={control}
+                    name="roleId"
+                    render={({ field }) => (
+                        <SearchableSelect
+                            value={field.value}
+                            icon={ShieldCheck}
+                            label="Role"
+                            onChange={field.onChange}
+                            options={roles?.map((a) => ({
+                                value: a.id,
+                                label: a.name,
+                            })) ?? []}
+                            placeholder="Select Role"
+                            searchPlaceholder="Search Roles..."
+                            disabled={loading}
+                        />
+                    )}
+                />
+            </div>
         </FormDialog>
     );
 }

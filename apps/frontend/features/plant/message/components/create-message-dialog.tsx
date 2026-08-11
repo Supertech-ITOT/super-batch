@@ -43,26 +43,22 @@ export default function CreateMessageDialog({ open, onClose }: Props) {
             onClose={handleClose}
             title="Create Message"
             description="Create a new predefined messages."
-            footer={
-                <FormLoadingButton form="create-message-form" type="submit" loading={loading} disabled={!isDirty}>
-                    Create
-                </FormLoadingButton>
-            }
+            submitDisabled={!isDirty}
+            submitLabel="Create"
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
             icon={MessageSquareQuote}
         >
-            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="create-message-form">
-                <TextAreaInput
-                    label="Message"
-                    icon={Feather}
-                    placeholder="Brief message overview"
-                    counter
-                    maxCharacters={MessageSchemaLimit.name.max}
-                    maxLength={MessageSchemaLimit.name.max}
-                    value={watch("name")}
-                    disabled={loading}
-                    {...register("name")}
-                />
-            </form>
+            <TextAreaInput
+                label="Message"
+                icon={Feather}
+                placeholder="Brief message overview"
+                counter
+                maxCharacters={MessageSchemaLimit.name.max}
+                maxLength={MessageSchemaLimit.name.max}
+                value={watch("name")}
+                disabled={loading}
+                {...register("name")}
+            />
         </FormDialog>
     );
 }

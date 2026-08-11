@@ -1,28 +1,26 @@
 "use client";
-import { Button } from "@/common/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
-import { Input } from "@/common/components/ui/input";
-import { Label } from "@/common/components/ui/label";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader } from "lucide-react";
+import { Gauge, Ruler } from "lucide-react";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/common/components/ui/select";
 import { useGetUomTypes } from "@/features/common/hooks/useMetadata";
-import { parameterSchema, ParameterSchema, ParameterSchemaLimit } from "../schemas/parameter-schema";
-import CharacterProgress from "@/common/components/form/character-progress";
+import { parameterDefaultValues, parameterSchema, ParameterSchema, ParameterSchemaLimit } from "../schemas/parameter-schema";
 import { useEffect } from "react";
 import { useGetParameterById, useUpdateParameter } from "../hooks/use-parameters";
+import { showFormError } from "@/common/lib/show-form-error";
+import FormDialog from "@/common/components/form/form-dialog";
+import { TextInput } from "@/common/components/form/text-input";
+import SearchableSelect from "@/common/components/form/searchable-select";
 
 type Props = { open: boolean; onClose: () => void; parameterId?: number };
 export default function UpdateParameterDialog({ open, onClose, parameterId }: Props) {
     const { mutateAsync: updateParameter, isPending: isUpdating } = useUpdateParameter();
     const { data: parameter, isLoading: parameterIsLoading } = useGetParameterById(parameterId);
     const { data: uomTypes, isLoading: uomTypesIsLoading } = useGetUomTypes(open);
-    const { register, handleSubmit, reset, control, watch, setValue, formState: { isSubmitting, isDirty } } = useForm<ParameterSchema>({
+    const { register, handleSubmit, reset, control, watch, formState: { isSubmitting, isDirty } } = useForm<ParameterSchema>({
         resolver: zodResolver(parameterSchema),
-        defaultValues: { name: "", uom: "" }
+        defaultValues: parameterDefaultValues,
     });
 
     useEffect(() => {
@@ -46,75 +44,57 @@ export default function UpdateParameterDialog({ open, onClose, parameterId }: Pr
         }
     };
     const handleClose = () => {
-        reset({ name: "", uom: "" });
+        reset(parameterDefaultValues);
         onClose();
     };
     const onInvalid = (errors: FieldErrors<ParameterSchema>) => {
-        const firstError = Object.values(errors)[0];
-        if (firstError?.message) {
-            toast.error(firstError.message.toString());
-        }
+        toast.error(showFormError(errors));
     };
 
     return (
-        <Dialog open={open} onOpenChange={(value) => { if (!value) handleClose() }}>
-            <DialogContent className="sm:max-w-md">
-                <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
-                    <DialogHeader>
-                        <DialogTitle>Update Parameter</DialogTitle>
-                        <DialogDescription>Update parameter information.</DialogDescription>
-                    </DialogHeader>
-                    <div className="py-4 space-y-4">
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Name</Label>
-                                <CharacterProgress value={watch("name")} max={ParameterSchemaLimit.name.max} />
-                            </div>
-                            <Input
-                                type="text"
-                                disabled={loading}
-                                placeholder="Temperature"
-                                maxLength={ParameterSchemaLimit.name.max}
-                                {...register("name")}
-                            />
-                        </div>
-                        <div className="space-y-2 relative">
-                            <Label>Select Uom Type</Label>
-                            <Controller
-                                control={control}
-                                name="uom"
-                                render={({ field }) => (
-                                    <Select
-                                        disabled={loading}
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                    >
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select Uom Type" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {uomTypes?.map((e) => (
-                                                    <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
-                        </div>
-
-
-
-                    </div>
-                    <DialogFooter>
-                        <DialogClose asChild>
-                            <Button disabled={loading} type="button" variant="outline" onClick={handleClose}>Cancel</Button>
-                        </DialogClose>
-                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Update Parameter"}</Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+        <FormDialog
+            open={open}
+            loading={loading}
+            onClose={handleClose}
+            title="Update Parameter"
+            description="Update a parameter entity."
+            submitDisabled={!isDirty}
+            submitLabel="Update"
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
+            icon={Gauge}
+        >
+            <div className="space-y-2">
+                <TextInput
+                    label="Name"
+                    counter
+                    maxCharacters={ParameterSchemaLimit.name.max}
+                    icon={Gauge}
+                    placeholder="Parameter Name"
+                    maxLength={ParameterSchemaLimit.name.max}
+                    disabled={loading}
+                    value={watch("name")}
+                    {...register("name")}
+                />
+                <Controller
+                    control={control}
+                    name="uom"
+                    render={({ field }) => (
+                        <SearchableSelect
+                            value={field.value}
+                            icon={Ruler}
+                            label="Uom"
+                            onChange={field.onChange}
+                            options={uomTypes?.map((a) => ({
+                                value: a.value,
+                                label: a.label,
+                            })) ?? []}
+                            placeholder="Select Uom Type"
+                            searchPlaceholder="Search Uom Type..."
+                            disabled={loading}
+                        />
+                    )}
+                />
+            </div>
+        </FormDialog>
     );
 }

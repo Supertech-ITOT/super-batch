@@ -8,7 +8,6 @@ import { useGetMessageById, useUpdateMessage } from "../hooks/use-messages";
 import { messageDefaultValues, messageSchema, MessageSchema, MessageSchemaLimit } from "../schemas/message-schema";
 import { useEffect } from "react";
 import { TextAreaInput } from "@/common/components/form/text-area-input";
-import FormLoadingButton from "@/common/components/form/form-loading-button";
 import FormDialog from "@/common/components/form/form-dialog";
 import { showFormError } from "@/common/lib/show-form-error";
 
@@ -53,26 +52,22 @@ export default function UpdateMessageDialog({ open, onClose, messageId }: Props)
             onClose={handleClose}
             title="Update Message"
             description="Update a new predefined messages."
-            footer={
-                <FormLoadingButton form="update-message-form" type="submit" loading={loading} disabled={!isDirty}>
-                    Update
-                </FormLoadingButton>
-            }
+            submitDisabled={!isDirty}
+            submitLabel="Update"
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
             icon={MessageSquareQuote}
         >
-            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="update-message-form">
-                <TextAreaInput
-                    label="Message"
-                    icon={Feather}
-                    placeholder="Brief message overview"
-                    counter
-                    maxCharacters={MessageSchemaLimit.name.max}
-                    maxLength={MessageSchemaLimit.name.max}
-                    value={watch("name")}
-                    disabled={loading}
-                    {...register("name")}
-                />
-            </form>
+            <TextAreaInput
+                label="Message"
+                icon={Feather}
+                placeholder="Brief message overview"
+                counter
+                maxCharacters={MessageSchemaLimit.name.max}
+                maxLength={MessageSchemaLimit.name.max}
+                value={watch("name")}
+                disabled={loading}
+                {...register("name")}
+            />
         </FormDialog>
     );
 }

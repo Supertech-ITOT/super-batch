@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { DialogType } from "@/features/plant/common/types/plant-hierarchy.types";
 import { UnitResponse } from "../../unit/types/unit.types";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { format } from "date-fns";
 
 
 export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogType & { redirect?: boolean }>>, router: AppRouterInstance): ColumnDef<UnitResponse>[] => [
@@ -43,6 +44,22 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogTyp
     {
         accessorKey: "totalEquipment",
         header: "Equipment",
+        meta: {
+            align: "center",
+        },
+    },
+    {
+        id: "lastModified",
+        header: "Last Modified",
+        cell: ({ row }) => {
+            const value = row.original.updatedAt || row.original.createdAt;
+
+            if (!value || new Date(value).getTime() === 0) {
+                return "-";
+            }
+
+            return format(new Date(value), "dd MMM yyyy hh:mm a");
+        },
         meta: {
             align: "center",
         },

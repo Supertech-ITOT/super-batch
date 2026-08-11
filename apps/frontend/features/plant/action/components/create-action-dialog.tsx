@@ -1,22 +1,20 @@
 "use client";
-import { Button } from "@/common/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
-import { Input } from "@/common/components/ui/input";
-import { Label } from "@/common/components/ui/label";
 import { FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader } from "lucide-react";
+import { Play } from "lucide-react";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
 import { useCreateAction } from "../hooks/use-actions";
-import { actionSchema, ActionSchema, ActionSchemaLimit } from "../schemas/action-schema";
-import CharacterProgress from "@/common/components/form/character-progress";
+import { actionDefaultValues, actionSchema, ActionSchema, ActionSchemaLimit } from "../schemas/action-schema";
+import FormDialog from "@/common/components/form/form-dialog";
+import { TextInput } from "@/common/components/form/text-input";
+import { showFormError } from "@/common/lib/show-form-error";
 type Props = { open: boolean; onClose: () => void; };
 export default function CreateActionDialog({ open, onClose }: Props) {
     const { mutateAsync: createAction, isPending: isCreating } = useCreateAction();
     const { register, handleSubmit, reset, watch, formState: { isSubmitting, isDirty } } = useForm<ActionSchema>({
         resolver: zodResolver(actionSchema),
-        defaultValues: { name: "" }
+        defaultValues: actionDefaultValues,
     });
     const loading = isCreating || isSubmitting;
     const onSubmit = async (formData: ActionSchema) => {
@@ -29,47 +27,36 @@ export default function CreateActionDialog({ open, onClose }: Props) {
         }
     };
     const handleClose = () => {
-        reset({ name: "" });
+        reset(actionDefaultValues);
         onClose();
     };
     const onInvalid = (errors: FieldErrors<ActionSchema>) => {
-        const firstError = Object.values(errors)[0];
-        if (firstError?.message) {
-            toast.error(firstError.message.toString());
-        }
+        toast.error(showFormError(errors));
     };
 
     return (
-        <Dialog open={open} onOpenChange={(value) => { if (!value) handleClose() }}>
-            <DialogContent className="sm:max-w-md">
-                <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
-                    <DialogHeader>
-                        <DialogTitle>Create Action</DialogTitle>
-                        <DialogDescription>Create a new action entity.</DialogDescription>
-                    </DialogHeader>
-                    <div className="py-4 space-y-4">
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Name</Label>
-                                <CharacterProgress value={watch("name")} max={ActionSchemaLimit.name.max} />
-                            </div>
-                            <Input
-                                type="text"
-                                disabled={loading}
-                                placeholder="Charge"
-                                maxLength={ActionSchemaLimit.name.max}
-                                {...register("name")}
-                            />
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <DialogClose asChild>
-                            <Button disabled={loading} type="button" variant="outline" onClick={handleClose}>Cancel</Button>
-                        </DialogClose>
-                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Create Action"}</Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+        <FormDialog
+            open={open}
+            loading={loading}
+            onClose={handleClose}
+            title="Create Action"
+            description="Create a Action entity."
+            icon={Play}
+            submitDisabled={!isDirty}
+            submitLabel="Create"
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
+        >
+            <TextInput
+                label="Name"
+                counter
+                maxCharacters={ActionSchemaLimit.name.max}
+                icon={Play}
+                placeholder="Action Name"
+                maxLength={ActionSchemaLimit.name.max}
+                disabled={loading}
+                value={watch("name")}
+                {...register("name")}
+            />
+        </FormDialog>
     );
 }

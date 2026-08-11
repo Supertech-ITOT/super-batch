@@ -52,34 +52,30 @@ export default function AssignEquipmentDialog({ open, onClose, unitId }: Props) 
             onClose={handleClose}
             title="Assign Equipment"
             description="Assign a equipment to unit."
-            footer={
-                <FormLoadingButton form="assign-equipment-form" type="submit" loading={loading} disabled={!isDirty}>
-                    Assign
-                </FormLoadingButton>
-            }
+            submitDisabled={!isDirty}
+            submitLabel="Assign"
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
             icon={Cpu}
         >
-            <form onSubmit={handleSubmit(onSubmit, onInvalid)} id="assign-equipment-form">
-                <Controller
-                    control={control}
-                    name="equipmentId"
-                    render={({ field }) => (
-                        <SearchableSelect
-                            label="Equipment"
-                            value={field.value}
-                            icon={Cpu}
-                            onChange={field.onChange}
-                            options={equipments?.map((a) => ({
-                                value: a.id,
-                                label: a.name,
-                            })) ?? []}
-                            placeholder="Select Equipment"
-                            searchPlaceholder="Search Equipments..."
-                            disabled={loading}
-                        />
-                    )}
-                />
-            </form>
-        </FormDialog>
+            <Controller
+                control={control}
+                name="equipmentId"
+                render={({ field }) => (
+                    <SearchableSelect
+                        label="Equipment"
+                        value={field.value}
+                        icon={Cpu}
+                        onChange={field.onChange}
+                        options={equipments?.map((a) => ({
+                            value: a.id,
+                            label: a.name,
+                        })) ?? []}
+                        placeholder="Select Equipment"
+                        searchPlaceholder="Search Equipments..."
+                        disabled={loading}
+                    />
+                )}
+            />
+            =        </FormDialog>
     );
 }

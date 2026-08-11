@@ -25,6 +25,7 @@ public class EquipmentMapper {
                 .code(equipment.getCode())
                 .description(equipment.getDescription())
                 .capacity(equipment.getCapacity())
+                .equipmentType(equipment.getEquipmentType())
                 .units(equipment.getUnits()
                         .stream()
                         .map(unitMapper::toUnitSummaryResponse)
