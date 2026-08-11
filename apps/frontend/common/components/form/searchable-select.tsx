@@ -6,14 +6,16 @@ import { Popover, PopoverContent, PopoverTrigger, } from "@/common/components/ui
 import { cn } from "@/common/lib/utils";
 import { Label } from "../ui/label";
 
+type SearchableSelectValue = number | string;
+
 export interface SearchableSelectOption {
-    value: number;
+    value: SearchableSelectValue;
     label: string;
 }
 
 interface SearchableSelectProps {
-    value?: number;
-    onChange: (value?: number) => void;
+    value?: SearchableSelectValue;
+    onChange: (value?: SearchableSelectValue) => void;
     options: SearchableSelectOption[];
     placeholder?: string;
     searchPlaceholder?: string;
@@ -70,17 +72,30 @@ function SearchableSelect({ icon: Icon, value, onChange, options, placeholder = 
                         <CommandInput placeholder={searchPlaceholder} />
                         <CommandList className="max-h-72 overflow-y-auto">
                             <CommandEmpty>{emptyText}</CommandEmpty>
-                            {options.map((option) => (
-                                <CommandItem key={option.value} value={option.label} onSelect={() => { onChange(option.value === value ? undefined : option.value); setOpen(false); }}>
-                                    <Check
-                                        className={cn(
-                                            "mr-2 h-4 w-4",
-                                            option.value === value ? "opacity-100 text-primary" : "opacity-0"
-                                        )}
-                                    />
-                                    {option.label}
-                                </CommandItem>
-                            ))}
+                            {options.map((option) => {
+                                const isSelected = String(option.value) === String(value);
+                                return (
+                                    <CommandItem
+                                        key={String(option.value)}
+                                        value={String(option.value)}
+                                        onSelect={() => {
+                                            onChange(
+                                                isSelected
+                                                    ? undefined
+                                                    : option.value
+                                            );
+                                            setOpen(false);
+                                        }}>
+                                        <Check
+                                            className={cn(
+                                                "mr-2 h-4 w-4",
+                                                isSelected ? "opacity-100 text-primary" : "opacity-0"
+                                            )}
+                                        />
+                                        {option.label}
+                                    </CommandItem>
+                                )
+                            })}
 
                         </CommandList>
                     </Command>

@@ -21,6 +21,9 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<MessageDi
     {
         accessorKey: "name",
         header: "Message",
+        meta: {
+            align: "left",
+        },
         cell: ({ row }) => (
             <div
                 className="wrap-break-word whitespace-normal line-clamp-2 leading-5"
@@ -33,8 +36,11 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<MessageDi
     {
         id: "actions",
         header: "Actions",
+        meta: {
+            align: "center",
+        },
         cell: ({ row }) => {
-            const unit = row.original
+            const msg = row.original
 
             return (
                 <DropdownMenu>
@@ -51,7 +57,7 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<MessageDi
                             e.stopPropagation(); setDialog({
                                 open: true,
                                 action: "edit",
-                                messageId: row.original.id,
+                                messageId: msg.id,
                             });
                         }}>
                             Edit</DropdownMenuItem>
@@ -60,7 +66,7 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<MessageDi
                             e.stopPropagation(); setDialog({
                                 open: true,
                                 action: "delete",
-                                messageId: row.original.id,
+                                messageId: msg.id,
                             });
                         }}>
                             Delete</DropdownMenuItem>

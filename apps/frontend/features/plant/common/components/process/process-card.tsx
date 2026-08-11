@@ -53,7 +53,7 @@ export default function ProcessCard<T>({ entity, label, desc, icon: Icon, color,
                     </div>
                     <div>
                         <h2 className="text-lg font-semibold">{label}</h2>
-                        <p className="text-xs text-muted-foreground">  {desc}</p>
+                        <p className="text-sm text-muted-foreground">  {desc}</p>
                     </div>
                 </div>
                 <div className="flex flex-col items-end">

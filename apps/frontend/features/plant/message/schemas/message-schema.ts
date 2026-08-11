@@ -19,3 +19,4 @@ export const messageSchema = z.object({
 });
 
 export type MessageSchema = z.infer<typeof messageSchema>;
+export const messageDefaultValues: MessageSchema = { name: "" };

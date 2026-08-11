@@ -57,3 +57,4 @@ export const materialSchema = z.object({
 });
 
 export type MaterialSchema = z.infer<typeof materialSchema>;
+export const materialDefaultValues: MaterialSchema = { name: "", materialType: "", description: "", code: "" };

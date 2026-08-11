@@ -26,3 +26,4 @@ export const parameterSchema = z.object({
 });
 
 export type ParameterSchema = z.infer<typeof parameterSchema>;
+export const parameterDefaultValues: ParameterSchema = { name: "", uom: "" };

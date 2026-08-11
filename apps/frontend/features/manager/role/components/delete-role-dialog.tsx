@@ -1,3 +1,4 @@
+"use client";
 import { ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
