@@ -16,6 +16,6 @@ public interface PlantService {
 
     void update(Long id, UpdatePlantRequest request);
 
-    void delete(Long id);
+    void delete(Long id, Long currentUserId);
 
 }

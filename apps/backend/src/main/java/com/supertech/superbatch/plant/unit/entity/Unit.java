@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.plant.area.entity.Area;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
 
@@ -55,4 +56,14 @@ public class Unit {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean deleted = false;
+
+    private LocalDateTime deletedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deleted_by_id")
+    private User deletedBy;
 }

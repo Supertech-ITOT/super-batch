@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.supertech.superbatch.common.dto.ApiResponse;
+import com.supertech.superbatch.common.security.UserContextService;
 import com.supertech.superbatch.plant.parameter.dto.CreateParameterRequest;
 import com.supertech.superbatch.plant.parameter.dto.ParameterResponse;
 import com.supertech.superbatch.plant.parameter.dto.UpdateParameterRequest;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin("*")
 public class ParameterController {
     private final ParameterService parameterService;
+    private final UserContextService userContextService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<ParameterResponse>>> getAll() {
@@ -51,7 +53,8 @@ public class ParameterController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
-        parameterService.delete(id);
+        Long userId = userContextService.getCurrentUserId();
+        parameterService.delete(id, userId);
         return ResponseEntity.ok(
                 ApiResponse.success("Parameter deleted successfully", null));
     }

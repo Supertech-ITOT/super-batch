@@ -1,8 +1,10 @@
 package com.supertech.superbatch.plant.unit.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.supertech.superbatch.audit.dto.BatchAuditRequest;
 import com.supertech.superbatch.audit.enums.BatchAuditAction;
@@ -12,6 +14,8 @@ import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
+import com.supertech.superbatch.manager.user.entity.User;
+import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.plant.area.entity.Area;
 import com.supertech.superbatch.plant.area.repository.AreaRepository;
 import com.supertech.superbatch.plant.equipment.dto.CreateEquipmentRequest;
@@ -30,11 +34,11 @@ import com.supertech.superbatch.plant.unit.mapper.UnitMapper;
 import com.supertech.superbatch.plant.unit.repository.UnitRepository;
 import com.supertech.superbatch.plant.unit.service.UnitService;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UnitServiceImpl implements UnitService {
         private final UnitRepository unitRepository;
         private final AreaRepository areaRepository;
@@ -42,20 +46,28 @@ public class UnitServiceImpl implements UnitService {
         private final UnitMapper unitMapper;
         private final EquipmentMapper equipmentMapper;
         private final BatchAuditService batchAuditService;
+        private final UserRepository userRepository;
 
         @Override
         @Transactional
         public void create(CreateUnitRequest request) {
 
-                if (unitRepository.existsByNameIgnoreCaseAndAreaId(request.name(), request.areaId())) {
-                        throw new DuplicateResourceException("Unit already exists");
-                }
                 Area area = areaRepository
-                                .findById(request.areaId())
+                                .findByIdAndDeletedFalse(request.areaId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
 
-                if (equipmentRepository.existsByNameIgnoreCase(request.name())) {
-                        throw new DuplicateResourceException("Equipment already exists");
+                if (unitRepository.existsByNameIgnoreCaseAndAreaIdAndDeletedFalse(request.name(), request.areaId())) {
+                        throw new DuplicateResourceException("Unit name already exists");
+                }
+                if (unitRepository.existsByCodeIgnoreCaseAndDeletedFalse(request.code())) {
+                        throw new DuplicateResourceException("Unit code already exists");
+                }
+
+                if (equipmentRepository.existsByNameIgnoreCaseAndDeletedFalse(request.name())) {
+                        throw new DuplicateResourceException("Equipment name already exists");
+                }
+                if (equipmentRepository.existsByCodeIgnoreCaseAndDeletedFalse(request.code())) {
+                        throw new DuplicateResourceException("Equipment code already exists");
                 }
 
                 Unit unit = unitMapper.toEntity(request, area);
@@ -83,37 +95,35 @@ public class UnitServiceImpl implements UnitService {
         }
 
         @Override
-        public UnitResponse getById(Long id) {
-                Unit unit = unitRepository.findWithHierarchyById(id)
-                                .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
-                return unitMapper.toResponse(unit);
-        }
-
-        @Override
-        public List<UnitResponse> getByAreaId(Long areaId) {
-                return unitRepository.findByAreaId(areaId).stream().map(unitMapper::toResponse).toList();
-        }
-
-        @Override
         @Transactional
         public void update(Long id, UpdateUnitRequest request) {
-                Unit unit = unitRepository.findById(id)
-                                .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
-                Area area = areaRepository.findById(request.areaId())
+                Area area = areaRepository.findByIdAndDeletedFalse(request.areaId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
+                Unit unit = unitRepository.findByIdAndDeletedFalse(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
 
-                if (unitRepository.existsByNameIgnoreCaseAndAreaId(request.name(), unit.getArea().getId())
-                                && !unit.getName().equalsIgnoreCase(request.name())) {
-                        throw new DuplicateResourceException("Unit already exists");
+                if (unitRepository.existsByNameIgnoreCaseAndAreaIdAndDeletedFalseAndIdNot(request.name(),
+                                request.areaId(), id)) {
+                        throw new DuplicateResourceException("Unit name already exists");
+                }
+
+                if (unitRepository.existsByCodeIgnoreCaseAndDeletedFalseAndIdNot(
+                                request.code(), id)) {
+                        throw new DuplicateResourceException("Unit code already exists");
                 }
 
                 Equipment mainEquipment = equipmentRepository
-                                .findByCreatorUnitIdAndEquipmentType(id, EquipmentType.MAIN_EQUIPMENT)
+                                .findByCreatorUnitIdAndEquipmentTypeAndDeletedFalse(id, EquipmentType.MAIN_EQUIPMENT)
                                 .orElseThrow(() -> new ResourceNotFoundException("Main equipment not found."));
 
-                if (!mainEquipment.getName().equalsIgnoreCase(request.name())
-                                && equipmentRepository.existsByNameIgnoreCase(request.name())) {
-                        throw new DuplicateResourceException("Equipment already exists");
+                if (equipmentRepository.existsByNameIgnoreCaseAndDeletedFalseAndIdNot(request.name(),
+                                mainEquipment.getId())) {
+                        throw new DuplicateResourceException("Equipment name already exists");
+                }
+
+                if (equipmentRepository.existsByCodeIgnoreCaseAndDeletedFalseAndIdNot(
+                                request.code(), mainEquipment.getId())) {
+                        throw new DuplicateResourceException("Equipment code already exists");
                 }
 
                 UnitAudit unitOldData = unitMapper.copy(unit);
@@ -136,24 +146,36 @@ public class UnitServiceImpl implements UnitService {
         }
 
         @Override
-        @Transactional
-        public void delete(Long id) {
+        public UnitResponse getById(Long id) {
+                Unit unit = unitRepository.findByIdAndDeletedFalse(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
+                return unitMapper.toResponse(unit);
+        }
 
-                Unit unit = unitRepository.findById(id)
+        @Override
+        public List<UnitResponse> getByAreaId(Long areaId) {
+                return unitRepository.findByAreaIdAndDeletedFalse(areaId).stream().map(unitMapper::toResponse).toList();
+        }
+
+        @Override
+        @Transactional
+        public void delete(Long id, Long currentUserId) {
+
+                Unit unit = unitRepository.findByIdAndDeletedFalse(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
 
                 // Any equipment assigned to this unit except its own main equipment?
-                if (equipmentRepository.existsNonCreatorEquipmentByUnitId(id)) {
+                if (equipmentRepository.existsActiveOtherEquipmentByUnitId(id)) {
                         throw new BadRequestException(
                                         "Cannot delete unit. Reassign or remove all equipments first.");
                 }
 
                 Equipment mainEquipment = equipmentRepository
-                                .findByCreatorUnitIdAndEquipmentType(id, EquipmentType.MAIN_EQUIPMENT)
+                                .findByCreatorUnitIdAndEquipmentTypeAndDeletedFalse(id, EquipmentType.MAIN_EQUIPMENT)
                                 .orElseThrow(() -> new ResourceNotFoundException("Main equipment not found."));
 
                 // Main equipment is still shared with other units
-                if (mainEquipment.getUnits().size() > 1) {
+                if (equipmentRepository.existsActiveOtherUnit(mainEquipment.getId(), id)) {
                         throw new BadRequestException(
                                         "Main equipment is assigned to other units. Unassign it first.");
                 }
@@ -161,8 +183,17 @@ public class UnitServiceImpl implements UnitService {
                 audit(BatchAuditAction.DELETED, unitMapper.copy(unit), null);
                 audit(BatchAuditAction.DELETED, equipmentMapper.copy(mainEquipment), null);
 
-                equipmentRepository.delete(mainEquipment);
-                unitRepository.delete(unit);
+                User deletedBy = userRepository.findByIdAndDeletedFalse(currentUserId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Current user not found."));
+                unit.setDeleted(true);
+                unit.setDeletedAt(LocalDateTime.now());
+                unit.setDeletedBy(deletedBy);
+                unitRepository.save(unit);
+
+                mainEquipment.setDeleted(true);
+                mainEquipment.setDeletedAt(LocalDateTime.now());
+                mainEquipment.setDeletedBy(deletedBy);
+                equipmentRepository.save(mainEquipment);
 
         }
 

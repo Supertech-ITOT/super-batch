@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.supertech.superbatch.common.dto.ApiResponse;
+import com.supertech.superbatch.common.security.UserContextService;
 import com.supertech.superbatch.plant.action.dto.ActionResponse;
 import com.supertech.superbatch.plant.action.dto.CreateActionRequest;
 import com.supertech.superbatch.plant.action.dto.UpdateActionRequest;
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin("*")
 public class ActionController {
     private final ActionService actionService;
+    private final UserContextService userContextService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<ActionResponse>>> getAll() {
@@ -59,7 +61,8 @@ public class ActionController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
-        actionService.delete(id);
+        Long currentUserId = userContextService.getCurrentUserId();
+        actionService.delete(id, currentUserId);
         return ResponseEntity.ok(
                 ApiResponse.success("Action deleted successfully", null));
     }

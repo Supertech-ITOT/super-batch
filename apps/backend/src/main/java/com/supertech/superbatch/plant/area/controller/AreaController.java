@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.supertech.superbatch.common.dto.ApiResponse;
+import com.supertech.superbatch.common.security.UserContextService;
 import com.supertech.superbatch.plant.area.dto.AreaResponse;
 import com.supertech.superbatch.plant.area.dto.CreateAreaRequest;
 import com.supertech.superbatch.plant.area.dto.UpdateAreaRequest;
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin("*")
 public class AreaController {
     private final AreaService areaService;
+    private final UserContextService userContextService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> create(@Valid @RequestBody CreateAreaRequest request) {
@@ -66,7 +68,8 @@ public class AreaController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
-        areaService.delete(id);
+        Long userId = userContextService.getCurrentUserId();
+        areaService.delete(id, userId);
         return ResponseEntity.ok(
                 ApiResponse.success("Area deleted successfully", null));
     }

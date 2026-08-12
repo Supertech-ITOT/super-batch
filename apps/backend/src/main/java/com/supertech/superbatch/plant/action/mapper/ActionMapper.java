@@ -9,18 +9,19 @@ import com.supertech.superbatch.plant.action.entity.Action;
 
 @Component
 public class ActionMapper {
-    public ActionResponse toResponse(Action transition) {
-        return new ActionResponse(
-                transition.getId(),
-                transition.getName());
+    public ActionResponse toResponse(Action action) {
+        return ActionResponse.builder()
+                .id(action.getId())
+                .name(action.getName())
+                .build();
     }
 
     public Action toEntity(CreateActionRequest request) {
         return Action.builder().name(request.name()).build();
     }
 
-    public void updateEntity(Action actionMaster, UpdateActionRequest request) {
-        actionMaster.setName(request.name());
+    public void updateEntity(Action action, UpdateActionRequest request) {
+        action.setName(request.name());
     }
 
 }

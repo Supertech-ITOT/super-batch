@@ -1,8 +1,10 @@
 package com.supertech.superbatch.plant.equipment.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.supertech.superbatch.audit.dto.BatchAuditRequest;
 import com.supertech.superbatch.audit.enums.BatchAuditAction;
@@ -12,6 +14,8 @@ import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
+import com.supertech.superbatch.manager.user.entity.User;
+import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.plant.equipment.dto.AssignEquipmentRequest;
 import com.supertech.superbatch.plant.equipment.dto.CreateEquipmentRequest;
 import com.supertech.superbatch.plant.equipment.dto.EquipmentAudit;
@@ -26,24 +30,28 @@ import com.supertech.superbatch.plant.equipment.service.EquipmentService;
 import com.supertech.superbatch.plant.unit.entity.Unit;
 import com.supertech.superbatch.plant.unit.repository.UnitRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class EquipmentServiceImpl implements EquipmentService {
     private final EquipmentRepository equipmentRepository;
     private final UnitRepository unitRepository;
     private final EquipmentMapper equipmentMapper;
     private final BatchAuditService batchAuditService;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
     public void create(CreateEquipmentRequest request) {
-        if (equipmentRepository.existsByNameIgnoreCase(request.name())) {
-            throw new DuplicateResourceException("Equipment already exists");
+        if (equipmentRepository.existsByNameIgnoreCaseAndDeletedFalse(request.name())) {
+            throw new DuplicateResourceException("Equipment name already exists");
         }
-        Unit unit = unitRepository.findById(request.unitId())
+        if (equipmentRepository.existsByCodeIgnoreCaseAndDeletedFalse(request.code())) {
+            throw new DuplicateResourceException("Equipment code already exists");
+        }
+        Unit unit = unitRepository.findByIdAndDeletedFalse(request.unitId())
                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
         Equipment equipment = equipmentMapper.toEntity(request, unit, EquipmentType.SUB_EQUIPMENT);
         equipmentRepository.save(equipment);
@@ -59,31 +67,33 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     public EquipmentResponse getById(Long id) {
-        Equipment equipment = equipmentRepository.findByIdWithRelations(id)
+        Equipment equipment = equipmentRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
         return equipmentMapper.toResponse(equipment);
     }
 
     @Override
     public List<EquipmentResponse> getByUnitId(long unitId) {
-        return equipmentRepository.findByUnitsId(unitId).stream().map(equipmentMapper::toResponse).toList();
+        return equipmentRepository.findByUnitsIdAndDeletedFalse(unitId).stream().map(equipmentMapper::toResponse)
+                .toList();
     }
 
     @Override
     @Transactional
     public void update(Long id, UpdateEquipmentRequest request) {
 
-        Equipment equipment = equipmentRepository.findById(id)
+        Equipment equipment = equipmentRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
 
         if (equipment.getEquipmentType() == EquipmentType.MAIN_EQUIPMENT) {
-            throw new BadRequestException(
-                    "Main equipment can only be updated through its unit.");
+            throw new BadRequestException("Main equipment can only be updated through its unit.");
         }
 
-        if (!equipment.getName().equalsIgnoreCase(request.name())
-                && equipmentRepository.existsByNameIgnoreCase(request.name())) {
-            throw new DuplicateResourceException("Equipment already exists");
+        if (equipmentRepository.existsByNameIgnoreCaseAndDeletedFalseAndIdNot(request.name(), id)) {
+            throw new DuplicateResourceException("Equipment name already exists");
+        }
+        if (equipmentRepository.existsByCodeIgnoreCaseAndDeletedFalseAndIdNot(request.code(), id)) {
+            throw new DuplicateResourceException("Equipment code already exists");
         }
 
         EquipmentAudit oldData = equipmentMapper.copy(equipment);
@@ -94,24 +104,31 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public void delete(Long id) {
-        Equipment equipment = equipmentRepository.findById(id)
+    @Transactional
+    public void delete(Long id, Long currentUserId) {
+        Equipment equipment = equipmentRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
         if (equipment.getEquipmentType() == EquipmentType.MAIN_EQUIPMENT) {
             throw new BadRequestException(
                     "Main equipment cannot be deleted directly. Delete the creator unit to remove this equipment.");
         }
         audit(BatchAuditAction.DELETED, equipmentMapper.copy(equipment), null);
-        equipmentRepository.delete(equipment);
+        User deletedBy = userRepository.findByIdAndDeletedFalse(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("Current user not found."));
+        equipment.setDeleted(true);
+        equipment.setDeletedAt(LocalDateTime.now());
+        equipment.setDeletedBy(deletedBy);
+        equipmentRepository.save(equipment);
     }
 
     @Override
+    @Transactional
     public void assign(AssignEquipmentRequest request) {
 
-        Equipment equipment = equipmentRepository.findByIdWithRelations(request.equipmentId())
+        Equipment equipment = equipmentRepository.findByIdAndDeletedFalse(request.equipmentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
 
-        Unit unit = unitRepository.findById(request.unitId())
+        Unit unit = unitRepository.findByIdAndDeletedFalse(request.unitId())
                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
 
         boolean alreadyAssigned = equipment.getUnits()
@@ -128,9 +145,10 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
+    @Transactional
     public void unassign(UnAssignEquipmentRequest request) {
 
-        Equipment equipment = equipmentRepository.findByIdWithRelations(request.equipmentId())
+        Equipment equipment = equipmentRepository.findByIdAndDeletedFalse(request.equipmentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
 
         if (equipment.getCreatorUnit() != null &&

@@ -76,6 +76,6 @@ export default function AssignEquipmentDialog({ open, onClose, unitId }: Props) 
                     />
                 )}
             />
-            =        </FormDialog>
+        </FormDialog>
     );
 }

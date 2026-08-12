@@ -37,6 +37,7 @@ public class PlantHierarchyServiceImpl implements PlantHierarchyService {
                                                 ? List.of()
                                                 : plant.getAreas()
                                                                 .stream()
+                                                                .filter(area -> !area.isDeleted())
                                                                 .map(this::mapArea)
                                                                 .toList());
         }
@@ -50,6 +51,7 @@ public class PlantHierarchyServiceImpl implements PlantHierarchyService {
                                                 ? List.of()
                                                 : area.getUnits()
                                                                 .stream()
+                                                                .filter(unit -> !unit.isDeleted())
                                                                 .map(this::mapUnit)
                                                                 .toList());
         }
@@ -63,6 +65,7 @@ public class PlantHierarchyServiceImpl implements PlantHierarchyService {
                                                 ? List.of()
                                                 : unit.getEquipments()
                                                                 .stream()
+                                                                .filter(equipment -> !equipment.isDeleted())
                                                                 .map(this::mapEquipment)
                                                                 .toList());
         }

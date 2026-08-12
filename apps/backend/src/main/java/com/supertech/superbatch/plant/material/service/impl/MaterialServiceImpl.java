@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
@@ -21,12 +22,14 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MaterialServiceImpl implements MaterialService {
     private final MaterialRepository materialRepository;
     private final MaterialMapper materialMapper;
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public void create(CreateMaterialRequest request) {
         if (materialRepository.existsByNameIgnoreCaseAndDeletedFalse(request.name())) {
             throw new DuplicateResourceException("Material name already exists");
@@ -54,8 +57,9 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
+    @Transactional
     public void update(Long id, UpdateMaterialRequest request) {
-        Material material = materialRepository.findById(id)
+        Material material = materialRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Material not found"));
 
         if (materialRepository.existsByNameIgnoreCaseAndDeletedFalse(request.name())
@@ -72,11 +76,12 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id, Long currentUserId) {
-        Material material = materialRepository.findById(id)
+        Material material = materialRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Material not found."));
 
-        User deletedBy = userRepository.findById(currentUserId)
+        User deletedBy = userRepository.findByIdAndDeletedFalse(currentUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("Current user not found."));
 
         material.setDeleted(true);

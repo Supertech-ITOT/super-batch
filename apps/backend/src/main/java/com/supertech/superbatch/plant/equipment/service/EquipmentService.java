@@ -24,6 +24,6 @@ public interface EquipmentService {
 
     void update(Long id, UpdateEquipmentRequest request);
 
-    void delete(Long id);
+    void delete(Long id, Long currentUserId);
 
 }

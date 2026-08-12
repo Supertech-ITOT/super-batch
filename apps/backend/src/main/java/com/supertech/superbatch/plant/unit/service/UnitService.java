@@ -17,6 +17,6 @@ public interface UnitService {
 
     void update(Long id, UpdateUnitRequest request);
 
-    void delete(Long id);
+    void delete(Long id, Long currentUserId);
 
 }

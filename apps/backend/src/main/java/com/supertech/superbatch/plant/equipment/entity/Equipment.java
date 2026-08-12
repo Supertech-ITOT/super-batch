@@ -8,12 +8,14 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.plant.equipment.enums.EquipmentType;
 import com.supertech.superbatch.plant.unit.entity.Unit;
 
 import jakarta.persistence.*;
 
 import lombok.*;
+
 @Entity
 @Table(name = "equipment")
 @Getter
@@ -51,15 +53,21 @@ public class Equipment {
 
     @Builder.Default
     @ManyToMany
-    @JoinTable(
-        name = "equipment_unit",
-        joinColumns = @JoinColumn(name = "equipment_id"),
-        inverseJoinColumns = @JoinColumn(name = "unit_id")
-    )
+    @JoinTable(name = "equipment_unit", joinColumns = @JoinColumn(name = "equipment_id"), inverseJoinColumns = @JoinColumn(name = "unit_id"))
     @JsonIgnore
     private Set<Unit> units = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "creator_unit_id", nullable = false)
     private Unit creatorUnit;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean deleted = false;
+
+    private LocalDateTime deletedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deleted_by_id")
+    private User deletedBy;
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.supertech.superbatch.common.dto.ApiResponse;
+import com.supertech.superbatch.common.security.UserContextService;
 import com.supertech.superbatch.plant.transition.dto.CreateTransitionRequest;
 import com.supertech.superbatch.plant.transition.dto.TransitionResponse;
 import com.supertech.superbatch.plant.transition.dto.UpdateTransitionRequest;
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin("*")
 public class TransitionController {
     private final TransitionService transitionService;
+    private final UserContextService userContextService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<TransitionResponse>>> getAll() {
@@ -59,7 +61,8 @@ public class TransitionController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
-        transitionService.delete(id);
+        Long userId = userContextService.getCurrentUserId();
+        transitionService.delete(id, userId);
         return ResponseEntity.ok(
                 ApiResponse.success("Transition deleted successfully", null));
     }

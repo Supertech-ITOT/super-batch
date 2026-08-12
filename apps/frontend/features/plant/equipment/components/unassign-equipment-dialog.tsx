@@ -10,6 +10,7 @@ import FormDialog from "@/common/components/form/form-dialog";
 import FormLoadingButton from "@/common/components/form/form-loading-button";
 import SearchableSelect from "@/common/components/form/searchable-select";
 import { showFormError } from "@/common/lib/show-form-error";
+import { useEffect } from "react";
 
 type Props = {
     open: boolean;
@@ -21,11 +22,18 @@ type Props = {
 export default function UnAssignEquipmentDialog({ open, onClose, unitId, equipmentId }: Props) {
     const { mutateAsync: unAssignEquipment, isPending } = useUnAssignEquipment();
     const { data: equipments, isLoading: equipmentsLoading, } = useGetEquipmentsByUnitId(unitId);
-    const { handleSubmit, reset, control, formState: { isSubmitting, isDirty }, } = useForm<UnAssignEquipmentSchema>({
+    const { handleSubmit, reset, control, formState: { isSubmitting, isDirty }, watch } = useForm<UnAssignEquipmentSchema>({
         resolver: zodResolver(equipmentAssignmentSchema),
         defaultValues: { equipmentId: equipmentId, unitId: unitId }
     });
     const loading = isPending || equipmentsLoading || isSubmitting;
+    const selectedEquipmentId = watch("equipmentId");
+
+    useEffect(() => {
+        if (open) {
+            reset({ equipmentId, unitId });
+        }
+    }, [open, equipmentId, unitId, reset]);
 
     const onSubmit = async (formData: UnAssignEquipmentSchema) => {
         try {
@@ -53,7 +61,7 @@ export default function UnAssignEquipmentDialog({ open, onClose, unitId, equipme
             onClose={handleClose}
             title="UnAssign Equipment"
             description="UnAssign a equipment to unit."
-            submitDisabled={!isDirty}
+            submitDisabled={!unitId || !selectedEquipmentId}
             submitLabel="UnAssign"
             onSubmit={handleSubmit(onSubmit, onInvalid)}
             icon={Cpu}
@@ -66,7 +74,7 @@ export default function UnAssignEquipmentDialog({ open, onClose, unitId, equipme
                         label="Equipment"
                         value={field.value}
                         icon={Cpu}
-                        onChange={field.onChange}
+                        onChange={(value) => field.onChange(value ?? 0)}
                         options={equipments?.map((a) => ({
                             value: a.id,
                             label: a.name,

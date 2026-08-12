@@ -30,10 +30,9 @@ interface SearchableSelectProps {
 function SearchableSelect({ icon: Icon, value, onChange, options, placeholder = "Select", searchPlaceholder = "Search...", emptyText = "No results found.", disabled, label, className, }: SearchableSelectProps) {
     const [open, setOpen] = useState(false);
     const selected = useMemo(
-        () => options.find((o) => o.value === value),
+        () => options.find((o) => String(o.value) === String(value)),
         [options, value]
     );
-
     return (
         <div className="space-y-1">
             {label && (

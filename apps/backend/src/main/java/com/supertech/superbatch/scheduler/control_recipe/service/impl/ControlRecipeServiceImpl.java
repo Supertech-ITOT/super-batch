@@ -149,14 +149,14 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
                                 .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
 
                 Equipment recipeMainEquipment = equipmentRepository
-                                .findByCreatorUnitIdAndEquipmentType(
+                                .findByCreatorUnitIdAndEquipmentTypeAndDeletedFalse(
                                                 recipe.getUnit().getId(),
                                                 EquipmentType.MAIN_EQUIPMENT)
                                 .orElseThrow(() -> new BadRequestException(
                                                 "Recipe default unit does not have a main equipment."));
 
                 Equipment selectedMainEquipment = equipmentRepository
-                                .findByCreatorUnitIdAndEquipmentType(
+                                .findByCreatorUnitIdAndEquipmentTypeAndDeletedFalse(
                                                 unitId,
                                                 EquipmentType.MAIN_EQUIPMENT)
                                 .orElseThrow(() -> new BadRequestException(

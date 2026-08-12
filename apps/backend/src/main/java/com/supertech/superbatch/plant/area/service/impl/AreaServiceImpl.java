@@ -1,8 +1,10 @@
 package com.supertech.superbatch.plant.area.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.supertech.superbatch.audit.dto.BatchAuditRequest;
 import com.supertech.superbatch.audit.enums.BatchAuditAction;
@@ -12,6 +14,8 @@ import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
+import com.supertech.superbatch.manager.user.entity.User;
+import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.plant.area.dto.AreaAudit;
 import com.supertech.superbatch.plant.area.dto.AreaResponse;
 import com.supertech.superbatch.plant.area.dto.CreateAreaRequest;
@@ -24,31 +28,32 @@ import com.supertech.superbatch.plant.plant.entity.Plant;
 import com.supertech.superbatch.plant.plant.repository.PlantRepository;
 import com.supertech.superbatch.plant.unit.repository.UnitRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AreaServiceImpl implements AreaService {
     private final AreaRepository areaRepository;
     private final PlantRepository plantRepository;
     private final UnitRepository unitRepository;
     private final AreaMapper areaMapper;
     private final BatchAuditService batchAuditService;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
     public void create(CreateAreaRequest request) {
 
-        if (areaRepository.existsByNameIgnoreCaseAndPlantId(request.name(), request.plantId())) {
+        if (areaRepository.existsByNameIgnoreCaseAndPlantIdAndDeletedFalse(request.name(), request.plantId())) {
             throw new DuplicateResourceException("Area already exists");
         }
         Plant plant = plantRepository
-                .findById(request.plantId())
+                .findByIdAndDeletedFalse(request.plantId())
                 .orElseThrow(() -> new ResourceNotFoundException("Plant not found"));
         Area area = areaMapper.toEntity(request, plant);
         areaRepository.save(area);
-        audit(BatchAuditAction.UPDATED, null, areaMapper.copy(area));
+        audit(BatchAuditAction.CREATED, null, areaMapper.copy(area));
 
     }
 
@@ -59,25 +64,28 @@ public class AreaServiceImpl implements AreaService {
 
     @Override
     public AreaResponse getById(Long id) {
-        Area area = areaRepository.findWithHierarchyById(id)
+        Area area = areaRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
         return areaMapper.toResponse(area);
     }
 
     @Override
     public List<AreaResponse> getByPlantId(Long plantId) {
-        return areaRepository.findByPlantId(plantId).stream().map(areaMapper::toResponse).toList();
+        return areaRepository.findByPlantIdAndDeletedFalse(plantId).stream().map(areaMapper::toResponse).toList();
     }
 
     @Override
     @Transactional
     public void update(Long id, UpdateAreaRequest request) {
-        Area area = areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area not found"));
-        Plant plant = plantRepository.findById(request.plantId())
+        Area area = areaRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
+        Plant plant = plantRepository.findByIdAndDeletedFalse(request.plantId())
                 .orElseThrow(() -> new ResourceNotFoundException("Plant not found"));
 
-        if (areaRepository.existsByNameIgnoreCaseAndPlantId(request.name(), area.getPlant().getId())
-                && !area.getName().equalsIgnoreCase(request.name())) {
+        if (areaRepository.existsByNameIgnoreCaseAndPlantIdAndDeletedFalseAndIdNot(
+                request.name(),
+                request.plantId(),
+                id)) {
             throw new DuplicateResourceException("Area already exists");
         }
         AreaAudit oldData = areaMapper.copy(area);
@@ -88,13 +96,21 @@ public class AreaServiceImpl implements AreaService {
     }
 
     @Override
-    public void delete(Long id) {
-        if (unitRepository.existsByAreaId(id)) {
+    @Transactional
+    public void delete(Long id, Long currentUserId) {
+        Area area = areaRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
+        if (unitRepository.existsByAreaIdAndDeletedFalse(id)) {
             throw new BadRequestException("Cannot delete area with units");
         }
-        Area area = areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area not found"));
         audit(BatchAuditAction.DELETED, areaMapper.copy(area), null);
-        areaRepository.delete(area);
+        User deletedBy = userRepository.findByIdAndDeletedFalse(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("Current user not found."));
+        area.setDeleted(true);
+        area.setDeletedAt(LocalDateTime.now());
+        area.setDeletedBy(deletedBy);
+        areaRepository.save(area);
+
     }
 
     private void audit(BatchAuditAction action, AreaAudit oldData, AreaAudit newData) {

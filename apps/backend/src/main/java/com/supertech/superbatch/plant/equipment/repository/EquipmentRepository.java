@@ -6,46 +6,63 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.equipment.enums.EquipmentType;
 
 public interface EquipmentRepository extends JpaRepository<Equipment, Long> {
 
-  boolean existsByNameIgnoreCase(String name);
+    boolean existsByNameIgnoreCaseAndDeletedFalse(String name);
 
-  boolean existsByUnitsId(Long unitId);
+    boolean existsByCodeIgnoreCaseAndDeletedFalse(String code);
 
-  @EntityGraph(attributePaths = { "units", "creatorUnit" })
-  List<Equipment> findByUnitsId(Long unitId);
+    boolean existsByNameIgnoreCaseAndDeletedFalseAndIdNot(String name, Long id);
 
-  @EntityGraph(attributePaths = { "units", "creatorUnit" })
-  @Query("select e from Equipment e")
-  List<Equipment> findAllWithRelations();
+    boolean existsByCodeIgnoreCaseAndDeletedFalseAndIdNot(String code, Long id);
 
-  @EntityGraph(attributePaths = { "units", "creatorUnit" })
-  @Query("select e from Equipment e where e.id = :id")
-  Optional<Equipment> findByIdWithRelations(Long id);
+    boolean existsByUnitsIdAndDeletedFalse(Long unitId);
 
-  @Query("""
-          SELECT COUNT(e) > 0
-          FROM Equipment e
-          JOIN e.units u
-          WHERE u.id = :unitId
-            AND e.creatorUnit IS NULL
-      """)
-  boolean existsNonCreatorEquipmentByUnitId(Long unitId);
+    @EntityGraph(attributePaths = { "units", "creatorUnit" })
+    List<Equipment> findByUnitsIdAndDeletedFalse(Long unitId);
 
-  @Query("""
-          SELECT COUNT(e) > 0
-          FROM Equipment e
-          JOIN e.units u
-          WHERE u.id = :unitId
-            AND e.creatorUnit <> u
-      """)
-  boolean existsAssignedEquipmentOtherThanMain(Long unitId);
+    @EntityGraph(attributePaths = { "units", "creatorUnit" })
+    @Query("""
+                SELECT e
+                FROM Equipment e
+                WHERE e.deleted = false
+                ORDER BY e.name ASC
+            """)
+    List<Equipment> findAllWithRelations();
 
-  Optional<Equipment> findByCreatorUnitIdAndEquipmentType(
-      Long creatorUnitId,
-      EquipmentType equipmentType);
+    @EntityGraph(attributePaths = { "units", "creatorUnit" })
+    Optional<Equipment> findByIdAndDeletedFalse(Long id);
+
+    @Query("""
+                SELECT COUNT(e) > 0
+                FROM Equipment e
+                JOIN e.units u
+                WHERE u.id = :unitId
+                  AND e.deleted = false
+                  AND NOT (
+                      e.creatorUnit.id = :unitId
+                      AND e.equipmentType = com.supertech.superbatch.plant.equipment.enums.EquipmentType.MAIN_EQUIPMENT
+                  )
+            """)
+    boolean existsActiveOtherEquipmentByUnitId(Long unitId);
+
+    Optional<Equipment> findByCreatorUnitIdAndEquipmentTypeAndDeletedFalse(
+            Long creatorUnitId,
+            EquipmentType equipmentType);
+
+    @Query("""
+                SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
+                FROM Equipment e
+                JOIN e.units u
+                WHERE e.id = :equipmentId
+                    AND e.deleted = false
+                    AND u.id <> :unitId
+                    AND u.deleted = false
+            """)
+    boolean existsActiveOtherUnit(@Param("equipmentId") Long equipmentId, @Param("unitId") Long unitId);
 }

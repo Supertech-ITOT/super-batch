@@ -1,6 +1,7 @@
 package com.supertech.superbatch.plant.plant.controller;
 
 import com.supertech.superbatch.common.dto.ApiResponse;
+import com.supertech.superbatch.common.security.UserContextService;
 import com.supertech.superbatch.plant.plant.dto.CreatePlantRequest;
 import com.supertech.superbatch.plant.plant.dto.PlantResponse;
 import com.supertech.superbatch.plant.plant.dto.UpdatePlantRequest;
@@ -20,6 +21,7 @@ import java.util.List;
 @CrossOrigin("*")
 public class PlantController {
     private final PlantService plantService;
+    private final UserContextService userContextService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> create(@Valid @RequestBody CreatePlantRequest request) {
@@ -48,7 +50,8 @@ public class PlantController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
-        plantService.delete(id);
+        Long userId = userContextService.getCurrentUserId();
+        plantService.delete(id, userId);
         return ResponseEntity.ok(
                 ApiResponse.success("Plant deleted successfully", null));
     }

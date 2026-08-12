@@ -12,7 +12,7 @@ public interface ParameterService {
 
     void update(Long id, UpdateParameterRequest request);
 
-    void delete(Long id);
+    void delete(Long id, Long currentUserId);
 
     List<ParameterResponse> getAll();
 

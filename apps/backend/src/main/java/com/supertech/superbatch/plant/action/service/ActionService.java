@@ -11,7 +11,7 @@ public interface ActionService {
 
     void update(Long id, UpdateActionRequest request);
 
-    void delete(Long id);
+    void delete(Long id, Long currentUserId);
 
     List<ActionResponse> getAll();
 

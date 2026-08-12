@@ -17,5 +17,5 @@ public interface AreaService {
 
     void update(Long id, UpdateAreaRequest request);
 
-    void delete(Long id);
+    void delete(Long id, Long currentUserId);
 }

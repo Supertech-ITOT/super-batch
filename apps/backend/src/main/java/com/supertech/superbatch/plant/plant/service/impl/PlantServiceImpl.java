@@ -8,6 +8,8 @@ import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
+import com.supertech.superbatch.manager.user.entity.User;
+import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.plant.area.repository.AreaRepository;
 import com.supertech.superbatch.plant.plant.dto.CreatePlantRequest;
 import com.supertech.superbatch.plant.plant.dto.PlantAudit;
@@ -18,23 +20,27 @@ import com.supertech.superbatch.plant.plant.mapper.PlantMapper;
 import com.supertech.superbatch.plant.plant.repository.PlantRepository;
 import com.supertech.superbatch.plant.plant.service.PlantService;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PlantServiceImpl implements PlantService {
     private final PlantRepository plantRepository;
     private final AreaRepository areaRepository;
     private final PlantMapper plantMapper;
     private final BatchAuditService batchAuditService;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
     public void create(CreatePlantRequest request) {
-        if (plantRepository.existsByNameIgnoreCase(request.name())) {
+        if (plantRepository.existsByNameIgnoreCaseAndDeletedFalse(request.name())) {
             throw new DuplicateResourceException("Plant already exists");
         }
         Plant plant = plantMapper.toEntity(request);
@@ -50,7 +56,7 @@ public class PlantServiceImpl implements PlantService {
 
     @Override
     public PlantResponse getById(Long id) {
-        Plant plant = plantRepository.findWithHierarchyById(id)
+        Plant plant = plantRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Plant not found"));
         return plantMapper.toResponse(plant);
     }
@@ -58,8 +64,9 @@ public class PlantServiceImpl implements PlantService {
     @Override
     @Transactional
     public void update(Long id, UpdatePlantRequest request) {
-        Plant plant = plantRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Plant not found"));
-        if (plantRepository.existsByNameIgnoreCase(request.name())
+        Plant plant = plantRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Plant not found"));
+        if (plantRepository.existsByNameIgnoreCaseAndDeletedFalse(request.name())
                 && !plant.getName().equalsIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Plant already exists");
         }
@@ -71,13 +78,20 @@ public class PlantServiceImpl implements PlantService {
     }
 
     @Override
-    public void delete(Long id) {
-        if (areaRepository.existsByPlantId(id)) {
+    @Transactional
+    public void delete(Long id, Long currentUserId) {
+        Plant plant = plantRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Plant not found"));
+        if (areaRepository.existsByPlantIdAndDeletedFalse(id)) {
             throw new BadRequestException("Cannot delete plant with areas");
         }
-        Plant plant = plantRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Plant not found"));
         audit(BatchAuditAction.DELETED, plantMapper.copy(plant), null);
-        plantRepository.delete(plant);
+        User deletedBy = userRepository.findByIdAndDeletedFalse(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("Current user not found."));
+        plant.setDeleted(true);
+        plant.setDeletedAt(LocalDateTime.now());
+        plant.setDeletedBy(deletedBy);
+        plantRepository.save(plant);
     }
 
     private void audit(BatchAuditAction action, PlantAudit oldData, PlantAudit newData) {

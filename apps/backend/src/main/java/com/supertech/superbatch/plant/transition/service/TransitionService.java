@@ -12,7 +12,7 @@ public interface TransitionService {
 
     void update(Long id, UpdateTransitionRequest request);
 
-    void delete(Long id);
+    void delete(Long id, Long currentUserId);
 
     List<TransitionResponse> getAll();
 

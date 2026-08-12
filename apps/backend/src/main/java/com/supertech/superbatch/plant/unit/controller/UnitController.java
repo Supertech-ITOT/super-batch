@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.supertech.superbatch.common.dto.ApiResponse;
+import com.supertech.superbatch.common.security.UserContextService;
 import com.supertech.superbatch.plant.unit.dto.CreateUnitRequest;
 import com.supertech.superbatch.plant.unit.dto.UnitResponse;
 import com.supertech.superbatch.plant.unit.dto.UpdateUnitRequest;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin("*")
 public class UnitController {
     private final UnitService unitService;
+    private final UserContextService userContextService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> create(@Valid @RequestBody CreateUnitRequest request) {
@@ -58,7 +60,8 @@ public class UnitController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
-        unitService.delete(id);
+        Long userId = userContextService.getCurrentUserId();
+        unitService.delete(id, userId);
         return ResponseEntity.ok(
                 ApiResponse.success("Unit deleted successfully", null));
     }

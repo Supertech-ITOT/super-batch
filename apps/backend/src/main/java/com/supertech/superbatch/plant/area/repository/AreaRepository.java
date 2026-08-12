@@ -12,20 +12,23 @@ import com.supertech.superbatch.plant.area.entity.Area;
 public interface AreaRepository extends JpaRepository<Area, Long> {
 
     @EntityGraph(attributePaths = { "plant", "units", "units.equipments" })
-    Optional<Area> findWithHierarchyById(Long id);
+    Optional<Area> findByIdAndDeletedFalse(Long id);
 
     @EntityGraph(attributePaths = { "plant", "units", "units.equipments" })
-    List<Area> findByPlantId(Long plantId);
+    List<Area> findByPlantIdAndDeletedFalse(Long plantId);
 
     @EntityGraph(attributePaths = { "plant", "units", "units.equipments" })
     @Query("""
             SELECT a
             FROM Area a
+            WHERE a.deleted = false
             ORDER BY a.name ASC
             """)
     List<Area> findAllHierarchy();
 
-    boolean existsByNameIgnoreCaseAndPlantId(String name, Long plantId);
+    boolean existsByNameIgnoreCaseAndPlantIdAndDeletedFalse(String name, Long plantId);
 
-    boolean existsByPlantId(Long plantId);
+    boolean existsByNameIgnoreCaseAndPlantIdAndDeletedFalseAndIdNot(String name, Long plantId, Long id);
+
+    boolean existsByPlantIdAndDeletedFalse(Long plantId);
 }
