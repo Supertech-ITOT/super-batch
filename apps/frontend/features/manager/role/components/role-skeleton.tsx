@@ -18,7 +18,7 @@ export default function RoleSkeleton() {
 
             {/* Full Table Skeleton */}
             <div className="flex-1 min-h-0">
-                <Skeleton className="h-full w-full rounded-xl" />
+                <Skeleton className="min-h-125 rounded-xl" />
             </div>
         </div>
     )

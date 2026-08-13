@@ -1,8 +1,10 @@
 package com.supertech.superbatch.recipe.recipe.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.supertech.superbatch.audit.dto.BatchAuditRequest;
 import com.supertech.superbatch.audit.enums.BatchAuditAction;
@@ -26,16 +28,13 @@ import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 import com.supertech.superbatch.recipe.recipe.mapper.RecipeMapper;
 import com.supertech.superbatch.recipe.recipe.repository.RecipeRepository;
 import com.supertech.superbatch.recipe.recipe.service.RecipeService;
-import com.supertech.superbatch.scheduler.control_recipe.repository.ControlRecipeRepository;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-
+@Transactional(readOnly = true)
 public class RecipeServiceImpl implements RecipeService {
         private final RecipeRepository recipeRepository;
-        private final ControlRecipeRepository controlRecipeRepository;
         private final MaterialRepository materialRepository;
         private final UnitRepository unitRepository;
         private final RecipeMapper recipeMapper;
@@ -43,26 +42,29 @@ public class RecipeServiceImpl implements RecipeService {
         private final BatchAuditService batchAuditService;
 
         @Override
-        public void delete(Long id) {
-                Recipe recipe = recipeRepository.findByIdWithRelations(id)
+        @Transactional
+        public void delete(Long id, Long currentUserId) {
+                Recipe recipe = recipeRepository.findByIdAndDeletedFalse(id)
                                 .orElseThrow(() -> new RuntimeException("Recipe not found."));
 
-                long count = controlRecipeRepository.countByRecipeId(id);
-                if (count > 0) {
-                        throw new BadRequestException(
-                                        "Cannot delete recipe because it is used by " + count + " Control Recipe(s).");
-                }
+                User deletedBy = userRepository.findByIdAndDeletedFalse(currentUserId)
+                                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
+                recipe.setDeletedBy(deletedBy);
+                recipe.setDeleted(true);
+                recipe.setDeletedAt(LocalDateTime.now());
+                recipeRepository.save(recipe);
                 audit(BatchAuditAction.DELETED, recipeMapper.copy(recipe), null);
-                recipeRepository.delete(recipe);
+
         }
 
         @Override
+        @Transactional
         public void create(CreateRecipeRequest request, Long userId) {
-                if (recipeRepository.existsByNameIgnoreCase(request.name())) {
+                if (recipeRepository.existsByNameIgnoreCaseAndDeletedFalse(request.name())) {
                         throw new DuplicateResourceException("Recipe already exists.");
                 }
-                Material material = materialRepository.findById(request.materialId())
+                Material material = materialRepository.findByIdAndDeletedFalse(request.materialId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Product not found."));
 
                 Unit unit = unitRepository.findByIdAndDeletedFalse(request.unitId())
@@ -70,7 +72,7 @@ public class RecipeServiceImpl implements RecipeService {
                 if (request.batchSize() > unit.getCapacity()) {
                         throw new BadRequestException("Batch size must be below unit capacity.");
                 }
-                User user = userRepository.findById(userId)
+                User user = userRepository.findByIdAndDeletedFalse(userId)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
                 Recipe recipe = recipeMapper.toEntity(request, material, user, unit);
@@ -91,22 +93,23 @@ public class RecipeServiceImpl implements RecipeService {
 
         @Override
         public RecipeResponse getById(Long id) {
-                Recipe recipe = recipeRepository.findByIdWithRelations(id)
-                                .orElseThrow(() -> new RuntimeException("Recipe not found."));
+                Recipe recipe = recipeRepository.findByIdAndDeletedFalse(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
                 return recipeMapper.toResponse(recipe);
         }
 
         @Override
+        @Transactional
         public void update(Long id, UpdateRecipeRequest request) {
-                Material material = materialRepository.findById(request.materialId())
+                Material material = materialRepository.findByIdAndDeletedFalse(request.materialId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Material not found."));
-                Recipe recipe = recipeRepository.findByIdWithRelations(id)
-                                .orElseThrow(() -> new RuntimeException("Recipe not found."));
+                Recipe recipe = recipeRepository.findByIdAndDeletedFalse(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
 
                 if (request.batchSize() > recipe.getUnit().getCapacity()) {
                         throw new BadRequestException("Batch size must be below unit capacity.");
                 }
-                if (recipeRepository.existsByNameIgnoreCase(request.name()) &&
+                if (recipeRepository.existsByNameIgnoreCaseAndDeletedFalse(request.name()) &&
                                 !recipe.getName().equalsIgnoreCase(request.name())) {
                         throw new DuplicateResourceException("Recipe already exists.");
                 }

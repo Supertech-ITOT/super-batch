@@ -15,7 +15,7 @@ export default function MessageSkeleton() {
             </div>
             <Separator className="my-2" />
             <div className="flex-1 min-h-0">
-                <Skeleton className="h-full w-full rounded-xl" />
+                <Skeleton className="h-full w-full rounded-xl min-h-125" />
             </div>
         </div>
     );

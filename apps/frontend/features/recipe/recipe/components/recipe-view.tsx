@@ -1,15 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import DataTable from "./data-table";
 import { useGetRecipes } from "../hooks/use-recipe";
-import { Skeleton } from "@/common/components/ui/skeleton";
-import { Separator } from "@/common/components/ui/separator";
 import CreateRecipeDialog from "./create-recipe-dialog";
 import UpdateRecipeDialog from "./update-recipe-dialog";
 import DeleteRecipeDialog from "./delete-recipe-dialog";
-import RecipeColumns from "./columns";
 import { useRouter } from "next/navigation";
+import FeedbackState from "@/common/components/feedback-state";
+import RecipeSkeleton from "./recipe-skeleton";
+import DataTableSearch from "@/common/components/data-table/data-table-search";
+import { Button } from "@/common/components/ui/button";
+import { Plus } from "lucide-react";
+import { DataTable } from "@/common/components/data-table/data-table";
+import columns from "./columns";
 
 export type DialogProp = {
     action: "create" | "edit" | "delete" | null;
@@ -20,36 +23,37 @@ export type DialogProp = {
 export default function RecipeView() {
     const [dialog, setDialog] = useState<DialogProp>({ action: null, id: null, open: false, });
     const closeDialog = () => setDialog({ open: false, action: null, id: null, });
-    const { data: recipes, isLoading } = useGetRecipes();
+    const { data: recipes, isLoading: recipesIsLoading, isError: recipesIsError } = useGetRecipes();
+    const loading = recipesIsLoading;
+    const error = recipesIsError;
     const router = useRouter();
-
-    if (!recipes || isLoading) {
-        return (
-
-            <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none flex flex-col">
-                <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                        <Skeleton className="h-10 w-80" />
-                        <Skeleton className="h-10 w-32" />
-                    </div>
-                </div>
-                <Separator className="my-4" />
-                <div className="flex-1 min-h-0">
-                    <Skeleton className="h-full w-full rounded-lg" />
-                </div>
-            </div>
-        )
+    if (loading) {
+        return (<RecipeSkeleton />);
+    }
+    if (error) {
+        return <FeedbackState variant="error" />;
+    }
+    if (!recipes) {
+        return <FeedbackState variant="empty" />;
     }
 
     return (
-        <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none flex-col">
-            <div className="flex-1 min-h-0 my-4">
-                <DataTable
-                    columns={RecipeColumns(setDialog, router)}
-                    data={recipes}
-                    setDialog={setDialog}
-                />
-            </div>
+        <div className="flex flex-col rounded-2xl border shadow  bg-card p-2 sm:p-4 flex-1">
+            <DataTable
+                columns={columns(setDialog, router)}
+                data={recipes ?? []}
+                rowClassName="h-20"
+                pageSize={10}
+                toolbar={(table) => (
+                    <div className="flex items-center gap-2">
+                        <DataTableSearch table={table} column="recipe" placeholder="Search recipes..." />
+                        <Button className="ml-auto text-white h-8 sm:h-10" onClick={() => setDialog({ open: true, action: "create", id: null })}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Recipe
+                        </Button>
+                    </div>
+                )}
+            />
             {
                 <>
                     {dialog.action === "create" && (

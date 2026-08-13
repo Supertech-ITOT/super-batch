@@ -17,6 +17,9 @@ export const columns = (
             id: "srNo",
             header: "Sr. No.",
             cell: ({ row }) => row.index + 1,
+            meta: {
+                align: "center",
+            },
         },
 
         {
@@ -85,8 +88,13 @@ export const columns = (
                 return (
                     <div className="flex items-center gap-3">
                         <UserAvatar name={user.name} />
-                        <div className="flex flex-col text-left">
-                            <span className="font-medium">{user.name}</span>
+                        <div className="flex flex-col text-left flex-1">
+                            <div className="flex justify-between items-center">
+                                <span className="font-medium">{user.name}</span>
+                                <Badge className={getColorByText(user.role)}>
+                                    {user.role}
+                                </Badge>
+                            </div>
                             <span className="text-xs text-muted-foreground">{user.email} </span>
                         </div>
                     </div>
@@ -96,7 +104,10 @@ export const columns = (
 
         {
             id: "modified",
-            header: "Modified",
+            header: "Last Modified",
+            meta: {
+                align: "center",
+            },
             cell: ({ row }) => {
                 const value =
                     row.original.updatedAt || row.original.createdAt;

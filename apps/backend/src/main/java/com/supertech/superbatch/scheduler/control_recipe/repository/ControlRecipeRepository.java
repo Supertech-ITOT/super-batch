@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.supertech.superbatch.scheduler.control_recipe.entity.ControlRecipe;
 
 public interface ControlRecipeRepository extends JpaRepository<ControlRecipe, Long> {
-        @Query("SELECT crh FROM ControlRecipe crh")
+        @Query("SELECT crh FROM ControlRecipe crh WHERE crh.deleted = false")
         @EntityGraph(attributePaths = {
                         "unit",
 
@@ -27,7 +27,7 @@ public interface ControlRecipeRepository extends JpaRepository<ControlRecipe, Lo
         })
         List<ControlRecipe> findAllWithRelations();
 
-        @Query("SELECT crh FROM ControlRecipe crh WHERE crh.id = :id")
+        @Query("SELECT crh FROM ControlRecipe crh WHERE crh.id = :id AND crh.deleted = false")
         @EntityGraph(attributePaths = {
                         "unit",
 
@@ -52,16 +52,10 @@ public interface ControlRecipeRepository extends JpaRepository<ControlRecipe, Lo
                         "sops.parameters",
                         "sops.parameters.parameter"
         })
-        Optional<ControlRecipe> findByIdWithRelations(Long id);
+        Optional<ControlRecipe> findByIdAndDeletedFalse(Long id);
 
-        List<ControlRecipe> findByRecipeId(Long recipeId);
+        boolean existsByBatchNoIgnoreCaseAndDeletedFalse(String batchNo);
 
-        boolean existsByBatchNoIgnoreCase(String batchNo);
-
-        boolean existsByBatchNoIgnoreCaseAndIdNot(String batchNo, Long id);
-
-        boolean existsByRecipeId(Long recipeId);
-
-        long countByRecipeId(Long recipeId);
+        boolean existsByBatchNoIgnoreCaseAndIdNotAndDeletedFalse(String batchNo, Long id);
 
 }

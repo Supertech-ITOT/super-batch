@@ -16,7 +16,7 @@ public interface ControlRecipeService {
 
     void update(Long id, UpdateControlRecipeRequest request);
 
-    void delete(Long id);
+    void delete(Long id, Long currentUserId);
 
     List<EquipmentMappingResponse> getRecipeEquipments(Long recipeId, Long unitId);
 

@@ -231,7 +231,7 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
         }
 
         private Recipe getRecipe(Long id) {
-                return recipeRepository.findByIdWithRelations(id)
+                return recipeRepository.findByIdAndDeletedFalse(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
         }
 

@@ -4,8 +4,9 @@ import lombok.Builder;
 
 @Builder
 public record UserRecipeResponse(
-        Long id,
-        String name,
-        String email) {
+                Long id,
+                String name,
+                String email,
+                String role) {
 
 }

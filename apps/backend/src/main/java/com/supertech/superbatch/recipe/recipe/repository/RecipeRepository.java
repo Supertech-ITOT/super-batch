@@ -10,15 +10,14 @@ import org.springframework.data.jpa.repository.Query;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
-    @Query("SELECT rh FROM Recipe rh")
-    @EntityGraph(attributePaths = { "material", "unit", "createdBy" })
+    @Query("SELECT r FROM Recipe r WHERE r.deleted = false")
+    @EntityGraph(attributePaths = { "material", "unit", "createdBy", "createdBy.role" })
     List<Recipe> findAllWithRelations();
 
-    @Query("SELECT rh FROM Recipe rh WHERE rh.id = :id")
+    @Query("SELECT r FROM Recipe r WHERE r.id = :id AND r.deleted = false")
     @EntityGraph(attributePaths = {
             "unit",
             "material",
-
             "createdBy",
             "createdBy.role",
 
@@ -33,11 +32,11 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             "sops.parameters",
             "sops.parameters.parameter"
     })
-    Optional<Recipe> findByIdWithRelations(Long id);
+    Optional<Recipe> findByIdAndDeletedFalse(Long id);
 
-    boolean existsByNameIgnoreCase(String name);
+    boolean existsByNameIgnoreCaseAndDeletedFalse(String name);
 
-    @Query(" SELECT DISTINCT r FROM Recipe r WHERE r.id = :id")
+    @Query(" SELECT DISTINCT r FROM Recipe r WHERE r.id = :id AND r.deleted = false")
     @EntityGraph(attributePaths = { "sops", "sops.fromEquipment", "sops.toEquipment", "unit" })
     Optional<Recipe> findByIdWithSopsAndEquipment(Long id);
 

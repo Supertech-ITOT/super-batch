@@ -60,6 +60,7 @@ public class RecipeMapper {
                 .id(users.getId())
                 .name(users.getName())
                 .email(users.getEmail())
+                .role(users.getRole().getName())
                 .build();
     }
 

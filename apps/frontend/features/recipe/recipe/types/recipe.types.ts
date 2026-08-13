@@ -49,6 +49,7 @@ export interface UserRecipeResponse {
     id: number;
     name: string;
     email: string;
+    role: string;
 }
 
 export enum RecipeStatus {

@@ -1,13 +1,15 @@
 package com.supertech.superbatch.scheduler.control_recipe.service.impl;
 
 import com.supertech.superbatch.scheduler.control_recipe.dto.ControlRecipeAudit;
-import java.util.Collections;
+
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.supertech.superbatch.audit.dto.BatchAuditRequest;
 import com.supertech.superbatch.audit.enums.BatchAuditAction;
@@ -29,7 +31,6 @@ import com.supertech.superbatch.plant.unit.entity.Unit;
 import com.supertech.superbatch.plant.unit.repository.UnitRepository;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 import com.supertech.superbatch.recipe.recipe.repository.RecipeRepository;
-import com.supertech.superbatch.recipe.recipe_sop.entity.RecipeSOP;
 import com.supertech.superbatch.scheduler.control_recipe.dto.ControlRecipeResponse;
 import com.supertech.superbatch.scheduler.control_recipe.dto.CreateControlRecipeRequest;
 import com.supertech.superbatch.scheduler.control_recipe.dto.EquipmentMappingRequest;
@@ -44,7 +45,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-
+@Transactional(readOnly = true)
 public class ControlRecipeServiceImpl implements ControlRecipeService {
         private final UserRepository userRepository;
         private final UnitRepository unitRepository;
@@ -57,34 +58,37 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
         private final BatchAuditService batchAuditService;
 
         @Override
-        public void delete(Long id) {
-                ControlRecipe controlRecipe = controlRecipeRepository.findByIdWithRelations(id)
-                                .orElseThrow(() -> new RuntimeException("Control Recipe not found."));
+        @Transactional
+        public void delete(Long id, Long currentUserId) {
+                ControlRecipe controlRecipe = getControlRecipe(id);
+                User deletedBy = getUser(currentUserId, "User not found.");
+                controlRecipe.setDeleted(true);
+                controlRecipe.setDeletedAt(LocalDateTime.now());
+                controlRecipe.setDeletedBy(deletedBy);
+                controlRecipeRepository.save(controlRecipe);
                 audit(BatchAuditAction.DELETED, null, controlRecipeMapper.copy(controlRecipe));
-                controlRecipeRepository.delete(controlRecipe);
         }
 
         @Override
+        @Transactional
         public void create(CreateControlRecipeRequest request, Long userId) {
-                if (controlRecipeRepository.existsByBatchNoIgnoreCase(request.batchNo())) {
+                if (controlRecipeRepository.existsByBatchNoIgnoreCaseAndDeletedFalse(request.batchNo())) {
                         throw new DuplicateResourceException("Batch No already exists.");
                 }
 
-                Recipe recipe = recipeRepository.findByIdWithRelations(request.recipeId())
+                Recipe recipe = recipeRepository.findByIdAndDeletedFalse(request.recipeId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
 
-                Unit unit = unitRepository.findById(request.unitId())
+                Unit unit = unitRepository.findByIdAndDeletedFalse(request.unitId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found."));
 
                 if (request.batchSize() > unit.getCapacity()) {
                         throw new BadRequestException("Batch size must be under unit capacity.");
                 }
 
-                User createdBy = userRepository.findById(userId)
-                                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+                User createdBy = getUser(userId, "User not found.");
 
-                User shiftIncharge = userRepository.findById(request.shiftInchargeId())
-                                .orElseThrow(() -> new ResourceNotFoundException("Shift Incharge User not found."));
+                User shiftIncharge = getUser(request.shiftInchargeId(), "Shift Incharge User not found.");
 
                 boolean requiresMapping = !recipe.getUnit().getId().equals(request.unitId());
                 if (requiresMapping &&
@@ -93,7 +97,7 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
                 }
 
                 List<Equipment> equipmentLists = request.equipmentMappings() == null
-                                ? Collections.emptyList()
+                                ? List.of()
                                 : equipmentRepository.findAllById(request.equipmentMappings().stream()
                                                 .map(EquipmentMappingRequest::executionEquipmentId).toList());
 
@@ -107,34 +111,32 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
 
         @Override
         public List<ControlRecipeResponse> getAll() {
-                List<ControlRecipe> controlRecipes = controlRecipeRepository.findAllWithRelations();
-                List<ControlRecipeResponse> controlRecipeResponses = controlRecipes.stream()
+                return controlRecipeRepository.findAllWithRelations()
+                                .stream()
                                 .sorted(Comparator.comparing(ControlRecipe::getScheduledAt).reversed())
-                                .map(controlRecipeMapper::toResponse).toList();
-                return controlRecipeResponses;
+                                .map(controlRecipeMapper::toResponse)
+                                .toList();
         }
 
         @Override
         public ControlRecipeResponse getById(Long id) {
-                ControlRecipe controlRecipe = controlRecipeRepository.findByIdWithRelations(id)
-                                .orElseThrow(() -> new RuntimeException(" Control Recipe not found."));
+                ControlRecipe controlRecipe = getControlRecipe(id);
                 return controlRecipeMapper.toResponse(controlRecipe);
         }
 
         @Override
+        @Transactional
         public void update(Long id, UpdateControlRecipeRequest request) {
-                if (controlRecipeRepository.existsByBatchNoIgnoreCaseAndIdNot(request.batchNo(), id)) {
+                if (controlRecipeRepository.existsByBatchNoIgnoreCaseAndIdNotAndDeletedFalse(request.batchNo(), id)) {
                         throw new DuplicateResourceException("Batch No already exist.");
                 }
-                ControlRecipe controlRecipe = controlRecipeRepository.findByIdWithRelations(id)
-                                .orElseThrow(() -> new RuntimeException("Control Recipe not found."));
+                ControlRecipe controlRecipe = getControlRecipe(id);
 
                 if (controlRecipe.getStatus().equals(ControlRecipeStatus.TRANSFERRED)) {
                         throw new BadRequestException("Transferred batch cannot be edit again.");
                 }
 
-                User shiftIncharge = userRepository.findById(request.shiftInchargeId())
-                                .orElseThrow(() -> new ResourceNotFoundException("Shift Incharge User not found."));
+                User shiftIncharge = getUser(request.shiftInchargeId(), "Shift Incharge User not found.");
                 ControlRecipeAudit oldData = controlRecipeMapper.copy(controlRecipe);
                 controlRecipeMapper.updateEntity(controlRecipe, request, shiftIncharge);
                 controlRecipeRepository.save(controlRecipe);
@@ -143,6 +145,7 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
         }
 
         @Override
+        @Transactional
         public List<EquipmentMappingResponse> getRecipeEquipments(Long recipeId, Long unitId) {
 
                 Recipe recipe = recipeRepository.findByIdWithSopsAndEquipment(recipeId)
@@ -162,18 +165,7 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
                                 .orElseThrow(() -> new BadRequestException(
                                                 "Selected unit does not have a main equipment."));
 
-                Set<Equipment> equipments = new LinkedHashSet<>();
-
-                for (RecipeSOP step : recipe.getSops()) {
-
-                        if (step.getFromEquipment() != null) {
-                                equipments.add(step.getFromEquipment());
-                        }
-
-                        if (step.getToEquipment() != null) {
-                                equipments.add(step.getToEquipment());
-                        }
-                }
+                Set<Equipment> equipments = getRecipeEquipments(recipe);
 
                 return equipments.stream()
                                 .map(eq -> {
@@ -193,16 +185,41 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
         }
 
         @Override
+        @Transactional
         public void transfer(Long id) {
-                ControlRecipe controlRecipe = controlRecipeRepository.findByIdWithRelations(id)
-                                .orElseThrow(() -> new RuntimeException("Control Recipe not found."));
+                ControlRecipe controlRecipe = getControlRecipe(id);
                 if (controlRecipe.getStatus() == ControlRecipeStatus.TRANSFERRED) {
-                        throw new RuntimeException("Already transferred.");
+                        throw new ResourceNotFoundException("Already transferred.");
                 }
                 Batch batch = batchMapper.toEntity(controlRecipe);
                 batchRepository.save(batch);
                 controlRecipe.setStatus(ControlRecipeStatus.TRANSFERRED);
                 controlRecipeRepository.save(controlRecipe);
+        }
+
+        private Set<Equipment> getRecipeEquipments(Recipe recipe) {
+                Set<Equipment> equipments = new LinkedHashSet<>();
+
+                recipe.getSops().forEach(step -> {
+                        if (step.getFromEquipment() != null) {
+                                equipments.add(step.getFromEquipment());
+                        }
+                        if (step.getToEquipment() != null) {
+                                equipments.add(step.getToEquipment());
+                        }
+                });
+
+                return equipments;
+        }
+
+        private ControlRecipe getControlRecipe(Long id) {
+                return controlRecipeRepository.findByIdAndDeletedFalse(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Control Recipe not found."));
+        }
+
+        private User getUser(Long id, String message) {
+                return userRepository.findByIdAndDeletedFalse(id)
+                                .orElseThrow(() -> new ResourceNotFoundException(message));
         }
 
         private void audit(BatchAuditAction action, ControlRecipeAudit oldData, ControlRecipeAudit newData) {

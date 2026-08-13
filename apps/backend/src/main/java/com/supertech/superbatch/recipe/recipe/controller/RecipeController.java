@@ -58,7 +58,8 @@ public class RecipeController {
 
         @DeleteMapping("/{id}")
         public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
-                recipeService.delete(id);
+                Long userId = userContextService.getCurrentUserId();
+                recipeService.delete(id, userId);
                 return ResponseEntity.ok(ApiResponse.success("Recipe deleted successfully", null));
         }
 }

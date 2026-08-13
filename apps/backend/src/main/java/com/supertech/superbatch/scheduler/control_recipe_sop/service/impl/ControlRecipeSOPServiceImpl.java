@@ -249,7 +249,7 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
         }
 
         private ControlRecipe getControlRecipe(Long id) {
-                return controlRecipeRepository.findByIdWithRelations(id)
+                return controlRecipeRepository.findByIdAndDeletedFalse(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Control recipe not found."));
         }
 

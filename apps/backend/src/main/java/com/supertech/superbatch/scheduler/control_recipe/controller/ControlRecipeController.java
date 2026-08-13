@@ -63,7 +63,8 @@ public class ControlRecipeController {
 
         @DeleteMapping("/{id}")
         public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
-                controlRecipeService.delete(id);
+                Long userId = userContextService.getCurrentUserId();
+                controlRecipeService.delete(id, userId);
                 return ResponseEntity.ok(ApiResponse.success("Scheduled Batch deleted successfully", null));
         }
 
