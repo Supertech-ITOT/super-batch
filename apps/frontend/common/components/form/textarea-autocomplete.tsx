@@ -1,7 +1,9 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState, } from "react";
-import { SparklesIcon } from "lucide-react";
+import { Icon, LucideIcon, SparklesIcon } from "lucide-react";
 import { Textarea } from "@/common/components/ui/textarea";
 import { cn } from "@/common/lib/utils";
+import { Label } from "../ui/label";
+import CharacterProgress from "./character-progress";
 
 export interface TextareaAutocompleteOption {
     id: number | string;
@@ -18,9 +20,13 @@ interface TextareaAutocompleteProps {
     className?: string;
     emptyMessage?: string;
     maxSuggestions?: number;
+    icon?: LucideIcon
+    counter?: boolean;
+    maxCharacters?: number;
+    label?: string;
 }
 
-function TextareaAutocomplete({ value, onChange, options, placeholder, disabled, maxLength, className, emptyMessage = "No matching suggestions", maxSuggestions = 8, }: TextareaAutocompleteProps) {
+function TextareaAutocomplete({ icon: Icon, value, onChange, options, placeholder, counter, maxCharacters, label, disabled, maxLength, className, emptyMessage = "No matching suggestions", maxSuggestions = 8 }: TextareaAutocompleteProps) {
     const [open, setOpen] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -113,24 +119,45 @@ function TextareaAutocomplete({ value, onChange, options, placeholder, disabled,
         },
         [search]
     );
-
+    const text = typeof value === "string" ? value : "";
     return (
-        <div className="relative w-full min-w-0">
-            <Textarea
-                value={value ?? ""}
-                placeholder={placeholder}
-                disabled={disabled}
-                maxLength={maxLength}
-                className={cn(
-                    "w-full min-w-0 max-w-full resize-none break-all wrap-anywhere",
-                    className
+        <div className="relative w-full min-w-0 space-y-1">
+            {(label || counter) && (
+                <div className="flex items-center justify-between">
+                    {label ? (
+                        <Label className="text-sm font-medium">
+                            {label}
+                        </Label>
+                    ) : (
+                        <div />
+                    )}
+
+                    {counter && maxCharacters && (
+                        <CharacterProgress value={text} max={maxCharacters} />
+                    )}
+                </div>
+            )}
+            <div className="relative">
+                {Icon && (
+                    <Icon className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 )}
-                wrap="hard"
-                onChange={handleChange}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-                onKeyDown={handleKeyDown}
-            />
+                <Textarea
+                    value={value ?? ""}
+                    placeholder={placeholder}
+                    disabled={disabled}
+                    maxLength={maxLength}
+                    className={cn(
+                        "w-full min-w-0 max-w-full resize-none break-all wrap-anywhere scrollbar-none",
+                        Icon && "pl-10",
+                        className
+                    )}
+                    wrap="hard"
+                    onChange={handleChange}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                    onKeyDown={handleKeyDown}
+                />
+            </div>
 
             {open && (
                 <div className="absolute inset-x-0 top-full z-50 mt-2 overflow-hidden rounded-lg border bg-background shadow-lg">

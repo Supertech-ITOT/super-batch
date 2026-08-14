@@ -1,21 +1,21 @@
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
+"use client";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateRecipeSchema, createRecipeSchema, RecipeSchemaLimit } from "../schemas/recipe-schema";
+import { CreateRecipeSchema, createRecipeSchema, recipeDefaultValues, RecipeSchemaLimit } from "../schemas/recipe-schema";
 import { useCreateRecipe } from "../hooks/use-recipe";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
-import { Label } from "@/common/components/ui/label";
-import CharacterProgress from "@/common/components/form/character-progress";
-import { Input } from "@/common/components/ui/input";
-import { Textarea } from "@/common/components/ui/textarea";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/common/components/ui/select";
-import { Button } from "@/common/components/ui/button";
-import { Loader } from "lucide-react";
+import { BookOpenText, Boxes, Circle, CircleDot, Feather, PackageCheck, Scale } from "lucide-react";
 import { useGetMaterials } from "@/features/plant/material/hooks/use-materials";
 import { useGetUnits } from "@/features/plant/unit/hooks/use-units";
 import { useGetRecipeStatusTypes } from "@/features/common/hooks/useMetadata";
 import { MaterialType } from "@/features/plant/material/types/material.types";
+import { TextInput } from "@/common/components/form/text-input";
+import { TextAreaInput } from "@/common/components/form/text-area-input";
+import SearchableSelect from "@/common/components/form/searchable-select";
+import { NumberInput } from "@/common/components/form/number-input";
+import FormDialog from "@/common/components/form/form-dialog";
+import { showFormError } from "@/common/lib/show-form-error";
 
 type Props = { open: boolean; onClose: () => void; };
 export default function CreateRecipeDialog({ open, onClose }: Props) {
@@ -25,7 +25,7 @@ export default function CreateRecipeDialog({ open, onClose }: Props) {
     const { data: recipeStatus, isLoading: isLoadingRecipeStatus } = useGetRecipeStatusTypes();
     const { register, handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty } } = useForm<CreateRecipeSchema>({
         resolver: zodResolver(createRecipeSchema),
-        defaultValues: { name: "", description: "", batchSize: "", materialId: "", unitId: "", status: "" }
+        defaultValues: recipeDefaultValues,
     });
     const loading = isSubmitting || isCreating || isLoadingMaterials || isLoadingUnits || isLoadingRecipeStatus;
     const selectedUnitId = watch("unitId");
@@ -38,16 +38,7 @@ export default function CreateRecipeDialog({ open, onClose }: Props) {
             return;
         }
         try {
-            const res = await createRecipe({
-                name: formData.name,
-                description: formData.description,
-                batchSize: Number(formData.batchSize),
-                materialId: Number(formData.materialId),
-                unitId: Number(formData.unitId),
-                status: formData.status,
-
-
-            });
+            const res = await createRecipe(formData);
             toast.success(res.message ?? "Recipe created successfully.");
             handleClose();
         } catch (error) {
@@ -55,172 +46,120 @@ export default function CreateRecipeDialog({ open, onClose }: Props) {
         }
     }
     const handleClose = () => {
-        reset({ name: "", description: "", batchSize: "", materialId: "", unitId: "", status: "" });
+        reset(recipeDefaultValues);
         onClose();
     };
     const onInvalid = (errors: FieldErrors<CreateRecipeSchema>) => {
-        const firstError = Object.values(errors)[0];
-        if (firstError?.message) {
-            toast.error(firstError.message.toString());
-        }
+        toast.error(showFormError(errors));
     };
     return (
-        <Dialog open={open} onOpenChange={(value) => { if (!value) handleClose() }}>
-            <DialogContent className="sm:max-w-md">
-                <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
-                    <DialogHeader>
-                        <DialogTitle>Create Recipe</DialogTitle>
-                        <DialogDescription>Create a new recipe.</DialogDescription>
-                    </DialogHeader>
-                    <div className="py-4 space-y-4">
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Name</Label>
-                                <CharacterProgress value={watch("name")} max={RecipeSchemaLimit.name.max} />
-                            </div>
-                            <Input
-                                type="text"
+        <FormDialog
+            open={open}
+            loading={loading}
+            onClose={handleClose}
+            title="Create Recipe"
+            description="Create a new recipe."
+            submitDisabled={!isDirty}
+            submitLabel="Create"
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
+            icon={BookOpenText}
+        >
+            <div className="space-y-2">
+                <TextInput
+                    label="Name"
+                    icon={BookOpenText}
+                    counter
+                    maxCharacters={RecipeSchemaLimit.name.max}
+                    placeholder="Recipe Name"
+                    maxLength={RecipeSchemaLimit.name.max}
+                    disabled={loading}
+                    value={watch("name")}
+                    {...register("name")}
+                />
+                <TextAreaInput
+                    label="Description"
+                    icon={Feather}
+                    counter
+                    maxCharacters={RecipeSchemaLimit.description.max}
+                    placeholder="Brief Recipe Overview"
+                    maxLength={RecipeSchemaLimit.description.max}
+                    disabled={loading}
+                    value={watch("description")}
+                    {...register("description")}
+                />
+                <div className="grid grid-cols-2 gap-2">
+                    <Controller
+                        control={control}
+                        name="unitId"
+                        render={({ field }) => (
+                            <SearchableSelect
+                                label="Unit"
+                                value={field.value}
+                                icon={Boxes}
+                                onChange={field.onChange}
+                                options={units?.map((a) => ({
+                                    value: a.id,
+                                    label: a.name,
+                                })) ?? []}
+                                placeholder="Select Unit"
+                                searchPlaceholder="Search Units..."
                                 disabled={loading}
-                                placeholder="Solvent Blend Recipe"
-                                maxLength={RecipeSchemaLimit.name.max}
-                                {...register("name")}
                             />
-                        </div>
-                        <div className="space-y-2 relative">
-                            <div className="flex items-center justify-between">
-                                <Label>Description</Label>
-                                <CharacterProgress value={watch("description")} max={RecipeSchemaLimit.description.max} />
-                            </div>
-                            <Textarea
-                                placeholder="Brief recipe overview"
-                                className="min-h-28 resize-none"
-                                maxLength={RecipeSchemaLimit.description.max}
+                        )}
+                    />
+                    <NumberInput
+                        label="Batch Size"
+                        icon={Scale}
+                        suffix="KG"
+                        placeholder={selectedUnitMaxRange ? `0 - ${selectedUnitMaxRange}` : "0"}
+                        disabled={loading}
+                        value={watch("batchSize")}
+                        {...register("batchSize", {
+                            valueAsNumber: true,
+                        })}
+                    />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                    <Controller
+                        control={control}
+                        name="materialId"
+                        render={({ field }) => (
+                            <SearchableSelect
+                                label="Product"
+                                value={field.value}
+                                icon={PackageCheck}
+                                onChange={field.onChange}
+                                options={materials?.filter((f) => f.materialType === MaterialType.FINISHED_PRODUCT).map((a) => ({
+                                    value: a.id,
+                                    label: a.name,
+                                })) ?? []}
+                                placeholder="Select Product"
+                                searchPlaceholder="Search Products..."
                                 disabled={loading}
-                                {...register("description")}
                             />
-                        </div>
-                        <div className="flex gap-2">
-                            <div className="relative flex-1 space-y-2">
-                                <Label>Unit</Label>
-                                <Controller
-                                    control={control}
-                                    name="unitId"
-                                    render={({ field }) => (
-                                        <Select
-                                            disabled={loading}
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Unit" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {units?.map((unit) => (
-                                                        <SelectItem key={unit.id} value={String(unit.id)}>
-                                                            {unit.name}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                            </div>
-                            <div className="space-y-2 relative flex-1">
-                                <div className="flex items-center justify-between">
-                                    <Label>Batch Size</Label>
-                                </div>
-                                <div className="flex">
-                                    <Input
-                                        type="number"
-                                        placeholder={selectedUnitMaxRange ? `0 - ${selectedUnitMaxRange}` : "0"}
-                                        className="rounded-r-none"
-                                        {...register("batchSize")}
-                                    />
-                                    <div className="flex items-center justify-center w-12 border border-l-0 rounded-r-md bg-muted text-sm">
-                                        kg
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div className="flex gap-2">
-
-                            <div className="relative flex-1 space-y-2">
-                                <Label>Product</Label>
-                                <Controller
-                                    control={control}
-                                    name="materialId"
-                                    render={({ field }) => (
-                                        <Select
-                                            disabled={loading || isLoadingMaterials}
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Product" />
-                                            </SelectTrigger>
-
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {materials?.filter((f) => f.materialType === MaterialType.FINISHED_PRODUCT).map((material) => (
-                                                        <SelectItem key={material.id} value={String(material.id)}>
-                                                            {material.name}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                            </div>
-                            <div className="relative flex-1 space-y-2">
-                                <Label>Status</Label>
-                                <Controller
-                                    control={control}
-                                    name="status"
-                                    render={({ field }) => (
-                                        <Select
-                                            disabled={loading}
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Status" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {recipeStatus?.map((recipeStatus) => (
-                                                        <SelectItem
-                                                            key={recipeStatus.value}
-                                                            value={String(recipeStatus.value)}
-                                                        >
-                                                            <div
-                                                                className={`h-2 w-2 rounded-full ${recipeStatus.value === "RELEASED"
-                                                                    ? "bg-green-500"
-                                                                    : "bg-gray-500"
-                                                                    }`}
-                                                            />
-                                                            {recipeStatus.label}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <DialogClose asChild>
-                            <Button disabled={loading} type="button" variant="outline" onClick={handleClose}>Cancel</Button>
-                        </DialogClose>
-                        <Button type="submit" className="min-w-34 text-white" disabled={loading || !isDirty}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Create"}</Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+                        )}
+                    />
+                    <Controller
+                        control={control}
+                        name="status"
+                        render={({ field }) => (
+                            <SearchableSelect
+                                label="Status"
+                                value={field.value}
+                                icon={CircleDot}
+                                onChange={field.onChange}
+                                options={recipeStatus?.map((a) => ({
+                                    value: a.value,
+                                    label: a.label,
+                                })) ?? []}
+                                placeholder="Select Status"
+                                searchPlaceholder="Search Status..."
+                                disabled={loading}
+                            />
+                        )}
+                    />
+                </div>
+            </div>
+        </FormDialog>
     )
 }

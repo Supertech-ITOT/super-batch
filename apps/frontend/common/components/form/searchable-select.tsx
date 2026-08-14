@@ -80,7 +80,9 @@ function SearchableSelect({ icon: Icon, value, onChange, options, placeholder = 
                                         onSelect={() => {
                                             onChange(
                                                 isSelected
-                                                    ? undefined
+                                                    ? typeof value === "number"
+                                                        ? 0
+                                                        : ""
                                                     : option.value
                                             );
                                             setOpen(false);

@@ -6,7 +6,7 @@ export default function RecipePage() {
     const searchParams = useSearchParams();
     const recipeId = Number(searchParams.get("id"));
     return (
-        <div className="flex-1 flex-col min-h-0 gap-2 flex h-full overflow-hidden p-4">
+        <div className="flex flex-col gap-1 p-1 sm:p-2 flex-1  h-full">
             <RecipeSOPView recipeId={recipeId} />
         </div>
     );

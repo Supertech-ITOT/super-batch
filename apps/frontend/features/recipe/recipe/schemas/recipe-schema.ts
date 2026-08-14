@@ -1,16 +1,17 @@
-import { z } from "zod"
+import { z } from "zod";
 
 export const RecipeSchemaLimit = {
     name: { min: 2, max: 100 },
     description: { min: 2, max: 255 },
-} as const
+} as const;
 
 export const baseRecipeSchema = z.object({
-    name: z.string()
+    name: z
+        .string()
         .trim()
         .min(
             RecipeSchemaLimit.name.min,
-            ` Recipe name must be atleast ${RecipeSchemaLimit.name.min} characters`
+            `Recipe name must be at least ${RecipeSchemaLimit.name.min} characters`
         )
         .max(
             RecipeSchemaLimit.name.max,
@@ -33,26 +34,23 @@ export const baseRecipeSchema = z.object({
             `Description cannot exceed ${RecipeSchemaLimit.description.max} characters`
         ),
 
-    batchSize: z.string()
-        .trim()
-        .min(1, "Batch size must be greater than 0"),
+    batchSize: z
+        .number({ error: "Batch size is required." })
+        .min(1, "Batch size is required"),
 
     materialId: z
-        .string()
-        .trim()
-        .min(1, `MaterialId must is required`),
+        .number({ error: "Product is required." })
+        .min(1, "Product is required"),
 
     unitId: z
-        .string()
-        .trim()
-        .min(1, `UnitId must is required`),
+        .number({ error: "Unit is required." })
+        .min(1, "Unit is required"),
 
     status: z
         .string()
         .trim()
-        .min(1, `Status must is required`)
+        .min(1, "Status is required"),
 });
-
 
 export const createRecipeSchema = baseRecipeSchema;
 
@@ -62,3 +60,12 @@ export const updateRecipeSchema = baseRecipeSchema.omit({
 
 export type CreateRecipeSchema = z.infer<typeof createRecipeSchema>;
 export type UpdateRecipeSchema = z.infer<typeof updateRecipeSchema>;
+
+export const recipeDefaultValues: CreateRecipeSchema = {
+    name: "",
+    description: "",
+    batchSize: 0,
+    materialId: 0,
+    unitId: 0,
+    status: "",
+};

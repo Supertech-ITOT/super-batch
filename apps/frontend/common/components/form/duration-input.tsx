@@ -1,16 +1,18 @@
 import React, { memo, useCallback, useEffect, useRef, useState, } from "react";
 import { cn } from "@/common/lib/utils";
+import { Label } from "../ui/label";
 
 interface DurationInputProps {
     value?: string;
     onChange: (value: string) => void;
     disabled?: boolean;
     className?: string;
+    label?: string;
 }
 
 const pad = (v: string) => v.padStart(2, "0");
 
-function DurationInput({ value = "", onChange, disabled, className }: DurationInputProps) {
+function DurationInput({ value = "", onChange, disabled, label, className }: DurationInputProps) {
     const hourRef = useRef<HTMLInputElement>(null);
     const minuteRef = useRef<HTMLInputElement>(null);
     const editingRef = useRef(false);
@@ -68,39 +70,43 @@ function DurationInput({ value = "", onChange, disabled, className }: DurationIn
     };
 
     return (
-        <div
-            className={cn(
-                "flex h-9 overflow-hidden rounded-md border bg-card shadow-sm",
-                "focus-within:ring-2 focus-within:ring-ring",
-                className
-            )}
-        >
-            <input
-                ref={hourRef}
-                value={hours}
-                placeholder="HH"
-                disabled={disabled}
-                inputMode="numeric"
-                maxLength={2}
-                onChange={handleChange("h", setHours, minuteRef)}
-                onBlur={handleBlur}
-                className="w-0 flex-1 bg-transparent text-center outline-none placeholder:text-muted-foreground"
-            />
+        <div className="relative w-full min-w-0 space-y-1">
+            {label && <Label className="text-sm font-medium">
+                {label}
+            </Label>}
+            <div
+                className={cn(
+                    "flex h-9 overflow-hidden rounded-md border shadow-sm", "bg-card border-input", "text-sm font-medium",
+                    className
+                )}
+            >
+                <input
+                    ref={hourRef}
+                    value={hours}
+                    placeholder="HH"
+                    disabled={disabled}
+                    inputMode="numeric"
+                    maxLength={2}
+                    onChange={handleChange("h", setHours, minuteRef)}
+                    onBlur={handleBlur}
+                    className="w-0 flex-1 bg-transparent text-center outline-none placeholder:text-muted-foreground"
+                />
 
-            <div className="w-px bg-border" />
+                <div className="w-px bg-border" />
 
-            <input
-                ref={minuteRef}
-                value={minutes}
-                placeholder="MM"
-                disabled={disabled}
-                inputMode="numeric"
-                maxLength={2}
-                onChange={handleChange("m", setMinutes)}
-                onBlur={handleBlur}
-                onKeyDown={(e) => handleBackspace(e, hourRef)}
-                className="w-0 flex-1 bg-transparent text-center outline-none placeholder:text-muted-foreground"
-            />
+                <input
+                    ref={minuteRef}
+                    value={minutes}
+                    placeholder="MM"
+                    disabled={disabled}
+                    inputMode="numeric"
+                    maxLength={2}
+                    onChange={handleChange("m", setMinutes)}
+                    onBlur={handleBlur}
+                    onKeyDown={(e) => handleBackspace(e, hourRef)}
+                    className="w-0 flex-1 bg-transparent text-center outline-none placeholder:text-muted-foreground"
+                />
+            </div>
         </div>
     );
 }

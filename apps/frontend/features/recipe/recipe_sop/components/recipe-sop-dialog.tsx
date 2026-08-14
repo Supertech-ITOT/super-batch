@@ -15,10 +15,10 @@ import { useGetMessages } from "@/features/plant/message/hooks/use-messages";
 import { useGetParameters } from "@/features/plant/parameter/hooks/use-parameters";
 import { useGetTransitions } from "@/features/plant/transition/hooks/use-transitions";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { GitBranch, Loader2, } from "lucide-react";
+import { ArrowRightLeft, Cpu, Feather, GitBranch, Hash, Loader2, Play, } from "lucide-react";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { recipeSOPSchema, RecipeSOPSchema, RecipeSOPSchemaLimit, } from "../schemas/recipe-sop-schema";
+import { recipeSopDefaultValues, recipeSOPSchema, RecipeSOPSchema, RecipeSOPSchemaLimit, } from "../schemas/recipe-sop-schema";
 import { TransitionType } from "@/features/plant/transition/types/transition.types";
 import { useCreateRecipeSOP, useGetRecipeSOPById, useInsertAboveRecipeSOP, useInsertBelowRecipeSOP, useUpdateRecipeSOP } from "../hooks/use-recipe-sop";
 import { durationToMinutes, minutesToDuration } from "@/common/utils/duration.util";
@@ -29,6 +29,8 @@ import { recipeSOPActionType } from "./recipe-sop-view";
 import { RadioGroup, RadioGroupItem } from "@/common/components/ui/radio-group";
 import { Separator } from "@/common/components/ui/separator";
 import { showFormError } from "@/common/lib/show-form-error";
+import { TextInput } from "@/common/components/form/text-input";
+import { QuantityPicker } from "@/common/components/form/quantity-picker";
 
 type RecipeSOPDialogProp = {
   recipeSOPId?: number;
@@ -55,14 +57,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
   const [materialInputMode, setMaterialInputMode] = useState<"ABSOLUTE" | "PERCENTAGE">("ABSOLUTE");
 
   const { handleSubmit, reset, watch, control, setValue, formState: { isSubmitting, isDirty }, } = useForm<RecipeSOPSchema>({
-    resolver: zodResolver(recipeSOPSchema), defaultValues: {
-      stdTime: "",
-      actionId: 0,
-      transitionId: 0,
-      message: "",
-      materials: [],
-      parameters: [],
-    },
+    resolver: zodResolver(recipeSOPSchema), defaultValues: recipeSopDefaultValues,
   });
 
   const loading = isSubmitting ||
@@ -93,19 +88,15 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
   }, [reset, recipeSOP]);
 
 
+  // Business Logic
   const selectedTransitionId = watch("transitionId");
   const selectedTransition = transitions?.find((t) => t.id === selectedTransitionId);
-
   const autoMaterialStep = selectedTransition?.name === TransitionType.AUTO_MATERIAL_CHARGE;
   const manualMaterialStep = selectedTransition?.name === TransitionType.MANUAL_MATERIAL_CHARGE;
   const transferStep = selectedTransition?.name === TransitionType.TRANSFER;
-
   const parentEq = equipments?.find((e) => e.creatorUnitId === unitId);
-
   useEffect(() => {
-
     if (!selectedTransition || !parentEq) return;
-
     if (transferStep) {
       setValue("fromEquipmentId", parentEq.id);
     } else {
@@ -146,14 +137,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
   };
 
   const handleClear = () => {
-    reset({
-      stdTime: "",
-      actionId: 0,
-      transitionId: 0,
-      message: "",
-      materials: [],
-      parameters: [],
-    },);
+    reset(recipeSopDefaultValues);
   };
 
   const onInvalid = (errors: FieldErrors<RecipeSOPSchema>) => {
@@ -161,7 +145,11 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
   };
 
   if (loading) {
-    return <Skeleton className="h-full" />;
+    return (
+      <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/70 backdrop-blur-[2px]">
+        <Loader2 className="h-7 w-7 animate-spin text-primary" />
+      </div>
+    );
   }
 
   return (
@@ -174,219 +162,177 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
         <CardHeader className="relative overflow-hidden border-b bg-muted/40 py-4!">
           {/* Background Icon */}
           <GitBranch className="absolute -top-4 -right-4 size-28 text-primary/10 " />
-          <div className="relative flex items-start gap-4">
-            <div className="flex shrink-0 h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-              <GitBranch className="size-6 text-primary" />
+          <div className="relative flex items-center justify-between gap-4">
+            <div className="flex gap-2">
+              <div className="flex shrink-0 h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                <GitBranch className="size-6 text-primary" />
+              </div>
+              <div>
+                <CardTitle>{action === "edit" ? "Edit Step" : "Create Step"}</CardTitle>
+                <CardDescription>{action === "edit" ? "Update the step information." : "Create a new process step."}</CardDescription>
+              </div>
             </div>
-            <div>
-              <CardTitle>{action === "edit" ? "Edit Step" : "Create Step"}</CardTitle>
-              <CardDescription>
-                {action === "edit"
-                  ? "Update the step information."
-                  : "Create a new process step."}
-              </CardDescription>
-            </div>
+            <h1 className="text-primary text-4xl font-bold">{stepNo ?? 0}</h1>
           </div>
         </CardHeader>
 
         {/* Body */}
-        <CardContent className="min-h-0 h-full flex-1 overflow-y-auto scrollbar-none p-4 space-y-4 ">
-          <div className="flex gap-2">
-            <div className="flex-1 space-y-2">
-              <Label>Step No</Label>
-              <Input
-                placeholder="..."
-                type="number"
-                disabled
-                readOnly
-                value={stepNo ?? 0}
-              />
-            </div>
-
-            <div className="flex-1 space-y-2">
-              <Label>Standard Time</Label>
-              <Controller
-                control={control}
-                name="stdTime"
-                render={({ field }) => (
-                  <DurationInput
-                    value={field.value}
-                    onChange={field.onChange}
-                    disabled={loading}
-                  />
-                )}
-              />
-            </div>
-          </div>
-          <div className="space-y-2 relative ">
-            <div className="flex items-center justify-between">
-              <Label>Message</Label>
-              <CharacterProgress
-                value={watch("message")}
-                max={RecipeSOPSchemaLimit.message.max}
-              />
-            </div>
+        <CardContent className="min-h-0 h-full flex-1 overflow-y-auto scrollbar-none p-4 space-y-2">
+          <div className="grid grid-cols-2 gap-2">
+            <TextInput
+              label="Step No"
+              icon={Hash}
+              disabled
+              readOnly
+              value={stepNo ?? 0}
+            />
             <Controller
               control={control}
-              name="message"
+              name="stdTime"
               render={({ field }) => (
-                <TextareaAutocomplete
+                <DurationInput
                   value={field.value}
+                  label="Standard Time"
                   onChange={field.onChange}
-                  options={messages.map((m) => ({
-                    id: m.id,
-                    label: m.name,
-                  }))}
-                  placeholder="Brief message overview"
                   disabled={loading}
-                  maxLength={RecipeSOPSchemaLimit.message.max}
-                  className="w-full min-w-0 max-w-full min-h-28 resize-none wrap-break-word"
                 />
               )}
             />
           </div>
-          <div className="flex gap-2">
-            <div className="min-w-0 flex-1 space-y-2">
-              <Label>Transition</Label>
-              <Controller
-                control={control}
-                name="transitionId"
-                render={({ field }) => (
-                  <SearchableSelect
-                    value={field.value}
-                    onChange={field.onChange}
-                    options={transitions.map((t) => ({
-                      value: t.id,
-                      label: t.name,
-                    }))}
-                    placeholder="Select"
-                    searchPlaceholder="Search Transition..."
-                    disabled={loading}
-                  />
-                )}
+          <Controller
+            control={control}
+            name="message"
+            render={({ field }) => (
+              <TextareaAutocomplete
+                value={field.value}
+                label="Message"
+                icon={Feather}
+                onChange={field.onChange}
+                options={messages.map((m) => ({
+                  id: m.id,
+                  label: m.name,
+                }))}
+                counter
+                maxCharacters={RecipeSOPSchemaLimit.message.max}
+                placeholder="Brief Message Overview"
+                disabled={loading}
+                maxLength={RecipeSOPSchemaLimit.message.max}
+                className="w-full min-w-0 max-w-full min-h-28 resize-none wrap-break-word"
               />
-            </div>
-            <div className="min-w-0 flex-1 space-y-2">
-              <Label>Action</Label>
-              <Controller
-                control={control}
-                name="actionId"
-                render={({ field }) => (
-                  <SearchableSelect
-                    value={field.value}
-                    onChange={field.onChange}
-                    options={actions.map((a) => ({
-                      value: a.id,
-                      label: a.name,
-                    }))}
-                    placeholder="Select"
-                    searchPlaceholder="Search Action..."
-                    disabled={loading}
-                  />
-                )}
-              />
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <div className="min-w-0 flex-1 space-y-2">
-              <Label>From Equipment</Label>
-              <Controller
-                control={control}
-                name="fromEquipmentId"
-                render={({ field }) => (
-                  <SearchableSelect
-                    value={field.value ?? undefined}
-                    onChange={field.onChange}
-                    options={equipments.map((t) => ({
-                      value: t.id,
-                      label: t.name,
-                    }))}
-                    placeholder="Select"
-                    searchPlaceholder="Search Equipment..."
-                    disabled={loading || !autoMaterialStep}
-                  />
-                )}
-              />
-            </div>
-            <div className="min-w-0 flex-1 space-y-2">
-              <Label>To Equipment</Label>
-              <Controller
-                control={control}
-                name="toEquipmentId"
-                render={({ field }) => (
-                  <SearchableSelect
-                    value={field.value}
-                    onChange={field.onChange}
-                    options={equipments.map((a) => ({
-                      value: a.id,
-                      label: a.name,
-                    }))}
-                    placeholder="Select"
-                    searchPlaceholder="Search Equipment..."
-                    disabled={loading || !transferStep}
-                  />
-                )}
-              />
-            </div>
-          </div>
-          <div className="space-y-4">
-            <Label className="font-medium">Material Quantity Mode</Label>
-            <RadioGroup
-              disabled={!(autoMaterialStep || manualMaterialStep)}
-              value={materialInputMode}
-              onValueChange={(v) =>
-                setMaterialInputMode(v as "ABSOLUTE" | "PERCENTAGE")
-              }
-              className="flex gap-4"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="ABSOLUTE" id="kg" />
-                <Label htmlFor="kg">Absolute (KG)</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="PERCENTAGE" id="percent" />
-                <Label htmlFor="percent">Percentage (%)</Label>
-              </div>
-            </RadioGroup>
-            <Separator />
+            )}
+          />
+          <div className="grid grid-cols-2 gap-2">
             <Controller
               control={control}
-              name="materials"
+              name="transitionId"
               render={({ field }) => (
-                <ValuePicker
-                  label="Materials"
-                  placeholder="Search Material..."
-                  valueLabel={materialInputMode === "ABSOLUTE" ? `Std Qty (KG)` : "Std Qty (%)"}
-                  disabled={!(autoMaterialStep || manualMaterialStep)}
-                  limit={autoMaterialStep ? 1 : undefined}
-                  options={materials
-                    .filter((f) => f.materialType !== MaterialType.FINISHED_PRODUCT)
-                    .map((m) => {
-                      const selected = (field.value ?? []).find((x) => x.materialId === m.id);
-                      const kg = selected?.stdQty ?? 0;
-                      const percentage = batchSize > 0 ? (kg / batchSize) * 100 : 0;
-                      return {
-                        id: m.id,
-                        name: m.name,
-                        uom: materialInputMode === "ABSOLUTE" ? `${percentage.toFixed(2)} %` : `${kg.toFixed(2)} KG`,
-                      };
-                    })}
-                  value={(field.value ?? []).map((m) => ({
-                    id: m.materialId,
-                    value: materialInputMode === "ABSOLUTE" ? m.stdQty : (m.stdQty / batchSize) * 100
-                  }))}
-                  onChange={(items) =>
-                    field.onChange(
-                      items.map((i) => ({
-                        materialId: i.id,
-                        stdQty: materialInputMode === "ABSOLUTE" ? i.value : (i.value * batchSize) / 100,
-                      }))
-                    )
-                  }
+                <SearchableSelect
+                  label="Transition"
+                  value={field.value ?? undefined}
+                  icon={ArrowRightLeft}
+                  onChange={field.onChange}
+                  options={transitions?.map((a) => ({
+                    value: a.id,
+                    label: a.name,
+                  })) ?? []}
+                  placeholder="Select Transition"
+                  searchPlaceholder="Search Transitions..."
+                  disabled={loading}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="actionId"
+              render={({ field }) => (
+                <SearchableSelect
+                  label="Action"
+                  value={field.value ?? undefined}
+                  icon={Play}
+                  onChange={field.onChange}
+                  options={actions?.map((a) => ({
+                    value: a.id,
+                    label: a.name,
+                  })) ?? []}
+                  placeholder="Select Action"
+                  searchPlaceholder="Search Actions..."
+                  disabled={loading}
                 />
               )}
             />
           </div>
+          <div className="grid grid-cols-2 gap-2">
+            <Controller
+              control={control}
+              name="fromEquipmentId"
+              render={({ field }) => (
+                <SearchableSelect
+                  label="Source"
+                  value={field.value ?? undefined}
+                  icon={Cpu}
+                  onChange={field.onChange}
+                  options={equipments?.map((a) => ({
+                    value: a.id,
+                    label: a.name,
+                  })) ?? []}
+                  placeholder="Select Source"
+                  searchPlaceholder="Search Equipments..."
+                  disabled={loading || !autoMaterialStep}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="toEquipmentId"
+              render={({ field }) => (
+                <SearchableSelect
+                  label="Destination"
+                  value={field.value ?? undefined}
+                  icon={Cpu}
+                  onChange={field.onChange}
+                  options={equipments?.map((a) => ({
+                    value: a.id,
+                    label: a.name,
+                  })) ?? []}
+                  placeholder="Select Destination"
+                  searchPlaceholder="Search Equipments..."
+                  disabled={loading || !transferStep}
+                />
+              )}
+            />
+          </div>
+          <Controller
+            control={control}
+            name="materials"
+            render={({ field }) => (
+              <QuantityPicker
+                value={(field.value ?? []).map((material) => ({
+                  id: material.materialId,
+                  value: material.stdQty,
+                }))}
+                onChange={(items) =>
+                  field.onChange(
+                    items.map((item) => ({
+                      materialId: item.id,
+                      stdQty: item.value,
+                    }))
+                  )
+                }
+                items={materials}
+                targetSize={batchSize}
+                label="Material Quantity Mode"
+                pickerLabel="Materials"
+                placeholder="Search Material..."
+                disabled={
+                  !(autoMaterialStep || manualMaterialStep)
+                }
+                limit={autoMaterialStep ? 1 : undefined}
+                excludeItem={(item) =>
+                  item.materialType === MaterialType.FINISHED_PRODUCT
+                }
+              />
+            )}
+          />
           <Controller
             control={control}
             name="parameters"
@@ -411,7 +357,6 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
                 }
                 isAdd={false}
                 disabled={loading}
-
               />
             )}
           />
@@ -419,7 +364,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
         </CardContent>
 
         {/* Footer */}
-        <CardFooter className="sticky bottom-0 border-t bg-background justify-end gap-2 p-4!">
+        <CardFooter className="sticky bottom-0 border-t bg-card justify-end gap-2 p-4!">
           <Button type="reset" variant="outline" className="min-w-22" onClick={handleClear}>
             Clear
           </Button>
@@ -434,6 +379,6 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
           </Button>
         </CardFooter>
       </form>
-    </Card>
+    </Card >
   );
 }

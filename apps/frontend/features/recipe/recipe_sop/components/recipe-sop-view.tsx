@@ -10,8 +10,8 @@ import { useGetRecipeById } from "../../recipe/hooks/use-recipe";
 import RecipeSOPDialog from "./recipe-sop-dialog";
 import RecipeSOPDeleteDialog from "./recipe-sop-delete-dialog";
 import RecipeSOPSummary from "./recipe-sop-summary";
-
-
+import FeedbackState from "@/common/components/feedback-state";
+import RecipeSopSkeleton from "./recipe-sop-skeleton";
 
 export type recipeSOPActionType = "create" | "insert-below" | "insert-above" | "edit" | "move-up" | "move-down" | "delete";
 export type RecipeSOPDialogType = {
@@ -22,14 +22,16 @@ export type RecipeSOPDialogType = {
 }
 
 export default function RecipeSOPView({ recipeId }: { recipeId: number }) {
-    const { data: recipe, isLoading: recipeIsLoading } = useGetRecipeById(recipeId);
-    const { data: recipeSOP, isLoading: recipeSOPIsLoading } = useGetRecipeSOPsByRecipeId(recipeId);
+    const { data: recipe, isLoading: recipeIsLoading, isError: recipeIsError } = useGetRecipeById(recipeId);
+    const { data: recipeSOP, isLoading: recipeSOPIsLoading, isError: recipeSopIsError } = useGetRecipeSOPsByRecipeId(recipeId);
+    const error = recipeIsError || recipeSopIsError;
     const loading = recipeIsLoading || recipeSOPIsLoading;
+    const nextStepNo = (recipeSOP?.length ?? 0) + 1;
+    const [dialog, setDialog] = useState<RecipeSOPDialogType>({ recipeId: recipeId, action: "create", stepNo: nextStepNo });
 
     const { mutateAsync: moveUp } = useMoveUpRecipeSOP();
     const { mutateAsync: moveDown } = useMoveDownRecipeSOP();
-    const nextStepNo = (recipeSOP?.length ?? 0) + 1;
-    const [dialog, setDialog] = useState<RecipeSOPDialogType>({ recipeId: recipeId, action: "create", stepNo: nextStepNo });
+
     useEffect(() => {
         setDialog((prev) => ({ ...prev, recipeId: recipeId, stepNo: nextStepNo, }));
     }, [recipeId, nextStepNo]);
@@ -74,26 +76,33 @@ export default function RecipeSOPView({ recipeId }: { recipeId: number }) {
             }
         }
     };
-    if (!recipeSOP || loading || !recipe)
-        return;
+    if (loading) {
+        return (<RecipeSopSkeleton />);
+    }
+    if (error) {
+        return <FeedbackState variant="error" />;
+    }
+    if (!recipeSOP || !recipe) {
+        return <FeedbackState variant="empty" />;
+    }
     return (
-        <div className="gap-4 rounded-lg border shadow h-screen p-4 overflow-y-auto scrollbar-none flex flex-col bg-card">
+        <div className="flex flex-col rounded-2xl border shadow bg-card p-2 sm:p-4 flex-1 gap-2">
             <RecipeInfo recipe={recipe} />
-            <div className="flex flex-col gap-4 min-w-0 2xl:flex-row 2xl:flex-1 2xl:min-h-0">
-                <div className="flex w-full min-w-0 flex-col gap-4">
+            <div className="flex flex-col gap-2 sm:gap-4 min-w-0 2xl:flex-row 2xl:h-[calc(100dvh-14rem)]">
+                <div className="flex w-full min-w-0 flex-col gap-2 sm:gap-4">
                     {/* Table */}
-                    <div className="flex-4 min-w-0 min-h-0 bg-card border shadow hover:shadow-lg rounded-lg overflow-hidden">
+                    <div className="flex-4 min-w-0 min-h-0 bg-card border shadow hover:shadow-lg rounded-2xl overflow-hidden">
                         <DataTable columns={columns} data={recipeSOP} onAction={handleAction} />
                     </div>
 
                     {/* Summary */}
-                    <div className="flex-1 min-h-56  overflow-hidden">
+                    <div className="flex-2 overflow-y">
                         <RecipeSOPSummary recipeId={recipeId} />
                     </div>
                 </div>
 
                 {/* Dialog */}
-                <div className="min-w-1/4 2xl:h-full 2xl:shrink-0 border shadow hover:shadow-lg rounded-lg overflow-hidden">
+                <div className="min-w-1/4  2xl:shrink-0 border shadow hover:shadow-lg rounded-2xl overflow-hidden flex-1 min-h-100 h-full ">
                     <RecipeSOPDialog action={dialog.action} recipeId={recipeId} stepNo={dialog.stepNo} recipeSOPId={dialog.recipeSOPId} unitId={recipe.unitRecipeResponse.id} batchSize={recipe.batchSize} />
                     {dialog.action === "delete" && dialog.recipeSOPId &&
                         (
