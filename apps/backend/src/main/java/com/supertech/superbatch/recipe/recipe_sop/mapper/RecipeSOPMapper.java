@@ -101,8 +101,6 @@ public class RecipeSOPMapper {
         recipeSOP.setFromEquipment(fromEquipment);
         recipeSOP.setToEquipment(toEquipment);
 
-        recipeSOP.getMaterials().clear();
-        recipeSOP.getParameters().clear();
 
         // build materials
         if (request.materials() != null) {

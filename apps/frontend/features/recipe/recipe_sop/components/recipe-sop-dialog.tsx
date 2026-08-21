@@ -1,13 +1,10 @@
-import CharacterProgress from "@/common/components/form/character-progress";
+"use client";
 import DurationInput from "@/common/components/form/duration-input";
 import SearchableSelect from "@/common/components/form/searchable-select";
 import TextareaAutocomplete from "@/common/components/form/textarea-autocomplete";
 import ValuePicker from "@/common/components/form/value-picker";
 import { Button } from "@/common/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/common/components/ui/card";
-import { Input } from "@/common/components/ui/input";
-import { Label } from "@/common/components/ui/label";
-import { Skeleton } from "@/common/components/ui/skeleton";
 import { useGetActions } from "@/features/plant/action/hooks/use-actions";
 import { useGetMaterials } from "@/features/plant/material/hooks/use-materials";
 import { MaterialType } from "@/features/plant/material/types/material.types";
@@ -22,12 +19,10 @@ import { recipeSopDefaultValues, recipeSOPSchema, RecipeSOPSchema, RecipeSOPSche
 import { TransitionType } from "@/features/plant/transition/types/transition.types";
 import { useCreateRecipeSOP, useGetRecipeSOPById, useInsertAboveRecipeSOP, useInsertBelowRecipeSOP, useUpdateRecipeSOP } from "../hooks/use-recipe-sop";
 import { durationToMinutes, minutesToDuration } from "@/common/utils/duration.util";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { showApiError } from "@/common/lib/show-api-error";
 import { useGetEquipmentsByUnitId } from "@/features/plant/equipment/hooks/use-equipment";
 import { recipeSOPActionType } from "./recipe-sop-view";
-import { RadioGroup, RadioGroupItem } from "@/common/components/ui/radio-group";
-import { Separator } from "@/common/components/ui/separator";
 import { showFormError } from "@/common/lib/show-form-error";
 import { TextInput } from "@/common/components/form/text-input";
 import { QuantityPicker } from "@/common/components/form/quantity-picker";
@@ -53,8 +48,6 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
   const { mutateAsync: insertBelow, isPending: insertBelowIsPending } = useInsertBelowRecipeSOP();
   const { mutateAsync: insertAbove, isPending: insertAboveIsPending } = useInsertAboveRecipeSOP();
   const { mutateAsync: update, isPending: updateIsPending } = useUpdateRecipeSOP();
-
-  const [materialInputMode, setMaterialInputMode] = useState<"ABSOLUTE" | "PERCENTAGE">("ABSOLUTE");
 
   const { handleSubmit, reset, watch, control, setValue, formState: { isSubmitting, isDirty }, } = useForm<RecipeSOPSchema>({
     resolver: zodResolver(recipeSOPSchema), defaultValues: recipeSopDefaultValues,
@@ -146,7 +139,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
 
   if (loading) {
     return (
-      <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/70 backdrop-blur-[2px]">
+      <div className="h-full rounded-none flex  justify-center items-center min-h-0">
         <Loader2 className="h-7 w-7 animate-spin text-primary" />
       </div>
     );
@@ -267,7 +260,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
               name="fromEquipmentId"
               render={({ field }) => (
                 <SearchableSelect
-                  label="Source"
+                  label="From Equipment"
                   value={field.value ?? undefined}
                   icon={Cpu}
                   onChange={field.onChange}
@@ -286,7 +279,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
               name="toEquipmentId"
               render={({ field }) => (
                 <SearchableSelect
-                  label="Destination"
+                  label="To Equipment"
                   value={field.value ?? undefined}
                   icon={Cpu}
                   onChange={field.onChange}
@@ -365,10 +358,10 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
 
         {/* Footer */}
         <CardFooter className="sticky bottom-0 border-t bg-card justify-end gap-2 p-4!">
-          <Button type="reset" variant="outline" className="min-w-22" onClick={handleClear}>
+          <Button type="reset" variant="outline" className="min-w-22 " onClick={handleClear}>
             Clear
           </Button>
-          <Button type="submit" className="min-w-32" disabled={loading || !isDirty}>
+          <Button type="submit" className="min-w-32 text-white" disabled={loading || !isDirty}>
             {loading ? (
               <Loader2 className="size-4 animate-spin" />
             ) : action === "edit" ? (

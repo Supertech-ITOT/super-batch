@@ -76,7 +76,7 @@ function DurationInput({ value = "", onChange, disabled, label, className }: Dur
             </Label>}
             <div
                 className={cn(
-                    "flex h-9 overflow-hidden rounded-md border shadow-sm", "bg-card border-input", "text-sm font-medium",
+                    "flex h-9 overflow-hidden rounded-lg border shadow-sm", "text-sm font-medium",
                     className
                 )}
             >
@@ -89,10 +89,10 @@ function DurationInput({ value = "", onChange, disabled, label, className }: Dur
                     maxLength={2}
                     onChange={handleChange("h", setHours, minuteRef)}
                     onBlur={handleBlur}
-                    className="w-0 flex-1 bg-transparent text-center outline-none placeholder:text-muted-foreground"
+                    className="w-0 flex-1 bg-card text-center outline-none placeholder:text-muted-foreground"
                 />
 
-                <div className="w-px bg-border" />
+                <div className="w-px border" />
 
                 <input
                     ref={minuteRef}
@@ -104,7 +104,7 @@ function DurationInput({ value = "", onChange, disabled, label, className }: Dur
                     onChange={handleChange("m", setMinutes)}
                     onBlur={handleBlur}
                     onKeyDown={(e) => handleBackspace(e, hourRef)}
-                    className="w-0 flex-1 bg-transparent text-center outline-none placeholder:text-muted-foreground"
+                    className="w-0 flex-1 bg-card text-center outline-none placeholder:text-muted-foreground"
                 />
             </div>
         </div>

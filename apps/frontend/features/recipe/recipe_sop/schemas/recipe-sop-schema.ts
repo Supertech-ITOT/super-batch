@@ -43,8 +43,8 @@ export const recipeSOPSchema = z.object({
 export type RecipeSOPSchema = z.infer<typeof recipeSOPSchema>;
 export const recipeSopDefaultValues: RecipeSOPSchema = {
     stdTime: "",
+    fromEquipmentId: null,
     toEquipmentId: 0,
-    fromEquipmentId: 0,
     actionId: 0,
     transitionId: 0,
     message: "",

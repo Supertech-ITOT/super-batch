@@ -132,6 +132,7 @@ public class ControlRecipeMapper {
                 return UnitControlRecipeResponse.builder()
                                 .id(unit.getId())
                                 .name(unit.getName())
+                                .code(unit.getCode())
                                 .capacity(unit.getCapacity())
                                 .build();
         }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { ArrowRight } from "lucide-react";
 
 import { Label } from "@/common/components/ui/label";

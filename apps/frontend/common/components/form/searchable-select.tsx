@@ -8,15 +8,16 @@ import { Label } from "../ui/label";
 
 type SearchableSelectValue = number | string;
 
-export interface SearchableSelectOption {
-    value: SearchableSelectValue;
+export interface SearchableSelectOption<T extends SearchableSelectValue> {
+    value: T;
     label: string;
 }
 
-interface SearchableSelectProps {
-    value?: SearchableSelectValue;
-    onChange: (value?: SearchableSelectValue) => void;
-    options: SearchableSelectOption[];
+interface SearchableSelectProps<T extends SearchableSelectValue> {
+    value?: T;
+    emptyValue?: T;
+    onChange: (value?: T) => void;
+    options: SearchableSelectOption<T>[];
     placeholder?: string;
     searchPlaceholder?: string;
     emptyText?: string;
@@ -27,7 +28,20 @@ interface SearchableSelectProps {
 
 }
 
-function SearchableSelect({ icon: Icon, value, onChange, options, placeholder = "Select", searchPlaceholder = "Search...", emptyText = "No results found.", disabled, label, className, }: SearchableSelectProps) {
+function SearchableSelect<T extends SearchableSelectValue>({
+    icon: Icon,
+    value,
+    onChange,
+    options,
+    emptyValue,
+    placeholder = "Select",
+    searchPlaceholder = "Search...",
+    emptyText = "No results found.",
+    disabled,
+    label,
+    className,
+}: SearchableSelectProps<T>) {
+
     const [open, setOpen] = useState(false);
     const selected = useMemo(
         () => options.find((o) => String(o.value) === String(value)),
@@ -77,22 +91,15 @@ function SearchableSelect({ icon: Icon, value, onChange, options, placeholder = 
                                     <CommandItem
                                         key={String(option.value)}
                                         value={String(option.value)}
+                                        data-checked={option.value === value}
                                         onSelect={() => {
-                                            onChange(
-                                                isSelected
-                                                    ? typeof value === "number"
-                                                        ? 0
-                                                        : ""
-                                                    : option.value
-                                            );
+                                            if (isSelected) {
+                                                onChange(emptyValue);
+                                            } else {
+                                                onChange(option.value);
+                                            }
                                             setOpen(false);
                                         }}>
-                                        <Check
-                                            className={cn(
-                                                "mr-2 h-4 w-4",
-                                                isSelected ? "opacity-100 text-primary" : "opacity-0"
-                                            )}
-                                        />
                                         {option.label}
                                     </CommandItem>
                                 )
@@ -106,4 +113,4 @@ function SearchableSelect({ icon: Icon, value, onChange, options, placeholder = 
     );
 }
 
-export default memo(SearchableSelect);
+export default memo(SearchableSelect) as typeof SearchableSelect;

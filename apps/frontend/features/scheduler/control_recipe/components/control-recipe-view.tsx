@@ -1,16 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import DataTable from "./data-table";
-import { Skeleton } from "@/common/components/ui/skeleton";
-import { Separator } from "@/common/components/ui/separator";
-import ControlRecipeColumns from "./columns";
 import { useRouter } from "next/navigation";
 import { useGetControlRecipes } from "../hooks/use-control-recipe";
 import CreateControlRecipeDialog from "./create-control-recipe-dialog";
 import DeleteControlRecipeDialog from "./delete-control-recipe-dialog";
 import UpdateControlRecipeDialog from "./update-control-recipe-dialog";
 import TransferControlRecipeDialog from "./transfer-control-recipe-dialog";
+import ControlRecipeSkeleton from "./control-recipe-skeleton";
+import FeedbackState from "@/common/components/feedback-state";
+import DataTableSearch from "@/common/components/data-table/data-table-search";
+import { Button } from "@/common/components/ui/button";
+import { Plus } from "lucide-react";
+import { DataTable } from "@/common/components/data-table/data-table";
+import columns from "./columns";
 
 export type DialogProp = {
     action: "create" | "edit" | "delete" | "transfer" | null;
@@ -21,36 +24,39 @@ export type DialogProp = {
 export default function ControlRecipeView() {
     const [dialog, setDialog] = useState<DialogProp>({ action: null, id: null, open: false, });
     const closeDialog = () => setDialog({ open: false, action: null, id: null, });
-    const { data: controlRecipes, isLoading } = useGetControlRecipes();
+    const { data: controlRecipes, isLoading: controlRecipeIsLoading, isError: controlRecipeIsError } = useGetControlRecipes();
+    const loading = controlRecipeIsLoading;
+    const error = controlRecipeIsError;
     const router = useRouter();
 
-    if (!controlRecipes || isLoading) {
-        return (
-
-            <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none flex flex-col">
-                <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                        <Skeleton className="h-10 w-80" />
-                        <Skeleton className="h-10 w-32" />
-                    </div>
-                </div>
-                <Separator className="my-4" />
-                <div className="flex-1 min-h-0">
-                    <Skeleton className="h-full w-full rounded-lg" />
-                </div>
-            </div>
-        )
+    if (loading) {
+        return (<ControlRecipeSkeleton />);
+    }
+    if (error) {
+        return <FeedbackState variant="error" />;
+    }
+    if (!controlRecipes) {
+        return <FeedbackState variant="empty" />;
     }
 
+
     return (
-        <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none flex-col">
-            <div className="flex-1 min-h-0 my-4">
-                <DataTable
-                    columns={ControlRecipeColumns(setDialog, router)}
-                    data={controlRecipes}
-                    setDialog={setDialog}
-                />
-            </div>
+        <div className="flex flex-col rounded-2xl border shadow  bg-card p-2 sm:p-4 flex-1">
+            <DataTable
+                columns={columns(setDialog, router)}
+                data={controlRecipes ?? []}
+                rowClassName="h-40"
+                pageSize={10}
+                toolbar={(table) => (
+                    <div className="flex items-center gap-2">
+                        <DataTableSearch table={table} column="batch" placeholder="Search batches..." />
+                        <Button className="ml-auto text-white h-8 sm:h-10" onClick={() => setDialog({ open: true, action: "create", id: null })}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Schedule
+                        </Button>
+                    </div>
+                )}
+            />
             {
                 <>
                     {dialog.action === "create" && (

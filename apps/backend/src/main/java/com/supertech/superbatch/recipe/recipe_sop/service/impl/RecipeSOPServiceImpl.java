@@ -38,7 +38,9 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class RecipeSOPServiceImpl implements RecipeSOPService {
+        private static final int STEP_OFFSET = 1_000_000;
         private final RecipeSOPRepository recipeSOPRepository;
         private final RecipeRepository recipeRepository;
         private final RecipeSOPMapper recipeSOPMapper;
@@ -63,6 +65,7 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
         }
 
         @Override
+        @Transactional
         public void create(CreateRecipeSOPRequest request) {
                 List<RecipeSOP> steps = recipeSOPRepository.findAllByRecipeId(request.recipeId());
                 Integer stepNo = steps.isEmpty() ? 1 : steps.size() + 1;
@@ -83,14 +86,18 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
 
         }
 
-        @Transactional
         @Override
+        @Transactional
         public void update(UpdateRecipeSOPRequest request) {
                 RecipeSOP recipeSOP = getRecipeSOP(request.id());
                 Recipe recipe = getRecipe(request.recipeId());
                 RecipeSOPDependencies deps = recipeSOPDependencyLoader.loadInsertDependencies(request, recipe,
                                 recipeSOP.getId());
                 RecipeSOPAudit oldData = recipeSOPMapper.copy(recipeSOP);
+                // Remove existing children and Force orphanRemoval DELETE
+                recipeSOP.getMaterials().clear();
+                recipeSOP.getParameters().clear();
+                recipeSOPRepository.flush();
                 recipeSOPMapper.updateEntity(
                                 request,
                                 recipeSOP,
@@ -104,13 +111,25 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                 audit(BatchAuditAction.UPDATED, oldData, recipeSOPMapper.copy(recipeSOP));
         }
 
-        @Transactional
         @Override
+        @Transactional
         public void delete(Long id) {
                 RecipeSOP recipeSOP = getRecipeSOP(id);
+                Long recipeId = recipeSOP.getRecipe().getId();
+                Integer stepNo = recipeSOP.getStepNo();
                 audit(BatchAuditAction.DELETED, recipeSOPMapper.copy(recipeSOP), null);
-                recipeSOPRepository.decrementStepNumbers(recipeSOP.getRecipe().getId(), recipeSOP.getStepNo());
+
+                // Move all following steps out of the way
+                recipeSOPRepository.shiftStepNumbersAfter(recipeId, stepNo, STEP_OFFSET);
+                recipeSOPRepository.flush();
+
+                // Delete the selected step
                 recipeSOPRepository.delete(recipeSOP);
+                recipeSOPRepository.flush();
+
+                // Move following steps back and decrement them by 1
+                recipeSOPRepository.shiftStepNumbersAfter(recipeId, stepNo + STEP_OFFSET, -STEP_OFFSET - 1);
+                recipeSOPRepository.flush();
         }
 
         @Override
@@ -186,10 +205,17 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                                 .orElseThrow(() -> new ResourceNotFoundException("Adjacent step not found."));
 
                 int currentStep = current.getStepNo();
-                current.setStepNo(other.getStepNo());
-                other.setStepNo(currentStep);
+                int otherStep = other.getStepNo();
 
-                recipeSOPRepository.saveAll(List.of(current, other));
+                // Temporarily remove both records from their unique keys
+                current.setStepNo(-currentStep);
+                other.setStepNo(-otherStep);
+                recipeSOPRepository.flush();
+
+                // Assign the swapped step numbers
+                current.setStepNo(otherStep);
+                other.setStepNo(currentStep);
+                recipeSOPRepository.flush();
         }
 
         private void insert(Long recipeSOPId, CreateRecipeSOPRequest request, boolean above) {
@@ -197,16 +223,21 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                 Recipe recipe = getRecipe(request.recipeId());
                 RecipeSOPDependencies deps = recipeSOPDependencyLoader.loadInsertDependencies(request, recipe, null);
 
-                int stepNo = current.getStepNo();
-                if (above) {
-                        recipeSOPRepository.incrementStepNumbersFrom(current.getRecipe().getId(), stepNo);
-                } else {
-                        recipeSOPRepository.incrementStepNumbersAfter(current.getRecipe().getId(), stepNo);
-                        stepNo++;
-                }
+                Long recipeId = recipe.getId();
+                int currentStep = current.getStepNo();
+                int newStepNo = above ? currentStep : currentStep + 1;
+
+                // Move affected steps far away
+                recipeSOPRepository.shiftStepNumbersFrom(recipeId, newStepNo, STEP_OFFSET);
+                recipeSOPRepository.flush();
+
+                // Move them back, but +1 from their original position
+                recipeSOPRepository.shiftStepNumbersFrom(recipeId, newStepNo + STEP_OFFSET, 1 - STEP_OFFSET);
+                recipeSOPRepository.flush();
+
                 RecipeSOP recipeSOP = recipeSOPMapper.toEntity(
                                 request,
-                                stepNo,
+                                newStepNo,
                                 current.getRecipe(),
                                 deps.action(),
                                 deps.transition(),

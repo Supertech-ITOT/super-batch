@@ -1,17 +1,17 @@
+"use client";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
-import { Button } from "@/common/components/ui/button";
-import { Loader } from "lucide-react";
+import { CalendarClock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useDeleteControlRecipe, useGetControlRecipeById } from "../hooks/use-control-recipe";
+import ConfirmDialog from "@/common/components/form/confirm-dialog";
 
 type Props = { open: boolean; onClose: () => void; controlRecipeId?: number; redirect?: boolean };
 export default function DeleteControlRecipeDialog({ open, onClose, controlRecipeId, redirect }: Props) {
     const { mutateAsync: deleteControlRecipe, isPending: deleteControlRecipeIsPending } = useDeleteControlRecipe();
     const { data: controlRecipe, isLoading: controlRecipeIsLoading } = useGetControlRecipeById(controlRecipeId);
     const router = useRouter();
-    const loading = deleteControlRecipeIsPending || controlRecipeIsLoading || !controlRecipe;
+    const loading = deleteControlRecipeIsPending || controlRecipeIsLoading;
     const handleDelete = async () => {
         if (!controlRecipe || !controlRecipeId) return;
         try {
@@ -27,22 +27,17 @@ export default function DeleteControlRecipeDialog({ open, onClose, controlRecipe
         }
     };
     return (
-        <Dialog open={open} onOpenChange={(value) => { if (!value) onClose() }}>
-            <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                    <DialogTitle>Delete</DialogTitle>
-                    <DialogDescription>
-                        {`Are you sure you want to delete recipe "${controlRecipe?.name}"?`}
-                    </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                    <DialogClose asChild>
-                        <Button disabled={loading} variant="outline" onClick={onClose}>Cancel</Button>
-                    </DialogClose>
-                    <Button onClick={handleDelete} variant="destructive" className="min-w-34 bg-destructive!  text-white" disabled={loading}>{loading ? <Loader className="w-4 h-4 animate-spin text-white" /> : "Delete"}</Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+        <ConfirmDialog
+            open={open}
+            onClose={onClose}
+            onConfirm={handleDelete}
+            loading={loading}
+            icon={CalendarClock}
+            dialogVariant="destructive"
+            title="Delete Schedule"
+            description={`Are you sure you want to delete "Schedule of batch ${controlRecipe?.batchNo ?? "-"}"? This action cannot be undone.`}
+            confirmText="Delete"
+        />
     );
 
 }

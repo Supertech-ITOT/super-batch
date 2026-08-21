@@ -29,11 +29,11 @@ export default function CreateRecipeDialog({ open, onClose }: Props) {
     });
     const loading = isSubmitting || isCreating || isLoadingMaterials || isLoadingUnits || isLoadingRecipeStatus;
     const selectedUnitId = watch("unitId");
-    const selectedUnitMaxRange = units?.find((unit) => unit.id === Number(selectedUnitId))?.capacity;
+    const selectedUnitMaxRange = units?.find((unit) => unit.id === selectedUnitId)?.capacity;
 
     const onSubmit = async (formData: CreateRecipeSchema) => {
         if (!selectedUnitMaxRange) return;
-        if (Number(formData.batchSize) > selectedUnitMaxRange) {
+        if (formData.batchSize > selectedUnitMaxRange) {
             toast.error(`Batch size must be under unit capacity - ${selectedUnitMaxRange}kg`)
             return;
         }

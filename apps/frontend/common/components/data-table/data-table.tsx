@@ -6,9 +6,10 @@ import { DataTableProps } from "./types";
 import DataTableEmpty from "./data-table-empty";
 import DataTablePagination from "./data-table-pagination";
 import { useState } from "react";
+import DataTableRow from "./data-table-row";
 
-const alignClass = { left: "text-left", center: "text-center", right: "text-right", };
-export function DataTable<TData, TValue>({ columns, data, pageSize = 10, toolbar, emptyMessage = "No data available.", className, rowClassName = "h-12", tableClassName = "min-h-125" }: DataTableProps<TData, TValue>) {
+
+export function DataTable<TData, TValue>({ columns, data, pageSize = 10, toolbar, emptyMessage = "No data available.", className, rowClassName = "h-12", tableClassName = "min-h-125", contextMenu }: DataTableProps<TData, TValue>) {
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const table = useReactTable({
         data,
@@ -52,13 +53,12 @@ export function DataTable<TData, TValue>({ columns, data, pageSize = 10, toolbar
                                 ? (
                                     <>
                                         {rows.map(row => (
-                                            <TableRow key={row.id}>
-                                                {row.getVisibleCells().map(cell => (
-                                                    <TableCell key={cell.id} className={`border-r last:border-r-0 px-2 sm:px-4 py-2 text-xs sm:text-sm ${alignClass[cell.column.columnDef.meta?.align ?? "left"]}`}>
-                                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                                    </TableCell>
-                                                ))}
-                                            </TableRow>
+                                            <DataTableRow
+                                                key={row.id}
+                                                row={row}
+                                                rowClassName={rowClassName}
+                                                contextMenu={contextMenu}
+                                            />
                                         ))}
 
                                         {Array.from({ length: emptyRows }).map((_, index) => (

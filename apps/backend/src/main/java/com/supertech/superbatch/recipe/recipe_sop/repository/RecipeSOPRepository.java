@@ -15,34 +15,23 @@ public interface RecipeSOPRepository extends JpaRepository<RecipeSOP, Long> {
 
   Optional<RecipeSOP> findByRecipeIdAndStepNo(Long recipeId, Integer stepNo);
 
-  @Modifying
+  @Modifying(flushAutomatically = true)
   @Query("""
           UPDATE RecipeSOP r
-          SET r.stepNo = r.stepNo - 1
-          WHERE r.recipe.id = :recipeId
-            AND r.stepNo > :stepNo
-      """)
-  void decrementStepNumbers(Long recipeId, Integer stepNo);
-
-  // Insert Below
-  @Modifying
-  @Query("""
-          UPDATE RecipeSOP r
-          SET r.stepNo = r.stepNo + 1
-          WHERE r.recipe.id = :recipeId
-            AND r.stepNo > :stepNo
-      """)
-  void incrementStepNumbersAfter(Long recipeId, Integer stepNo);
-
-  // Insert Above
-  @Modifying
-  @Query("""
-          UPDATE RecipeSOP r
-          SET r.stepNo = r.stepNo + 1
+          SET r.stepNo = r.stepNo + :offset
           WHERE r.recipe.id = :recipeId
             AND r.stepNo >= :stepNo
       """)
-  void incrementStepNumbersFrom(Long recipeId, Integer stepNo);
+  void shiftStepNumbersFrom(Long recipeId, Integer stepNo, Integer offset);
+
+  @Modifying(flushAutomatically = true)
+  @Query("""
+          UPDATE RecipeSOP r
+          SET r.stepNo = r.stepNo + :offset
+          WHERE r.recipe.id = :recipeId
+            AND r.stepNo > :stepNo
+      """)
+  void shiftStepNumbersAfter(Long recipeId, Integer stepNo, Integer offset);
 
   @EntityGraph(attributePaths = { "recipe", "action", "transition", "fromEquipment", "toEquipment", "materials",
       "materials.material", "parameters", "parameters.parameter" })

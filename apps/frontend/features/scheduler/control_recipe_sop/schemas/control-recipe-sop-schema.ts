@@ -41,3 +41,13 @@ export const controlRecipeSOPSchema = z.object({
 );
 
 export type ControlRecipeSOPSchema = z.infer<typeof controlRecipeSOPSchema>;
+export const controlRecipeSopDefaultValues: ControlRecipeSOPSchema = {
+    stdTime: "",
+    fromEquipmentId: null,
+    toEquipmentId: 0,
+    actionId: 0,
+    transitionId: 0,
+    message: "",
+    materials: [],
+    parameters: [],
+}

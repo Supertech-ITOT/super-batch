@@ -74,6 +74,7 @@ export default function UnAssignEquipmentDialog({ open, onClose, unitId, equipme
                         label="Equipment"
                         value={field.value}
                         icon={Cpu}
+                        emptyValue={0}
                         onChange={field.onChange}
                         options={equipments?.map((a) => ({
                             value: a.id,

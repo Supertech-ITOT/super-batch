@@ -4,6 +4,6 @@ export const queryKeys = {
 
     recipeSOPs: ["recipe-sops"] as const,
     recipeSOP: (id: number) => ["recipe-sops", id] as const,
-    recipeSOPsByRecipe: (id: number) => ["recipe-sops", "recipes", id] as const,
-    recipeSOPsSummaryByRecipe:(id:number) =>["recipe-sops","recipes",id,"summary"] as const,
+    recipeSOPsByRecipe: (recipeId: number) => ["recipe-sops", "recipes", recipeId] as const,
+    recipeSOPsSummaryByRecipe: (recipeId: number) => ["recipe-sops", "recipes", recipeId, "summary"] as const,
 }

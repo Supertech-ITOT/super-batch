@@ -18,32 +18,30 @@ export default function ControlRecipeSOPInfo({ controlRecipe }: { controlRecipe:
     const [dialog, setDialog] = useState<DialogProp>({ action: null, id: null, open: false, });
     const closeDialog = () => setDialog({ open: false, action: null, id: null, });
     return (
-        <div className="flex flex-wrap justify-between gap-0.5">
-            <div className="flex flex-col gap-0.5">
-                <div className="flex gap-2 items-center">
-                    <h1 className="text-2xl font-semibold">{controlRecipe.name}</h1>
+        <div className="flex lg:flex-row flex-col justify-between gap-2">
+            <div className="flex flex-col gap-2">
+                <h1 className="text-xl leading-6 sm:text-2xl font-semibold text-primary line-clamp-2">{controlRecipe.name}</h1>
+                <p className="max-w-5xl text-xs sm:text-sm leading-3.5 text-justify text-muted-foreground">
+                    {controlRecipe.recipe.description}
+                </p>
+                <div className="flex gap-1 overflow-x-auto scrollbar-none">
                     <Badge
                         className={`flex items-center gap-2 border font-semibold ${ControlRecipeStatusBadgeStyles[controlRecipe.status]}`}
                     >
                         <Circle className={`h-2 w-2 fill-current`} />
-                        {controlRecipe.status === ControlRecipeStatus.SHEDULED ? "Scheduled" : "Transferred"}
+                        {controlRecipe.status === ControlRecipeStatus.SCHEDULED ? "Scheduled" : "Transferred"}
                     </Badge>
-                </div>
-                <div className="flex gap-2">
-                    <Badge variant={"outline"} >Unit: {controlRecipe.unit.name}</Badge>
+                    <Badge variant={"outline"} >Unit: {controlRecipe.unit.name} - [{controlRecipe.unit.code}]</Badge>
                     <Badge variant={"outline"} >Batch Size: {controlRecipe.batchSize} KG</Badge>
                 </div>
-                <p className="max-w-5xl text-sm leading-4 text-muted-foreground">
-                    {controlRecipe.recipe.description}
-                </p>
             </div>
-            <div className="flex gap-2">
-                <Button className="w-24" onClick={() => setDialog({ action: "edit", id: controlRecipe.id, open: true, })} >
+            <div className="flex gap-1 grow sm:grow-0 sm:w-100">
+                <Button className="flex-1! text-white" onClick={() => setDialog({ action: "edit", id: controlRecipe.id, open: true, })} >
                     <PencilLine className="h-4 w-4" />
                     Edit
                 </Button>
-                <Button className="w-24" variant="destructive" onClick={() => setDialog({ action: "delete", id: controlRecipe.id, open: true, })}>
-                    <Trash2 className="h-4 w-4 text-destructive" />
+                <Button className="flex-1! text-white" variant="destructive" onClick={() => setDialog({ action: "delete", id: controlRecipe.id, open: true, })}>
+                    <Trash2 className="h-4 w-4" />
                     Delete
                 </Button>
                 {

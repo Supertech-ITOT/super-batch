@@ -111,9 +111,6 @@ public class ControlRecipeSOPMapper {
                 controlRecipeSOP.setFromEquipment(fromEquipment);
                 controlRecipeSOP.setToEquipment(toEquipment);
 
-                controlRecipeSOP.getMaterials().clear();
-                controlRecipeSOP.getParameters().clear();
-
                 // build materials
                 if (request.materials() != null) {
                         for (ControlRecipeSOPMaterialRequest rm : request.materials()) {

@@ -44,6 +44,9 @@ export const useUpdateControlRecipeSOP = () => {
             queryClient.invalidateQueries({
                 queryKey: queryKeys.controlRecipeSOPsByControlRecipe(variables.controlRecipeId),
             });
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.controlRecipeSOP(variables.id),
+            });
         },
     });
 };
@@ -68,6 +71,9 @@ export const useMoveUpControlRecipeSOP = () => {
             queryClient.invalidateQueries({
                 queryKey: queryKeys.controlRecipeSOPsByControlRecipe(variables.controlRecipeId),
             });
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.controlRecipeSOP(variables.id),
+            });
         },
     });
 };
@@ -79,6 +85,9 @@ export const useMoveDownControlRecipeSOP = () => {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
                 queryKey: queryKeys.controlRecipeSOPsByControlRecipe(variables.controlRecipeId),
+            });
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.controlRecipeSOP(variables.id),
             });
         },
     });

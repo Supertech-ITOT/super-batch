@@ -44,6 +44,9 @@ export const useUpdateRecipeSOP = () => {
             queryClient.invalidateQueries({
                 queryKey: queryKeys.recipeSOPsByRecipe(variables.recipeId),
             });
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.recipeSOP(variables.id),
+            });
         },
     });
 };
@@ -68,6 +71,9 @@ export const useMoveUpRecipeSOP = () => {
             queryClient.invalidateQueries({
                 queryKey: queryKeys.recipeSOPsByRecipe(variables.recipeId),
             });
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.recipeSOP(variables.id),
+            });
         },
     });
 };
@@ -79,6 +85,9 @@ export const useMoveDownRecipeSOP = () => {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
                 queryKey: queryKeys.recipeSOPsByRecipe(variables.recipeId),
+            });
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.recipeSOP(variables.id),
             });
         },
     });
@@ -109,14 +118,14 @@ export const useInsertBelowRecipeSOP = () => {
 };
 
 export const useGetSummaryByRecipeId = (recipeId: number) => {
-  return useQuery({
-    queryKey: queryKeys.recipeSOPsSummaryByRecipe(recipeId),
-    queryFn: async () => {
-      const res = await getSummaryByRecipeId(recipeId);
-      return res.data;
-    },
-    enabled: !!recipeId,
-  });
+    return useQuery({
+        queryKey: queryKeys.recipeSOPsSummaryByRecipe(recipeId),
+        queryFn: async () => {
+            const res = await getSummaryByRecipeId(recipeId);
+            return res.data;
+        },
+        enabled: !!recipeId,
+    });
 };
-  
-    
+
+

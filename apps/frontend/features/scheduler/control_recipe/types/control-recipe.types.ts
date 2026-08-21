@@ -42,6 +42,7 @@ export interface MasterRecipeResponse {
 export interface UnitControlRecipeResponse {
   id: number;
   name: string;
+  code: string;
   capacity: number;
 }
 
@@ -65,14 +66,14 @@ export interface EquipmentMappingResponse {
 }
 
 export enum ControlRecipeStatus {
-  SHEDULED = "SHEDULED",
+  SCHEDULED = "SCHEDULED",
   TRANSFERRED = "TRANSFERRED",
 }
 
 export const ControlRecipeStatusBadgeStyles = {
-  SHEDULED:
-    "text-green-700 bg-green-100 border-green-200 dark:text-green-400 dark:bg-green-950 dark:border-green-800",
+  SCHEDULED:
+    "text-green-800 bg-green-100 border-green-400 dark:text-green-300 dark:bg-green-950 dark:border-green-600",
 
   TRANSFERRED:
-    "text-gray-700 bg-gray-100 border-gray-200 dark:text-gray-300 dark:bg-gray-900 dark:border-gray-700",
+    "text-green-600 bg-green-50 border-green-100 dark:text-green-500 dark:bg-green-950/30 dark:border-green-900",
 } as const;

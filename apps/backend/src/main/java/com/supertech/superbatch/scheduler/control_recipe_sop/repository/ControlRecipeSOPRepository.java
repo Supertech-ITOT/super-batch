@@ -20,32 +20,23 @@ public interface ControlRecipeSOPRepository extends JpaRepository<ControlRecipeS
 
   Optional<ControlRecipeSOP> findByControlRecipeIdAndStepNo(Long controlRecipeId, Integer stepNo);
 
-  @Modifying
+  @Modifying(flushAutomatically = true)
   @Query("""
           UPDATE ControlRecipeSOP r
-          SET r.stepNo = r.stepNo - 1
-          WHERE r.controlRecipe.id = :controlRecipeId
-            AND r.stepNo > :stepNo
-      """)
-  void decrementStepNumbers(Long controlRecipeId, Integer stepNo);
-
-  @Modifying
-  @Query("""
-          UPDATE ControlRecipeSOP r
-          SET r.stepNo = r.stepNo + 1
-          WHERE r.controlRecipe.id = :controlRecipeId
-            AND r.stepNo > :stepNo
-      """)
-  void incrementStepNumbersAfter(Long controlRecipeId, Integer stepNo);
-
-  @Modifying
-  @Query("""
-          UPDATE ControlRecipeSOP r
-          SET r.stepNo = r.stepNo + 1
+          SET r.stepNo = r.stepNo + :offset
           WHERE r.controlRecipe.id = :controlRecipeId
             AND r.stepNo >= :stepNo
       """)
-  void incrementStepNumbersFrom(Long controlRecipeId, Integer stepNo);
+  void shiftStepNumbersFrom(Long controlRecipeId, Integer stepNo, Integer offset);
+
+  @Modifying(flushAutomatically = true)
+  @Query("""
+          UPDATE ControlRecipeSOP r
+          SET r.stepNo = r.stepNo + :offset
+          WHERE r.controlRecipe.id = :controlRecipeId
+            AND r.stepNo > :stepNo
+      """)
+  void shiftStepNumbersAfter(Long controlRecipeId, Integer stepNo, Integer offset);
 
   @EntityGraph(attributePaths = { "controlRecipe", "action", "transition", "fromEquipment", "toEquipment", "materials",
       "materials.material", "parameters", "parameters.parameter" })

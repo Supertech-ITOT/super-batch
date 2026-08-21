@@ -15,6 +15,9 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogPro
         id: "srNo",
         header: "Sr. No.",
         cell: ({ row }) => row.index + 1,
+        meta: {
+            align: "center",
+        },
     },
     {
         header: "Batch",
@@ -26,10 +29,10 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogPro
                 <div className="space-y-2">
                     {/* Header */}
                     <div className="flex items-center justify-between">
-                        <span className="font-semibold text-sm"> #{batchNo}</span>
+                        <span className="font-bold text-primary text-lg"> #{batchNo}</span>
                         <Badge className={ControlRecipeStatusBadgeStyles[status as keyof typeof ControlRecipeStatusBadgeStyles]} >
                             <Circle className="size-2 fill-current" />
-                            {status === ControlRecipeStatus.SHEDULED ? "Scheduled" : "Transferred"}
+                            {status === ControlRecipeStatus.SCHEDULED ? "Scheduled" : "Transferred"}
                         </Badge>
                     </div>
 
@@ -146,7 +149,7 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogPro
                                 </p>
 
                                 {/* User */}
-                                <div className="flex items-center gap-3 min-w-0">
+                                <div className="flex items-center gap-3 min-w-52 shrink-0">
                                     <UserAvatar
                                         name={user.name}
                                         className="size-8 shrink-0"
@@ -194,6 +197,9 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogPro
     },
     {
         id: "modified",
+        meta: {
+            align: "center",
+        },
         header: "Modified",
         cell: ({ row }) => {
             const value = row.original.updatedAt || row.original.createdAt;

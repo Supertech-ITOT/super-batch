@@ -16,7 +16,7 @@ const equipmentMappingSchema = z.object({
 });
 
 
-export const createControlRecipeSchema = z.object({
+export const baseControlRecipeSchema = z.object({
   scheduledAt: scheduledAtSchema,
 
   batchNo: z
@@ -33,9 +33,8 @@ export const createControlRecipeSchema = z.object({
       "Batch No must contain only uppercase letters, numbers, underscores (_) and hyphens (-)."
     ),
   batchSize: z
-    .string({ error: "Batch Size is required." })
-    .min(1, "Batch Size is required")
-    .trim(),
+    .number({ error: "Batch size is required." })
+    .min(1, "Batch size is required"),
 
   recipeId: z
     .number({ error: "Recipe Id is required." })
@@ -52,17 +51,22 @@ export const createControlRecipeSchema = z.object({
   equipmentMappings: z
     .array(equipmentMappingSchema).optional(),
 });
+export const createControlRecipeSchema = baseControlRecipeSchema;
 
-export const updateControlRecipeSchema = createControlRecipeSchema.omit({
+export const updateControlRecipeSchema = baseControlRecipeSchema.omit({
   recipeId: true,
   equipmentMappings: true,
   unitId: true,
 });
 
-export type CreateControlRecipeSchema = z.infer<
-  typeof createControlRecipeSchema
->;
-
-export type UpdateControlRecipeSchema = z.infer<
-  typeof updateControlRecipeSchema
->;
+export type CreateControlRecipeSchema = z.infer<typeof createControlRecipeSchema>;
+export type UpdateControlRecipeSchema = z.infer<typeof updateControlRecipeSchema>;
+export const controlRecipeDefaultValues: CreateControlRecipeSchema = {
+  batchNo: "",
+  batchSize: 0,
+  recipeId: 0,
+  unitId: 0,
+  scheduledAt: "",
+  shiftInchargeId: 0,
+  equipmentMappings: [],
+};

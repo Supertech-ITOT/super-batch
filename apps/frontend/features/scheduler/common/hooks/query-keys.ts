@@ -5,6 +5,6 @@ export const queryKeys = {
 
     controlRecipeSOPs: ["control-recipe-sops"] as const,
     controlRecipeSOP: (id: number) => ["control-recipe-sops", id] as const,
-    controlRecipeSOPsByControlRecipe: (id: number) => ["control-recipe-sops", "control-recipes", id] as const,
-    controlRecipeSOPsSummaryByControlRecipe: (id: number) => ["control-recipe-sops", "control-recipes", id, "summary"] as const,
+    controlRecipeSOPsByControlRecipe: (recipeId: number) => ["control-recipe-sops", "control-recipes", recipeId] as const,
+    controlRecipeSOPsSummaryByControlRecipe: (recipeId: number) => ["control-recipe-sops", "control-recipes", recipeId, "summary"] as const,
 }

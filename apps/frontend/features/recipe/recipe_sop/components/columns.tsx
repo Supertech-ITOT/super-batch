@@ -14,7 +14,10 @@ export const columns: ColumnDef<RecipeSOPResponse>[] = [
             <div className="size-8 bg-primary/10 rounded-full flex justify-center items-center place-self-center p-0.5 shadow" >
                 <h1 className="text-primary font-black">{row.original.stepNo}</h1>
             </div>
-        )
+        ),
+        meta: {
+            align: "center",
+        },
     },
     {
         accessorKey: "message",
@@ -31,6 +34,9 @@ export const columns: ColumnDef<RecipeSOPResponse>[] = [
     {
         accessorKey: "stdTime",
         header: "Std Time",
+        meta: {
+            align: "center",
+        },
         cell: ({ row }) => (
             <div>
                 {minutesToADuration(row.original.stdTime)}

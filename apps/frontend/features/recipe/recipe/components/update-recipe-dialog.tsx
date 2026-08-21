@@ -37,7 +37,7 @@ export default function UpdateRecipeDialog({ open, onClose, recipeId }: Props) {
     const selectedUnitMaxRange = recipe?.unitRecipeResponse?.capacity ?? 0;
     const onSubmit = async (formData: UpdateRecipeSchema) => {
         if (!selectedUnitMaxRange) return;
-        if (Number(formData.batchSize) > selectedUnitMaxRange) {
+        if (formData.batchSize > selectedUnitMaxRange) {
             toast.error(`Batch size must be under unit capacity - ${selectedUnitMaxRange}kg`)
             return;
         }

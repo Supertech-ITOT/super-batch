@@ -10,20 +10,21 @@ export const columns: ColumnDef<ControlRecipeSOPResponse>[] = [
     {
         accessorKey: "stepNo",
         header: "Step",
-        size: 10,
         cell: ({ row }) => (
             <div className="size-8 bg-primary/10 rounded-full flex justify-center items-center place-self-center p-0.5 shadow" >
                 <h1 className="text-primary font-black">{row.original.stepNo}</h1>
             </div>
-        )
+        ),
+        meta: {
+            align: "center",
+        },
     },
     {
         accessorKey: "message",
         header: "Message",
-        size: 300,
         cell: ({ row }) => (
             <div
-                className="wrap-break-word whitespace-normal line-clamp-2"
+                className="max-w-xs wrap-break-word whitespace-normal line-clamp-2"
                 title={row.original.message}
             >
                 {row.original.message}
@@ -33,7 +34,9 @@ export const columns: ColumnDef<ControlRecipeSOPResponse>[] = [
     {
         accessorKey: "stdTime",
         header: "Std Time",
-        size: 50,
+        meta: {
+            align: "center",
+        },
         cell: ({ row }) => (
             <div>
                 {minutesToADuration(row.original.stdTime)}
@@ -44,7 +47,6 @@ export const columns: ColumnDef<ControlRecipeSOPResponse>[] = [
     {
         id: "transitionAction",
         header: "Process",
-        size: 280,
         cell: ({ row }) => (
             <div className="space-y-1.5 text-left">
                 <div className="flex flex-row items-center justify-between">
@@ -92,7 +94,6 @@ export const columns: ColumnDef<ControlRecipeSOPResponse>[] = [
     {
         accessorKey: "parameters",
         header: "Parameters",
-        size: 100,
         cell: ({ row }) => (
             <CollapsibleDataTable
                 title="Parameter(s)"
@@ -119,7 +120,6 @@ export const columns: ColumnDef<ControlRecipeSOPResponse>[] = [
     {
         accessorKey: "materials",
         header: "Materials",
-        size: 100,
         cell: ({ row }) => (
             <CollapsibleDataTable
                 title="Material(s)"
@@ -146,7 +146,6 @@ export const columns: ColumnDef<ControlRecipeSOPResponse>[] = [
     {
         id: "sourceDestination",
         header: "Source → Destination",
-        size: 100,
         cell: ({ row }) => {
             const { fromEquipment, toEquipment } = row.original;
             return (

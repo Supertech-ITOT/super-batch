@@ -1,28 +1,28 @@
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
+"use client";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
-import { Label } from "@/common/components/ui/label";
-import { Input } from "@/common/components/ui/input";
-import { Button } from "@/common/components/ui/button";
-import { Loader } from "lucide-react";
+import { BookOpenText, Boxes, CalendarClock, Hash, PackageCheck, Scale, User } from "lucide-react";
 import { useGetMaterials } from "@/features/plant/material/hooks/use-materials";
 import { useGetUnits } from "@/features/plant/unit/hooks/use-units";
 import { MaterialType } from "@/features/plant/material/types/material.types";
 import { useCreateControlRecipe, useRecipeEquipmentMapping } from "../hooks/use-control-recipe";
-import { createControlRecipeSchema, CreateControlRecipeSchema } from "../schemas/control-recipe-schema";
+import { controlRecipeDefaultValues, ControlRecipeSchemaLimit, createControlRecipeSchema, CreateControlRecipeSchema } from "../schemas/control-recipe-schema";
 import SearchableSelect from "@/common/components/form/searchable-select";
 import { useEffect, useState } from "react";
 import DatetimePicker from "@/common/components/form/datetime-picker";
 import UserSelect from "@/common/components/form/user-select";
 import { useGetUser } from "@/features/manager/user/hooks/use-user";
-import { Skeleton } from "@/common/components/ui/skeleton";
 import { useGetRecipeById, useGetRecipes } from "@/features/recipe/recipe/hooks/use-recipe";
 import { EquipmentMappingResponse } from "../types/control-recipe.types";
 import EquipmentMapping from "./equipment-mapping";
 import { useGetEquipmentsByUnitId } from "@/features/plant/equipment/hooks/use-equipment";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/common/components/ui/tabs";
+import FormDialog from "@/common/components/form/form-dialog";
+import { TextInput } from "@/common/components/form/text-input";
+import { NumberInput } from "@/common/components/form/number-input";
+import { showFormError } from "@/common/lib/show-form-error";
 
 
 type Tab = "details" | "mapping";
@@ -38,7 +38,7 @@ export default function CreateControlRecipeDialog({ open, onClose }: Props) {
     const { data: masterRecipes, isLoading: isLoadingMasterRecipes } = useGetRecipes();
     const { register, handleSubmit, reset, watch, control, setValue, formState: { isSubmitting, isDirty } } = useForm<CreateControlRecipeSchema>({
         resolver: zodResolver(createControlRecipeSchema),
-        defaultValues: { batchNo: "", batchSize: "", recipeId: 0, unitId: 0, scheduledAt: "", shiftInchargeId: 0, equipmentMappings: [], }
+        defaultValues: controlRecipeDefaultValues,
     });
 
     const loading = isSubmitting ||
@@ -49,8 +49,7 @@ export default function CreateControlRecipeDialog({ open, onClose }: Props) {
 
     const selectedUnitId = watch("unitId");
     const selectedMasterRecipeId = watch("recipeId");
-    const selectedUnitMaxRange = units?.find((unit) => unit.id === Number(selectedUnitId))?.capacity;
-    const defaultBatchSize = masterRecipes?.find((f) => f.id === selectedMasterRecipeId)?.batchSize;
+    const selectedUnitMaxRange = units?.find((unit) => unit.id === selectedUnitId)?.capacity;
     const masterRecipesOptions = masterRecipes?.filter((f) => f.materialRecipeResponse.id === materialId);
     const { data: mapping, isLoading: isLoadingMapping } = useRecipeEquipmentMapping(selectedMasterRecipeId, selectedUnitId);
     const { data: masterRecipe, isLoading: isLoadingMasterRecipe } = useGetRecipeById(selectedMasterRecipeId);
@@ -63,13 +62,13 @@ export default function CreateControlRecipeDialog({ open, onClose }: Props) {
     }, [mapping]);
 
     useEffect(() => {
-        if (!selectedMasterRecipeId) return;
-        setValue("batchSize", String(defaultBatchSize));
-    }, [selectedMasterRecipeId]);
+        if (isLoadingMasterRecipe) return;
+        setValue("batchSize", selectedMasterRecipeId && masterRecipe ? masterRecipe.batchSize : 0);
+    }, [selectedMasterRecipeId, masterRecipe, isLoadingMasterRecipe, setValue,]);
 
     const onSubmit = async (formData: CreateControlRecipeSchema) => {
         if (!selectedUnitMaxRange) return;
-        if (Number(formData.batchSize) > selectedUnitMaxRange) {
+        if (formData.batchSize > selectedUnitMaxRange) {
             toast.error(`Batch size must be under unit capacity - ${selectedUnitMaxRange}kg`)
             return;
         }
@@ -85,7 +84,6 @@ export default function CreateControlRecipeDialog({ open, onClose }: Props) {
 
         const payload = {
             ...formData,
-            batchSize: Number(formData.batchSize),
             equipmentMappings: isMapping
                 ? equipmentMappings.map((m) => ({
                     recipeEquipmentId: m.equipmentId,
@@ -102,217 +100,166 @@ export default function CreateControlRecipeDialog({ open, onClose }: Props) {
         }
     }
     const handleClose = () => {
-        reset({ batchNo: "", batchSize: "", recipeId: 0, unitId: 0, scheduledAt: "", shiftInchargeId: 0, equipmentMappings: [], });
+        reset(controlRecipeDefaultValues);
         onClose();
     };
     const onInvalid = (errors: FieldErrors<CreateControlRecipeSchema>) => {
-        const firstError = Object.values(errors)[0];
-        if (firstError?.message) {
-            toast.error(firstError.message.toString());
-        }
+        toast.error(showFormError(errors));
     };
-    if (loading) {
-        return <Skeleton className="h-full" />;
-    }
 
     return (
-        <Dialog open={open} onOpenChange={(value) => { if (!value) handleClose() }}>
-            <DialogContent className="sm:max-w-md">
-                <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
-                    <DialogHeader>
-                        <DialogTitle>Create Batch Schedule</DialogTitle>
-                        <DialogDescription>
-                            Configure the batch details and production schedule.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <Tabs value={tab} onValueChange={(value) => setTab(value as Tab)} className="py-4 space-y-4">
-                        <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="details">Batch Details</TabsTrigger>
-                            <TabsTrigger value="mapping" disabled>Equipment Mapping</TabsTrigger>
-                        </TabsList>
-                        <TabsContent className="space-y-4" value="details">
-                            <div className="grid grid-cols-2 gap-1.5">
-                                <div className="space-y-2 relative">
-                                    <div className="flex items-center justify-between">
-                                        <Label>Batch No</Label>
-                                    </div>
-                                    <div className="flex">
-                                        <Input
-                                            type="text"
-                                            placeholder="LOT_88"
-                                            {...register("batchNo")}
-                                            onChange={(e) => {
-                                                e.target.value = e.target.value.toUpperCase();
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="min-w-0 space-y-2">
-                                    <Label>Product</Label>
-                                    <SearchableSelect
-                                        value={materialId}
-                                        onChange={setMaterialId}
-                                        options={
-                                            materials.filter((m) => m.materialType === MaterialType.FINISHED_PRODUCT)
-                                                .map((m) => ({
-                                                    value: m.id,
-                                                    label: m.name,
-                                                }))
-                                        }
-                                        placeholder="Select"
-                                        searchPlaceholder="Search Product..."
-                                        disabled={loading}
-                                    />
-                                </div>
-                                <div className="min-w-0 space-y-2">
-                                    <Label>Master Recipe</Label>
-                                    <Controller
-                                        control={control}
-                                        name="recipeId"
-                                        render={({ field }) => (
-                                            <SearchableSelect
-                                                value={field.value}
-                                                onChange={field.onChange}
-                                                options={masterRecipesOptions?.map((m) => ({
-                                                    value: m.id,
-                                                    label: m.name,
-                                                })) ?? []}
-                                                placeholder="Select"
-                                                searchPlaceholder="Search Transition..."
-                                                disabled={loading}
-                                            />
-                                        )}
-                                    />
-                                </div>
-                                <div className="min-w-0 space-y-2">
-                                    <Label>Proccessing Unit</Label>
-                                    <Controller
-                                        control={control}
-                                        name="unitId"
-                                        render={({ field }) => (
-                                            <SearchableSelect
-                                                value={field.value}
-                                                onChange={field.onChange}
-                                                options={units?.map((m) => ({
-                                                    value: m.id,
-                                                    label: m.name,
-                                                })) ?? []}
-                                                placeholder="Select"
-                                                searchPlaceholder="Search Unit..."
-                                                disabled={loading}
-                                            />
-                                        )}
-                                    />
-                                </div>
+        <FormDialog
+            open={open}
+            loading={loading}
+            onClose={handleClose}
+            title="Create Schedule"
+            description="Configure the batch details and production schedule."
+            submitDisabled={!isDirty}
+            submitLabel="Create"
+            showFooter={isMapping ? tab === "mapping" : tab === "details"}
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
+            icon={CalendarClock}
+        >
 
-                            </div>
-                            <div className="grid grid-cols-2 gap-1.5">
-                                <div className="space-y-2 relative">
-                                    <div className="flex items-center justify-between">
-                                        <Label>Batch Size</Label>
-                                    </div>
-                                    <div className="flex">
-                                        <Input
-                                            type="number"
-                                            placeholder={selectedUnitMaxRange ? `0 - ${selectedUnitMaxRange}` : "0"}
-                                            {...register("batchSize")}
-                                            className="rounded-r-none"
-                                        />
-                                        <div className="flex items-center justify-center w-12 border border-l-0 rounded-r-md bg-muted text-sm">
-                                            KG
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="min-w-0  space-y-2">
-                                    <Label>Shift Incharge</Label>
-                                    <Controller
-                                        control={control}
-                                        name="shiftInchargeId"
-                                        render={({ field }) => (
-                                            <UserSelect
-                                                value={field.value}
-                                                onChange={field.onChange}
-                                                options={
-                                                    users.map((u) => ({
-                                                        id: u.id,
-                                                        name: u.name,
-                                                        email: u.email,
-                                                        role: u.roleName
-                                                    }))
-                                                }
-                                                placeholder="Select"
-                                                searchPlaceholder="Search Users..."
-                                                disabled={loading}
-                                            />
-                                        )}
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Schedule At</Label>
-                                <Controller
-                                    name="scheduledAt"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <DatetimePicker
-                                            disabledDates={{ before: new Date() }}
-                                            className="bg-card"
-                                            value={field.value}
-                                            onChange={field.onChange}
-                                            placeholder="DD MM YY HH:MM"
-                                            disabled={loading}
-                                        />
-                                    )}
-                                />
-                            </div>
-
-                        </TabsContent>
-                        <TabsContent value="mapping" className="p-4 border ">
-                            <div className="h-64 overflow-y-auto scrollbar-none">
-                                <EquipmentMapping
-                                    value={equipmentMappings}
-                                    onChange={setEquipmentMappings}
-                                    executionEquipments={equipmentOpt?.map(e => ({
-                                        value: e.id,
-                                        label: e.name
+            <Tabs value={tab} onValueChange={(value) => setTab(value as Tab)} className="space-y-2">
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="details">Batch Details</TabsTrigger>
+                    <TabsTrigger value="mapping" disabled={!isMapping}>Equipment Mapping</TabsTrigger>
+                </TabsList>
+                <TabsContent className="space-y-2" value="details">
+                    <div className="grid grid-cols-2 gap-2">
+                        <TextInput
+                            label="Batch No"
+                            icon={Hash}
+                            counter
+                            maxCharacters={ControlRecipeSchemaLimit.batchNo.max}
+                            placeholder="Batch No"
+                            maxLength={ControlRecipeSchemaLimit.batchNo.max}
+                            disabled={loading}
+                            value={watch("batchNo")}
+                            {...register("batchNo")}
+                        />
+                        <SearchableSelect
+                            label="Product"
+                            value={materialId}
+                            icon={PackageCheck}
+                            onChange={setMaterialId}
+                            options={materials?.filter((f) => f.materialType === MaterialType.FINISHED_PRODUCT).map((a) => ({
+                                value: a.id,
+                                label: a.name,
+                            })) ?? []}
+                            placeholder="Select Product"
+                            searchPlaceholder="Search Products..."
+                            disabled={loading}
+                        />
+                        <Controller
+                            control={control}
+                            name="recipeId"
+                            render={({ field }) => (
+                                <SearchableSelect
+                                    label="Recipe"
+                                    value={field.value}
+                                    icon={BookOpenText}
+                                    onChange={field.onChange}
+                                    options={masterRecipesOptions?.map((m) => ({
+                                        value: m.id,
+                                        label: m.name,
                                     })) ?? []}
-                                    loading={isLoadingMapping || isLoadingEquipmentOpt}
+                                    placeholder="Select Recipe"
+                                    searchPlaceholder="Search Recipes..."
+                                    disabled={loading}
                                 />
-                            </div>
-                        </TabsContent>
-                    </Tabs>
-                    <DialogFooter>
-                        {tab === "details" ? (
-                            <>
-                                <DialogClose asChild>
-                                    <Button key="cancel" type="button" variant="outline" disabled={loading} onClick={handleClose} >
-                                        Cancel
-                                    </Button>
-                                </DialogClose>
-
-                                {isMapping ? (
-                                    <Button key="next" type="button" onClick={() => setTab("mapping")} className="min-w-34 text-white" >
-                                        Next
-                                    </Button>
-                                ) : (
-                                    <Button key="create-mapping" type="submit" className="min-w-34 text-white" disabled={loading || !isDirty} >
-                                        {loading ? (<Loader className="w-4 h-4 animate-spin text-white" />) : ("Create")}
-                                    </Button>
-                                )}
-                            </>
-                        ) : (
-                            <>
-                                <Button key="back" variant="outline" type="button" onClick={() => setTab("details")} >
-                                    Back
-                                </Button>
-                                <Button key="create-mapping" type="submit" className="min-w-34 text-white" disabled={loading || !isDirty} >
-                                    {loading ? (<Loader className="w-4 h-4 animate-spin text-white" />) : ("Create")}
-                                </Button>
-                            </>
+                            )}
+                        />
+                        <Controller
+                            control={control}
+                            name="unitId"
+                            render={({ field }) => (
+                                <SearchableSelect
+                                    label="Unit"
+                                    value={field.value}
+                                    icon={Boxes}
+                                    onChange={field.onChange}
+                                    options={units?.map((a) => ({
+                                        value: a.id,
+                                        label: a.name,
+                                    })) ?? []}
+                                    placeholder="Select Unit"
+                                    searchPlaceholder="Search Units..."
+                                    disabled={loading}
+                                />
+                            )}
+                        />
+                        <NumberInput
+                            label="Batch Size"
+                            icon={Scale}
+                            suffix="KG"
+                            placeholder={selectedUnitMaxRange ? `0 - ${selectedUnitMaxRange}` : "0"}
+                            disabled={loading}
+                            value={watch("batchSize")}
+                            {...register("batchSize", {
+                                valueAsNumber: true,
+                            })}
+                        />
+                        <Controller
+                            control={control}
+                            name="shiftInchargeId"
+                            render={({ field }) => (
+                                <UserSelect
+                                    label="Shift Incharge"
+                                    icon={User}
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    options={
+                                        users?.map((u) => ({
+                                            id: u.id,
+                                            name: u.name,
+                                            email: u.email,
+                                            role: u.roleName
+                                        })) ?? []
+                                    }
+                                    placeholder="Select User"
+                                    searchPlaceholder="Search Users..."
+                                    disabled={loading}
+                                />
+                            )}
+                        />
+                    </div>
+                    <Controller
+                        name="scheduledAt"
+                        control={control}
+                        render={({ field }) => (
+                            <DatetimePicker
+                                icon={CalendarClock}
+                                label="Schedule At"
+                                disabledDates={{ before: new Date() }}
+                                className="bg-card"
+                                value={field.value}
+                                onChange={field.onChange}
+                                placeholder="DD MM YY HH:MM"
+                                disabled={loading}
+                            />
                         )}
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+                    />
+                </TabsContent>
+                <TabsContent value="mapping" className="p-4 border rounded-lg ">
+                    <div className="h-64 overflow-y-auto scrollbar-none flex justify-center items-center">
+                        {isMapping &&
+                            <EquipmentMapping
+                                value={equipmentMappings}
+                                onChange={setEquipmentMappings}
+                                executionEquipments={equipmentOpt?.map(e => ({
+                                    value: e.id,
+                                    label: e.name
+                                })) ?? []}
+                                loading={isLoadingMapping || isLoadingEquipmentOpt}
+                            />
+                        }
+                        {!isMapping && <p className="text-muted-foreground text-center">No mapping required, as proccessing unit is same as recipe default unit.</p>}
+                    </div>
+                </TabsContent>
+            </Tabs>
+        </FormDialog >
+
     )
 }

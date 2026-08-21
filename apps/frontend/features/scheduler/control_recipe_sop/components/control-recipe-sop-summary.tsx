@@ -41,11 +41,11 @@ export default function ControlRecipeSOPSummary({ controlRecipeId }: { controlRe
     if (isLoading || !data) return;
 
     return (
-        <div className="h-full flex gap-4">
-            <div className="flex flex-col flex-1 rounded-xl border bg-card  shadow-sm hover:shadow-md transition-shadow">
+        <div className="h-full flex sm:flex-row flex-col gap-4">
+            <div className="flex flex-col flex-1 rounded-2xl border bg-card  shadow-sm hover:shadow-md transition-shadow">
                 <div className="border-b px-5 py-2 shrink-0">
                     <h2 className="text-lg font-semibold">
-                        Summary
+                        Recipe Summary
                     </h2>
                 </div>
 
@@ -75,13 +75,11 @@ export default function ControlRecipeSOPSummary({ controlRecipeId }: { controlRe
             </div>
 
             {/* Pie chart */}
-            <div className="flex flex-col border flex-2 shadow hover:shadow-lg rounded-lg">
+            <div className="flex flex-col border flex-2 shadow hover:shadow-lg rounded-2xl">
                 <DonutChart
                     targetSize={data.batchSize}
-                    title="Materials Summary"
                     data={materialChartData ?? []} />
             </div>
-
         </div>
 
     )

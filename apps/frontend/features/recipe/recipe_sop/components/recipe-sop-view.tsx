@@ -1,7 +1,7 @@
+"use client";
 import { useEffect, useState } from "react";
 import { useGetRecipeSOPsByRecipeId, useMoveDownRecipeSOP, useMoveUpRecipeSOP } from "../hooks/use-recipe-sop";
 import columns from "./columns";
-import DataTable from "./data-table";
 import RecipeInfo from "./recipe-sop-info";
 import { RecipeSOPResponse } from "../types/recipe-sop-types";
 import { toast } from "sonner";
@@ -11,7 +11,9 @@ import RecipeSOPDialog from "./recipe-sop-dialog";
 import RecipeSOPDeleteDialog from "./recipe-sop-delete-dialog";
 import RecipeSOPSummary from "./recipe-sop-summary";
 import FeedbackState from "@/common/components/feedback-state";
-import RecipeSopSkeleton from "./recipe-sop-skeleton";
+import { RecipeSOPSkeleton } from "./recipe-sop-skeleton";
+import { ChevronsDown, ChevronsUp, CornerLeftDown, CornerLeftUp, Plus, SquarePen, Trash } from "lucide-react";
+import { DataTable } from "@/common/components/data-table/data-table";
 
 export type recipeSOPActionType = "create" | "insert-below" | "insert-above" | "edit" | "move-up" | "move-down" | "delete";
 export type RecipeSOPDialogType = {
@@ -77,7 +79,7 @@ export default function RecipeSOPView({ recipeId }: { recipeId: number }) {
         }
     };
     if (loading) {
-        return (<RecipeSopSkeleton />);
+        return (<RecipeSOPSkeleton />);
     }
     if (error) {
         return <FeedbackState variant="error" />;
@@ -88,15 +90,60 @@ export default function RecipeSOPView({ recipeId }: { recipeId: number }) {
     return (
         <div className="flex flex-col rounded-2xl border shadow bg-card p-2 sm:p-4 flex-1 gap-2">
             <RecipeInfo recipe={recipe} />
-            <div className="flex flex-col gap-2 sm:gap-4 min-w-0 2xl:flex-row 2xl:h-[calc(100dvh-14rem)]">
-                <div className="flex w-full min-w-0 flex-col gap-2 sm:gap-4">
+            <div className="flex flex-col gap-2 sm:gap-4 min-w-0 2xl:flex-row 2xl:h-[calc(100dvh-15rem)]">
+                <div className="flex w-full min-w-0 flex-col gap-2 sm:gap-4 h-full">
                     {/* Table */}
-                    <div className="flex-4 min-w-0 min-h-0 bg-card border shadow hover:shadow-lg rounded-2xl overflow-hidden">
-                        <DataTable columns={columns} data={recipeSOP} onAction={handleAction} />
+                    <div className="flex-4 min-w-0  min-h-0">
+                        <DataTable
+                            columns={columns}
+                            data={recipeSOP}
+                            rowClassName="h-15"
+                            contextMenu={{
+                                label: "Action",
+                                items: [
+                                    {
+                                        label: "Add",
+                                        icon: Plus,
+                                        onClick: row => handleAction("create", row),
+                                    },
+                                    {
+                                        label: "Insert Above",
+                                        icon: CornerLeftUp,
+                                        onClick: row => handleAction("insert-above", row),
+                                    },
+                                    {
+                                        label: "Insert Below",
+                                        icon: CornerLeftDown,
+                                        onClick: row => handleAction("insert-below", row),
+                                    },
+                                    {
+                                        label: "Move Up",
+                                        icon: ChevronsUp,
+                                        onClick: row => handleAction("move-up", row),
+                                    },
+                                    {
+                                        label: "Move Down",
+                                        icon: ChevronsDown,
+                                        onClick: row => handleAction("move-down", row),
+                                    },
+                                    {
+                                        label: "Edit",
+                                        icon: SquarePen,
+                                        onClick: row => handleAction("edit", row),
+                                    },
+                                    {
+                                        label: "Delete",
+                                        icon: Trash,
+                                        variant: "destructive",
+                                        onClick: row => handleAction("delete", row),
+                                    },
+                                ],
+                            }}
+                        />
                     </div>
 
                     {/* Summary */}
-                    <div className="flex-2 overflow-y">
+                    <div className="flex-2  min-w-0 min-h-0">
                         <RecipeSOPSummary recipeId={recipeId} />
                     </div>
                 </div>

@@ -6,6 +6,7 @@ import lombok.Builder;
 public record UnitControlRecipeResponse(
         Long id,
         String name,
+        String code,
         Integer capacity) {
 
 }

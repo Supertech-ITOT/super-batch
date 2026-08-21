@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useEffect, useMemo, useState } from "react";
-import { CalendarIcon } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/common/components/ui/button";
 import { Calendar } from "@/common/components/ui/calendar";
@@ -10,6 +10,7 @@ import { cn } from "@/common/lib/utils";
 import SearchableSelect, { SearchableSelectOption, } from "./searchable-select";
 import { Separator } from "../ui/separator";
 import { Matcher } from "react-day-picker";
+import { Label } from "../ui/label";
 
 interface DateTimePickerProps {
     value?: string;
@@ -18,6 +19,8 @@ interface DateTimePickerProps {
     disabled?: boolean;
     disabledDates?: Matcher | Matcher[];
     className?: string;
+    icon?: LucideIcon;
+    label?: string;
 }
 
 function pad(n: number) {
@@ -34,7 +37,7 @@ function toLocalISOString(date: Date) {
     );
 }
 
-function DateTimePicker({ disabledDates, value, onChange, placeholder = "Select date & time", disabled, className, }: DateTimePickerProps) {
+function DateTimePicker({ icon: Icon, label, disabledDates, value, onChange, placeholder = "Select date & time", disabled, className, }: DateTimePickerProps) {
     const [open, setOpen] = useState(false);
     const initialDate = value ? new Date(value) : undefined;
     const [date, setDate] = useState<Date | undefined>(initialDate);
@@ -70,7 +73,7 @@ function DateTimePicker({ disabledDates, value, onChange, placeholder = "Select 
         onChange(toLocalISOString(d));
     }, [date, hour, minute, onChange]);
 
-    const createTimeOptions = (length: number): SearchableSelectOption[] =>
+    const createTimeOptions = (length: number): SearchableSelectOption<number>[] =>
         Array.from({ length }, (_, i) => ({
             value: i,
             label: pad(i),
@@ -79,11 +82,16 @@ function DateTimePicker({ disabledDates, value, onChange, placeholder = "Select 
     const hourOptions = useMemo(() => createTimeOptions(24), []);
     const minuteOptions = useMemo(() => createTimeOptions(60), []);
 
-    const renderTimeSelect = (value: string, onValueChange: (value: string) => void, options: SearchableSelectOption[]) => (
+    const renderTimeSelect = (value: string, onValueChange: (value: string) => void, options: SearchableSelectOption<number>[]) => (
         <div className="flex-1">
             <SearchableSelect
                 value={Number(value)}
-                onChange={(v) => onValueChange(pad(v))}
+                emptyValue={0}
+                onChange={(v) => {
+                    if (v !== undefined) {
+                        onValueChange(pad(v));
+                    }
+                }}
                 options={options}
                 searchPlaceholder="Search..."
                 className="h-10 min-w-24 w-full"
@@ -92,41 +100,53 @@ function DateTimePicker({ disabledDates, value, onChange, placeholder = "Select 
     );
 
     return (
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    disabled={disabled}
-                    className={cn(
-                        "justify-start w-full font-normal",
-                        !date && "text-muted-foreground",
-                        className
-                    )}
-                >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? `${format(date, "dd MMM yyyy")} ${hour}:${minute}` : placeholder}
-                </Button>
-            </PopoverTrigger>
+        <div className="space-y-1">
+            {label && (
+                <Label className="text-sm font-medium">{label} </Label>
+            )}
+            <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                    <Button
+                        variant="outline"
+                        disabled={disabled}
+                        className={cn(
+                            "w-full justify-between font-normal bg-card",
+                            !date && "text-muted-foreground",
+                            className
+                        )}
+                    >
+                        <div className="flex flex-1 items-center gap-2 overflow-hidden">
+                            {Icon && (
+                                <Icon className="h-4 w-4 text-muted-foreground" />
+                            )}
 
-            <PopoverContent
-                align="start"
-                className="w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width) p-4"
-            >
-                <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    disabled={disabledDates}
-                    className="w-full p-0 m-0"
-                />
-                <Separator />
-                <div className="flex items-center gap-2">
-                    {renderTimeSelect(hour, setHour, hourOptions)}
-                    <span className="font-semibold text-muted-foreground">:</span>
-                    {renderTimeSelect(minute, setMinute, minuteOptions)}
-                </div>
-            </PopoverContent>
-        </Popover>
+                            <span className="truncate">
+                                {date ? `${format(date, "dd MMM yyyy")} ${hour}:${minute}` : placeholder}
+                            </span>
+                        </div>
+                    </Button>
+                </PopoverTrigger>
+
+                <PopoverContent
+                    align="start"
+                    className="w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width) p-4"
+                >
+                    <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        disabled={disabledDates}
+                        className="w-full p-0 m-0"
+                    />
+                    <Separator />
+                    <div className="flex items-center gap-2">
+                        {renderTimeSelect(hour, setHour, hourOptions)}
+                        <span className="font-semibold text-muted-foreground">:</span>
+                        {renderTimeSelect(minute, setMinute, minuteOptions)}
+                    </div>
+                </PopoverContent>
+            </Popover>
+        </div>
     );
 }
 

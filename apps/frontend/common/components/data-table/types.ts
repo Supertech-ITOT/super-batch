@@ -1,4 +1,5 @@
 import { ColumnDef, Table } from "@tanstack/react-table";
+import { LucideIcon } from "lucide-react";
 
 export interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -7,6 +8,17 @@ export interface DataTableProps<TData, TValue> {
     toolbar?: (table: Table<TData>) => React.ReactNode;
     emptyMessage?: string;
     className?: string;
-    rowClassName?: string;
+    rowClassName?: string | ((row: TData) => string);
     tableClassName?: string;
+    contextMenu?: {
+        label?: string;
+        items: {
+            label: string;
+            icon?: LucideIcon;
+            variant?: "default" | "destructive";
+            onClick: (row: TData) => void;
+        }[];
+    };
 }
+
+export const alignClass = { left: "text-left", center: "text-center", right: "text-right", };

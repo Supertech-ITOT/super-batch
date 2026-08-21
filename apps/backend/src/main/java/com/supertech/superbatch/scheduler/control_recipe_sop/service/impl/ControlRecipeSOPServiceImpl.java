@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.supertech.superbatch.audit.dto.BatchAuditRequest;
 import com.supertech.superbatch.audit.enums.BatchAuditAction;
@@ -33,12 +34,13 @@ import com.supertech.superbatch.scheduler.control_recipe_sop.repository.ControlR
 import com.supertech.superbatch.scheduler.control_recipe_sop.service.ControlRecipeSOPService;
 import com.supertech.superbatch.scheduler.control_recipe_sop.validation.ControlRecipeSOPValidator;
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.entity.ControlRecipeSOPMaterial;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
+        private static final int STEP_OFFSET = 1_000_000;
         private final ControlRecipeSOPRepository controlRecipeSOPRepository;
         private final ControlRecipeRepository controlRecipeRepository;
         private final ControlRecipeSOPMapper controlRecipeSOPMapper;
@@ -67,6 +69,7 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
         }
 
         @Override
+        @Transactional
         public void create(CreateControlRecipeSOPRequest request) {
                 ControlRecipe controlRecipe = getControlRecipe(request.controlRecipeId());
                 controlRecipeSOPValidator.validateEditable(controlRecipe);
@@ -89,8 +92,8 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                 audit(BatchAuditAction.CREATED, null, controlRecipeSOPMapper.copy(controlRecipeSOP));
         }
 
-        @Transactional
         @Override
+        @Transactional
         public void update(UpdateControlRecipeSOPRequest request) {
                 ControlRecipeSOP controlRecipeSOP = getControlRecipeSOP(request.id());
                 ControlRecipe controlRecipe = getControlRecipe(request.controlRecipeId());
@@ -98,6 +101,10 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                 ControlRecipeSOPDependencies deps = controlRecipeSOPDependencyLoader.loadInsertDependencies(request,
                                 controlRecipe, controlRecipeSOP.getId());
                 ControlRecipeSOPAudit oldData = controlRecipeSOPMapper.copy(controlRecipeSOP);
+                // Remove existing children and Force orphanRemoval DELETE
+                controlRecipeSOP.getMaterials().clear();
+                controlRecipeSOP.getParameters().clear();
+                controlRecipeSOPRepository.flush();
                 controlRecipeSOPMapper.updateEntity(
                                 request,
                                 controlRecipeSOP,
@@ -111,39 +118,52 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                 audit(BatchAuditAction.UPDATED, oldData, controlRecipeSOPMapper.copy(controlRecipeSOP));
         }
 
-        @Transactional
         @Override
+        @Transactional
         public void delete(Long id) {
                 ControlRecipeSOP controlRecipeSOP = getControlRecipeSOP(id);
+
+                Long controlRecipeId = controlRecipeSOP.getControlRecipe().getId();
+                Integer stepNo = controlRecipeSOP.getStepNo();
+
                 controlRecipeSOPValidator.validateEditable(controlRecipeSOP.getControlRecipe());
                 audit(BatchAuditAction.DELETED, controlRecipeSOPMapper.copy(controlRecipeSOP), null);
-                controlRecipeSOPRepository.decrementStepNumbers(
-                                controlRecipeSOP.getControlRecipe().getId(),
-                                controlRecipeSOP.getStepNo());
+
+                // Move all following steps out of the way
+                controlRecipeSOPRepository.shiftStepNumbersAfter(controlRecipeId, stepNo, STEP_OFFSET);
+                controlRecipeSOPRepository.flush();
+
+                // Delete the selected step
                 controlRecipeSOPRepository.delete(controlRecipeSOP);
+                controlRecipeSOPRepository.flush();
+
+                // Move following steps back and decrement them by 1
+                controlRecipeSOPRepository.shiftStepNumbersAfter(controlRecipeId, stepNo + STEP_OFFSET,
+                                -STEP_OFFSET - 1);
+                controlRecipeSOPRepository.flush();
         }
 
-        @Transactional
         @Override
+        @Transactional
         public void moveUp(Long controlRecipeSOPId) {
                 move(controlRecipeSOPId, -1);
         }
 
-        @Transactional
         @Override
+        @Transactional
         public void moveDown(Long controlRecipeSOPId) {
                 move(controlRecipeSOPId, 1);
         }
 
-        @Transactional
         @Override
+        @Transactional
         public void insertAbove(Long controlRecipeSOPId,
                         CreateControlRecipeSOPRequest request) {
                 insert(controlRecipeSOPId, request, true);
         }
 
-        @Transactional
         @Override
+        @Transactional
         public void insertBelow(Long controlRecipeSOPId,
                         CreateControlRecipeSOPRequest request) {
                 insert(controlRecipeSOPId, request, false);
@@ -195,33 +215,46 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                                 current.getStepNo() + direction)
                                 .orElseThrow(() -> new ResourceNotFoundException("Adjacent step not found."));
 
-                int stepNo = current.getStepNo();
-                current.setStepNo(other.getStepNo());
-                other.setStepNo(stepNo);
-                controlRecipeSOPRepository.saveAll(List.of(current, other));
+                int currentStep = current.getStepNo();
+                int otherStep = other.getStepNo();
+
+                // 1. Temporarily remove both records from their unique keys
+                current.setStepNo(-currentStep);
+                other.setStepNo(-otherStep);
+
+                controlRecipeSOPRepository.flush();
+
+                // 2. Assign the swapped step numbers
+                current.setStepNo(otherStep);
+                other.setStepNo(currentStep);
+
+                controlRecipeSOPRepository.flush();
         }
 
         private void insert(Long controlRecipeSOPId, CreateControlRecipeSOPRequest request, boolean above) {
                 ControlRecipeSOP current = getControlRecipeSOP(controlRecipeSOPId);
                 ControlRecipe controlRecipe = getControlRecipe(request.controlRecipeId());
                 controlRecipeSOPValidator.validateEditable(controlRecipe);
-                ControlRecipeSOPDependencies deps = controlRecipeSOPDependencyLoader.loadInsertDependencies(
-                                request,
-                                controlRecipe,
-                                null);
 
-                int stepNo = current.getStepNo();
-                if (above) {
-                        controlRecipeSOPRepository.incrementStepNumbersFrom(current.getControlRecipe().getId(), stepNo);
-                } else {
-                        controlRecipeSOPRepository.incrementStepNumbersAfter(current.getControlRecipe().getId(),
-                                        stepNo);
-                        stepNo++;
-                }
+                ControlRecipeSOPDependencies deps = controlRecipeSOPDependencyLoader.loadInsertDependencies(request,
+                                controlRecipe, null);
+
+                Long controlRecipeId = current.getControlRecipe().getId();
+                int currentStep = current.getStepNo();
+                int newStepNo = above ? currentStep : currentStep + 1;
+
+                // Move affected steps out of the way
+                controlRecipeSOPRepository.shiftStepNumbersFrom(controlRecipeId, newStepNo, STEP_OFFSET);
+                controlRecipeSOPRepository.flush();
+
+                // Bring them back with +1
+                controlRecipeSOPRepository.shiftStepNumbersFrom(controlRecipeId, newStepNo + STEP_OFFSET,
+                                1 - STEP_OFFSET);
+                controlRecipeSOPRepository.flush();
 
                 ControlRecipeSOP newStep = controlRecipeSOPMapper.toEntity(
                                 request,
-                                stepNo,
+                                newStepNo,
                                 current.getControlRecipe(),
                                 deps.action(),
                                 deps.transition(),
@@ -229,7 +262,9 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
                                 deps.toEquipment(),
                                 controlRecipeSOPLookupService.getMaterialMap(request.materials()),
                                 controlRecipeSOPLookupService.getParameterMap(request.parameters()));
+
                 controlRecipeSOPRepository.save(newStep);
+                audit(BatchAuditAction.CREATED, null, controlRecipeSOPMapper.copy(newStep));
         }
 
         private void audit(BatchAuditAction action, ControlRecipeSOPAudit oldData, ControlRecipeSOPAudit newData) {

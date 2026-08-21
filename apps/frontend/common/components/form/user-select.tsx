@@ -1,10 +1,11 @@
 import { memo, useMemo, useState } from "react";
-import { ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown, LucideIcon } from "lucide-react";
 import { Button } from "@/common/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, } from "@/common/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger, } from "@/common/components/ui/popover";
 import { cn } from "@/common/lib/utils";
 import { getColorByText } from "@/common/utils/color.util";
+import { Label } from "../ui/label";
 
 export interface UserSelectOption {
     id: number;
@@ -21,6 +22,8 @@ interface UserSelectProps {
     searchPlaceholder?: string;
     emptyText?: string;
     disabled?: boolean;
+    label?: string;
+    icon?: LucideIcon;
     className?: string;
 }
 
@@ -28,7 +31,7 @@ function getInitials(name: string) {
     return name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 }
 
-function UserSelect({ value, onChange, options, placeholder = "Select User", searchPlaceholder = "Search user...", emptyText = "No users found.", disabled, className, }: UserSelectProps) {
+function UserSelect({ value, onChange, icon: Icon, options, placeholder = "Select User", label, searchPlaceholder = "Search user...", emptyText = "No users found.", disabled, className, }: UserSelectProps) {
     const [open, setOpen] = useState(false);
     const selected = useMemo(
         () => options.find((option) => option.id === value),
@@ -36,90 +39,108 @@ function UserSelect({ value, onChange, options, placeholder = "Select User", sea
     );
 
     return (
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <Button
-                    type="button"
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    disabled={disabled}
-                    className={cn(
-                        "w-full justify-between px-2 bg-card",
-                        className
-                    )}
+        <div className="space-y-1">
+            {label && (
+                <Label className="text-sm font-medium">{label} </Label>
+            )}
+            <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        disabled={disabled}
+                        className={cn(
+                            "w-full justify-between font-normal bg-card",
+                            !selected && "text-muted-foreground",
+                            className
+                        )}
+                    >
+                        {selected ? (
+                            <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
+                                <div className={` ${getColorByText(selected.name)} flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[11px] font-semibold`}>
+                                    {getInitials(selected.name)}
+                                </div>
+
+                                <div className="min-w-0 text-left">
+                                    <div className="truncate text-xs font-medium leading-4">
+                                        {selected.name}
+                                    </div>
+                                    <div className="truncate text-[11px] leading-3 text-primary">
+                                        {selected.role}
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex flex-1 items-center gap-2 overflow-hidden">
+                                {Icon && (
+                                    <Icon className="h-4 w-4 text-muted-foreground" />
+                                )}
+
+                                <span className="truncate">
+                                    {placeholder}
+                                </span>
+                            </div>
+                        )}
+
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                </PopoverTrigger>
+
+                <PopoverContent
+                    align="start"
+                    className="w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width) p-0"
                 >
-                    {selected ? (
-                        <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-                            <div className={` ${getColorByText(selected.name)} flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[11px] font-semibold`}>
-                                {getInitials(selected.name)}
-                            </div>
+                    <Command shouldFilter className="overflow-hidden rounded-md">
+                        <CommandInput
+                            placeholder={searchPlaceholder}
+                            className="h-9"
+                        />
 
-                            <div className="min-w-0 text-left">
-                                <div className="truncate text-xs font-medium leading-4">
-                                    {selected.name}
-                                </div>
-                                <div className="truncate text-[11px] leading-3 text-primary">
-                                    {selected.role}
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
-                        <span className="truncate text-muted-foreground">
-                            {placeholder}
-                        </span>
-                    )}
+                        <CommandList className="max-h-64">
+                            <CommandEmpty>{emptyText}</CommandEmpty>
 
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-            </PopoverTrigger>
+                            <CommandGroup>
+                                {options.map((option) => {
+                                    const isSelected = option.id === value;
 
-            <PopoverContent
-                align="start"
-                className="w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width) p-0"
-            >
-                <Command shouldFilter className="overflow-hidden rounded-md">
-                    <CommandInput
-                        placeholder={searchPlaceholder}
-                        className="h-9"
-                    />
+                                    return (
+                                        <CommandItem
+                                            key={option.id}
+                                            value={`${option.name} ${option.email} ${option.role}`}
+                                            data-checked={option.id === value}
+                                            onSelect={() => {
+                                                onChange(isSelected ? 0 : option.id);
+                                                setOpen(false);
+                                            }}
+                                            className="flex cursor-pointer items-center gap-0.5 py-0.5"
+                                        >
+                                            <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${getColorByText(option.name)}`}>
+                                                {getInitials(option.name)}
+                                            </div>
 
-                    <CommandList className="max-h-64">
-                        <CommandEmpty>{emptyText}</CommandEmpty>
+                                            <div className="min-w-0 flex-1 leading-tight">
+                                                <div className="truncate text-sm font-medium" title={option.name}>
+                                                    {option.name}
+                                                </div>
 
-                        <CommandGroup>
-                            {options.map((option) => (
-                                <CommandItem
-                                    key={option.id}
-                                    value={`${option.name} ${option.email} ${option.role}`}
-                                    data-checked={option.id === value}
-                                    onSelect={() => { onChange(option.id); setOpen(false); }}
-                                    className="flex cursor-pointer items-center gap-0.5 py-0.5"
-                                >
-                                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${getColorByText(option.name)}`}>
-                                        {getInitials(option.name)}
-                                    </div>
+                                                <div className="truncate text-xs text-muted-foreground" title={option.email}>
+                                                    {option.email}
+                                                </div>
 
-                                    <div className="min-w-0 flex-1 leading-tight">
-                                        <div className="truncate text-sm font-medium" title={option.name}>
-                                            {option.name}
-                                        </div>
-
-                                        <div className="truncate text-xs text-muted-foreground" title={option.email}>
-                                            {option.email}
-                                        </div>
-
-                                        <div className="truncate text-[11px] text-primary" title={option.role}>
-                                            {option.role}
-                                        </div>
-                                    </div>
-                                </CommandItem>
-                            ))}
-                        </CommandGroup>
-                    </CommandList>
-                </Command>
-            </PopoverContent>
-        </Popover>
+                                                <div className="truncate text-[11px] text-primary" title={option.role}>
+                                                    {option.role}
+                                                </div>
+                                            </div>
+                                        </CommandItem>)
+                                })}
+                            </CommandGroup>
+                        </CommandList>
+                    </Command>
+                </PopoverContent>
+            </Popover>
+        </div>
     );
 }
 

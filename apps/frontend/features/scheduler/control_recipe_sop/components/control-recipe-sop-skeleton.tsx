@@ -1,6 +1,6 @@
 import { Skeleton } from "@/common/components/ui/skeleton";
 
-export function RecipeSOPSkeleton() {
+export function ControlRecipeSOPSkeleton() {
     return (
         <div className="flex flex-1 flex-col gap-2 rounded-2xl border bg-card p-2 shadow sm:gap-4 sm:p-4">
             {/* Recipe Info */}
