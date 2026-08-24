@@ -19,6 +19,13 @@ export interface DataTableProps<TData, TValue> {
             onClick: (row: TData) => void;
         }[];
     };
+    serverPagination?: {
+        pageIndex: number;
+        pageCount: number;
+        onPageChange: (pageIndex: number) => void;
+    };
+    onRowClick?: (row: TData) => void;
+    isRowSelected?: (row: TData) => boolean;
 }
 
 export const alignClass = { left: "text-left", center: "text-center", right: "text-right", };

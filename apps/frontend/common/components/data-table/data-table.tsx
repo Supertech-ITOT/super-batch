@@ -9,21 +9,41 @@ import { useState } from "react";
 import DataTableRow from "./data-table-row";
 
 
-export function DataTable<TData, TValue>({ columns, data, pageSize = 10, toolbar, emptyMessage = "No data available.", className, rowClassName = "h-12", tableClassName = "min-h-125", contextMenu }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, onRowClick, isRowSelected, data, pageSize = 10, toolbar, emptyMessage = "No data available.", className, rowClassName = "h-12", tableClassName = "min-h-125", contextMenu, serverPagination }: DataTableProps<TData, TValue>) {
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize, })
     const table = useReactTable({
         data,
         columns,
-        state: { columnFilters, },
+        state: {
+            columnFilters,
+            pagination: serverPagination
+                ? { pageIndex: serverPagination.pageIndex, pageSize, }
+                : pagination,
+        },
         onColumnFiltersChange: setColumnFilters,
+        onPaginationChange: serverPagination
+            ? (updater) => {
+                const currentPagination = {
+                    pageIndex: serverPagination.pageIndex,
+                    pageSize,
+                };
+
+                const nextPagination =
+                    typeof updater === "function"
+                        ? updater(currentPagination)
+                        : updater;
+
+                serverPagination.onPageChange(nextPagination.pageIndex);
+            }
+            : setPagination,
+        manualPagination: !!serverPagination,
+        pageCount: serverPagination?.pageCount,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        initialState: {
-            pagination: {
-                pageSize,
-            },
-        },
+        ...(!serverPagination && {
+            getPaginationRowModel: getPaginationRowModel(),
+        }),
     });
     const rows = table.getRowModel().rows;
     const emptyRows = Math.max(0, pageSize - rows.length);
@@ -31,7 +51,7 @@ export function DataTable<TData, TValue>({ columns, data, pageSize = 10, toolbar
     return (
         <div className={`flex flex-col gap-2 h-full ${className ?? ""}`}>
             {toolbar?.(table)}
-            <div className="rounded-xl border overflow-hidden flex-1 min-h-0 h-full">
+            <div className="rounded-xl border overflow-hidden flex-1 min-h-0 h-full bg-card shadow-xs">
                 <div className={`h-full overflow-auto scrollbar-none ${tableClassName}`}>
                     <Table>
                         <TableHeader className="sticky top-0 bg-primary">
@@ -58,6 +78,8 @@ export function DataTable<TData, TValue>({ columns, data, pageSize = 10, toolbar
                                                 row={row}
                                                 rowClassName={rowClassName}
                                                 contextMenu={contextMenu}
+                                                onClick={() => onRowClick?.(row.original)}
+                                                isSelected={isRowSelected?.(row.original)}
                                             />
                                         ))}
 
@@ -78,7 +100,7 @@ export function DataTable<TData, TValue>({ columns, data, pageSize = 10, toolbar
                     </Table>
                 </div>
             </div>
-            <DataTablePagination table={table} />
+            <DataTablePagination table={table} serverPagination={serverPagination} />
         </div>
     );
 }

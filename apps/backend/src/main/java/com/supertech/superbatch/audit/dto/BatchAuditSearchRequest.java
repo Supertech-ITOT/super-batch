@@ -10,7 +10,7 @@ import lombok.Builder;
 @Builder
 public record BatchAuditSearchRequest(
                 String search,
-                ModuleType module,
+                Long moduleId,
                 BatchAuditAction action,
                 Long userId,
                 LocalDate fromDate,

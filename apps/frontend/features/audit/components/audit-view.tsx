@@ -1,101 +1,85 @@
 "use client";
 
-import { Skeleton } from "@/common/components/ui/skeleton";
-import { Separator } from "@/common/components/ui/separator";
+import { useEffect, useMemo, useState } from "react";
 import { useGetBatchAudits } from "../hook/use-batch-audit";
-import DataTable from "./data-table";
-import columns from "./columns";
-import { useEffect, useState } from "react";
-import {
-  BatchAuditResponse,
-  BatchAuditSearchRequest,
-} from "../types/audit.types";
-import AuditChangesDialog from "./audit-changes-dialog";
-import { AuditFilterValue } from "./audit-filter";
 import { useDebounce } from "../hook/use-debaounce-audit";
+import columns from "./columns";
+import AuditFilter, { AuditFilterValue, } from "./audit-filter";
+import AuditSkeleton from "./audit-skeleton";
+import AuditDetailCard from "./audit-detail-card";
+import FeedbackState from "@/common/components/feedback-state";
+import { DataTable } from "@/common/components/data-table/data-table";
+import { INITIAL_AUDIT_FILTER, toBatchAuditSearchRequest } from "./audit-filter.constants";
 
+const PAGE_SIZE = 10;
 export default function AuditView() {
-  const [searchRequest, setSearchRequest] = useState<BatchAuditSearchRequest>({
-    search: "",
-    module: null,
-    action: null,
-    userId: null,
-    fromDate: null,
-    toDate: null,
-    page: 0,
-    size: 12,
-  });
-  const [filter, setFilter] = useState<AuditFilterValue>({
-    search: "",
-    module: undefined,
-    action: undefined,
-    user: undefined,
-    fromDate: undefined,
-    toDate: undefined,
-  });
+  const [page, setPage] = useState(0);
+  const [selectedAuditId, setSelectedAuditId] = useState<number | null>(null);
+  const [filter, setFilter] = useState<AuditFilterValue>(INITIAL_AUDIT_FILTER);
   const debouncedFilter = useDebounce(filter, 500);
-  useEffect(() => {
-    setSearchRequest((prev) => ({
-      ...prev,
-      page: 0,
-      search: debouncedFilter.search,
-      userId: debouncedFilter.user ?? null,
-      fromDate: debouncedFilter.fromDate?.toISOString().split("T")[0] ?? null,
-      toDate: debouncedFilter.toDate?.toISOString().split("T")[0] ?? null,
-    }));
-  }, [debouncedFilter]);
-
-  const { data: audits, isLoading } = useGetBatchAudits(searchRequest);
-  const [open, setOpen] = useState(false);
-  const [selectedAudit, setSelectedAudit] = useState<BatchAuditResponse | null>(
-    null,
+  const searchRequest = useMemo(
+    () => toBatchAuditSearchRequest(debouncedFilter, page, PAGE_SIZE),
+    [debouncedFilter, page]
   );
+  const { data: audits, isLoading, isError, } = useGetBatchAudits(searchRequest);
 
-  if (isLoading && !audits) {
-    return (
-      <div className="flex-1 rounded-lg border shadow h-full bg-card p-4 overflow-y-auto scrollbar-none flex flex-col">
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <Skeleton className="h-10 w-80" />
-            <Skeleton className="h-10 w-32" />
-          </div>
-        </div>
-        <Separator className="my-4" />
-        <div className="flex-1 min-h-0">
-          <Skeleton className="h-full w-full rounded-lg" />
-        </div>
-      </div>
+
+  useEffect(() => {
+    if (!audits?.content?.length) {
+      setSelectedAuditId(null);
+      return;
+    }
+    const selectedAuditExists = audits.content.some(
+      (audit) => audit.id === selectedAuditId
     );
+    if (!selectedAuditExists) {
+      setSelectedAuditId(audits.content[0].id);
+    }
+  }, [audits, selectedAuditId]);
+
+  const handleFilterChange = (nextFilter: AuditFilterValue) => { setPage(0); setFilter(nextFilter); };
+  const resetFilter = () => { setFilter(INITIAL_AUDIT_FILTER); setPage(0); };
+
+  if (isLoading) {
+    return <AuditSkeleton />;
+  }
+  if (isError) {
+    return <FeedbackState variant="error" />;
+  }
+  if (!audits) {
+    return <FeedbackState variant="empty" />;
   }
 
   return (
-    <div className="flex-1 rounded-lg border shadow h-full bg-card px-4 overflow-y-auto scrollbar-none flex-col">
-      <div className="flex-1 min-h-0 my-4">
-        <DataTable
-          columns={columns(searchRequest.page, searchRequest.size, (audit) => {
-            setSelectedAudit(audit);
-            setOpen(true);
-          })}
-          data={audits?.content ?? []}
-          filter={filter}
-          onFilterChange={setFilter}
-          page={searchRequest.page}
-          size={searchRequest.size}
-          totalPages={audits?.totalPages ?? 0}
-          totalElements={audits?.totalElements ?? 0}
-          onPageChange={(page) =>
-            setSearchRequest((prev) => ({ ...prev, page }))
-          }
-        />
-        {selectedAudit && (
-          <AuditChangesDialog
-            open={open}
-            onOpenChange={setOpen}
-            oldData={selectedAudit.oldData}
-            newData={selectedAudit.newData}
+    <div className="grid min-h-0 w-full grid-cols-1 gap-2 overflow-hidden 2xl:h-[calc(100dvh-6rem)] 2xl:grid-cols-[minmax(0,7fr)_minmax(320px,3fr)]">
+      {/* LEFT - TABLE */}
+      <DataTable
+        pageSize={PAGE_SIZE}
+        columns={columns(page, PAGE_SIZE)}
+        onRowClick={(audit) => { setSelectedAuditId(audit.id); }}
+        isRowSelected={(audit) => audit.id === selectedAuditId}
+        toolbar={() => (
+          <AuditFilter
+            filter={filter}
+            onFilterChange={handleFilterChange}
+            onReset={resetFilter}
           />
         )}
+        data={audits.content}
+        serverPagination={{
+          pageIndex: audits.number,
+          pageCount: audits.totalPages,
+          onPageChange: setPage,
+        }}
+        rowClassName="h-12"
+
+      />
+
+
+      {/* RIGHT - DETAIL */}
+      <div className="min-h-0 min-w-0 overflow-hidden">
+        <AuditDetailCard id={selectedAuditId} />
       </div>
     </div>
-  );
+  )
 }
