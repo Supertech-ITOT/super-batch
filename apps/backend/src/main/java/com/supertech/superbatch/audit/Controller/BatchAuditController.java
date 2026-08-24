@@ -1,4 +1,4 @@
-package com.supertech.superbatch.audit.Controller;
+package com.supertech.superbatch.audit.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
