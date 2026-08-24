@@ -75,7 +75,7 @@ export const ConfigurationRoutes: RouteType[] = [
     {
         label: "Settings",
         short: "Settings",
-        path: "/Setting",
+        path: "/Setting/profile",
         icon: Settings,
         description:
             "Configure system preferences, application settings, and defaults.",

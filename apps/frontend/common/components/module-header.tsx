@@ -53,7 +53,7 @@ export default function ModuleHeader() {
                         </div>
                     </div>
                 </div>
-                <Link href={"/Setting"} className="animate-in zoom-in duration-300 shrink-0 block sm:hidden">
+                <Link href={"/Setting/profile"} className="animate-in zoom-in duration-300 shrink-0 block sm:hidden">
                     <UserAvatar name={user?.name ?? ""} className="size-12! border" />
                 </Link>
             </div>

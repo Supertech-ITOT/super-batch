@@ -18,7 +18,8 @@ const titleMap: Record<string, string> = {
     materials: "Materials",
     process: "Process",
     message: "Predefiend Message",
-    plant: "Plant", area: "Area", unit: "Unit", equipment: "Equipment"
+    plant: "Plant", area: "Area", unit: "Unit", equipment: "Equipment",
+    profile: "Me", license: "license", application: "Application"
 };
 
 export function ModuleBreadcrumb() {
