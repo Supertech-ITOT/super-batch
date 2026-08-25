@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.license.client.LicenseServerClient;
 import com.supertech.superbatch.manager.role.entity.Role;
 import com.supertech.superbatch.manager.role.repository.RoleRepository;
 import com.supertech.superbatch.manager.setup.dto.SetupRequest;
@@ -24,6 +25,7 @@ public class SetupServiceImpl implements SetupService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final LicenseServerClient licenseServerClient;
 
     @Override
     public SetupResponse getSetupStatus() {

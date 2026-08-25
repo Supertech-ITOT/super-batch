@@ -9,9 +9,8 @@ public enum ActionType {
     PRECHECKS("Prechecks"),
     DISCHARGE("Discharge"),
     OPERATOR_ACTION("Operator Action"),
-    TRANSFER("Transfer"),
-    TRANSFER_AND_RELEASE("Transfer and Release"),
-    STIRRING("Stirring");
+    STIRRING("Stirring"),
+    CHARGING("Charging");
 
     private final String displayName;
 }

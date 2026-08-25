@@ -12,7 +12,6 @@ import com.supertech.superbatch.manager.auth.dto.LoginResponse;
 import com.supertech.superbatch.manager.auth.service.AuthService;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
 
 @Service

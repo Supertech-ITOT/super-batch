@@ -1,15 +1,15 @@
 package com.supertech.superbatch.manager.license.client;
 
-import com.supertech.superbatch.manager.license.dto.LicenseActivationResponse;
 import com.supertech.superbatch.manager.license.dto.LicenseKeyActivationRequest;
 import com.supertech.superbatch.manager.license.dto.TrialActivationRequest;
+import com.supertech.superbatch.manager.license.dto.TrialLicenseActivationResponse;
 
 public interface LicenseServerClient {
 
-    LicenseActivationResponse activateTrial(
-            TrialActivationRequest request);
+        TrialLicenseActivationResponse activateTrial(
+                        TrialActivationRequest request);
 
-    LicenseActivationResponse activateLicense(
-            LicenseKeyActivationRequest request);
+        TrialLicenseActivationResponse activateLicense(
+                        LicenseKeyActivationRequest request);
 
 }
