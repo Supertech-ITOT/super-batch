@@ -33,7 +33,7 @@ public class SetupServiceImpl implements SetupService {
 
     @Override
     public void setup(SetupRequest request) {
-        validateLicenseRequest(request);
+        // validateLicenseRequest(request);
         if (userRepository.existsByEmailAndDeletedFalse(request.email())) {
             throw new DuplicateResourceException("Email already exists.");
         }
@@ -55,23 +55,27 @@ public class SetupServiceImpl implements SetupService {
         // Initialize License
     }
 
-    private void validateLicenseRequest(SetupRequest request) {
-        if (request.activationType() == LicenseActivationType.ONLINE) {
-            if (request.licenseFile() != null && !request.licenseFile().isEmpty()) {
-                throw new BadRequestException("License file is not supported for online activation.");
-            }
-            if (!request.isTrial() && (request.licenseKey() == null || request.licenseKey().isBlank())) {
-                throw new BadRequestException("License key is required for online activation.");
-            }
-        }
+    // private void validateLicenseRequest(SetupRequest request) {
+    // if (request.activationType() == LicenseActivationType.ONLINE) {
+    // if (request.licenseFile() != null && !request.licenseFile().isEmpty()) {
+    // throw new BadRequestException("License file is not supported for online
+    // activation.");
+    // }
+    // if (!request.isTrial() && (request.licenseKey() == null ||
+    // request.licenseKey().isBlank())) {
+    // throw new BadRequestException("License key is required for online
+    // activation.");
+    // }
+    // }
 
-        if (request.activationType() == LicenseActivationType.OFFLINE) {
-            if (request.licenseFile() == null || request.licenseFile().isEmpty()) {
-                throw new BadRequestException("License file is required for offline activation.");
-            }
-            if (request.isTrial()) {
-                throw new BadRequestException("Trial activation is only available online.");
-            }
-        }
-    }
+    // if (request.activationType() == LicenseActivationType.OFFLINE) {
+    // if (request.licenseFile() == null || request.licenseFile().isEmpty()) {
+    // throw new BadRequestException("License file is required for offline
+    // activation.");
+    // }
+    // if (request.isTrial()) {
+    // throw new BadRequestException("Trial activation is only available online.");
+    // }
+    // }
+    // }
 }

@@ -1,15 +1,15 @@
-package com.supertech.superbatch.license.service.impl;
+package com.supertech.superbatch.manager.license.service.impl;
 
 import org.springframework.stereotype.Service;
 
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
-import com.supertech.superbatch.license.dto.CreateLicenseRequest;
-import com.supertech.superbatch.license.dto.LicenseResponse;
-import com.supertech.superbatch.license.dto.UpdateLicenseRequest;
-import com.supertech.superbatch.license.entity.License;
-import com.supertech.superbatch.license.mapper.LicenseMapper;
-import com.supertech.superbatch.license.repository.LicenseRepository;
-import com.supertech.superbatch.license.service.LicenseService;
+import com.supertech.superbatch.manager.license.dto.CreateLicenseRequest;
+import com.supertech.superbatch.manager.license.dto.LicenseResponse;
+import com.supertech.superbatch.manager.license.dto.UpdateLicenseRequest;
+import com.supertech.superbatch.manager.license.entity.License;
+import com.supertech.superbatch.manager.license.mapper.LicenseMapper;
+import com.supertech.superbatch.manager.license.repository.LicenseRepository;
+import com.supertech.superbatch.manager.license.service.LicenseService;
 
 import lombok.RequiredArgsConstructor;
 

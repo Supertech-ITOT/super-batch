@@ -1,8 +1,8 @@
-package com.supertech.superbatch.license.service;
+package com.supertech.superbatch.manager.license.service;
 
-import com.supertech.superbatch.license.dto.CreateLicenseRequest;
-import com.supertech.superbatch.license.dto.LicenseResponse;
-import com.supertech.superbatch.license.dto.UpdateLicenseRequest;
+import com.supertech.superbatch.manager.license.dto.CreateLicenseRequest;
+import com.supertech.superbatch.manager.license.dto.LicenseResponse;
+import com.supertech.superbatch.manager.license.dto.UpdateLicenseRequest;
 
 public interface LicenseService {
 

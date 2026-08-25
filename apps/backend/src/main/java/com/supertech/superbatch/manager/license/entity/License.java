@@ -1,4 +1,4 @@
-package com.supertech.superbatch.license.entity;
+package com.supertech.superbatch.manager.license.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

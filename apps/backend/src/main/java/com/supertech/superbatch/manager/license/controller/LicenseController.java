@@ -1,4 +1,4 @@
-package com.supertech.superbatch.license.controller;
+package com.supertech.superbatch.manager.license.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.supertech.superbatch.common.dto.ApiResponse;
-import com.supertech.superbatch.license.dto.LicenseResponse;
-import com.supertech.superbatch.license.service.LicenseService;
+import com.supertech.superbatch.manager.license.dto.LicenseResponse;
+import com.supertech.superbatch.manager.license.service.LicenseService;
 
 import lombok.RequiredArgsConstructor;
 
