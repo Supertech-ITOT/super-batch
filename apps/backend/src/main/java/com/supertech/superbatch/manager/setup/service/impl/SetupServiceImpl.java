@@ -10,6 +10,7 @@ import com.supertech.superbatch.manager.role.entity.Role;
 import com.supertech.superbatch.manager.role.repository.RoleRepository;
 import com.supertech.superbatch.manager.setup.dto.SetupRequest;
 import com.supertech.superbatch.manager.setup.dto.SetupResponse;
+import com.supertech.superbatch.manager.setup.enums.LicenseActivationType;
 import com.supertech.superbatch.manager.setup.service.SetupService;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
@@ -32,6 +33,7 @@ public class SetupServiceImpl implements SetupService {
 
     @Override
     public void setup(SetupRequest request) {
+        validateLicenseRequest(request);
         if (userRepository.existsByEmailAndDeletedFalse(request.email())) {
             throw new DuplicateResourceException("Email already exists.");
         }
@@ -51,5 +53,25 @@ public class SetupServiceImpl implements SetupService {
         userRepository.save(admin);
         // Create Company(request.companyName())
         // Initialize License
+    }
+
+    private void validateLicenseRequest(SetupRequest request) {
+        if (request.activationType() == LicenseActivationType.ONLINE) {
+            if (request.licenseFile() != null && !request.licenseFile().isEmpty()) {
+                throw new BadRequestException("License file is not supported for online activation.");
+            }
+            if (!request.isTrial() && (request.licenseKey() == null || request.licenseKey().isBlank())) {
+                throw new BadRequestException("License key is required for online activation.");
+            }
+        }
+
+        if (request.activationType() == LicenseActivationType.OFFLINE) {
+            if (request.licenseFile() == null || request.licenseFile().isEmpty()) {
+                throw new BadRequestException("License file is required for offline activation.");
+            }
+            if (request.isTrial()) {
+                throw new BadRequestException("Trial activation is only available online.");
+            }
+        }
     }
 }
