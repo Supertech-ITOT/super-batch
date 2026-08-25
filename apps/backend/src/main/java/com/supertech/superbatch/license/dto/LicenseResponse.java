@@ -2,22 +2,24 @@ package com.supertech.superbatch.license.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import com.supertech.superbatch.license.enums.LicensePlan;
-import com.supertech.superbatch.license.enums.LicenseStatus;
+
 import lombok.Builder;
 
 @Builder
 public record LicenseResponse(
-        Long id,
-        String licenseKey,
-        String machineId,
-        String customerName,
-        String companyName,
-        LicensePlan plan,
-        LicenseStatus status,
-        LocalDate expiryDate,
-        LocalDateTime activatedAt,
-        LocalDateTime lastValidatedAt,
-        Integer maxClients,
-        String version) {
+                Long id,
+                String licenseKey,
+                String licenseNumber,
+                String machineFingerprint,
+                String customerName,
+                String companyName,
+                String status,
+                LocalDate expiryDate,
+                LocalDateTime activationDate,
+                LocalDateTime lastValidatedAt,
+                Integer userCount,
+                Long planId,
+                String planName,
+                String planDescription,
+                Integer planMaxUser) {
 }

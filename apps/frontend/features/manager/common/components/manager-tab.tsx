@@ -1,6 +1,6 @@
 "use client";
 
-import { ShieldCheck, Users } from "lucide-react";
+import { KeyRound, ShieldCheck, Users } from "lucide-react";
 
 import CommonTabs, {
     TabItem,
@@ -16,6 +16,11 @@ const tabs: TabItem[] = [
         label: "User",
         path: "/Manager/users/",
         icon: Users,
+    },
+    {
+        label: "License",
+        path: "/Manager/license/",
+        icon: KeyRound,
     },
 ];
 

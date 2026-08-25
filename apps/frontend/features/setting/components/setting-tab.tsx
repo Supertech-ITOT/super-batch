@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, KeyRound, UserCircle } from "lucide-react";
+import { BadgeCheck, UserCircle } from "lucide-react";
 import CommonTabs, { TabItem, } from "@/common/components/common-tabs";
 
 const tabs: TabItem[] = [
@@ -8,11 +8,6 @@ const tabs: TabItem[] = [
         label: "Profile",
         path: "/Setting/profile/",
         icon: UserCircle,
-    },
-    {
-        label: "License",
-        path: "/Setting/license/",
-        icon: KeyRound,
     },
     {
         label: "Application",
