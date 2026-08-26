@@ -86,7 +86,7 @@ export default function UpdateRoleDialog({ open, onClose, roleId }: Props) {
             description="Update a role and assign module permissions."
             showFooter={tab === "permissions"}
             submitDisabled={!isDirty}
-            submitLabel="Create"
+            submitLabel="Update"
             onSubmit={handleSubmit(onSubmit, onInvalid)}
             icon={ShieldCheck}
         >

@@ -10,11 +10,8 @@ import org.springframework.web.client.RestClient;
 
 public class LicenseServerConfig {
     @Bean
-    public RestClient licenseServerRestClient(
-            LicenseServerProperties properties) {
-        return RestClient.builder()
-                .baseUrl(properties.baseUrl())
-                .build();
+    public RestClient licenseServerRestClient(LicenseServerProperties properties) {
+        return RestClient.builder().baseUrl(properties.baseUrl()).build();
     }
 
 }

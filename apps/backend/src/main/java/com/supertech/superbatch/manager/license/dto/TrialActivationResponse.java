@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import com.supertech.superbatch.manager.license.enums.LicenseStatus;
 import com.supertech.superbatch.manager.license.enums.LicenseType;
 
-public record TrialLicenseActivationResponse(
+public record TrialActivationResponse(
         String licenseNumber,
         String licenseKey,
         LicenseType type,
