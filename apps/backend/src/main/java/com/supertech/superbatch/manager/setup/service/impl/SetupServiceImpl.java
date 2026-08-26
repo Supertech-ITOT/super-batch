@@ -7,6 +7,7 @@ import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.manager.license.client.LicenseServerClient;
+import com.supertech.superbatch.manager.license.dto.TrialActivationRequest;
 import com.supertech.superbatch.manager.role.entity.Role;
 import com.supertech.superbatch.manager.role.repository.RoleRepository;
 import com.supertech.superbatch.manager.setup.dto.SetupRequest;
@@ -30,7 +31,7 @@ public class SetupServiceImpl implements SetupService {
     @Override
     public SetupResponse getSetupStatus() {
         boolean firstSetup = !userRepository.existsByDeletedFalseAndSystemAccountFalse();
-        return new SetupResponse(firstSetup);
+        return new SetupResponse(true);
     }
 
     @Override
@@ -39,9 +40,9 @@ public class SetupServiceImpl implements SetupService {
         if (userRepository.existsByEmailAndDeletedFalse(request.email())) {
             throw new DuplicateResourceException("Email already exists.");
         }
-        if (userRepository.existsByDeletedFalseAndSystemAccountFalse()) {
-            throw new BadRequestException("System has already been initialized.");
-        }
+        // if (userRepository.existsByDeletedFalseAndSystemAccountFalse()) {
+        // throw new BadRequestException("System has already been initialized.");
+        // }
         Role administratorRole = roleRepository
                 .findByNameAndDeletedFalse("Administrator")
                 .orElseThrow(() -> new ResourceNotFoundException("Administrator role not found"));
@@ -55,6 +56,9 @@ public class SetupServiceImpl implements SetupService {
         userRepository.save(admin);
         // Create Company(request.companyName())
         // Initialize License
+
+        licenseServerClient.activateTrial(
+                new TrialActivationRequest(request.email(), request.companyName(), request.name(), 1L, "TestMachine"));
     }
 
     // private void validateLicenseRequest(SetupRequest request) {
