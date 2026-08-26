@@ -1,9 +1,12 @@
 package com.supertech.superbatch.manager.license.mapper;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Component;
 
 import com.supertech.superbatch.manager.license.dto.CreateLicenseRequest;
 import com.supertech.superbatch.manager.license.dto.LicenseResponse;
+import com.supertech.superbatch.manager.license.dto.TrialLicenseResponse;
 import com.supertech.superbatch.manager.license.dto.UpdateLicenseRequest;
 import com.supertech.superbatch.manager.license.entity.License;
 
@@ -44,6 +47,25 @@ public class LicenseMapper {
         return License.builder()
                 .licenseKey(request.licenseKey())
                 .build();
+    }
+
+    public License toTrialEntity(TrialLicenseResponse res) {
+        return License.builder()
+                .licenseKey(res.licenseKey())
+                .licenseNumber(res.licenseNumber())
+                .machineFingerprint(res.machineFingerprint())
+                .customerName(res.customerName())
+                .companyName(res.companyName())
+                .status(res.status())
+                .expiryDate(res.expiryDate())
+                .activationDate(res.activationDate())
+                .lastValidatedAt(LocalDateTime.now())
+                .planId(res.planId())
+                .planDescription(res.planDescription())
+                .planName(res.planName())
+                .planMaxUser(res.planMaxUser())
+                .build();
+
     }
 
 }

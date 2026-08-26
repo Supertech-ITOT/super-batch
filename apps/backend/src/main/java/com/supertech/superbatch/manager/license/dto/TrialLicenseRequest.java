@@ -3,8 +3,10 @@ package com.supertech.superbatch.manager.license.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.Builder;
 
-public record TrialActivationRequest(
+@Builder
+public record TrialLicenseRequest(
         @NotNull(message = "Email is required") String email,
         @NotNull(message = "Company Name is required") String companyName,
         @NotNull(message = "Name is required") String name,

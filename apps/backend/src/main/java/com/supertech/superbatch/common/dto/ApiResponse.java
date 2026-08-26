@@ -2,11 +2,13 @@ package com.supertech.superbatch.common.dto;
 
 import java.time.LocalDateTime;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
+@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ApiResponse<T> {
         private String timestamp;
         private String message;

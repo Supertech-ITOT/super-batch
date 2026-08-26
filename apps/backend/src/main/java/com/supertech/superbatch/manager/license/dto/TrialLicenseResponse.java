@@ -1,17 +1,21 @@
 package com.supertech.superbatch.manager.license.dto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-import com.supertech.superbatch.manager.license.enums.LicenseStatus;
-import com.supertech.superbatch.manager.license.enums.LicenseType;
-
-public record TrialActivationResponse(
+public record TrialLicenseResponse(
         String licenseNumber,
+        String customerName,
         String licenseKey,
-        LicenseType type,
-        LicenseStatus status,
+        String companyName,
+        String type,
+        String status,
         LocalDate issueDate,
-        LocalDate activationDate,
+        LocalDateTime activationDate,
+        Long planId,
+        String planName,
+        String planDescription,
+        Integer planMaxUser,
         LocalDate expiryDate,
         String machineFingerprint,
         String licenseFileName,

@@ -3,12 +3,12 @@ package com.supertech.superbatch.manager.license.service.impl;
 import org.springframework.stereotype.Service;
 
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
-import com.supertech.superbatch.manager.license.dto.CreateLicenseRequest;
 import com.supertech.superbatch.manager.license.dto.LicenseResponse;
-import com.supertech.superbatch.manager.license.dto.UpdateLicenseRequest;
+import com.supertech.superbatch.manager.license.dto.TrialLicenseResponse;
 import com.supertech.superbatch.manager.license.entity.License;
 import com.supertech.superbatch.manager.license.mapper.LicenseMapper;
 import com.supertech.superbatch.manager.license.repository.LicenseRepository;
+import com.supertech.superbatch.manager.license.service.LicenseFileStorageService;
 import com.supertech.superbatch.manager.license.service.LicenseService;
 
 import lombok.RequiredArgsConstructor;
@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class LicenseServiceImpl implements LicenseService {
     private final LicenseRepository licenseRepository;
     private final LicenseMapper licenseMapper;
+    private final LicenseFileStorageService licenseFileStorageService;
 
     @Override
     public LicenseResponse get() {
@@ -27,45 +28,16 @@ public class LicenseServiceImpl implements LicenseService {
     }
 
     @Override
-    public void activate(CreateLicenseRequest request) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'activate'");
-    }
+    public void saveTrial(TrialLicenseResponse res) {
 
-    @Override
-    public void validate() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'validate'");
-    }
+        if (res.licenseFile() != null && res.licenseFile().length > 0) {
+            licenseFileStorageService.save(
+                    res.licenseNumber(),
+                    res.licenseFile());
+        }
 
-    @Override
-    public boolean isActive() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isActive'");
-    }
-
-    @Override
-    public void deactivate() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deactivate'");
-    }
-
-    @Override
-    public void renew(UpdateLicenseRequest request) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'renew'");
-    }
-
-    @Override
-    public String getMachineId() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMachineId'");
-    }
-
-    @Override
-    public void startupValidation() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'startupValidation'");
+        License license = licenseMapper.toTrialEntity(res);
+        licenseRepository.save(license);
     }
 
 }

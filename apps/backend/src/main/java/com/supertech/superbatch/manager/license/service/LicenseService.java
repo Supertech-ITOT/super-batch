@@ -1,24 +1,12 @@
 package com.supertech.superbatch.manager.license.service;
 
-import com.supertech.superbatch.manager.license.dto.CreateLicenseRequest;
 import com.supertech.superbatch.manager.license.dto.LicenseResponse;
-import com.supertech.superbatch.manager.license.dto.UpdateLicenseRequest;
+import com.supertech.superbatch.manager.license.dto.TrialLicenseResponse;
 
 public interface LicenseService {
 
     LicenseResponse get();
 
-    void activate(CreateLicenseRequest request);
+    void saveTrial(TrialLicenseResponse res);
 
-    void validate();
-
-    boolean isActive();
-
-    void deactivate();
-
-    void renew(UpdateLicenseRequest request);
-
-    String getMachineId();
-
-    void startupValidation();
 }
