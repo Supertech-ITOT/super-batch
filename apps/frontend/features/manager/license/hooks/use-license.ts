@@ -1,30 +1,26 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getLicense, validateLicense } from "../service/license.service";
-
-export const queryKeys = {
-    license: ["license"] as const,
-};
+import { queryKeys } from "@/features/common/hooks/query-keys";
 
 export const useGetLicense = () => {
-    return useQuery({
-        queryKey: queryKeys.license,
-        queryFn: async () => {
-            const res = await getLicense();
-            return res.data;
-        }
-
-    })
-}
+  return useQuery({
+    queryKey: queryKeys.license.all,
+    queryFn: async () => {
+      const res = await getLicense();
+      return res.data;
+    },
+  });
+};
 
 export const useValidateLicense = () => {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: validateLicense,
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.license,
-            });
-        },
-    });
+  return useMutation({
+    mutationFn: validateLicense,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.license.all,
+      });
+    },
+  });
 };

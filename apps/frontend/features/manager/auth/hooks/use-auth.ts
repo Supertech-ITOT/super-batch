@@ -1,31 +1,26 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { login, logout } from "../services/auth.service";
-import { queryKeys } from "../../common/hooks/query-keys";
+import { queryKeys } from "../../../common/hooks/query-keys";
 
 export const useLogin = () => {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: login,
-        onSuccess: (res) => {
-            localStorage.setItem(
-                "user",
-                JSON.stringify(res.data)
-            );
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.users,
-            });
-        }
-    });
+  return useMutation({
+    mutationFn: login,
+    onSuccess: (res) => {
+      localStorage.setItem("user", JSON.stringify(res.data));
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users,
+      });
+    },
+  });
 };
-
 
 export const useLogout = () => {
-    return useMutation({
-        mutationFn: logout,
-        onSuccess: () => {
-            localStorage.removeItem("user");
-        }
-    });
+  return useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      localStorage.removeItem("user");
+    },
+  });
 };
-
