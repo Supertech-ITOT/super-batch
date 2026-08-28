@@ -4,8 +4,12 @@ import { useRef, useState } from "react";
 import { FileKey, Upload, X, } from "lucide-react";
 import { Button } from "@/common/components/ui/button";
 import { Card, CardContent, } from "@/common/components/ui/card";
+import { useSetup } from "../hook/use-setup";
+import { showApiError } from "@/common/lib/show-api-error";
+import { toast } from "sonner";
 
 export default function OfflineSetup() {
+    const { mutateAsync, isPending } = useSetup();
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -30,6 +34,22 @@ export default function OfflineSetup() {
         setFile(null);
         if (inputRef.current) {
             inputRef.current.value = "";
+        }
+    };
+
+    const handleValidate = async () => {
+        try {
+
+            if (!file) {
+                return;
+            }
+            const formData = new FormData();
+            formData.append("activationType", "OFFLINE");
+            formData.append("licenseFile", file);
+            const res = await mutateAsync(formData);
+            toast.success(res.message ?? "Setup completed successfully.");
+        } catch (error) {
+            showApiError(error);
         }
     };
 
@@ -91,10 +111,8 @@ export default function OfflineSetup() {
                             <div className="flex gap-2">
                                 <Button
                                     type="button"
-                                    onClick={() => {
-                                        // Later:
-                                        // upload/validate license
-                                    }}
+                                    disabled={isPending}
+                                    onClick={handleValidate}
                                 >
                                     Activate License
                                 </Button>

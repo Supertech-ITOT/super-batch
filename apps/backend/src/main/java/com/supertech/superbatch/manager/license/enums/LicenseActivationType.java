@@ -1,4 +1,4 @@
-package com.supertech.superbatch.manager.setup.enums;
+package com.supertech.superbatch.manager.license.enums;
 
 public enum LicenseActivationType {
     ONLINE,

@@ -2,21 +2,18 @@ package com.supertech.superbatch.manager.setup.service.impl;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.supertech.superbatch.common.dto.ApiResponse;
 import com.supertech.superbatch.common.exception.BadRequestException;
-import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
-import com.supertech.superbatch.manager.license.client.LicenseServerClient;
-import com.supertech.superbatch.manager.license.dto.TrialLicenseRequest;
-import com.supertech.superbatch.manager.license.dto.TrialLicenseResponse;
-import com.supertech.superbatch.manager.license.service.MachineFingerprintService;
-import com.supertech.superbatch.manager.license.service.impl.LicenseServiceImpl;
+import com.supertech.superbatch.manager.license.dto.LicenseResponse;
+import com.supertech.superbatch.manager.license.enums.LicenseActivationType;
+import com.supertech.superbatch.manager.license.service.LicenseService;
+import com.supertech.superbatch.manager.license.validation.LicenseValidator;
 import com.supertech.superbatch.manager.role.entity.Role;
 import com.supertech.superbatch.manager.role.repository.RoleRepository;
 import com.supertech.superbatch.manager.setup.dto.SetupRequest;
 import com.supertech.superbatch.manager.setup.dto.SetupResponse;
-import com.supertech.superbatch.manager.setup.enums.LicenseActivationType;
 import com.supertech.superbatch.manager.setup.service.SetupService;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
@@ -25,14 +22,13 @@ import lombok.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class SetupServiceImpl implements SetupService {
-
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
-    private final LicenseServerClient licenseServerClient;
-    private final LicenseServiceImpl licenseServiceImpl;
-    private final MachineFingerprintService machineFingerprintService;
+    private final LicenseService licenseService;
+    private final LicenseValidator licenseValidator;
 
     @Override
     public SetupResponse getSetupStatus() {
@@ -41,61 +37,48 @@ public class SetupServiceImpl implements SetupService {
     }
 
     @Override
+    @Transactional
     public void setup(SetupRequest request) {
-        validateLicenseRequest(request);
-        if (userRepository.existsByEmailAndDeletedFalse(request.email())) {
-            throw new DuplicateResourceException("Email already exists.");
-        }
+        licenseValidator.validateLicenseRequest(request.activationType(), request.licenseKey(), request.licenseFile(),
+                request.isTrial());
+
         if (userRepository.existsByDeletedFalseAndSystemAccountFalse()) {
             throw new BadRequestException("System has already been initialized.");
         }
-        Role administratorRole = roleRepository
-                .findByNameAndDeletedFalse("Administrator")
-                .orElseThrow(() -> new ResourceNotFoundException("Administrator role not found"));
-        User admin = User.builder()
-                .name(request.name())
-                .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
-                .role(administratorRole)
-                .build();
 
-        userRepository.save(admin);
+        // ONLINE TRIAL
+        if (request.activationType() == LicenseActivationType.ONLINE && request.isTrial()) {
+            licenseService.activateTrialLicense(request.name(), request.email(), request.companyName());
+            createAdminUser(request.name(), request.email(), request.password());
+        }
 
-        if (request.isTrial()) {
-            String machineFingerprint = machineFingerprintService.getMachineFingerprint();
-            System.out.println("Machine Fingerprint: " + machineFingerprint);
-            ApiResponse<TrialLicenseResponse> trialActivationResponse = licenseServerClient.activateTrial(
-                    TrialLicenseRequest.builder()
-                            .name(request.name())
-                            .companyName(request.companyName())
-                            .email(request.email())
-                            .machineFingerprint(machineFingerprint)
-                            .productId(1L)
-                            .build());
+        // ONLINE LICENSE KEY
+        if (request.activationType() == LicenseActivationType.ONLINE && request.licenseKey() != null
+                && !request.licenseKey().isBlank() && !request.isTrial()) {
 
-            licenseServiceImpl.saveTrial(trialActivationResponse.getData());
+            LicenseResponse res = licenseService.activateLicense(request.licenseKey());
+            createAdminUser(res.customerName(), res.customerEmail(), "Super@123");
+
+        }
+
+        // OFFLINE LICENSE FILE
+        if (request.activationType() == LicenseActivationType.OFFLINE) {
+            LicenseResponse res = licenseService.activateOfflineLicense(request.licenseFile());
+            createAdminUser(res.customerName(), res.customerEmail(), "Super@123");
         }
 
     }
 
-    private void validateLicenseRequest(SetupRequest request) {
-        if (request.activationType() == LicenseActivationType.ONLINE) {
-            if (request.licenseFile() != null && !request.licenseFile().isEmpty()) {
-                throw new BadRequestException("License file is not supported for online activation.");
-            }
-            if (!request.isTrial() && (request.licenseKey() == null ||
-                    request.licenseKey().isBlank())) {
-                throw new BadRequestException("License key is required for online activation.");
-            }
-        }
-
-        if (request.activationType() == LicenseActivationType.OFFLINE) {
-            if (request.licenseFile() == null || request.licenseFile().isEmpty()) {
-                throw new BadRequestException("License file is required for offline activation.");
-            }
-            if (request.isTrial()) {
-                throw new BadRequestException("Trial activation is only available online.");
-            }
-        }
+    private void createAdminUser(String name, String email, String password) {
+        Role administratorRole = roleRepository
+                .findByNameAndDeletedFalse("Administrator")
+                .orElseThrow(() -> new ResourceNotFoundException("Administrator role not found"));
+        User admin = User.builder()
+                .name(name)
+                .email(email)
+                .password(passwordEncoder.encode(password))
+                .role(administratorRole)
+                .build();
+        userRepository.save(admin);
     }
 }

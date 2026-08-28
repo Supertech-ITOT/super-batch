@@ -18,7 +18,6 @@ public class MachineFingerprintServiceImpl implements MachineFingerprintService 
         if (machineGuid == null || machineGuid.isBlank()) {
             throw new BadRequestException("Unable to retrieve Windows MachineGuid.");
         }
-
         return sha256(machineGuid);
     }
 
@@ -32,56 +31,37 @@ public class MachineFingerprintServiceImpl implements MachineFingerprintService 
                     "/v",
                     "MachineGuid").redirectErrorStream(true).start();
 
-            String output = new String(
-                    process.getInputStream().readAllBytes(),
-                    StandardCharsets.UTF_8);
-
+            String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
             int exitCode = process.waitFor();
-
             if (exitCode != 0) {
                 return null;
             }
-
             for (String line : output.split("\\R")) {
-
                 if (line.contains("MachineGuid")) {
-
                     String[] parts = line.trim().split("\\s+");
-
                     if (parts.length >= 3) {
                         return parts[parts.length - 1];
                     }
                 }
             }
-
             return null;
 
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "Failed to retrieve Windows MachineGuid.",
-                    e);
+            throw new BadRequestException("Failed to retrieve Windows MachineGuid.");
         }
     }
 
     private String sha256(String value) {
-
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-
-            byte[] hash = digest.digest(
-                    value.getBytes(StandardCharsets.UTF_8));
-
+            byte[] hash = digest.digest(value.getBytes(StandardCharsets.UTF_8));
             StringBuilder result = new StringBuilder();
-
             for (byte b : hash) {
                 result.append(String.format("%02x", b));
             }
-
             return result.toString();
-
         } catch (NoSuchAlgorithmException e) {
-            throw new BadRequestException(
-                    "SHA-256 algorithm not available.");
+            throw new BadRequestException("SHA-256 algorithm not available.");
         }
     }
 }

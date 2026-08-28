@@ -1,12 +1,17 @@
 package com.supertech.superbatch.manager.license.service;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.supertech.superbatch.manager.license.dto.LicenseResponse;
-import com.supertech.superbatch.manager.license.dto.TrialLicenseResponse;
 
 public interface LicenseService {
 
     LicenseResponse get();
 
-    void saveTrial(TrialLicenseResponse res);
+    void activateTrialLicense(String name, String email, String companyName);
+
+    LicenseResponse activateOfflineLicense(MultipartFile licenseFile);
+
+    LicenseResponse activateLicense(String licenseKey);
 
 }

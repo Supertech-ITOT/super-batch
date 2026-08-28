@@ -2,26 +2,24 @@ package com.supertech.superbatch.manager.license.dto;
 
 import java.time.LocalDate;
 
-public record TrialLicenseResponse(
+public record LicenseFilePayload(
         String licenseNumber,
         String customerName,
         String customerEmail,
-        String licenseKey,
         String companyName,
+        Long customerId,
+        Long planId,
+        Integer planMaxUsers,
+        String planName,
+        String planDescription,
+        String licenseKey,
         String type,
         String status,
         LocalDate issueDate,
         LocalDate activationDate,
-        Long planId,
-        String planName,
-        String planDescription,
-        Integer planMaxUser,
         LocalDate expiryDate,
         String machineFingerprint,
         String licenseFileName,
         Long productId,
-        byte[] licenseFile
-
-) {
-
+        String signature) {
 }

@@ -28,7 +28,14 @@ export default function TrialSetupForm({ onBack, }: TrialSetupFormProps) {
     const loading = isSubmitting || isPending;
     const onSubmit = async (data: SetupSchema) => {
         try {
-            const res = await mutateAsync(data);
+            const formData = new FormData();
+            formData.append("companyName", data.companyName);
+            formData.append("activationType", "ONLINE");
+            formData.append("email", data.email);
+            formData.append("password", data.password);
+            formData.append("isTrial", "true");
+            formData.append("name", data.name);
+            const res = await mutateAsync(formData);
             toast.success(res.message ?? "Setup completed successfully.");
             router.refresh();
         } catch (error) {

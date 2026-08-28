@@ -1,26 +1,27 @@
 package com.supertech.superbatch.manager.license.dto;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
-import lombok.Builder;
-
-@Builder
-public record LicenseResponse(
-        Long id,
-        String licenseKey,
+public record LicenseActivationResponse(
         String licenseNumber,
-        String machineFingerprint,
         String customerName,
         String customerEmail,
+        String licenseKey,
         String companyName,
+        String type,
         String status,
-        LocalDate expiryDate,
+        LocalDate issueDate,
         LocalDate activationDate,
-        LocalDateTime lastValidatedAt,
-        Integer userCount,
         Long planId,
         String planName,
         String planDescription,
-        Integer planMaxUser) {
+        Integer planMaxUser,
+        LocalDate expiryDate,
+        String machineFingerprint,
+        String licenseFileName,
+        Long productId,
+        byte[] licenseFile
+
+) {
+
 }

@@ -28,6 +28,9 @@ public class License {
     @Column(nullable = false, length = 100)
     private String machineFingerprint;
 
+    @Column(nullable = false, length = 255)
+    private String customerEmail;
+
     @Column(nullable = false, length = 100)
     private String customerName;
 
@@ -41,7 +44,7 @@ public class License {
     private LocalDate expiryDate;
 
     @Column(nullable = false)
-    private LocalDateTime activationDate;
+    private LocalDate activationDate;
 
     @Column
     private LocalDateTime lastValidatedAt;

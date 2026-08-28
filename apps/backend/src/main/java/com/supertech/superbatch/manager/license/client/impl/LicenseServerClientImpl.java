@@ -9,6 +9,9 @@ import org.springframework.web.client.RestClient;
 import com.supertech.superbatch.common.dto.ApiResponse;
 import com.supertech.superbatch.common.exception.LicenseServerException;
 import com.supertech.superbatch.manager.license.client.LicenseServerClient;
+import com.supertech.superbatch.manager.license.dto.LicenseActivationRequest;
+import com.supertech.superbatch.manager.license.dto.LicenseActivationResponse;
+import com.supertech.superbatch.manager.license.dto.LicenseResponse;
 import com.supertech.superbatch.manager.license.dto.TrialLicenseRequest;
 import com.supertech.superbatch.manager.license.dto.TrialLicenseResponse;
 
@@ -41,6 +44,28 @@ public class LicenseServerClientImpl implements LicenseServerClient {
                     }
                 })
                 .body(new ParameterizedTypeReference<ApiResponse<TrialLicenseResponse>>() {
+                });
+    }
+
+    @Override
+    public ApiResponse<LicenseActivationResponse> activateLicense(LicenseActivationRequest request) {
+        return licenseServerRestClient.post()
+                .uri("/api/licenses/activate")
+                .body(request)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, (req, res) -> {
+                    try {
+                        String errorBody = new String(res.getBody().readAllBytes());
+                        ApiResponse<?> errorResponse = objectMapper.readValue(errorBody, ApiResponse.class);
+                        throw new LicenseServerException(errorResponse.getMessage(),
+                                HttpStatus.valueOf(res.getStatusCode().value()));
+                    } catch (LicenseServerException ex) {
+                        throw ex;
+                    } catch (Exception ex) {
+                        throw new LicenseServerException("License server returned an error", HttpStatus.BAD_GATEWAY);
+                    }
+                })
+                .body(new ParameterizedTypeReference<ApiResponse<LicenseActivationResponse>>() {
                 });
     }
 }
