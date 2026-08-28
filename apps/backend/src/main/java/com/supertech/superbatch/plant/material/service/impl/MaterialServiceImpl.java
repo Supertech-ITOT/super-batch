@@ -2,16 +2,20 @@ package com.supertech.superbatch.plant.material.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.supertech.superbatch.audit.dto.BatchAuditRequest;
+import com.supertech.superbatch.audit.enums.BatchAuditAction;
+import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.module.enums.EntityType;
+import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.plant.material.dto.CreateMaterialRequest;
+import com.supertech.superbatch.plant.material.dto.MaterialAudit;
 import com.supertech.superbatch.plant.material.dto.MaterialResponse;
 import com.supertech.superbatch.plant.material.dto.UpdateMaterialRequest;
 import com.supertech.superbatch.plant.material.entity.Material;
@@ -27,6 +31,7 @@ public class MaterialServiceImpl implements MaterialService {
     private final MaterialRepository materialRepository;
     private final MaterialMapper materialMapper;
     private final UserRepository userRepository;
+    private final BatchAuditService batchAuditService;
 
     @Override
     @Transactional
@@ -40,6 +45,8 @@ public class MaterialServiceImpl implements MaterialService {
         }
         Material material = materialMapper.toEntity(request);
         materialRepository.save(material);
+        audit(BatchAuditAction.CREATED, null, materialMapper.copy(material));
+
     }
 
     @Override
@@ -71,8 +78,10 @@ public class MaterialServiceImpl implements MaterialService {
                 && !material.getCode().equalsIgnoreCase(request.code())) {
             throw new DuplicateResourceException("Material code already exists");
         }
+        MaterialAudit oldData = materialMapper.copy(material);
         materialMapper.updateEntity(material, request);
         materialRepository.save(material);
+        audit(BatchAuditAction.UPDATED, oldData, materialMapper.copy(material));
     }
 
     @Override
@@ -80,7 +89,7 @@ public class MaterialServiceImpl implements MaterialService {
     public void delete(Long id, Long currentUserId) {
         Material material = materialRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Material not found."));
-
+        audit(BatchAuditAction.DELETED, materialMapper.copy(material), null);
         User deletedBy = userRepository.findByIdAndDeletedFalse(currentUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("Current user not found."));
 
@@ -89,5 +98,16 @@ public class MaterialServiceImpl implements MaterialService {
         material.setDeletedBy(deletedBy);
 
         materialRepository.save(material);
+    }
+
+    private void audit(BatchAuditAction action, MaterialAudit oldData, MaterialAudit newData) {
+        batchAuditService.save(
+                BatchAuditRequest.builder()
+                        .entity(EntityType.MATERIAL)
+                        .module(ModuleType.PLANT_MODEL)
+                        .action(action)
+                        .oldData(oldData)
+                        .newData(newData)
+                        .build());
     }
 }

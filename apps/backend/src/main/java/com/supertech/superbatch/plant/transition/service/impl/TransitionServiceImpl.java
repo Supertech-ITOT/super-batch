@@ -7,19 +7,24 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.supertech.superbatch.audit.dto.BatchAuditRequest;
+import com.supertech.superbatch.audit.enums.BatchAuditAction;
+import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.module.enums.EntityType;
+import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.plant.transition.dto.CreateTransitionRequest;
+import com.supertech.superbatch.plant.transition.dto.TransitionAudit;
 import com.supertech.superbatch.plant.transition.dto.TransitionResponse;
 import com.supertech.superbatch.plant.transition.dto.UpdateTransitionRequest;
 import com.supertech.superbatch.plant.transition.entity.Transition;
 import com.supertech.superbatch.plant.transition.mapper.TransitionMapper;
 import com.supertech.superbatch.plant.transition.repository.TransitionRepository;
 import com.supertech.superbatch.plant.transition.service.TransitionService;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -29,6 +34,7 @@ public class TransitionServiceImpl implements TransitionService {
     private final TransitionRepository transitionRepository;
     private final TransitionMapper transitionMapper;
     private final UserRepository userRepository;
+    private final BatchAuditService batchAuditService;
 
     @Override
     public List<TransitionResponse> getAll() {
@@ -41,6 +47,7 @@ public class TransitionServiceImpl implements TransitionService {
         Transition transition = transitionRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transition not found."));
         return transitionMapper.toResponse(transition);
+
     }
 
     @Override
@@ -51,6 +58,7 @@ public class TransitionServiceImpl implements TransitionService {
         }
         Transition transition = transitionMapper.toEntity(request);
         transitionRepository.save(transition);
+        audit(BatchAuditAction.CREATED, null, transitionMapper.copy(transition));
     }
 
     @Override
@@ -63,9 +71,10 @@ public class TransitionServiceImpl implements TransitionService {
                 && !transition.getName().equalsIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Transition name already exists");
         }
-
+        TransitionAudit oldData = transitionMapper.copy(transition);
         transitionMapper.updateEntity(transition, request);
         transitionRepository.save(transition);
+        audit(BatchAuditAction.UPDATED, oldData, transitionMapper.copy(transition));
     }
 
     @Override
@@ -76,7 +85,7 @@ public class TransitionServiceImpl implements TransitionService {
         if (!transition.getCanDelete()) {
             throw new BadRequestException("Cannot delete standard transition.");
         }
-
+        audit(BatchAuditAction.DELETED, transitionMapper.copy(transition), null);
         User deletedBy = userRepository.findByIdAndDeletedFalse(currentUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("Current user not found."));
 
@@ -84,6 +93,17 @@ public class TransitionServiceImpl implements TransitionService {
         transition.setDeletedAt(LocalDateTime.now());
         transition.setDeletedBy(deletedBy);
         transitionRepository.save(transition);
+    }
+
+    private void audit(BatchAuditAction action, TransitionAudit oldData, TransitionAudit newData) {
+        batchAuditService.save(
+                BatchAuditRequest.builder()
+                        .entity(EntityType.TRANSITION)
+                        .module(ModuleType.PLANT_MODEL)
+                        .action(action)
+                        .oldData(oldData)
+                        .newData(newData)
+                        .build());
     }
 
 }
