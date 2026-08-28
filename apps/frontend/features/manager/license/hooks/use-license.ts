@@ -1,9 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getLicense, validateLicense } from "../service/license.service";
-
-export const queryKeys = {
-  license: ["license"] as const,
-};
+import { queryKeys } from "@/features/common/hooks/query-keys";
 
 export const useGetLicense = () => {
   return useQuery({
