@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { getLicense, validateLicense } from "../service/license.service";
+import { activateLicense, activateOfflineLicense, getLicense, validateLicense } from "../service/license.service";
 
 export const queryKeys = {
     license: ["license"] as const,
@@ -21,6 +21,32 @@ export const useValidateLicense = () => {
 
     return useMutation({
         mutationFn: validateLicense,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.license,
+            });
+        },
+    });
+};
+
+export const useActivateLicense = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: activateLicense,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.license,
+            });
+        },
+    });
+};
+
+export const useActivateOfflineLicense = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: activateOfflineLicense,
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: queryKeys.license,

@@ -5,11 +5,14 @@ import java.time.LocalDateTime;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.common.security.JwtService;
 import com.supertech.superbatch.manager.auth.dto.LoginRequest;
 import com.supertech.superbatch.manager.auth.dto.LoginResponse;
 import com.supertech.superbatch.manager.auth.service.AuthService;
+import com.supertech.superbatch.manager.license.service.LicenseService;
+import com.supertech.superbatch.manager.role.entity.DefaultRole;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,17 +23,22 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final LicenseService licenseService;
 
     @Override
     public LoginResponse login(LoginRequest request) {
         String email = request.email().trim().toLowerCase();
         User user = userRepository.findByEmailAndDeletedFalse(email)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Invalid email or password"));
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid email or password"));
+
+        boolean canLoginWithoutLicense = user.isSystemAccount()
+                || DefaultRole.ADMINISTRATOR.equals(user.getRole().getName());
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new ResourceNotFoundException(
-                    "Invalid email or password");
+            throw new ResourceNotFoundException("Invalid email or password");
+        }
+        if (!licenseService.isLicenseValid() && !canLoginWithoutLicense) {
+            throw new BadRequestException("A valid license is required.");
         }
 
         user.setLastLoginAt(LocalDateTime.now());

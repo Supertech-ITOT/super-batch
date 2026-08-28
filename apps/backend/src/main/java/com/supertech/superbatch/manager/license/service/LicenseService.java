@@ -18,4 +18,6 @@ public interface LicenseService {
 
     boolean isActivated();
 
+    boolean isLicenseValid();
+
 }

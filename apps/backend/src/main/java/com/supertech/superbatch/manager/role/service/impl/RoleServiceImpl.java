@@ -18,6 +18,7 @@ import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.module.repository.ModuleRepository;
+import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
 import com.supertech.superbatch.manager.permission.dto.PermissionRequest;
 import com.supertech.superbatch.manager.permission.entity.Permission;
 import com.supertech.superbatch.manager.role.dto.RoleAudit;
@@ -34,11 +35,15 @@ import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+
+import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
 import com.supertech.superbatch.manager.module.entity.Module;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@RequiresPermission(ModuleType.MANAGER)
+@RequiresLicense()
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;

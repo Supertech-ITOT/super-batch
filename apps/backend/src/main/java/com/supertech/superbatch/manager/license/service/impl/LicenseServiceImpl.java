@@ -3,6 +3,7 @@ package com.supertech.superbatch.manager.license.service.impl;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import com.supertech.superbatch.manager.license.dto.LicenseResponse;
 import com.supertech.superbatch.manager.license.dto.TrialLicenseRequest;
 import com.supertech.superbatch.manager.license.dto.TrialLicenseResponse;
 import com.supertech.superbatch.manager.license.entity.License;
+import com.supertech.superbatch.manager.license.enums.LicenseStatus;
 import com.supertech.superbatch.manager.license.mapper.LicenseMapper;
 import com.supertech.superbatch.manager.license.repository.LicenseRepository;
 import com.supertech.superbatch.manager.license.service.LicenseFileStorageService;
@@ -44,7 +46,7 @@ public class LicenseServiceImpl implements LicenseService {
 
     @Override
     public LicenseResponse get() {
-        License license = licenseRepository.findById(1L)
+        License license = licenseRepository.findByStatus(LicenseStatus.ACTIVE)
                 .orElseThrow(() -> new ResourceNotFoundException("License not activated."));
         return licenseMapper.toResponse(license);
     }
@@ -84,6 +86,16 @@ public class LicenseServiceImpl implements LicenseService {
             byte[] fileBytes = licenseFile.getBytes();
             LicenseFilePayload payload = readLicenseFile(fileBytes);
             licenseValidator.validateLicensePayload(payload);
+            License oldLicense = licenseRepository.findByStatus(LicenseStatus.ACTIVE)
+                    .orElse(null);
+
+            if (oldLicense != null && oldLicense.getLicenseKey().equals(payload.licenseKey())) {
+                throw new BadRequestException("This license is already active.");
+            }
+
+            if (oldLicense != null) {
+                oldLicense.setStatus(LicenseStatus.EXPIRED);
+            }
             License saved = licenseRepository.save(licenseMapper.toEntity(payload));
             licenseFileStorageService.save(payload.licenseNumber(), fileBytes);
             return licenseMapper.toResponse(saved);
@@ -97,10 +109,10 @@ public class LicenseServiceImpl implements LicenseService {
     @Override
     @Transactional
     public boolean validateLicense() {
-        try {
-            License license = licenseRepository.findById(1L)
-                    .orElseThrow(() -> new ResourceNotFoundException("License not activated."));
+        License license = licenseRepository.findByStatus(LicenseStatus.ACTIVE)
+                .orElseThrow(() -> new ResourceNotFoundException("License not activated."));
 
+        try {
             Path path = licenseFileStorageService.get(license.getLicenseNumber());
             LicenseFilePayload payload = readLicenseFile(Files.readAllBytes(path));
             licenseValidator.validateLicensePayload(payload);
@@ -108,6 +120,10 @@ public class LicenseServiceImpl implements LicenseService {
             licenseRepository.save(license);
             return true;
         } catch (BadRequestException e) {
+            if (e.getMessage() != null && e.getMessage().equals("License has expired.")) {
+                license.setStatus(LicenseStatus.EXPIRED);
+                licenseRepository.save(license);
+            }
             throw e;
         } catch (Exception e) {
             throw new BadRequestException("License validation failed. " + e.getMessage());
@@ -133,6 +149,13 @@ public class LicenseServiceImpl implements LicenseService {
             }
             LicenseFilePayload payload = readLicenseFile(licenseFile);
             licenseValidator.validateLicensePayload(payload);
+            License oldLicense = licenseRepository.findByStatus(LicenseStatus.ACTIVE).orElse(null);
+            if (oldLicense != null && oldLicense.getLicenseKey().equals(payload.licenseKey())) {
+                throw new BadRequestException("This license is already active.");
+            }
+            if (oldLicense != null) {
+                oldLicense.setStatus(LicenseStatus.EXPIRED);
+            }
             licenseFileStorageService.save(payload.licenseNumber(), licenseFile);
             License license = licenseMapper.toEntity(payload);
             License saved = licenseRepository.save(license);
@@ -154,7 +177,14 @@ public class LicenseServiceImpl implements LicenseService {
 
     @Override
     public boolean isActivated() {
-        return licenseRepository.existsById(1L);
+        return licenseRepository.existsByStatus(LicenseStatus.ACTIVE);
+    }
+
+    @Override
+    public boolean isLicenseValid() {
+        return licenseRepository.findByStatus(LicenseStatus.ACTIVE)
+                .map(license -> license.getExpiryDate() != null && !license.getExpiryDate().isBefore(LocalDate.now()))
+                .orElse(false);
     }
 
 }

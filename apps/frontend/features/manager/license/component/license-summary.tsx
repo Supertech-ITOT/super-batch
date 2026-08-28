@@ -74,7 +74,7 @@ export default function LicenseSummary({ license }: LicenseSummaryProps) {
                         <p className="text-sm font-semibold">Notes</p>
                     </div>
 
-                    <ul className="space-y-1.5 text-sm font-semibold leading-4 text-muted-foreground">
+                    <ul className="space-y-1.5 text-xs leading-4 text-muted-foreground">
                         <li>
                             • Your license will be automatically validated at
                             regular intervals.
