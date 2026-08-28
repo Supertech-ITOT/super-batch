@@ -7,8 +7,6 @@ import com.supertech.superbatch.plant.action.dto.ActionResponse;
 import com.supertech.superbatch.plant.action.dto.CreateActionRequest;
 import com.supertech.superbatch.plant.action.dto.UpdateActionRequest;
 import com.supertech.superbatch.plant.action.entity.Action;
-import com.supertech.superbatch.plant.plant.dto.PlantAudit;
-import com.supertech.superbatch.plant.plant.entity.Plant;
 
 @Component
 public class ActionMapper {

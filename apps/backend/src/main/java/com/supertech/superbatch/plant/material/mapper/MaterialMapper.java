@@ -7,9 +7,6 @@ import com.supertech.superbatch.plant.material.dto.MaterialAudit;
 import com.supertech.superbatch.plant.material.dto.MaterialResponse;
 import com.supertech.superbatch.plant.material.dto.UpdateMaterialRequest;
 import com.supertech.superbatch.plant.material.entity.Material;
-import com.supertech.superbatch.plant.plant.dto.PlantAudit;
-import com.supertech.superbatch.plant.plant.entity.Plant;
-
 import lombok.RequiredArgsConstructor;
 
 @Component
