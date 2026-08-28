@@ -1,13 +1,12 @@
 package com.supertech.superbatch.plant.parameter.mapper;
 
 import org.springframework.stereotype.Component;
-
 import com.supertech.superbatch.plant.common.mapper.UomMapper;
 import com.supertech.superbatch.plant.parameter.dto.CreateParameterRequest;
+import com.supertech.superbatch.plant.parameter.dto.ParameterAudit;
 import com.supertech.superbatch.plant.parameter.dto.ParameterResponse;
 import com.supertech.superbatch.plant.parameter.dto.UpdateParameterRequest;
 import com.supertech.superbatch.plant.parameter.entity.Parameter;
-
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -33,6 +32,17 @@ public class ParameterMapper {
     public void updateEntity(Parameter parameterMaster, UpdateParameterRequest request) {
         parameterMaster.setName(request.name());
         parameterMaster.setUom(request.uom());
+    }
+
+    public ParameterAudit copy(Parameter parameter) {
+        if (parameter == null) {
+            return null;
+        }
+        return ParameterAudit.builder()
+                .id(parameter.getId())
+                .name(parameter.getName())
+                .uom(parameter.getUom())
+                .build();
     }
 
 }

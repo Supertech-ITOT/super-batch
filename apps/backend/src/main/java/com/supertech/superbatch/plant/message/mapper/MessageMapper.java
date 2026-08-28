@@ -1,8 +1,8 @@
 package com.supertech.superbatch.plant.message.mapper;
 
 import org.springframework.stereotype.Controller;
-
 import com.supertech.superbatch.plant.message.dto.CreateMessageRequest;
+import com.supertech.superbatch.plant.message.dto.MessageAudit;
 import com.supertech.superbatch.plant.message.dto.MessageResponse;
 import com.supertech.superbatch.plant.message.dto.UpdateMessageRequest;
 import com.supertech.superbatch.plant.message.entity.Message;
@@ -21,4 +21,13 @@ public class MessageMapper {
         message.setName(request.name());
     }
 
+    public MessageAudit copy(Message message) {
+        if (message == null) {
+            return null;
+        }
+        return MessageAudit.builder()
+                .id(message.getId())
+                .name(message.getName())
+                .build();
+    }
 }

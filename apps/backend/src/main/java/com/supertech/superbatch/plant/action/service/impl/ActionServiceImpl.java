@@ -7,11 +7,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.supertech.superbatch.audit.dto.BatchAuditRequest;
+import com.supertech.superbatch.audit.enums.BatchAuditAction;
+import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.module.enums.EntityType;
+import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
+import com.supertech.superbatch.plant.action.dto.ActionAudit;
 import com.supertech.superbatch.plant.action.dto.ActionResponse;
 import com.supertech.superbatch.plant.action.dto.CreateActionRequest;
 import com.supertech.superbatch.plant.action.dto.UpdateActionRequest;
@@ -19,7 +25,6 @@ import com.supertech.superbatch.plant.action.entity.Action;
 import com.supertech.superbatch.plant.action.mapper.ActionMapper;
 import com.supertech.superbatch.plant.action.repository.ActionRepository;
 import com.supertech.superbatch.plant.action.service.ActionService;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -29,6 +34,7 @@ public class ActionServiceImpl implements ActionService {
     private final ActionRepository actionMasterRepository;
     private final ActionMapper actionMapper;
     private final UserRepository userRepository;
+    private final BatchAuditService batchAuditService;
 
     @Override
     public List<ActionResponse> getAll() {
@@ -52,6 +58,7 @@ public class ActionServiceImpl implements ActionService {
         }
         Action actionMaster = actionMapper.toEntity(request);
         actionMasterRepository.save(actionMaster);
+        audit(BatchAuditAction.CREATED, null, actionMapper.copy(actionMaster));
     }
 
     @Override
@@ -64,8 +71,10 @@ public class ActionServiceImpl implements ActionService {
                 && !actionMaster.getName().equalsIgnoreCase(request.name())) {
             throw new DuplicateResourceException("Action name already exists");
         }
+        ActionAudit oldData = actionMapper.copy(actionMaster);
         actionMapper.updateEntity(actionMaster, request);
         actionMasterRepository.save(actionMaster);
+        audit(BatchAuditAction.UPDATED, oldData, actionMapper.copy(actionMaster));
     }
 
     @Override
@@ -76,6 +85,7 @@ public class ActionServiceImpl implements ActionService {
         if (!actionMaster.getCanDelete()) {
             throw new BadRequestException("Cannot delete standard action");
         }
+        audit(BatchAuditAction.DELETED, actionMapper.copy(actionMaster), null);
         User deletedBy = userRepository.findByIdAndDeletedFalse(currentUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("Current user not found."));
 
@@ -83,6 +93,17 @@ public class ActionServiceImpl implements ActionService {
         actionMaster.setDeletedAt(LocalDateTime.now());
         actionMaster.setDeletedBy(deletedBy);
         actionMasterRepository.save(actionMaster);
+    }
+
+    private void audit(BatchAuditAction action, ActionAudit oldData, ActionAudit newData) {
+        batchAuditService.save(
+                BatchAuditRequest.builder()
+                        .entity(EntityType.ACTION)
+                        .module(ModuleType.PLANT_MODEL)
+                        .action(action)
+                        .oldData(oldData)
+                        .newData(newData)
+                        .build());
     }
 
 }

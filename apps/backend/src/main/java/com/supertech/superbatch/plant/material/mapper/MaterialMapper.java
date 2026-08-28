@@ -3,9 +3,12 @@ package com.supertech.superbatch.plant.material.mapper;
 import org.springframework.stereotype.Component;
 
 import com.supertech.superbatch.plant.material.dto.CreateMaterialRequest;
+import com.supertech.superbatch.plant.material.dto.MaterialAudit;
 import com.supertech.superbatch.plant.material.dto.MaterialResponse;
 import com.supertech.superbatch.plant.material.dto.UpdateMaterialRequest;
 import com.supertech.superbatch.plant.material.entity.Material;
+import com.supertech.superbatch.plant.plant.dto.PlantAudit;
+import com.supertech.superbatch.plant.plant.entity.Plant;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,5 +43,18 @@ public class MaterialMapper {
         material.setCode(request.code());
         material.setDescription(request.description());
         material.setMaterialType(request.materialType());
+    }
+
+    public MaterialAudit copy(Material material) {
+        if (material == null) {
+            return null;
+        }
+        return MaterialAudit.builder()
+                .id(material.getId())
+                .name(material.getName())
+                .code(material.getCode())
+                .materialType(material.getMaterialType())
+                .description(material.getDescription())
+                .build();
     }
 }
