@@ -3,6 +3,8 @@ package com.supertech.superbatch.manager.license.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.supertech.superbatch.manager.license.enums.LicenseStatus;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,8 +39,9 @@ public class License {
     @Column(nullable = false, length = 100)
     private String companyName;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String status;
+    private LicenseStatus status;
 
     @Column(nullable = false)
     private LocalDate expiryDate;

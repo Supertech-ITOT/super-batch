@@ -2,6 +2,7 @@ package com.supertech.superbatch.manager.license.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +24,12 @@ public class LicenseController {
         LicenseResponse license = licenseService.get();
         return ResponseEntity.ok(
                 ApiResponse.success("License fetched successfully", license));
+    }
+
+    @PostMapping("/validate")
+    public ResponseEntity<ApiResponse<Boolean>> validateLicense() {
+        boolean valid = licenseService.validateLicense();
+        return ResponseEntity.ok(ApiResponse.success(valid ? "License is valid" : "License is invalid", valid));
     }
 
 }

@@ -2,6 +2,8 @@ package com.supertech.superbatch.manager.license.dto;
 
 import java.time.LocalDate;
 
+import com.supertech.superbatch.manager.license.enums.LicenseStatus;
+
 public record LicenseActivationResponse(
         String licenseNumber,
         String customerName,
@@ -9,7 +11,7 @@ public record LicenseActivationResponse(
         String licenseKey,
         String companyName,
         String type,
-        String status,
+        LicenseStatus status,
         LocalDate issueDate,
         LocalDate activationDate,
         Long planId,

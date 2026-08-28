@@ -11,7 +11,6 @@ import com.supertech.superbatch.common.exception.LicenseServerException;
 import com.supertech.superbatch.manager.license.client.LicenseServerClient;
 import com.supertech.superbatch.manager.license.dto.LicenseActivationRequest;
 import com.supertech.superbatch.manager.license.dto.LicenseActivationResponse;
-import com.supertech.superbatch.manager.license.dto.LicenseResponse;
 import com.supertech.superbatch.manager.license.dto.TrialLicenseRequest;
 import com.supertech.superbatch.manager.license.dto.TrialLicenseResponse;
 

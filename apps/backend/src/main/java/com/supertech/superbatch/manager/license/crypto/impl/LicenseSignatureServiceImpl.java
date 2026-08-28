@@ -8,25 +8,36 @@ import java.util.Base64;
 
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.supertech.superbatch.common.exception.BadRequestException;
+import com.supertech.superbatch.manager.license.crypto.LicenseSignaturePayload;
+import com.supertech.superbatch.manager.license.crypto.LicenseSignaturePayloadMapper;
 import com.supertech.superbatch.manager.license.crypto.LicenseSignatureService;
+import com.supertech.superbatch.manager.license.dto.LicenseFilePayload;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class LicenseSignatureServiceImpl implements LicenseSignatureService {
+
     private final PublicKey licensePublicKey;
+    private final ObjectMapper objectMapper;
+    private final LicenseSignaturePayloadMapper payloadMapper;
 
     @Override
-    public boolean verify(String data, String signature) {
+    public boolean verify(LicenseFilePayload payload) {
+
         try {
+            LicenseSignaturePayload signaturePayload = payloadMapper.toSignaturePayload(payload);
+            String signedData = objectMapper.writeValueAsString(signaturePayload);
             Signature verifier = Signature.getInstance("SHA256withRSA");
             verifier.initVerify(licensePublicKey);
-            verifier.update(data.getBytes(StandardCharsets.UTF_8));
-            byte[] signatureBytes = Base64.getDecoder().decode(signature);
+            verifier.update(signedData.getBytes(StandardCharsets.UTF_8));
+            byte[] signatureBytes = Base64.getDecoder().decode(payload.signature());
             return verifier.verify(signatureBytes);
-        } catch (GeneralSecurityException e) {
+        } catch (GeneralSecurityException | JsonProcessingException e) {
             throw new BadRequestException("Invalid license signature.");
         }
     }

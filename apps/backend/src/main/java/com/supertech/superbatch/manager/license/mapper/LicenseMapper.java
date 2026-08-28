@@ -4,10 +4,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
 
-import com.supertech.superbatch.manager.license.dto.LicenseActivationResponse;
 import com.supertech.superbatch.manager.license.dto.LicenseFilePayload;
 import com.supertech.superbatch.manager.license.dto.LicenseResponse;
-import com.supertech.superbatch.manager.license.dto.TrialLicenseResponse;
 import com.supertech.superbatch.manager.license.entity.License;
 
 @Component
@@ -17,7 +15,6 @@ public class LicenseMapper {
         if (license == null) {
             return null;
         }
-
         return LicenseResponse.builder()
                 .id(license.getId())
                 .licenseKey(license.getLicenseKey())
@@ -36,48 +33,6 @@ public class LicenseMapper {
                 .planDescription(license.getPlanDescription())
                 .planMaxUser(license.getPlanMaxUser())
                 .build();
-    }
-
-    public License toEntity(TrialLicenseResponse res) {
-        return License.builder()
-                .licenseKey(res.licenseKey())
-                .licenseNumber(res.licenseNumber())
-                .machineFingerprint(res.machineFingerprint())
-                .customerName(res.customerName())
-                .customerEmail(res.customerEmail())
-                .companyName(res.companyName())
-                .status(res.status())
-                .expiryDate(res.expiryDate())
-                .activationDate(res.activationDate())
-                .userCount(1)
-                .lastValidatedAt(LocalDateTime.now())
-                .planId(res.planId())
-                .planDescription(res.planDescription())
-                .planName(res.planName())
-                .planMaxUser(res.planMaxUser())
-                .build();
-
-    }
-    
-    public License toEntity(LicenseActivationResponse res) {
-        return License.builder()
-                .licenseKey(res.licenseKey())
-                .licenseNumber(res.licenseNumber())
-                .machineFingerprint(res.machineFingerprint())
-                .customerName(res.customerName())
-                .customerEmail(res.customerEmail())
-                .companyName(res.companyName())
-                .status(res.status())
-                .expiryDate(res.expiryDate())
-                .activationDate(res.activationDate())
-                .userCount(1)
-                .lastValidatedAt(LocalDateTime.now())
-                .planId(res.planId())
-                .planDescription(res.planDescription())
-                .planName(res.planName())
-                .planMaxUser(res.planMaxUser())
-                .build();
-
     }
 
     public License toEntity(LicenseFilePayload res) {

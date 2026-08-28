@@ -1,6 +1,8 @@
 package com.supertech.superbatch.manager.license.crypto;
 
+import com.supertech.superbatch.manager.license.dto.LicenseFilePayload;
+
 public interface LicenseSignatureService {
-    boolean verify(String data, String signature);
+    boolean verify(LicenseFilePayload payload);
 
 }

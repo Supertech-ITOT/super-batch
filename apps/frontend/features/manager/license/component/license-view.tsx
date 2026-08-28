@@ -1,24 +1,48 @@
+"use client";
+
+import { XCircle } from "lucide-react";
+import { useGetLicense } from "@/features/manager/license/hooks/use-license";
 import LicenseCard from "./license-card";
+import LicenseSkeleton from "./license-sekeleton";
 
 export default function LicenseView() {
+    const { data: license, isLoading, isError } = useGetLicense();
+
+    if (isLoading) {
+        return (
+            <div className="flex flex-1 flex-col rounded-2xl border bg-card p-2 shadow sm:p-4">
+                <LicenseSkeleton />
+            </div>
+        );
+    }
+
+    if (isError || !license) {
+        return (
+            <div className="flex flex-1 flex-col rounded-2xl border bg-card p-2 shadow sm:p-4">
+                <div className="rounded-2xl border bg-card p-6">
+                    <div className="flex items-center gap-3">
+                        <div className="flex size-10 items-center justify-center rounded-xl bg-destructive/10 text-destructive">
+                            <XCircle className="size-5" />
+                        </div>
+
+                        <div>
+                            <h2 className="text-sm font-semibold">
+                                Unable to load license
+                            </h2>
+
+                            <p className="text-xs text-muted-foreground">
+                                License information could not be retrieved.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className="flex flex-col rounded-2xl border shadow  bg-card p-2 sm:p-4 flex-1">
-            <LicenseCard
-                license={{
-                    licenseKey: "SB-XXXX-XXXX-XXXX-XXXX",
-                    planId: "ENTERPRISE",
-                    customerName: "ABC Pharma",
-                    companyName: "ABC Pharma Pvt Ltd",
-                    machineId: "9A4F-4C91-7B2D-8E33-1F23A9B7C5D2",
-                    productId: "SUPERBATCH",
-                    version: "1.0.0",
-                    expiryDate: "2028-12-31",
-                    maxClients: 20,
-                    activatedAt: "2026-07-30T09:15:00",
-                    lastValidatedAt: "2026-07-30T10:30:00",
-                    status: "ACTIVE",
-                }}
-            />
+        <div className="flex flex-1 flex-col rounded-2xl border bg-card p-2 shadow sm:p-4">
+            <LicenseCard license={license} />
         </div>
     );
 }

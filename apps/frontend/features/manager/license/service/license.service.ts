@@ -6,3 +6,9 @@ export const getLicense = async () => {
     const res = await api.get<ApiResponse<LicenseResponse>>("/license");
     return res.data;
 }
+
+
+export const validateLicense = async () => {
+    const res = await api.post<ApiResponse<boolean>>("/license/validate");
+    return res.data;
+};

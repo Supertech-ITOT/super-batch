@@ -1,9 +1,12 @@
 package com.supertech.superbatch.manager.license.service.impl;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,12 +14,10 @@ import com.supertech.superbatch.common.dto.ApiResponse;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.manager.license.client.LicenseServerClient;
-import com.supertech.superbatch.manager.license.crypto.LicenseSignatureService;
 import com.supertech.superbatch.manager.license.dto.LicenseActivationRequest;
 import com.supertech.superbatch.manager.license.dto.LicenseActivationResponse;
 import com.supertech.superbatch.manager.license.dto.LicenseFilePayload;
 import com.supertech.superbatch.manager.license.dto.LicenseResponse;
-import com.supertech.superbatch.manager.license.dto.LicenseSignaturePayload;
 import com.supertech.superbatch.manager.license.dto.TrialLicenseRequest;
 import com.supertech.superbatch.manager.license.dto.TrialLicenseResponse;
 import com.supertech.superbatch.manager.license.entity.License;
@@ -25,19 +26,21 @@ import com.supertech.superbatch.manager.license.repository.LicenseRepository;
 import com.supertech.superbatch.manager.license.service.LicenseFileStorageService;
 import com.supertech.superbatch.manager.license.service.LicenseService;
 import com.supertech.superbatch.manager.license.service.MachineFingerprintService;
+import com.supertech.superbatch.manager.license.validation.LicenseValidator;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class LicenseServiceImpl implements LicenseService {
     private final LicenseRepository licenseRepository;
     private final LicenseMapper licenseMapper;
     private final LicenseFileStorageService licenseFileStorageService;
-    private final LicenseSignatureService licenseSignatureService;
     private final ObjectMapper objectMapper;
     private final MachineFingerprintService machineFingerprintService;
     private final LicenseServerClient licenseServerClient;
+    private final LicenseValidator licenseValidator;
 
     @Override
     public LicenseResponse get() {
@@ -47,104 +50,111 @@ public class LicenseServiceImpl implements LicenseService {
     }
 
     @Override
+    @Transactional
     public void activateTrialLicense(String name, String email, String companyName) {
-        String machineFingerprint = machineFingerprintService.getMachineFingerprint();
-        ApiResponse<TrialLicenseResponse> res = licenseServerClient.activateTrial(TrialLicenseRequest.builder()
-                .name(name)
-                .email(email)
-                .companyName(companyName)
-                .machineFingerprint(machineFingerprint)
-                .productId(1L)
-                .build());
-        if (res.getData().licenseFile() != null && res.getData().licenseFile().length > 0) {
-            licenseFileStorageService.save(res.getData().licenseNumber(), res.getData().licenseFile());
+        try {
+            String machineFingerprint = machineFingerprintService.getMachineFingerprint();
+            ApiResponse<TrialLicenseResponse> res = licenseServerClient.activateTrial(TrialLicenseRequest.builder()
+                    .name(name)
+                    .email(email)
+                    .companyName(companyName)
+                    .machineFingerprint(machineFingerprint)
+                    .productId(1L)
+                    .build());
+            byte[] licenseFile = res.getData().licenseFile();
+            if (licenseFile == null || licenseFile.length == 0) {
+                throw new BadRequestException("License server returned an empty license file.");
+            }
+            LicenseFilePayload payload = readLicenseFile(licenseFile);
+            licenseValidator.validateLicensePayload(payload);
+            licenseFileStorageService.save(payload.licenseNumber(), licenseFile);
+            License license = licenseMapper.toEntity(payload);
+            licenseRepository.save(license);
+        } catch (BadRequestException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BadRequestException("Trial failed. " + e.getMessage());
         }
-        License license = licenseMapper.toEntity(res.getData());
-        licenseRepository.save(license);
     }
 
     @Override
+    @Transactional
     public LicenseResponse activateOfflineLicense(MultipartFile licenseFile) {
         try {
-            String machineFingerprint = machineFingerprintService.getMachineFingerprint();
-            // 1. Read license file
-            String json = new String(licenseFile.getBytes(), StandardCharsets.UTF_8);
-            // 2. Convert JSON → licenseFilePayload
-            LicenseFilePayload licenseFilePayload = objectMapper.readValue(json, LicenseFilePayload.class);
-            // 3. Reconstruct EXACT data that was signed
-            LicenseSignaturePayload licenseSignaturePayload = LicenseSignaturePayload.builder()
-                    .licenseNumber(licenseFilePayload.licenseNumber())
-                    .licenseKey(licenseFilePayload.licenseKey())
-                    .type(licenseFilePayload.type())
-                    .status(licenseFilePayload.status())
-                    .issueDate(licenseFilePayload.issueDate())
-                    .activationDate(licenseFilePayload.activationDate())
-                    .expiryDate(licenseFilePayload.expiryDate())
-                    .machineFingerprint(licenseFilePayload.machineFingerprint())
-                    .customerId(licenseFilePayload.customerId())
-                    .customerName(licenseFilePayload.customerName())
-                    .customerEmail(licenseFilePayload.customerEmail())
-                    .companyName(licenseFilePayload.companyName())
-                    .planId(licenseFilePayload.planId())
-                    .planName(licenseFilePayload.planName())
-                    .planDescription(licenseFilePayload.planDescription())
-                    .planMaxUsers(licenseFilePayload.planMaxUsers())
-                    .productId(licenseFilePayload.productId())
-                    .build();
-            String signedData = objectMapper.writeValueAsString(licenseSignaturePayload);
-
-            // 4. Verify RSA signature
-            boolean valid = licenseSignatureService.verify(signedData, licenseFilePayload.signature());
-            if (!valid) {
-                throw new BadRequestException("Invalid license signature.");
-            }
-
-            // 5. Verify machine
-            if (!machineFingerprint.equals(licenseFilePayload.machineFingerprint())) {
-                throw new BadRequestException("License is not valid for this machine.");
-            }
-
-            // 6. Verify expiry
-            if (licenseFilePayload.expiryDate() != null && licenseFilePayload.expiryDate().isBefore(LocalDate.now())) {
-                throw new BadRequestException("License has expired.");
-            }
-
-            // 7. Convert to database entity
-            License entity = licenseMapper.toEntity(licenseFilePayload);
-
-            // 8. Save Table
-            License saved = licenseRepository.save(entity);
-
-            // 9. Save File To ProgramData
-            licenseFileStorageService.save(licenseFilePayload.licenseNumber(), licenseFile.getBytes());
-
-            // 10. Return
+            byte[] fileBytes = licenseFile.getBytes();
+            LicenseFilePayload payload = readLicenseFile(fileBytes);
+            licenseValidator.validateLicensePayload(payload);
+            License saved = licenseRepository.save(licenseMapper.toEntity(payload));
+            licenseFileStorageService.save(payload.licenseNumber(), fileBytes);
             return licenseMapper.toResponse(saved);
         } catch (BadRequestException e) {
             throw e;
         } catch (Exception e) {
-            throw new BadRequestException("Invalid license file.");
+            throw new BadRequestException("Invalid license file. " + e.getMessage());
         }
     }
 
     @Override
-    public LicenseResponse activateLicense(String licenseKey) {
+    @Transactional
+    public boolean validateLicense() {
+        try {
+            License license = licenseRepository.findById(1L)
+                    .orElseThrow(() -> new ResourceNotFoundException("License not activated."));
 
-        String machineFingerprint = machineFingerprintService.getMachineFingerprint();
-
-        ApiResponse<LicenseActivationResponse> res = licenseServerClient.activateLicense(
-                LicenseActivationRequest.builder()
-                        .licenseKey(licenseKey)
-                        .machineFingerprint(machineFingerprint)
-                        .productId(1L)
-                        .build());
-
-        if (res.getData().licenseFile() != null && res.getData().licenseFile().length > 0) {
-            licenseFileStorageService.save(res.getData().licenseNumber(), res.getData().licenseFile());
+            Path path = licenseFileStorageService.get(license.getLicenseNumber());
+            LicenseFilePayload payload = readLicenseFile(Files.readAllBytes(path));
+            licenseValidator.validateLicensePayload(payload);
+            license.setLastValidatedAt(LocalDateTime.now());
+            licenseRepository.save(license);
+            return true;
+        } catch (BadRequestException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BadRequestException("License validation failed. " + e.getMessage());
         }
-        License license = licenseMapper.toEntity(res.getData());
-        License saved = licenseRepository.save(license);
-        return licenseMapper.toResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public LicenseResponse activateLicense(String licenseKey) {
+        try {
+            String machineFingerprint = machineFingerprintService.getMachineFingerprint();
+            ApiResponse<LicenseActivationResponse> res = licenseServerClient.activateLicense(
+                    LicenseActivationRequest.builder()
+                            .licenseKey(licenseKey)
+                            .machineFingerprint(machineFingerprint)
+                            .productId(1L)
+                            .build());
+
+            byte[] licenseFile = res.getData().licenseFile();
+
+            if (licenseFile == null || licenseFile.length == 0) {
+                throw new BadRequestException("License server returned an empty license file.");
+            }
+            LicenseFilePayload payload = readLicenseFile(licenseFile);
+            licenseValidator.validateLicensePayload(payload);
+            licenseFileStorageService.save(payload.licenseNumber(), licenseFile);
+            License license = licenseMapper.toEntity(payload);
+            License saved = licenseRepository.save(license);
+            return licenseMapper.toResponse(saved);
+        } catch (BadRequestException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BadRequestException("License activation failed. " + e.getMessage());
+        }
+    }
+
+    private LicenseFilePayload readLicenseFile(byte[] file) {
+        try {
+            return objectMapper.readValue(new String(file, StandardCharsets.UTF_8), LicenseFilePayload.class);
+        } catch (Exception e) {
+            throw new BadRequestException("Invalid license file." + e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean isActivated() {
+        return licenseRepository.existsById(1L);
     }
 
 }

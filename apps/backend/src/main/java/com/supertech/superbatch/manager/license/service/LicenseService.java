@@ -14,4 +14,8 @@ public interface LicenseService {
 
     LicenseResponse activateLicense(String licenseKey);
 
+    boolean validateLicense();
+
+    boolean isActivated();
+
 }
