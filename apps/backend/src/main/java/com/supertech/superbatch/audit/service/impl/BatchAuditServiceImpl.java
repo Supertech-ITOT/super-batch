@@ -19,14 +19,19 @@ import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.common.security.UserContextService;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
+import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
 import com.supertech.superbatch.manager.module.entity.Module;
+import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.module.repository.ModuleRepository;
+import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@RequiresLicense
+@RequiresPermission(ModuleType.AUDIT)
 public class BatchAuditServiceImpl implements BatchAuditService {
     private final BatchAuditRepository batchAuditRepository;
     private final BatchAuditMapper batchAuditMapper;

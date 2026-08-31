@@ -1,4 +1,5 @@
 import { BatchAuditSearchRequest } from "@/features/audit/types/audit.types";
+import { RecipeStatus } from "@/features/recipe/recipe/types/recipe.types";
 
 export const queryKeys = {
   plants: {
@@ -87,6 +88,7 @@ export const queryKeys = {
     all: ["recipes"] as const,
     list: () => ["recipes", "list"] as const,
     detail: (id: number) => ["recipes", "detail", id] as const,
+    byMaterialAndStatus: (materialId: number, status: RecipeStatus) => ["recipes", "by-material-and-status", materialId, status] as const,
   },
 
   recipeSOPs: {

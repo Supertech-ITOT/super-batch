@@ -5,6 +5,7 @@ import java.util.List;
 import com.supertech.superbatch.recipe.recipe.dto.CreateRecipeRequest;
 import com.supertech.superbatch.recipe.recipe.dto.RecipeResponse;
 import com.supertech.superbatch.recipe.recipe.dto.UpdateRecipeRequest;
+import com.supertech.superbatch.recipe.recipe.enums.RecipeStatus;
 
 public interface RecipeService {
     void create(CreateRecipeRequest request, Long userId);
@@ -16,5 +17,7 @@ public interface RecipeService {
     void update(Long id, UpdateRecipeRequest request);
 
     void delete(Long id, Long currentUserId);
+
+    List<RecipeResponse> getAllByMaterialIdAndStatus(Long materialId, RecipeStatus status);
 
 }

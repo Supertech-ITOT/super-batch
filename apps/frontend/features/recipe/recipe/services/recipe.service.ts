@@ -1,6 +1,6 @@
 import api from "@/common/lib/axios"
 import { ApiResponse } from "@/common/types/api.types"
-import { CreateRecipeRequest, RecipeResponse, UpdateRecipeRequest } from "../types/recipe.types"
+import { CreateRecipeRequest, RecipeResponse, RecipeStatus, UpdateRecipeRequest } from "../types/recipe.types"
 
 export const getAllRecipes = async () => {
     const res = await api.get<ApiResponse<RecipeResponse[]>>("/recipe");
@@ -26,3 +26,8 @@ export const deleteRecipe = async (id: number) => {
     const res = await api.delete<ApiResponse<void>>(`/recipe/${id}`);
     return res.data;
 }
+
+export const getRecipesByMaterialAndStatus = async (materialId: number, status: RecipeStatus) => {
+    const res = await api.get<ApiResponse<RecipeResponse[]>>(`/recipe/material/${materialId}`, { params: { status }, });
+    return res.data;
+};

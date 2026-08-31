@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import DatetimePicker from "@/common/components/form/datetime-picker";
 import UserSelect from "@/common/components/form/user-select";
 import { useGetUser } from "@/features/manager/user/hooks/use-user";
-import { useGetRecipeById, useGetRecipes } from "@/features/recipe/recipe/hooks/use-recipe";
+import { useGetRecipeById, useGetRecipes, useGetRecipesByMaterialAndStatus } from "@/features/recipe/recipe/hooks/use-recipe";
 import { EquipmentMappingResponse } from "../types/control-recipe.types";
 import EquipmentMapping from "./equipment-mapping";
 import { useGetEquipmentsByUnitId } from "@/features/plant/equipment/hooks/use-equipment";
@@ -23,6 +23,7 @@ import FormDialog from "@/common/components/form/form-dialog";
 import { TextInput } from "@/common/components/form/text-input";
 import { NumberInput } from "@/common/components/form/number-input";
 import { showFormError } from "@/common/lib/show-form-error";
+import { RecipeStatus } from "@/features/recipe/recipe/types/recipe.types";
 
 
 type Tab = "details" | "mapping";
@@ -35,7 +36,6 @@ export default function CreateControlRecipeDialog({ open, onClose }: Props) {
     const { data: units, isLoading: isLoadingUnits } = useGetUnits();
     const { data: materials, isLoading: isLoadingMaterials } = useGetMaterials();
     const { data: users, isLoading: isLoadingUsers } = useGetUser();
-    const { data: masterRecipes, isLoading: isLoadingMasterRecipes } = useGetRecipes();
     const { register, handleSubmit, reset, watch, control, setValue, formState: { isSubmitting, isDirty } } = useForm<CreateControlRecipeSchema>({
         resolver: zodResolver(createControlRecipeSchema),
         defaultValues: controlRecipeDefaultValues,
@@ -44,13 +44,12 @@ export default function CreateControlRecipeDialog({ open, onClose }: Props) {
     const loading = isSubmitting ||
         isCreating || isLoadingMaterials ||
         isLoadingUnits || isLoadingUsers ||
-        !users || !units || !materials ||
-        isLoadingMasterRecipes || !masterRecipes;
+        !users || !units || !materials;
 
     const selectedUnitId = watch("unitId");
     const selectedMasterRecipeId = watch("recipeId");
     const selectedUnitMaxRange = units?.find((unit) => unit.id === selectedUnitId)?.capacity;
-    const masterRecipesOptions = masterRecipes?.filter((f) => f.materialRecipeResponse.id === materialId);
+    const { data: masterRecipesOpt, isLoading: isLoadingMasterRecipesOpt } = useGetRecipesByMaterialAndStatus(materialId, RecipeStatus.RELEASED);
     const { data: mapping, isLoading: isLoadingMapping } = useRecipeEquipmentMapping(selectedMasterRecipeId, selectedUnitId);
     const { data: masterRecipe, isLoading: isLoadingMasterRecipe } = useGetRecipeById(selectedMasterRecipeId);
     const { data: equipmentOpt, isLoading: isLoadingEquipmentOpt } = useGetEquipmentsByUnitId(selectedUnitId);
@@ -161,13 +160,13 @@ export default function CreateControlRecipeDialog({ open, onClose }: Props) {
                                     value={field.value}
                                     icon={BookOpenText}
                                     onChange={field.onChange}
-                                    options={masterRecipesOptions?.map((m) => ({
+                                    options={masterRecipesOpt?.map((m) => ({
                                         value: m.id,
                                         label: m.name,
                                     })) ?? []}
                                     placeholder="Select Recipe"
                                     searchPlaceholder="Search Recipes..."
-                                    disabled={loading}
+                                    disabled={loading || isLoadingMasterRecipesOpt}
                                 />
                             )}
                         />

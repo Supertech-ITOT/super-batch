@@ -30,6 +30,7 @@ import com.supertech.superbatch.plant.equipment.repository.EquipmentRepository;
 import com.supertech.superbatch.plant.unit.entity.Unit;
 import com.supertech.superbatch.plant.unit.repository.UnitRepository;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
+import com.supertech.superbatch.recipe.recipe.enums.RecipeStatus;
 import com.supertech.superbatch.recipe.recipe.repository.RecipeRepository;
 import com.supertech.superbatch.scheduler.control_recipe.dto.ControlRecipeResponse;
 import com.supertech.superbatch.scheduler.control_recipe.dto.CreateControlRecipeRequest;
@@ -78,6 +79,11 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
 
                 Recipe recipe = recipeRepository.findByIdAndDeletedFalse(request.recipeId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
+
+                if (recipe.getStatus() != RecipeStatus.RELEASED) {
+                        throw new BadRequestException(
+                                        "Choose diffrent recipe as it is not released in production yet.");
+                }
 
                 Unit unit = unitRepository.findByIdAndDeletedFalse(request.unitId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found."));

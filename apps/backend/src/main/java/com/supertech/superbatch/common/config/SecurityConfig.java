@@ -24,7 +24,6 @@ public class SecurityConfig {
                 return http
                                 .cors(Customizer.withDefaults())
                                 .csrf(csrf -> csrf.disable())
-                                .httpBasic(Customizer.withDefaults())
                                 .sessionManagement(session -> session.sessionCreationPolicy(
                                                 SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(auth -> auth
@@ -33,6 +32,7 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/setup/**").permitAll()
                                                 .requestMatchers("/api/recipes/**").permitAll()
                                                 .requestMatchers("/api/batch-audits/**").permitAll()
+                                                .requestMatchers("/actuator/health").permitAll()
                                                 .requestMatchers("/api/application/**").permitAll()
                                                 .requestMatchers("/api/license/**").permitAll()
                                                 .anyRequest().authenticated())

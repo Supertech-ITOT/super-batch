@@ -4,9 +4,11 @@ import {
   deleteRecipe,
   getAllRecipes,
   getRecipeById,
+  getRecipesByMaterialAndStatus,
   updateRecipe,
 } from "../services/recipe.service";
 import { queryKeys } from "../../../common/hooks/query-keys";
+import { RecipeStatus } from "../types/recipe.types";
 
 export const useGetRecipes = (enabled = true) => {
   return useQuery({
@@ -63,5 +65,17 @@ export const useDeleteRecipe = () => {
         queryKey: queryKeys.recipes.all,
       });
     },
+  });
+};
+
+
+export const useGetRecipesByMaterialAndStatus = (materialId?: number, status?: RecipeStatus) => {
+  return useQuery({
+    queryKey: materialId && status ? queryKeys.recipes.byMaterialAndStatus(materialId, status) : [],
+    queryFn: async () => {
+      const res = await getRecipesByMaterialAndStatus(materialId!, status!);
+      return res.data;
+    },
+    enabled: !!materialId && !!status,
   });
 };

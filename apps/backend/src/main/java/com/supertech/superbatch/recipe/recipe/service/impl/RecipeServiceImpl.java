@@ -25,6 +25,7 @@ import com.supertech.superbatch.recipe.recipe.dto.RecipeAudit;
 import com.supertech.superbatch.recipe.recipe.dto.RecipeResponse;
 import com.supertech.superbatch.recipe.recipe.dto.UpdateRecipeRequest;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
+import com.supertech.superbatch.recipe.recipe.enums.RecipeStatus;
 import com.supertech.superbatch.recipe.recipe.mapper.RecipeMapper;
 import com.supertech.superbatch.recipe.recipe.repository.RecipeRepository;
 import com.supertech.superbatch.recipe.recipe.service.RecipeService;
@@ -128,5 +129,14 @@ public class RecipeServiceImpl implements RecipeService {
                                                 .oldData(oldData)
                                                 .newData(newData)
                                                 .build());
+        }
+
+        @Override
+        public List<RecipeResponse> getAllByMaterialIdAndStatus(Long materialId, RecipeStatus status) {
+                return recipeRepository.findAllByMaterialIdAndStatusAndDeletedFalse(materialId, status)
+                                .stream()
+                                .sorted(Comparator.comparing(Recipe::getCreatedAt).reversed())
+                                .map(recipeMapper::toResponse)
+                                .toList();
         }
 }

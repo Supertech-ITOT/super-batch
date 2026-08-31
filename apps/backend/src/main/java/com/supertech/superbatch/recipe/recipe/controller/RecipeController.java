@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.supertech.superbatch.common.dto.ApiResponse;
 import com.supertech.superbatch.common.security.UserContextService;
 import com.supertech.superbatch.recipe.recipe.dto.CreateRecipeRequest;
 import com.supertech.superbatch.recipe.recipe.dto.RecipeResponse;
 import com.supertech.superbatch.recipe.recipe.dto.UpdateRecipeRequest;
+import com.supertech.superbatch.recipe.recipe.enums.RecipeStatus;
 import com.supertech.superbatch.recipe.recipe.service.RecipeService;
 
 import jakarta.validation.Valid;
@@ -61,5 +63,12 @@ public class RecipeController {
                 Long userId = userContextService.getCurrentUserId();
                 recipeService.delete(id, userId);
                 return ResponseEntity.ok(ApiResponse.success("Recipe deleted successfully", null));
+        }
+
+        @GetMapping("/material/{materialId}")
+        public ResponseEntity<ApiResponse<List<RecipeResponse>>> getAllByMaterialIdAndStatus(
+                        @PathVariable Long materialId, @RequestParam RecipeStatus status) {
+                List<RecipeResponse> recipes = recipeService.getAllByMaterialIdAndStatus(materialId, status);
+                return ResponseEntity.ok(ApiResponse.success("Recipes fetched successfully", recipes));
         }
 }
