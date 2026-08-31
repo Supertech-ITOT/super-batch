@@ -28,21 +28,13 @@ export default function DonutChart({ data, targetSize }: DonutChartProps) {
         [chartData]
     );
 
-    const totalUsedKg = useMemo(() => {
-        return chartData.reduce((sum, item) => {
-            const qtyKg = item.value;
-            return sum + qtyKg;
-        }, 0);
-    }, [chartData, targetSize]);
 
-    const remainingQty = Math.max(targetSize - totalUsedKg, 0);
 
     const renderTooltip = useCallback(
         ({ active, payload }: any) => {
             if (!active || !payload?.length) return null;
             const item = payload[0].payload;
             const qty = item.value;
-            const percentage = (item.value / targetSize) * 100;
             return (
                 <div className="relative min-w-52 overflow-hidden rounded-xl border border-border/50 bg-background/75 shadow-xl backdrop-blur-xl">
                     <div
@@ -69,18 +61,13 @@ export default function DonutChart({ data, targetSize }: DonutChartProps) {
                                 className="rounded-md px-2 py-1 text-sm font-semibold"
                                 style={{ backgroundColor: `${item.fill}20`, color: item.fill, }}
                             >
-                                {qty.toFixed(2)} KG
+                                {qty.toFixed(2)}
                             </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground">Contribution</span>
-                            <span className="text-sm font-semibold text-foreground">{percentage.toFixed(1)}%</span>
                         </div>
                     </div>
                 </div>
             );
-        },
-        [targetSize]
+        }, []
     );
 
 
@@ -126,13 +113,10 @@ export default function DonutChart({ data, targetSize }: DonutChartProps) {
                                 return (
                                     <g>
                                         <text x={viewBox.cx} y={viewBox.cy - 10} textAnchor="middle" className="fill-muted-foreground text-sm">
-                                            Remaining
+                                            Target
                                         </text>
                                         <text x={viewBox.cx} y={viewBox.cy + 10} textAnchor="middle" className="fill-foreground text-lg font-bold">
-                                            {remainingQty.toFixed(1)} KG
-                                        </text>
-                                        <text x={viewBox.cx} y={viewBox.cy + 26} textAnchor="middle" className="fill-muted-foreground text-xs font-semibold">
-                                            Target {targetSize.toFixed(1)} KG
+                                            {targetSize.toFixed(2)} KG
                                         </text>
                                     </g>
                                 );
@@ -171,7 +155,7 @@ export default function DonutChart({ data, targetSize }: DonutChartProps) {
                                     </span>
                                     <span className="truncate text-sm" title={item.label}>{item.label}</span>
                                 </div>
-                                <strong className="text-sm font-semibold">{item.value} KG</strong>
+                                <strong className="text-sm font-semibold">{item.value.toFixed(2)}</strong>
                             </div>
                         ))}
                     </div>
@@ -180,7 +164,7 @@ export default function DonutChart({ data, targetSize }: DonutChartProps) {
                     <div className="flex items-center justify-between text-sm font-semibold">
                         <span>Total</span>
                         <span className="text-primary">
-                            {totalValue.toFixed(2)} KG
+                            {totalValue.toFixed(2)}
                         </span>
                     </div>
                 </div>

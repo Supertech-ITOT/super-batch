@@ -5,7 +5,6 @@ import {
   getRecipeStatusTypes,
   getUomTypes,
 } from "../services/metadata.service";
-import { queryKeys } from "./query-keys";
 
 export const useGetUomTypes = (enabled = true) => {
   return useQuery({
@@ -31,7 +30,7 @@ export const useGetMaterialTypes = (enabled = true) => {
 
 export const useGetBatchAuditAction = (enabled = true) => {
   return useQuery({
-    queryKey: queryKeys.metadata.batchAuditActions(),
+    queryKey: ["batch-audit-action"],
     queryFn: async () => {
       const res = await getBatchAuditAction();
       return res.data;

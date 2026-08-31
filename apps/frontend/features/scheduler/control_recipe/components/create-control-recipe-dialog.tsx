@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import DatetimePicker from "@/common/components/form/datetime-picker";
 import UserSelect from "@/common/components/form/user-select";
 import { useGetUser } from "@/features/manager/user/hooks/use-user";
-import { useGetRecipeById, useGetRecipes, useGetRecipesByMaterialAndStatus } from "@/features/recipe/recipe/hooks/use-recipe";
+import { useGetRecipeById, useGetRecipesByMaterialAndStatus } from "@/features/recipe/recipe/hooks/use-recipe";
 import { EquipmentMappingResponse } from "../types/control-recipe.types";
 import EquipmentMapping from "./equipment-mapping";
 import { useGetEquipmentsByUnitId } from "@/features/plant/equipment/hooks/use-equipment";
@@ -53,7 +53,7 @@ export default function CreateControlRecipeDialog({ open, onClose }: Props) {
     const { data: mapping, isLoading: isLoadingMapping } = useRecipeEquipmentMapping(selectedMasterRecipeId, selectedUnitId);
     const { data: masterRecipe, isLoading: isLoadingMasterRecipe } = useGetRecipeById(selectedMasterRecipeId);
     const { data: equipmentOpt, isLoading: isLoadingEquipmentOpt } = useGetEquipmentsByUnitId(selectedUnitId);
-    const isMapping = !!masterRecipe && masterRecipe.unitRecipeResponse.id !== selectedUnitId;
+    const isMapping = !!masterRecipe && !!selectedUnitId && masterRecipe.unitRecipeResponse.id !== selectedUnitId;
 
     useEffect(() => {
         if (!mapping) return;
@@ -242,7 +242,7 @@ export default function CreateControlRecipeDialog({ open, onClose }: Props) {
                     />
                 </TabsContent>
                 <TabsContent value="mapping" className="p-4 border rounded-lg ">
-                    <div className="h-64 overflow-y-auto scrollbar-none flex justify-center items-center">
+                    <div className="h-64 overflow-y-auto scrollbar-none flex justify-center">
                         {isMapping &&
                             <EquipmentMapping
                                 value={equipmentMappings}

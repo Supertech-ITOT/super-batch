@@ -7,6 +7,7 @@ import { useState } from "react";
 import DeleteRecipeDialog from "../../recipe/components/delete-recipe-dialog";
 import UpdateRecipeDialog from "../../recipe/components/update-recipe-dialog";
 import { RecipeResponse, RecipeStatus, RecipeStatusBadgeStyles } from "../../recipe/types/recipe.types";
+import { RecipeQuantityType } from "@/features/plant/unit/types/unit.types";
 
 export type DialogProp = {
     action: "edit" | "delete" | null;
@@ -32,7 +33,8 @@ export default function RecipeSOPInfo({ recipe }: { recipe: RecipeResponse }) {
                         {recipe.status === RecipeStatus.RELEASED ? "Released" : "UnReleased"}
                     </Badge>
                     <Badge variant={"outline"} >Unit: {recipe.unitRecipeResponse.name} - [{recipe.unitRecipeResponse.code}]</Badge>
-                    <Badge variant={"outline"} >Batch Size: {recipe.batchSize} KG</Badge>
+                    <Badge variant={"outline"} >Qty Mode: {recipe.unitRecipeResponse.recipeQuantityType === RecipeQuantityType.PERCENTAGE ? "%" : "KG"}</Badge>
+                    <Badge variant={"outline"} >Size: {recipe.batchSize} KG</Badge>
                 </div>
             </div>
             <div className="flex gap-1 grow sm:grow-0 sm:w-100">

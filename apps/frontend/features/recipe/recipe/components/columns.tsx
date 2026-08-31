@@ -2,12 +2,13 @@ import { ColumnDef } from "@tanstack/react-table";
 import { RecipeResponse, RecipeStatus, RecipeStatusBadgeStyles, } from "../types/recipe.types";
 import { Button } from "@/common/components/ui/button";
 import { DialogProp } from "./recipe-view";
-import { Circle, Eye, PencilLine, Trash2, Package, Scale, Boxes, } from "lucide-react";
+import { Circle, Eye, PencilLine, Trash2, Package, Scale, Boxes, Ruler, } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/common/components/ui/badge";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { getColorByText } from "@/common/utils/color.util";
 import UserAvatar from "@/common/components/user-avatar";
+import { RecipeQuantityType } from "@/features/plant/unit/types/unit.types";
 
 export const columns = (
     setDialog: React.Dispatch<React.SetStateAction<DialogProp>>,
@@ -61,10 +62,17 @@ export const columns = (
                             </Badge>
                             <Badge
                                 variant="outline"
-                                className={`h-6 gap-1 px-2 text-[11px] ${getColorByText(recipe.unitRecipeResponse?.name)}`}
+                                className={`h-6 gap-1 px-2 text-[11px] ${getColorByText(recipe.unitRecipeResponse?.code)}`}
                             >
                                 <Boxes />
-                                {recipe.unitRecipeResponse?.name ?? "-"}
+                                {recipe.unitRecipeResponse?.code ?? "-"}
+                            </Badge>
+                            <Badge
+                                variant="outline"
+                                className={`h-6 gap-1 px-2 text-[11px] ${getColorByText(recipe.unitRecipeResponse?.recipeQuantityType)}`}
+                            >
+                                <Ruler />
+                                {recipe.unitRecipeResponse?.recipeQuantityType === RecipeQuantityType.PERCENTAGE ? "%" : "KG"}
                             </Badge>
                             <Badge
                                 variant="secondary"

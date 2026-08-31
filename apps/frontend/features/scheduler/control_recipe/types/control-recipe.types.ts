@@ -1,3 +1,4 @@
+import { RecipeQuantityType } from "@/features/plant/unit/types/unit.types";
 
 export interface ControlRecipeResponse {
   id: number;
@@ -44,6 +45,8 @@ export interface UnitControlRecipeResponse {
   name: string;
   code: string;
   capacity: number;
+  recipeQuantityType: RecipeQuantityType,
+
 }
 
 export interface UserControlRecipeResponse {

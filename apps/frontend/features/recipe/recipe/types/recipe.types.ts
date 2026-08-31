@@ -1,3 +1,4 @@
+import { RecipeQuantityType } from "@/features/plant/unit/types/unit.types";
 
 export interface RecipeResponse {
     id: number;
@@ -19,7 +20,6 @@ export interface CreateRecipeRequest {
     batchSize: number;
     materialId: number;
     unitId: number;
-    status: string;
 }
 
 export interface UpdateRecipeRequest {
@@ -42,6 +42,7 @@ export interface UnitRecipeResponse {
     id: number;
     name: string;
     code: string;
+    recipeQuantityType: RecipeQuantityType,
     capacity: number;
 }
 

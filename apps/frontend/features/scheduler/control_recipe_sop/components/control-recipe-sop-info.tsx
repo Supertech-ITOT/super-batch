@@ -32,7 +32,7 @@ export default function ControlRecipeSOPInfo({ controlRecipe }: { controlRecipe:
                         {controlRecipe.status === ControlRecipeStatus.SCHEDULED ? "Scheduled" : "Transferred"}
                     </Badge>
                     <Badge variant={"outline"} >Unit: {controlRecipe.unit.name} - [{controlRecipe.unit.code}]</Badge>
-                    <Badge variant={"outline"} >Batch Size: {controlRecipe.batchSize} KG</Badge>
+                    <Badge variant={"outline"} >Size: {controlRecipe.batchSize} KG</Badge>
                 </div>
             </div>
             <div className="flex gap-1 grow sm:grow-0 sm:w-100">

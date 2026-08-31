@@ -52,7 +52,9 @@ export const baseRecipeSchema = z.object({
         .min(1, "Status is required"),
 });
 
-export const createRecipeSchema = baseRecipeSchema;
+export const createRecipeSchema = baseRecipeSchema.omit({
+    status: true,
+});
 
 export const updateRecipeSchema = baseRecipeSchema.omit({
     unitId: true,
@@ -67,5 +69,4 @@ export const recipeDefaultValues: CreateRecipeSchema = {
     batchSize: 0,
     materialId: 0,
     unitId: 0,
-    status: "",
 };

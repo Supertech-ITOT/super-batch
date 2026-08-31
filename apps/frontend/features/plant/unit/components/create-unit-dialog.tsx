@@ -1,32 +1,26 @@
 "use client";
-import { Button } from "@/common/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/common/components/ui/dialog";
-import { Input } from "@/common/components/ui/input";
-import { Label } from "@/common/components/ui/label";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Boxes, Building, Feather, Hash, Loader, Scale } from "lucide-react";
+import { Boxes, Building, Feather, Hash, Ruler, Scale } from "lucide-react";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/common/components/ui/select";
 import { useGetAreas } from "../../area/hooks/use-areas";
 import { useEffect } from "react";
-import CharacterProgress from "@/common/components/form/character-progress";
-import { Textarea } from "@/common/components/ui/textarea";
 import { useCreateUnit } from "../hooks/use-units";
 import { unitDefaultValues, unitSchema, UnitSchema, UnitSchemaLimit } from "../schemas/unit-schema";
 import { showFormError } from "@/common/lib/show-form-error";
 import FormDialog from "@/common/components/form/form-dialog";
-import FormLoadingButton from "@/common/components/form/form-loading-button";
 import { TextInput } from "@/common/components/form/text-input";
 import { TextAreaInput } from "@/common/components/form/text-area-input";
 import SearchableSelect from "@/common/components/form/searchable-select";
 import { NumberInput } from "@/common/components/form/number-input";
+import { UseGetRecipeQuantityType } from "@/features/common/hooks/useMetadata";
 
 type Props = { open: boolean; onClose: () => void; areaId?: number };
 export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
     const { mutateAsync: createUnit, isPending: isCreating } = useCreateUnit();
     const { data: areas, isLoading: areasLoading } = useGetAreas(open);
+    const { data: recipeQuantityType, isLoading: recipeQuantityTypeLoading } = UseGetRecipeQuantityType();
     const { register, handleSubmit, reset, control, watch, formState: { isSubmitting, isDirty } } = useForm<UnitSchema>({
         resolver: zodResolver(unitSchema),
         defaultValues: unitDefaultValues
@@ -135,6 +129,25 @@ export default function CreateUnitDialog({ open, onClose, areaId }: Props) {
                         })}
                     />
                 </div>
+                <Controller
+                    control={control}
+                    name="recipeQuantityType"
+                    render={({ field }) => (
+                        <SearchableSelect
+                            value={field.value}
+                            icon={Ruler}
+                            label="Type"
+                            onChange={field.onChange}
+                            options={recipeQuantityType?.map((a) => ({
+                                value: a.value,
+                                label: a.label,
+                            })) ?? []}
+                            placeholder="Select Recipe Quantity Type"
+                            searchPlaceholder="Search Recipe Quantity Type..."
+                            disabled={loading || recipeQuantityTypeLoading}
+                        />
+                    )}
+                />
             </div>
         </FormDialog>
     );

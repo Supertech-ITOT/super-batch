@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.unit.entity.Unit;
+import com.supertech.superbatch.plant.unit.enums.RecipeQuantityType;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 import com.supertech.superbatch.recipe.recipe_sop.entity.RecipeSOP;
 import com.supertech.superbatch.recipe.recipe_sop_material.enitiy.RecipeSOPMaterial;
@@ -58,8 +59,7 @@ public class ControlRecipeMapper {
 
         public ControlRecipe toEntity(CreateControlRecipeRequest request, Unit unit, Recipe recipe, User createdBy,
                         User shiftIncharge, List<Equipment> equipmentLists) {
-                String name = "CR_" + recipe.getName() + "_" + recipe.getUnit().getCode() + "_"
-                                + request.batchNo();
+                String name = "CR_" + recipe.getName() + "_" + request.batchNo();
                 ControlRecipe controlRecipe = ControlRecipe.builder()
                                 .name(name)
                                 .unit(unit)
@@ -81,15 +81,25 @@ public class ControlRecipeMapper {
                 Map<Long, Equipment> equipments = equipmentLists.stream()
                                 .collect(Collectors.toMap(Equipment::getId, Function.identity()));
 
+                RecipeQuantityType recipeQuantityType = recipe.getUnit().getRecipeQuantityType();
                 for (RecipeSOP recipeSOP : recipe.getSops()) {
 
                         ControlRecipeSOP controlRecipeSOP = controlRecipeSOPMapper.toEntity(recipeSOP, controlRecipe,
                                         equipmentMapping, equipments);
                         // Material
                         for (RecipeSOPMaterial material : recipeSOP.getMaterials()) {
+                                double controlQty;
+                                if (recipeQuantityType == RecipeQuantityType.PERCENTAGE) {
+                                        controlQty = request.batchSize() * material.getStdQty() / 100.0;
+                                } else {
+                                        controlQty = material.getStdQty();
+                                }
+
                                 controlRecipeSOP.getMaterials()
-                                                .add(controlRecipeSOPMaterialMapper.toEntity(controlRecipeSOP,
-                                                                material));
+                                                .add(controlRecipeSOPMaterialMapper.toEntity(
+                                                                controlRecipeSOP,
+                                                                material,
+                                                                controlQty));
                         }
                         // Parameter
                         for (RecipeSOPParameter parameter : recipeSOP.getParameters()) {
@@ -133,6 +143,7 @@ public class ControlRecipeMapper {
                                 .id(unit.getId())
                                 .name(unit.getName())
                                 .code(unit.getCode())
+                                .recipeQuantityType(unit.getRecipeQuantityType())
                                 .capacity(unit.getCapacity())
                                 .build();
         }

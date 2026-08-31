@@ -29,6 +29,7 @@ public class UnitMapper {
                                 .description(unit.getDescription())
                                 .areaId(unit.getArea().getId())
                                 .areaName(unit.getArea().getName())
+                                .recipeQuantityType(unit.getRecipeQuantityType())
                                 .capacity(unit.getCapacity())
                                 .totalEquipment(totalEquipment)
                                 .createdAt(unit.getCreatedAt())
@@ -42,6 +43,7 @@ public class UnitMapper {
                                 .code(request.code())
                                 .description(request.description())
                                 .capacity(request.capacity())
+                                .recipeQuantityType(request.recipeQuantityType())
                                 .area(area)
                                 .build();
         }
@@ -70,6 +72,7 @@ public class UnitMapper {
                                 .name(unit.getName())
                                 .code(unit.getCode())
                                 .description(unit.getDescription())
+                                .recipeQuantityType(unit.getRecipeQuantityType())
                                 .capacity(unit.getCapacity())
                                 .build();
         }

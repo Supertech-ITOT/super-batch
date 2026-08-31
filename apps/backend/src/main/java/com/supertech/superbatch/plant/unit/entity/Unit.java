@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.plant.area.entity.Area;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
+import com.supertech.superbatch.plant.unit.enums.RecipeQuantityType;
 
 import jakarta.persistence.*;
 
@@ -66,4 +67,9 @@ public class Unit {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "deleted_by_id")
     private User deletedBy;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    @Builder.Default
+    private RecipeQuantityType recipeQuantityType = RecipeQuantityType.KG;
 }

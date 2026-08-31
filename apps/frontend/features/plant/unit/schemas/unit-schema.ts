@@ -53,8 +53,10 @@ export const unitSchema = z.object({
 
     capacity: z.number({ error: "Capacity is required." }).min(1, "Capacity is required"),
 
-    areaId: z.number({ error: "Area is required." }).min(1, "Area is required")
+    areaId: z.number({ error: "Area is required." }).min(1, "Area is required"),
+
+    recipeQuantityType: z.string({ error: "Recipe Quantity Type is required." }).min(1, "Recipe Quantity Type is required").trim(),
 });
 
 export type UnitSchema = z.infer<typeof unitSchema>;
-export const unitDefaultValues: UnitSchema = { name: "", areaId: 0, capacity: 0, code: "", description: "" }
+export const unitDefaultValues: UnitSchema = { name: "", areaId: 0, capacity: 0, code: "", description: "", recipeQuantityType: "" }

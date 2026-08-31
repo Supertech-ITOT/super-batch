@@ -18,6 +18,11 @@ export const getBatchAuditAction = async () => {
     return res.data;
 }
 
+export const getRecipeQuantityType = async () => {
+    const res = await api.get<ApiResponse<OptionResponse[]>>("/metadata/recipe-qty-types");
+    return res.data;
+}
+
 
 export const getRecipeStatusTypes = async () => {
     const res = await api.get<ApiResponse<OptionResponse[]>>("/metadata/recipe-status-types");

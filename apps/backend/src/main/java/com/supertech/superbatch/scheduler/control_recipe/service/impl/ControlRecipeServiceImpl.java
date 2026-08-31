@@ -42,6 +42,8 @@ import com.supertech.superbatch.scheduler.control_recipe.enums.ControlRecipeStat
 import com.supertech.superbatch.scheduler.control_recipe.mapper.ControlRecipeMapper;
 import com.supertech.superbatch.scheduler.control_recipe.repository.ControlRecipeRepository;
 import com.supertech.superbatch.scheduler.control_recipe.service.ControlRecipeService;
+import com.supertech.superbatch.scheduler.control_recipe_sop.repository.ControlRecipeSOPRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -57,6 +59,7 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
         private final BatchMapper batchMapper;
         private final BatchRepository batchRepository;
         private final BatchAuditService batchAuditService;
+        private final ControlRecipeSOPRepository controlRecipeSOPRepository;
 
         @Override
         @Transactional
@@ -190,6 +193,8 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
                                 .toList();
         }
 
+        private static final double QUANTITY_TOLERANCE = 0.01;
+
         @Override
         @Transactional
         public void transfer(Long id) {
@@ -197,6 +202,17 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
                 if (controlRecipe.getStatus() == ControlRecipeStatus.TRANSFERRED) {
                         throw new ResourceNotFoundException("Already transferred.");
                 }
+
+                Double totalMaterialQty = controlRecipeSOPRepository
+                                .getTotalMaterialQtyByControlRecipeId(controlRecipe.getId());
+                double batchSize = controlRecipe.getBatchSize();
+                if (Math.abs(totalMaterialQty - batchSize) > QUANTITY_TOLERANCE) {
+                        throw new BadRequestException(String.format(
+                                        "Total material quantity (%.2f kg) must equal control recipe batch size (%d kg).",
+                                        totalMaterialQty,
+                                        controlRecipe.getBatchSize()));
+                }
+
                 Batch batch = batchMapper.toEntity(controlRecipe);
                 batchRepository.save(batch);
                 controlRecipe.setStatus(ControlRecipeStatus.TRANSFERRED);
