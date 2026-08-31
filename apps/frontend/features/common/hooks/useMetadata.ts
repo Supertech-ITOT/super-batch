@@ -36,6 +36,17 @@ export const useGetBatchAuditAction = (enabled = true) => {
     })
 }
 
+export const UseGetRecipeQuantityType = (enabled = true) => {
+    return useQuery({
+        queryKey: ["recipe-qty-types"],
+        queryFn: async () => {
+            const res = await getBatchAuditAction();
+            return res.data;
+        },
+        enabled
+    })
+}
+
 export const useGetRecipeStatusTypes = (enabled = true) => {
     return useQuery({
         queryKey: ["recipe-status-types"],

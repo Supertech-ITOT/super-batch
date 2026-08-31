@@ -6,6 +6,7 @@ import com.supertech.superbatch.common.dto.OptionDto;
 import com.supertech.superbatch.common.enums.UomType;
 import com.supertech.superbatch.common.util.EnumUtil;
 import com.supertech.superbatch.plant.material.enums.MaterialType;
+import com.supertech.superbatch.plant.unit.enums.RecipeQuantityType;
 import com.supertech.superbatch.recipe.recipe.enums.RecipeStatus;
 
 import org.springframework.http.ResponseEntity;
@@ -59,5 +60,15 @@ public class MetadataController {
                 type.name()))
                 .toList();
         return ResponseEntity.ok(ApiResponse.success("Batch Audit Action fetched successfully", data));
+    }
+
+    @GetMapping("/recipe-qty-types")
+    public ResponseEntity<ApiResponse<List<OptionDto>>> getRecipeQuantityType() {
+
+        List<OptionDto> data = Arrays.stream(RecipeQuantityType.values()).map(type -> new OptionDto(
+                EnumUtil.formatLabel(type.name()),
+                type.name()))
+                .toList();
+        return ResponseEntity.ok(ApiResponse.success("Recipe Quantity Type fetched successfully", data));
     }
 }
