@@ -19,6 +19,7 @@ import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.plant.material.entity.Material;
 import com.supertech.superbatch.plant.material.repository.MaterialRepository;
 import com.supertech.superbatch.plant.unit.entity.Unit;
+import com.supertech.superbatch.plant.unit.enums.RecipeQuantityType;
 import com.supertech.superbatch.plant.unit.repository.UnitRepository;
 import com.supertech.superbatch.recipe.recipe.dto.CreateRecipeRequest;
 import com.supertech.superbatch.recipe.recipe.dto.RecipeAudit;
@@ -29,6 +30,8 @@ import com.supertech.superbatch.recipe.recipe.enums.RecipeStatus;
 import com.supertech.superbatch.recipe.recipe.mapper.RecipeMapper;
 import com.supertech.superbatch.recipe.recipe.repository.RecipeRepository;
 import com.supertech.superbatch.recipe.recipe.service.RecipeService;
+import com.supertech.superbatch.recipe.recipe_sop.repository.RecipeSOPRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -41,6 +44,7 @@ public class RecipeServiceImpl implements RecipeService {
         private final RecipeMapper recipeMapper;
         private final UserRepository userRepository;
         private final BatchAuditService batchAuditService;
+        private final RecipeSOPRepository recipeSOPRepository;
 
         @Override
         @Transactional
@@ -76,7 +80,7 @@ public class RecipeServiceImpl implements RecipeService {
                 User user = userRepository.findByIdAndDeletedFalse(userId)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
-                Recipe recipe = recipeMapper.toEntity(request, material, user, unit);
+                Recipe recipe = recipeMapper.toEntity(request, material, user, unit, RecipeStatus.UNRELEASED);
                 recipeRepository.save(recipe);
 
                 audit(BatchAuditAction.CREATED, null, recipeMapper.copy(recipe));
@@ -138,5 +142,42 @@ public class RecipeServiceImpl implements RecipeService {
                                 .sorted(Comparator.comparing(Recipe::getCreatedAt).reversed())
                                 .map(recipeMapper::toResponse)
                                 .toList();
+        }
+
+        private static final double QUANTITY_TOLERANCE = 0.01;
+
+        @Override
+        @Transactional
+        public void release(Long id) {
+                Recipe recipe = recipeRepository.findByIdAndDeletedFalse(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
+
+                if (recipe.getStatus() == RecipeStatus.RELEASED) {
+                        throw new BadRequestException("Recipe is already released.");
+                }
+
+                Double totalMaterialValue = recipeSOPRepository.getTotalMaterialQtyByRecipeId(recipe.getId());
+
+                RecipeQuantityType quantityType = recipe.getUnit().getRecipeQuantityType();
+
+                if (quantityType == RecipeQuantityType.KG) {
+                        double batchSize = recipe.getBatchSize();
+                        if (Math.abs(totalMaterialValue - batchSize) > QUANTITY_TOLERANCE) {
+                                throw new BadRequestException(String.format(
+                                                "Total material quantity (%.2f kg) must equal recipe batch size (%d kg).",
+                                                totalMaterialValue,
+                                                recipe.getBatchSize()));
+                        }
+
+                } else if (quantityType == RecipeQuantityType.PERCENTAGE) {
+                        if (Math.abs(totalMaterialValue - 100.0) > QUANTITY_TOLERANCE) {
+                                throw new BadRequestException(String.format(
+                                                "Total material percentage (%.2f%%) must equal 100%%.",
+                                                totalMaterialValue));
+                        }
+                }
+
+                recipe.setStatus(RecipeStatus.RELEASED);
+                recipeRepository.save(recipe);
         }
 }

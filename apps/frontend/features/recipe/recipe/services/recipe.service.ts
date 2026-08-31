@@ -31,3 +31,9 @@ export const getRecipesByMaterialAndStatus = async (materialId: number, status: 
     const res = await api.get<ApiResponse<RecipeResponse[]>>(`/recipe/material/${materialId}`, { params: { status }, });
     return res.data;
 };
+
+
+export const releaseRecipe = async (id: number) => {
+    const res = await api.put<ApiResponse<void>>(`/recipe/${id}/release`);
+    return res.data;
+};

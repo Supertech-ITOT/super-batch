@@ -46,4 +46,12 @@ public interface ControlRecipeSOPRepository extends JpaRepository<ControlRecipeS
       "materials.material", "parameters", "parameters.parameter" })
   List<ControlRecipeSOP> findWithRelationsByControlRecipeId(Long controlRecipeId);
 
+  @Query("""
+      SELECT COALESCE(SUM(m.stdQty), 0)
+      FROM ControlRecipeSOP s
+      JOIN s.materials m
+      WHERE s.controlRecipe.id = :controlRecipeId
+      """)
+  Double getTotalMaterialQtyByControlRecipeId(Long controlRecipeId);
+
 }

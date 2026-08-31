@@ -20,7 +20,6 @@ export interface CreateRecipeRequest {
     batchSize: number;
     materialId: number;
     unitId: number;
-    status: string;
 }
 
 export interface UpdateRecipeRequest {

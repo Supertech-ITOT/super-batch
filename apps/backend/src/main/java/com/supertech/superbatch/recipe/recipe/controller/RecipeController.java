@@ -71,4 +71,11 @@ public class RecipeController {
                 List<RecipeResponse> recipes = recipeService.getAllByMaterialIdAndStatus(materialId, status);
                 return ResponseEntity.ok(ApiResponse.success("Recipes fetched successfully", recipes));
         }
+
+        @PutMapping("/{id}/release")
+        public ResponseEntity<ApiResponse<Void>> release(@PathVariable Long id) {
+                recipeService.release(id);
+                return ResponseEntity.ok(
+                                ApiResponse.success("Recipe released successfully", null));
+        }
 }

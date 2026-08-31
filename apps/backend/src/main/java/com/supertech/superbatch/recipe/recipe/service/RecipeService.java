@@ -20,4 +20,6 @@ public interface RecipeService {
 
     List<RecipeResponse> getAllByMaterialIdAndStatus(Long materialId, RecipeStatus status);
 
+    void release(Long id);
+
 }

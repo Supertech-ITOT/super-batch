@@ -5,10 +5,9 @@ import { CreateRecipeSchema, createRecipeSchema, recipeDefaultValues, RecipeSche
 import { useCreateRecipe } from "../hooks/use-recipe";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
-import { BookOpenText, Boxes, Circle, CircleDot, Feather, PackageCheck, Scale } from "lucide-react";
+import { BookOpenText, Boxes, Feather, PackageCheck, Scale } from "lucide-react";
 import { useGetMaterials } from "@/features/plant/material/hooks/use-materials";
 import { useGetUnits } from "@/features/plant/unit/hooks/use-units";
-import { useGetRecipeStatusTypes } from "@/features/common/hooks/useMetadata";
 import { MaterialType } from "@/features/plant/material/types/material.types";
 import { TextInput } from "@/common/components/form/text-input";
 import { TextAreaInput } from "@/common/components/form/text-area-input";
@@ -22,12 +21,11 @@ export default function CreateRecipeDialog({ open, onClose }: Props) {
     const { mutateAsync: createRecipe, isPending: isCreating } = useCreateRecipe();
     const { data: units, isLoading: isLoadingUnits } = useGetUnits();
     const { data: materials, isLoading: isLoadingMaterials } = useGetMaterials();
-    const { data: recipeStatus, isLoading: isLoadingRecipeStatus } = useGetRecipeStatusTypes();
     const { register, handleSubmit, reset, watch, control, formState: { isSubmitting, isDirty } } = useForm<CreateRecipeSchema>({
         resolver: zodResolver(createRecipeSchema),
         defaultValues: recipeDefaultValues,
     });
-    const loading = isSubmitting || isCreating || isLoadingMaterials || isLoadingUnits || isLoadingRecipeStatus;
+    const loading = isSubmitting || isCreating || isLoadingMaterials || isLoadingUnits;
     const selectedUnitId = watch("unitId");
     const selectedUnitMaxRange = units?.find((unit) => unit.id === selectedUnitId)?.capacity;
 
@@ -135,25 +133,6 @@ export default function CreateRecipeDialog({ open, onClose }: Props) {
                                 })) ?? []}
                                 placeholder="Select Product"
                                 searchPlaceholder="Search Products..."
-                                disabled={loading}
-                            />
-                        )}
-                    />
-                    <Controller
-                        control={control}
-                        name="status"
-                        render={({ field }) => (
-                            <SearchableSelect
-                                label="Status"
-                                value={field.value}
-                                icon={CircleDot}
-                                onChange={field.onChange}
-                                options={recipeStatus?.map((a) => ({
-                                    value: a.value,
-                                    label: a.label,
-                                })) ?? []}
-                                placeholder="Select Status"
-                                searchPlaceholder="Search Status..."
                                 disabled={loading}
                             />
                         )}

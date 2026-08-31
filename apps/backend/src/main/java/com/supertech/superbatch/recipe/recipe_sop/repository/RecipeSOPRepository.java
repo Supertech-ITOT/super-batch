@@ -41,4 +41,12 @@ public interface RecipeSOPRepository extends JpaRepository<RecipeSOP, Long> {
       "materials.material", "parameters", "parameters.parameter" })
   List<RecipeSOP> findWithRelationsByRecipeId(Long recipeId);
 
+  @Query("""
+      SELECT COALESCE(SUM(m.stdQty), 0)
+      FROM RecipeSOP s
+      JOIN s.materials m
+      WHERE s.recipe.id = :recipeId
+      """)
+  Double getTotalMaterialQtyByRecipeId(Long recipeId);
+
 }

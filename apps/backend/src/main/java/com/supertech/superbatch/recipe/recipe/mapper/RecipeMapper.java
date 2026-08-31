@@ -15,6 +15,7 @@ import com.supertech.superbatch.recipe.recipe.dto.UnitRecipeResponse;
 import com.supertech.superbatch.recipe.recipe.dto.UpdateRecipeRequest;
 import com.supertech.superbatch.recipe.recipe.dto.UserRecipeResponse;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
+import com.supertech.superbatch.recipe.recipe.enums.RecipeStatus;
 
 @Component
 @RequiredArgsConstructor
@@ -35,7 +36,8 @@ public class RecipeMapper {
                 .build();
     }
 
-    public Recipe toEntity(CreateRecipeRequest request, Material material, User createdBy, Unit unit) {
+    public Recipe toEntity(CreateRecipeRequest request, Material material, User createdBy, Unit unit,
+            RecipeStatus recipeStatus) {
         return Recipe.builder()
                 .name(request.name())
                 .description(request.description())
@@ -43,7 +45,7 @@ public class RecipeMapper {
                 .material(material)
                 .unit(unit)
                 .createdBy(createdBy)
-                .status(request.status())
+                .status(recipeStatus)
                 .build();
     }
 
