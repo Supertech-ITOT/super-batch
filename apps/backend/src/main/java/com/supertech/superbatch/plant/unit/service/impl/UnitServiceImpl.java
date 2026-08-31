@@ -12,8 +12,10 @@ import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
+import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.plant.area.entity.Area;
@@ -33,11 +35,14 @@ import com.supertech.superbatch.plant.unit.entity.Unit;
 import com.supertech.superbatch.plant.unit.mapper.UnitMapper;
 import com.supertech.superbatch.plant.unit.repository.UnitRepository;
 import com.supertech.superbatch.plant.unit.service.UnitService;
+import com.supertech.superbatch.recipe.recipe.repository.RecipeRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@RequiresPermission(ModuleType.PLANT_MODEL)
+@RequiresLicense()
 @Transactional(readOnly = true)
 public class UnitServiceImpl implements UnitService {
         private final UnitRepository unitRepository;
@@ -47,6 +52,7 @@ public class UnitServiceImpl implements UnitService {
         private final EquipmentMapper equipmentMapper;
         private final BatchAuditService batchAuditService;
         private final UserRepository userRepository;
+        private final RecipeRepository recipeRepository;
 
         @Override
         @Transactional
@@ -163,6 +169,11 @@ public class UnitServiceImpl implements UnitService {
 
                 Unit unit = unitRepository.findByIdAndDeletedFalse(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
+
+                if (recipeRepository.existsByUnitIdAndDeletedFalse(id)) {
+                        throw new BadRequestException(
+                                        "Cannot delete unit. It is being used by one or more recipes.");
+                }
 
                 // Any equipment assigned to this unit except its own main equipment?
                 if (equipmentRepository.existsActiveOtherEquipmentByUnitId(id)) {

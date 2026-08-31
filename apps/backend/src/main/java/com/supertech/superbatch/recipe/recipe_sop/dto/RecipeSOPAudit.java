@@ -9,17 +9,17 @@ import lombok.Builder;
 
 @Builder
 public record RecipeSOPAudit(
-                Long id,
-                Integer stepNo,
-                Double stdTime,
-                String recipe,
-                String transition,
-                String action,
-                String message,
-                String fromEquipment,
-                String toEquipment,
-                List<RecipeSOPMaterialAudit> materials,
-                List<RecipeSOPParameterAudit> parameters
+        Long id,
+        Integer stepNo,
+        Double stdTime,
+        String recipe,
+        String transition,
+        String action,
+        String message,
+        String fromEquipment,
+        String toEquipment,
+        List<RecipeSOPMaterialAudit> materials,
+        List<RecipeSOPParameterAudit> parameters
 
 ) {
 

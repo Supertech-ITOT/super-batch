@@ -12,8 +12,10 @@ import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
+import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.plant.equipment.dto.AssignEquipmentRequest;
@@ -29,18 +31,22 @@ import com.supertech.superbatch.plant.equipment.repository.EquipmentRepository;
 import com.supertech.superbatch.plant.equipment.service.EquipmentService;
 import com.supertech.superbatch.plant.unit.entity.Unit;
 import com.supertech.superbatch.plant.unit.repository.UnitRepository;
+import com.supertech.superbatch.recipe.recipe_sop.repository.RecipeSOPRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@RequiresPermission(ModuleType.PLANT_MODEL)
+@RequiresLicense()
 public class EquipmentServiceImpl implements EquipmentService {
     private final EquipmentRepository equipmentRepository;
     private final UnitRepository unitRepository;
     private final EquipmentMapper equipmentMapper;
     private final BatchAuditService batchAuditService;
     private final UserRepository userRepository;
+    private final RecipeSOPRepository recipeSOPRepository;
 
     @Override
     @Transactional
@@ -111,6 +117,11 @@ public class EquipmentServiceImpl implements EquipmentService {
         if (equipment.getEquipmentType() == EquipmentType.MAIN_EQUIPMENT) {
             throw new BadRequestException(
                     "Main equipment cannot be deleted directly. Delete the creator unit to remove this equipment.");
+
+        }
+        if (recipeSOPRepository.existsByActiveRecipeAndEquipmentId(id)) {
+            throw new BadRequestException(
+                    "Cannot delete equipment. It is used in one or more active recipes.");
         }
         audit(BatchAuditAction.DELETED, equipmentMapper.copy(equipment), null);
         User deletedBy = userRepository.findByIdAndDeletedFalse(currentUserId)

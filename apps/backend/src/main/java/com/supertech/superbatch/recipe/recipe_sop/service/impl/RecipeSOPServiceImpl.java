@@ -1,5 +1,6 @@
 package com.supertech.superbatch.recipe.recipe_sop.service.impl;
 
+import com.supertech.superbatch.recipe.recipe_sop.validation.RecipeSOPValidator;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -15,8 +16,10 @@ import com.supertech.superbatch.audit.enums.BatchAuditAction;
 import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
+import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 import com.supertech.superbatch.recipe.recipe.repository.RecipeRepository;
 import com.supertech.superbatch.recipe.recipe_sop.dto.CreateRecipeSOPRequest;
@@ -39,7 +42,10 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@RequiresPermission(ModuleType.RECIPE)
+@RequiresLicense()
 public class RecipeSOPServiceImpl implements RecipeSOPService {
+        private final RecipeSOPValidator recipeSOPValidator;
         private static final int STEP_OFFSET = 1_000_000;
         private final RecipeSOPRepository recipeSOPRepository;
         private final RecipeRepository recipeRepository;
@@ -70,6 +76,7 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
                 List<RecipeSOP> steps = recipeSOPRepository.findAllByRecipeId(request.recipeId());
                 Integer stepNo = steps.isEmpty() ? 1 : steps.size() + 1;
                 Recipe recipe = getRecipe(request.recipeId());
+                recipeSOPValidator.validateEditable(recipe);
                 RecipeSOPDependencies deps = recipeSOPDependencyLoader.loadInsertDependencies(request, recipe, null);
                 RecipeSOP recipeSOP = recipeSOPMapper.toEntity(
                                 request,
@@ -91,6 +98,7 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
         public void update(UpdateRecipeSOPRequest request) {
                 RecipeSOP recipeSOP = getRecipeSOP(request.id());
                 Recipe recipe = getRecipe(request.recipeId());
+                recipeSOPValidator.validateEditable(recipe);
                 RecipeSOPDependencies deps = recipeSOPDependencyLoader.loadInsertDependencies(request, recipe,
                                 recipeSOP.getId());
                 RecipeSOPAudit oldData = recipeSOPMapper.copy(recipeSOP);
@@ -115,6 +123,7 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
         @Transactional
         public void delete(Long id) {
                 RecipeSOP recipeSOP = getRecipeSOP(id);
+                recipeSOPValidator.validateEditable(recipeSOP.getRecipe());
                 Long recipeId = recipeSOP.getRecipe().getId();
                 Integer stepNo = recipeSOP.getStepNo();
                 audit(BatchAuditAction.DELETED, recipeSOPMapper.copy(recipeSOP), null);
@@ -159,7 +168,6 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
         @Override
         public RecipeSOPSummaryResponse getSummaryByRecipeId(Long recipeId) {
                 Recipe recipe = getRecipe(recipeId);
-
                 Integer batchSize = recipe.getBatchSize();
                 List<RecipeSOP> recipeSOPs = recipeSOPRepository.findWithRelationsByRecipeId(recipe.getId());
                 int totalSteps = recipeSOPs.size();
@@ -194,7 +202,7 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
 
         private void move(Long recipeSOPId, int direction) {
                 RecipeSOP current = getRecipeSOP(recipeSOPId);
-
+                recipeSOPValidator.validateEditable(current.getRecipe());
                 if (direction < 0 && current.getStepNo() == 1) {
                         throw new BadRequestException("Step 1 cannot be moved up.");
                 }
@@ -221,6 +229,7 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
         private void insert(Long recipeSOPId, CreateRecipeSOPRequest request, boolean above) {
                 RecipeSOP current = getRecipeSOP(recipeSOPId);
                 Recipe recipe = getRecipe(request.recipeId());
+                recipeSOPValidator.validateEditable(recipe);
                 RecipeSOPDependencies deps = recipeSOPDependencyLoader.loadInsertDependencies(request, recipe, null);
 
                 Long recipeId = recipe.getId();

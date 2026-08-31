@@ -50,7 +50,6 @@ public class ControlRecipeSOPParameterMapper {
 
     public ControlRecipeSOPParameterAudit copy(ControlRecipeSOPParameter controlRecipeSOPParameter) {
         return ControlRecipeSOPParameterAudit.builder()
-                .id(controlRecipeSOPParameter.getId())
                 .name(controlRecipeSOPParameter.getParameter().getName())
                 .stdValue(controlRecipeSOPParameter.getStdValue())
                 .build();

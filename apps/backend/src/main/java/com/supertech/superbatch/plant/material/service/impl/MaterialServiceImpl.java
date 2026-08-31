@@ -8,10 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.supertech.superbatch.audit.dto.BatchAuditRequest;
 import com.supertech.superbatch.audit.enums.BatchAuditAction;
 import com.supertech.superbatch.audit.service.BatchAuditService;
+import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
+import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.plant.material.dto.CreateMaterialRequest;
@@ -22,16 +25,21 @@ import com.supertech.superbatch.plant.material.entity.Material;
 import com.supertech.superbatch.plant.material.mapper.MaterialMapper;
 import com.supertech.superbatch.plant.material.repository.MaterialRepository;
 import com.supertech.superbatch.plant.material.service.MaterialService;
+import com.supertech.superbatch.recipe.recipe_sop_material.repository.RecipeSOPMaterialRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@RequiresPermission(ModuleType.PLANT_MODEL)
+@RequiresLicense()
 public class MaterialServiceImpl implements MaterialService {
     private final MaterialRepository materialRepository;
     private final MaterialMapper materialMapper;
     private final UserRepository userRepository;
     private final BatchAuditService batchAuditService;
+    private final RecipeSOPMaterialRepository recipeSOPMaterialRepository;
 
     @Override
     @Transactional
@@ -89,6 +97,9 @@ public class MaterialServiceImpl implements MaterialService {
     public void delete(Long id, Long currentUserId) {
         Material material = materialRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Material not found."));
+        if (recipeSOPMaterialRepository.existsByActiveRecipeAndMaterialId(id)) {
+            throw new BadRequestException("Cannot delete material. It is used in one or more active recipes.");
+        }
         audit(BatchAuditAction.DELETED, materialMapper.copy(material), null);
         User deletedBy = userRepository.findByIdAndDeletedFalse(currentUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("Current user not found."));

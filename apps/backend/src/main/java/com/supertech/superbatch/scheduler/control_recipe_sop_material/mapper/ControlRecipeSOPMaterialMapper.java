@@ -49,7 +49,6 @@ public class ControlRecipeSOPMaterialMapper {
 
     public ControlRecipeSOPMaterialAudit copy(ControlRecipeSOPMaterial controlRecipeSOPMaterial) {
         return ControlRecipeSOPMaterialAudit.builder()
-                .id(controlRecipeSOPMaterial.getId())
                 .name(controlRecipeSOPMaterial.getMaterial().getName())
                 .stdQty(controlRecipeSOPMaterial.getStdQty())
                 .build();

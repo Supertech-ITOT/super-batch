@@ -38,7 +38,6 @@ public class RecipeSOPMaterialMapper {
 
     public RecipeSOPMaterialAudit copy(RecipeSOPMaterial recipeSOPMaterial) {
         return RecipeSOPMaterialAudit.builder()
-                .id(recipeSOPMaterial.getId())
                 .name(recipeSOPMaterial.getMaterial().getName())
                 .stdQty(recipeSOPMaterial.getStdQty())
                 .build();

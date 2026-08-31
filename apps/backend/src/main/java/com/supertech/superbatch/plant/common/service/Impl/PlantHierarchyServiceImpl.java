@@ -4,6 +4,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
+import com.supertech.superbatch.manager.module.enums.ModuleType;
+import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
 import com.supertech.superbatch.plant.area.entity.Area;
 import com.supertech.superbatch.plant.common.dto.PlantHierarchyResponse;
 import com.supertech.superbatch.plant.common.service.PlantHierarchyService;
@@ -16,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@RequiresPermission(ModuleType.PLANT_MODEL)
+@RequiresLicense()
 public class PlantHierarchyServiceImpl implements PlantHierarchyService {
         private final PlantRepository plantRepository;
 

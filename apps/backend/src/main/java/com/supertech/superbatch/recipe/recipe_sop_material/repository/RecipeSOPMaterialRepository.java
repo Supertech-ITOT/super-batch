@@ -22,4 +22,14 @@ public interface RecipeSOPMaterialRepository extends JpaRepository<RecipeSOPMate
             where m.recipeSOP.id = :recipeSOPId
             """)
     double getTotalMaterialQtyByRecipeSOPId(Long recipeSOPId);
+
+    @Query("""
+            SELECT CASE WHEN COUNT(m) > 0 THEN true ELSE false END
+            FROM RecipeSOPMaterial m
+            JOIN m.recipeSOP s
+            JOIN s.recipe r
+            WHERE r.deleted = false
+              AND m.material.id = :materialId
+            """)
+    boolean existsByActiveRecipeAndMaterialId(Long materialId);
 }

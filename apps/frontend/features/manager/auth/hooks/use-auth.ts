@@ -1,17 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { login, logout } from "../services/auth.service";
-import { queryKeys } from "../../../common/hooks/query-keys";
+import {
+  invalidateQueries,
+  queryDeps,
+} from "@/features/common/hooks/query-deps";
 
 export const useLogin = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: login,
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
       localStorage.setItem("user", JSON.stringify(res.data));
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users,
-      });
+      await invalidateQueries(queryClient, queryDeps.users);
     },
   });
 };

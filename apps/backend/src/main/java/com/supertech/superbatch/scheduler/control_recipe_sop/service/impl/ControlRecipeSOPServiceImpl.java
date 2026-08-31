@@ -15,8 +15,10 @@ import com.supertech.superbatch.audit.enums.BatchAuditAction;
 import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
+import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
 import com.supertech.superbatch.scheduler.control_recipe.entity.ControlRecipe;
 import com.supertech.superbatch.scheduler.control_recipe.repository.ControlRecipeRepository;
 import com.supertech.superbatch.scheduler.control_recipe_sop.dto.ControlRecipeSOPAudit;
@@ -39,6 +41,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@RequiresPermission(ModuleType.SCHEDULER)
+@RequiresLicense()
 public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
         private static final int STEP_OFFSET = 1_000_000;
         private final ControlRecipeSOPRepository controlRecipeSOPRepository;

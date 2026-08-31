@@ -4,8 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record RecipeSOPMaterialAudit(
-        Long id,
-        String name,
-        Double stdQty) {
+                String name,
+                Double stdQty) {
 
 }

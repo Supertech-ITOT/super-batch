@@ -13,8 +13,10 @@ import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
+import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.plant.action.dto.ActionAudit;
@@ -25,16 +27,21 @@ import com.supertech.superbatch.plant.action.entity.Action;
 import com.supertech.superbatch.plant.action.mapper.ActionMapper;
 import com.supertech.superbatch.plant.action.repository.ActionRepository;
 import com.supertech.superbatch.plant.action.service.ActionService;
+import com.supertech.superbatch.recipe.recipe_sop.repository.RecipeSOPRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@RequiresPermission(ModuleType.PLANT_MODEL)
+@RequiresLicense()
 public class ActionServiceImpl implements ActionService {
     private final ActionRepository actionMasterRepository;
     private final ActionMapper actionMapper;
     private final UserRepository userRepository;
     private final BatchAuditService batchAuditService;
+    private final RecipeSOPRepository recipeSOPRepository;
 
     @Override
     public List<ActionResponse> getAll() {
@@ -82,6 +89,10 @@ public class ActionServiceImpl implements ActionService {
     public void delete(Long id, Long currentUserId) {
         Action actionMaster = actionMasterRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Action not found."));
+        if (recipeSOPRepository.existsByActiveRecipeAndActionId(id)) {
+            throw new BadRequestException(
+                    "Cannot delete action. It is used in one or more active recipes.");
+        }
         if (!actionMaster.getCanDelete()) {
             throw new BadRequestException("Cannot delete standard action");
         }

@@ -38,7 +38,6 @@ public class RecipeSOPParameterMapper {
 
     public RecipeSOPParameterAudit copy(RecipeSOPParameter recipeSOPParameter) {
         return RecipeSOPParameterAudit.builder()
-                .id(recipeSOPParameter.getId())
                 .name(recipeSOPParameter.getParameter().getName())
                 .stdValue(recipeSOPParameter.getStdValue())
                 .build();

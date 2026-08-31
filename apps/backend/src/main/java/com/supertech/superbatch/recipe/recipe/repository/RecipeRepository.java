@@ -44,4 +44,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     @EntityGraph(attributePaths = { "material", "unit", "createdBy", "createdBy.role" })
     List<Recipe> findAllByMaterialIdAndStatusAndDeletedFalse(Long materialId, RecipeStatus status);
 
+    boolean existsByUnitIdAndDeletedFalse(Long unitId);
+
 }

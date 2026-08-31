@@ -13,8 +13,10 @@ import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
+import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.plant.transition.dto.CreateTransitionRequest;
@@ -25,16 +27,21 @@ import com.supertech.superbatch.plant.transition.entity.Transition;
 import com.supertech.superbatch.plant.transition.mapper.TransitionMapper;
 import com.supertech.superbatch.plant.transition.repository.TransitionRepository;
 import com.supertech.superbatch.plant.transition.service.TransitionService;
+import com.supertech.superbatch.recipe.recipe_sop.repository.RecipeSOPRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@RequiresPermission(ModuleType.PLANT_MODEL)
+@RequiresLicense()
 public class TransitionServiceImpl implements TransitionService {
     private final TransitionRepository transitionRepository;
     private final TransitionMapper transitionMapper;
     private final UserRepository userRepository;
     private final BatchAuditService batchAuditService;
+    private final RecipeSOPRepository recipeSOPRepository;
 
     @Override
     public List<TransitionResponse> getAll() {
@@ -82,6 +89,10 @@ public class TransitionServiceImpl implements TransitionService {
     public void delete(Long id, Long currentUserId) {
         Transition transition = transitionRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transition not found."));
+        if (recipeSOPRepository.existsByActiveRecipeAndTransitionId(id)) {
+            throw new BadRequestException(
+                    "Cannot delete transition. It is used in one or more active recipes.");
+        }
         if (!transition.getCanDelete()) {
             throw new BadRequestException("Cannot delete standard transition.");
         }

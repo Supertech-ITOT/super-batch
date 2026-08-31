@@ -4,8 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record ControlRecipeSOPParameterAudit(
-                Long id,
-                String name,
-                Double stdValue) {
+        String name,
+        Double stdValue) {
 
 }

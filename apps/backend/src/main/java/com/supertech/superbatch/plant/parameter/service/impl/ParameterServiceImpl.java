@@ -10,10 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.supertech.superbatch.audit.dto.BatchAuditRequest;
 import com.supertech.superbatch.audit.enums.BatchAuditAction;
 import com.supertech.superbatch.audit.service.BatchAuditService;
+import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
+import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.plant.parameter.dto.CreateParameterRequest;
@@ -24,16 +27,21 @@ import com.supertech.superbatch.plant.parameter.entity.Parameter;
 import com.supertech.superbatch.plant.parameter.mapper.ParameterMapper;
 import com.supertech.superbatch.plant.parameter.repository.ParameterRepository;
 import com.supertech.superbatch.plant.parameter.service.ParameterService;
+import com.supertech.superbatch.recipe.recipe_sop_parameter.repository.RecipeSOPParameterRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@RequiresPermission(ModuleType.PLANT_MODEL)
+@RequiresLicense()
 public class ParameterServiceImpl implements ParameterService {
     private final ParameterRepository parameterRepository;
     private final ParameterMapper parameterMapper;
     private final UserRepository userRepository;
     private final BatchAuditService batchAuditService;
+    private final RecipeSOPParameterRepository recipeSOPParameterRepository;
 
     @Override
     public List<ParameterResponse> getAll() {
@@ -84,6 +92,9 @@ public class ParameterServiceImpl implements ParameterService {
     public void delete(Long id, Long currentUserId) {
         Parameter parameter = parameterRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Parameter not found."));
+        if (recipeSOPParameterRepository.existsByActiveRecipeAndParameterId(id)) {
+            throw new BadRequestException("Cannot delete parameter. It is used in one or more active recipes.");
+        }
         audit(BatchAuditAction.DELETED, parameterMapper.copy(parameter), null);
         User deletedBy = userRepository.findByIdAndDeletedFalse(currentUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("Current user not found."));
