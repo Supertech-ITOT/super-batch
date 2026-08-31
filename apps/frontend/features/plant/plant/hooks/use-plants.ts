@@ -7,6 +7,10 @@ import {
   updatePlant,
 } from "../../plant/services/plant.service";
 import { queryKeys } from "../../../common/hooks/query-keys";
+import {
+  invalidateQueries,
+  queryDeps,
+} from "@/features/common/hooks/query-deps";
 
 export const useGetPlants = (enabled = true) => {
   return useQuery({
@@ -36,14 +40,8 @@ export const useUpdatePlant = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updatePlant,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.plants.all,
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.plantHierarchy.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.plants);
     },
   });
 };
@@ -52,14 +50,8 @@ export const useCreatePlant = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createPlant,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.plants.all,
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.plantHierarchy.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.plants);
     },
   });
 };
@@ -68,14 +60,8 @@ export const useDeletePlant = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deletePlant,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.plants.all,
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.plantHierarchy.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.plants);
     },
   });
 };

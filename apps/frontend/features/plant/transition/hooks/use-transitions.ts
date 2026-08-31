@@ -7,6 +7,10 @@ import {
   updateTransition,
 } from "../services/transition.service";
 import { queryKeys } from "../../../common/hooks/query-keys";
+import {
+  invalidateQueries,
+  queryDeps,
+} from "@/features/common/hooks/query-deps";
 
 export const useGetTransitions = (enabled = true) => {
   return useQuery({
@@ -34,10 +38,8 @@ export const useUpdateTransition = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateTransition,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.transitions.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.transitions);
     },
   });
 };
@@ -46,10 +48,8 @@ export const useCreateTransition = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createTransition,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.transitions.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.transitions);
     },
   });
 };
@@ -58,10 +58,8 @@ export const useDeleteTransition = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteTransition,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.transitions.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.transitions);
     },
   });
 };

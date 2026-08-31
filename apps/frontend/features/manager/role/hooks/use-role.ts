@@ -7,6 +7,10 @@ import {
   updateRole,
   getAllRole,
 } from "../services/role.service";
+import {
+  invalidateQueries,
+  queryDeps,
+} from "@/features/common/hooks/query-deps";
 
 export const useGetRoles = () => {
   return useQuery({
@@ -33,10 +37,8 @@ export const useCreateRole = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createRole,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.roles.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.roles);
     },
   });
 };
@@ -45,10 +47,8 @@ export const useUpdateRole = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateRole,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.roles.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.roles);
     },
   });
 };
@@ -57,10 +57,8 @@ export const useDeleteRole = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteRole,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.roles.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.roles);
     },
   });
 };

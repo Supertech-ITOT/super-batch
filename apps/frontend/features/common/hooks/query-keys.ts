@@ -88,7 +88,8 @@ export const queryKeys = {
     all: ["recipes"] as const,
     list: () => ["recipes", "list"] as const,
     detail: (id: number) => ["recipes", "detail", id] as const,
-    byMaterialAndStatus: (materialId: number, status: RecipeStatus) => ["recipes", "by-material-and-status", materialId, status] as const,
+    byMaterialAndStatus: (materialId: number, status: RecipeStatus) =>
+      ["recipes", "by-material-and-status", materialId, status] as const,
   },
 
   recipeSOPs: {
@@ -139,5 +140,17 @@ export const queryKeys = {
     list: (request: BatchAuditSearchRequest) =>
       ["audits", "list", request] as const,
     detail: (id: number) => ["audits", "detail", id] as const,
+  },
+
+  metadata: {
+    all: ["metadata"] as const,
+
+    uomTypes: () => ["metadata", "uom-types"] as const,
+
+    materialTypes: () => ["metadata", "material-types"] as const,
+
+    batchAuditActions: () => ["metadata", "batch-audit-action"] as const,
+
+    recipeStatusTypes: () => ["metadata", "recipe-status-types"] as const,
   },
 } as const;

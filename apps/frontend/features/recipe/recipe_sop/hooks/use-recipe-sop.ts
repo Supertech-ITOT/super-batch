@@ -13,6 +13,10 @@ import {
 } from "../service/recipe-sop.service";
 import { queryKeys } from "../../../common/hooks/query-keys";
 import { CreateRecipeSOPRequest } from "../types/recipe-sop-types";
+import {
+  invalidateQueries,
+  queryDeps,
+} from "@/features/common/hooks/query-deps";
 
 export const useGetRecipeSOPById = (id?: number) => {
   return useQuery({
@@ -39,13 +43,8 @@ export const useCreateRecipeSOP = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createRecipeSOP,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipeSOPs.byRecipe(variables.recipeId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipeSOPs.summaryByRecipe(variables.recipeId),
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.recipeSOPs);
     },
   });
 };
@@ -54,16 +53,8 @@ export const useUpdateRecipeSOP = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateRecipeSOP,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipeSOPs.byRecipe(variables.recipeId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipeSOPs.detail(variables.id),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipeSOPs.summaryByRecipe(variables.recipeId),
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.recipeSOPs);
     },
   });
 };
@@ -72,13 +63,8 @@ export const useDeleteRecipeSOP = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteRecipeSOP,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipeSOPs.byRecipe(variables.recipeId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipeSOPs.summaryByRecipe(variables.recipeId),
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.recipeSOPs);
     },
   });
 };
@@ -87,16 +73,8 @@ export const useMoveUpRecipeSOP = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: moveRecipeSOPUp,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipeSOPs.byRecipe(variables.recipeId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipeSOPs.detail(variables.id),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipeSOPs.summaryByRecipe(variables.recipeId),
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.recipeSOPs);
     },
   });
 };
@@ -105,16 +83,8 @@ export const useMoveDownRecipeSOP = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: moveRecipeSOPDown,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipeSOPs.byRecipe(variables.recipeId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipeSOPs.detail(variables.id),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipeSOPs.summaryByRecipe(variables.recipeId),
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.recipeSOPs);
     },
   });
 };
@@ -124,13 +94,8 @@ export const useInsertAboveRecipeSOP = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: CreateRecipeSOPRequest }) =>
       insertRecipeSOPAbove(id, data),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipeSOPs.byRecipe(variables.data.recipeId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipeSOPs.summaryByRecipe(variables.data.recipeId),
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.recipeSOPs);
     },
   });
 };
@@ -140,13 +105,8 @@ export const useInsertBelowRecipeSOP = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: CreateRecipeSOPRequest }) =>
       insertRecipeSOPBelow(id, data),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipeSOPs.byRecipe(variables.data.recipeId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipeSOPs.summaryByRecipe(variables.data.recipeId),
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.recipeSOPs);
     },
   });
 };

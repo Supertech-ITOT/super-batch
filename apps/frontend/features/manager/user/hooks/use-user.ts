@@ -11,6 +11,10 @@ import {
   resetPassword,
   updateUser,
 } from "../services/user.service";
+import {
+  invalidateQueries,
+  queryDeps,
+} from "@/features/common/hooks/query-deps";
 
 export const useGetUser = () => {
   return useQuery({
@@ -48,10 +52,8 @@ export const useCreateUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.users);
     },
   });
 };
@@ -60,10 +62,8 @@ export const useUpdateUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.users);
     },
   });
 };
@@ -72,10 +72,8 @@ export const useDeleteUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.users);
     },
   });
 };

@@ -7,6 +7,10 @@ import {
   updateParameter,
 } from "../../parameter/services/parameter.service";
 import { queryKeys } from "../../../common/hooks/query-keys";
+import {
+  invalidateQueries,
+  queryDeps,
+} from "@/features/common/hooks/query-deps";
 
 export const useGetParameters = (enabled = true) => {
   return useQuery({
@@ -34,10 +38,8 @@ export const useUpdateParameter = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateParameter,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.parameters.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.parameters);
     },
   });
 };
@@ -46,10 +48,8 @@ export const useCreateParameter = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createParameter,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.parameters.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.parameters);
     },
   });
 };
@@ -58,10 +58,8 @@ export const useDeleteParameter = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteParameter,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.parameters.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.parameters);
     },
   });
 };

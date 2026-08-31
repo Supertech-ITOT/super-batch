@@ -10,6 +10,10 @@ import {
   updateEquipment,
 } from "../services/equipment.service";
 import { queryKeys } from "../../../common/hooks/query-keys";
+import {
+  invalidateQueries,
+  queryDeps,
+} from "@/features/common/hooks/query-deps";
 
 export const useGetEquipment = () => {
   return useQuery({
@@ -38,13 +42,8 @@ export const useUpdateEquipment = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateEquipment,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.equipments.all,
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.plantHierarchy.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.equipments);
     },
   });
 };
@@ -53,13 +52,8 @@ export const useCreateEquipment = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createEquipment,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.equipments.all,
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.plantHierarchy.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.equipments);
     },
   });
 };
@@ -68,13 +62,8 @@ export const useDeleteEquipment = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteEquipment,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.equipments.all,
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.plantHierarchy.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.equipments);
     },
   });
 };

@@ -7,6 +7,10 @@ import {
   getMessages,
   updateMessage,
 } from "../services/messages.service";
+import {
+  invalidateQueries,
+  queryDeps,
+} from "@/features/common/hooks/query-deps";
 
 export const useGetMessages = (enabled = true) => {
   return useQuery({
@@ -34,10 +38,8 @@ export const useUpdateMessage = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateMessage,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.messages.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.messages);
     },
   });
 };
@@ -46,10 +48,8 @@ export const useCreateMessage = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createMessage,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.messages.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.messages);
     },
   });
 };
@@ -58,10 +58,8 @@ export const useDeleteMessage = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteMessage,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.messages.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.messages);
     },
   });
 };

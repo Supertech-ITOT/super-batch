@@ -8,6 +8,10 @@ import {
   updateUnit,
 } from "../../unit/services/unit.service";
 import { queryKeys } from "../../../common/hooks/query-keys";
+import {
+  invalidateQueries,
+  queryDeps,
+} from "@/features/common/hooks/query-deps";
 
 export const useGetUnits = (enabled = true) => {
   return useQuery({
@@ -37,13 +41,8 @@ export const useUpdateUnit = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateUnit,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.units.all,
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.plantHierarchy.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.units);
     },
   });
 };
@@ -52,13 +51,8 @@ export const useCreateUnit = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createUnit,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.units.all,
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.plantHierarchy.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.units);
     },
   });
 };
@@ -67,13 +61,8 @@ export const useDeleteUnit = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteUnit,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.units.all,
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.plantHierarchy.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.units);
     },
   });
 };

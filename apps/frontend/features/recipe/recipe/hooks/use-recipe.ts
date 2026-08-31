@@ -9,6 +9,10 @@ import {
 } from "../services/recipe.service";
 import { queryKeys } from "../../../common/hooks/query-keys";
 import { RecipeStatus } from "../types/recipe.types";
+import {
+  invalidateQueries,
+  queryDeps,
+} from "@/features/common/hooks/query-deps";
 
 export const useGetRecipes = (enabled = true) => {
   return useQuery({
@@ -36,10 +40,8 @@ export const useCreateRecipe = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createRecipe,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipes.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.recipes);
     },
   });
 };
@@ -48,10 +50,8 @@ export const useUpdateRecipe = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateRecipe,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipes.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.recipes);
     },
   });
 };
@@ -60,18 +60,21 @@ export const useDeleteRecipe = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteRecipe,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.recipes.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.recipes);
     },
   });
 };
 
-
-export const useGetRecipesByMaterialAndStatus = (materialId?: number, status?: RecipeStatus) => {
+export const useGetRecipesByMaterialAndStatus = (
+  materialId?: number,
+  status?: RecipeStatus,
+) => {
   return useQuery({
-    queryKey: materialId && status ? queryKeys.recipes.byMaterialAndStatus(materialId, status) : [],
+    queryKey:
+      materialId && status
+        ? queryKeys.recipes.byMaterialAndStatus(materialId, status)
+        : [],
     queryFn: async () => {
       const res = await getRecipesByMaterialAndStatus(materialId!, status!);
       return res.data;

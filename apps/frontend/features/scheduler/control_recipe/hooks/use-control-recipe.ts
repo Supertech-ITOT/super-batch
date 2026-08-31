@@ -9,6 +9,10 @@ import {
   updateControlRecipe,
 } from "../services/control-recipe.service";
 import { queryKeys } from "../../../common/hooks/query-keys";
+import {
+  invalidateQueries,
+  queryDeps,
+} from "@/features/common/hooks/query-deps";
 
 export const useGetControlRecipes = (enabled = true) => {
   return useQuery({
@@ -53,10 +57,8 @@ export const useCreateControlRecipe = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createControlRecipe,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.controlRecipes.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.controlRecipes);
     },
   });
 };
@@ -65,10 +67,8 @@ export const useUpdateControlRecipe = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateControlRecipe,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.controlRecipes.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.controlRecipes);
     },
   });
 };
@@ -77,10 +77,8 @@ export const useDeleteControlRecipe = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteControlRecipe,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.controlRecipes.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.controlRecipes);
     },
   });
 };

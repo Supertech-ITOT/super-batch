@@ -7,6 +7,10 @@ import {
   updateAction,
 } from "../services/action.service";
 import { queryKeys } from "../../../common/hooks/query-keys";
+import {
+  invalidateQueries,
+  queryDeps,
+} from "@/features/common/hooks/query-deps";
 
 export const useGetActions = (enabled = true) => {
   return useQuery({
@@ -34,10 +38,8 @@ export const useUpdateAction = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateAction,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.actions.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.actions);
     },
   });
 };
@@ -46,10 +48,8 @@ export const useCreateAction = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createAction,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.actions.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.actions);
     },
   });
 };
@@ -58,10 +58,8 @@ export const useDeleteAction = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteAction,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.actions.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.actions);
     },
   });
 };

@@ -1,6 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSetupStatus, setup } from "../service/service.service";
 import { queryKeys } from "@/features/common/hooks/query-keys";
+import {
+  invalidateQueries,
+  queryDeps,
+} from "@/features/common/hooks/query-deps";
 
 export const useGetSetupStatus = () => {
   return useQuery({
@@ -17,10 +21,8 @@ export const useSetup = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: setup,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.setups.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.setups);
     },
   });
 };

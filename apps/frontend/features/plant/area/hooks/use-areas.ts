@@ -8,6 +8,10 @@ import {
   updateArea,
 } from "../services/area.service";
 import { queryKeys } from "../../../common/hooks/query-keys";
+import {
+  invalidateQueries,
+  queryDeps,
+} from "@/features/common/hooks/query-deps";
 
 export const useGetAreas = (enabled = true) => {
   return useQuery({
@@ -37,13 +41,8 @@ export const useUpdateArea = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateArea,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.areas.all,
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.plantHierarchy.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.areas);
     },
   });
 };
@@ -52,13 +51,8 @@ export const useCreateArea = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createArea,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.areas.all,
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.plantHierarchy.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.plants);
     },
   });
 };
@@ -67,13 +61,8 @@ export const useDeleteArea = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteArea,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.areas.all,
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.plantHierarchy.all,
-      });
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.plants);
     },
   });
 };
