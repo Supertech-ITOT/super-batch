@@ -24,8 +24,8 @@ import { useGetEquipmentsByUnitId } from "@/features/plant/equipment/hooks/use-e
 import { controlRecipeSOPActionType } from "./control-recipe-sop-view";
 import { useCreateControlRecipeSOP, useGetControlRecipeSOPById, useInsertAboveControlRecipeSOP, useInsertBelowControlRecipeSOP, useUpdateControlRecipeSOP } from "../hooks/use-control-recipe-sop";
 import { showFormError } from "@/common/lib/show-form-error";
-import QuantityPicker from "@/common/components/form/quantity-picker";
 import { TextInput } from "@/common/components/form/text-input";
+import { RecipeQuantityType } from "@/features/plant/unit/types/unit.types";
 
 type ControlRecipeSOPDialogProp = {
   controlRecipeSOPId?: number;
@@ -33,9 +33,9 @@ type ControlRecipeSOPDialogProp = {
   stepNo?: number;
   action: controlRecipeSOPActionType;
   unitId: number;
-  batchSize: number;
+  recipeQuantityType: RecipeQuantityType
 }
-export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlRecipeId, action = "create", stepNo, unitId, batchSize }: ControlRecipeSOPDialogProp) {
+export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlRecipeId, action = "create", stepNo, unitId, recipeQuantityType }: ControlRecipeSOPDialogProp) {
   const { data: transitions, isLoading: transitionsIsLoading } = useGetTransitions();
   const { data: actions, isLoading: actionsIsLoading } = useGetActions();
   const { data: messages, isLoading: messagesIsLoading } = useGetMessages();
@@ -297,31 +297,26 @@ export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlReci
             control={control}
             name="materials"
             render={({ field }) => (
-              <QuantityPicker
-                value={(field.value ?? []).map((material) => ({
-                  id: material.materialId,
-                  value: material.stdQty,
+              <ValuePicker
+                label="Materials"
+                placeholder="Search Materials..."
+                valueLabel="Std Qty"
+                options={materials.filter(f => f.materialType === MaterialType.RAW_MATERIAL).map((m) => ({
+                  id: m.id,
+                  name: m.name,
+                  uom: recipeQuantityType === RecipeQuantityType.PERCENTAGE ? "%" : "KG",
+                }))}
+                value={(field.value ?? []).map((m) => ({
+                  id: m.materialId,
+                  value: m.stdQty,
                 }))}
                 onChange={(items) =>
                   field.onChange(
-                    items.map((item) => ({
-                      materialId: item.id,
-                      stdQty: item.value,
-                    }))
+                    items.map((i) => ({ materialId: i.id, stdQty: i.value })),
                   )
                 }
-                items={materials}
-                targetSize={batchSize}
-                label="Material Quantity Mode"
-                pickerLabel="Materials"
-                placeholder="Search Material..."
-                disabled={
-                  !(autoMaterialStep || manualMaterialStep)
-                }
+                disabled={!(autoMaterialStep || manualMaterialStep)}
                 limit={autoMaterialStep ? 1 : undefined}
-                excludeItem={(item) =>
-                  item.materialType === MaterialType.FINISHED_PRODUCT
-                }
               />
             )}
           />

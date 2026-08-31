@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import DatetimePicker from "@/common/components/form/datetime-picker";
 import UserSelect from "@/common/components/form/user-select";
 import { useGetUser } from "@/features/manager/user/hooks/use-user";
-import { useGetRecipeById, useGetRecipes, useGetRecipesByMaterialAndStatus } from "@/features/recipe/recipe/hooks/use-recipe";
+import { useGetRecipeById, useGetRecipesByMaterialAndStatus } from "@/features/recipe/recipe/hooks/use-recipe";
 import { EquipmentMappingResponse } from "../types/control-recipe.types";
 import EquipmentMapping from "./equipment-mapping";
 import { useGetEquipmentsByUnitId } from "@/features/plant/equipment/hooks/use-equipment";

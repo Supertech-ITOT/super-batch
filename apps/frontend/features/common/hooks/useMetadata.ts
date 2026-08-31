@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { getBatchAuditAction, getMaterialTypes, getRecipeStatusTypes, getUomTypes } from "../services/metadata.service"
+import { getBatchAuditAction, getMaterialTypes, getRecipeQuantityType, getRecipeStatusTypes, getUomTypes } from "../services/metadata.service"
 
 
 export const useGetUomTypes = (enabled = true) => {
@@ -40,7 +40,7 @@ export const UseGetRecipeQuantityType = (enabled = true) => {
     return useQuery({
         queryKey: ["recipe-qty-types"],
         queryFn: async () => {
-            const res = await getBatchAuditAction();
+            const res = await getRecipeQuantityType();
             return res.data;
         },
         enabled

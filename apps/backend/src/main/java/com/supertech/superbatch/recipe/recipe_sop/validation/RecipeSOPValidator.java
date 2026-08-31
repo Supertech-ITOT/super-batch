@@ -8,6 +8,7 @@ import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.transition.entity.Transition;
 import com.supertech.superbatch.plant.transition.enums.TransitionType;
+import com.supertech.superbatch.plant.unit.enums.RecipeQuantityType;
 import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialRequest;
 import com.supertech.superbatch.recipe.recipe_sop_material.repository.RecipeSOPMaterialRepository;
 
@@ -48,7 +49,7 @@ public class RecipeSOPValidator {
 
     public void validateMaterial(Long recipeId, Long recipeSOPId, Transition transition,
             List<RecipeSOPMaterialRequest> materials,
-            Integer batchSize) {
+            Integer batchSize, RecipeQuantityType quantityType) {
 
         materials = materials == null ? List.of() : materials;
 
@@ -72,10 +73,22 @@ public class RecipeSOPValidator {
 
         double finalQty = existingQty + requestedQty;
 
-        if (finalQty > batchSize) {
-            throw new BadRequestException(String.format(
-                    "Total material quantity (%.2f kg) exceeds recipe batch size (%d kg).",
-                    finalQty, batchSize));
+        if (quantityType == RecipeQuantityType.KG) {
+
+            if (finalQty > batchSize) {
+                throw new BadRequestException(String.format(
+                        "Total material quantity (%.2f kg) exceeds recipe batch size (%d kg).",
+                        finalQty,
+                        batchSize));
+            }
+
+        } else if (quantityType == RecipeQuantityType.PERCENTAGE) {
+
+            if (finalQty > 100.0) {
+                throw new BadRequestException(String.format(
+                        "Total material percentage (%.2f%%) exceeds 100%%.",
+                        finalQty));
+            }
         }
 
     }

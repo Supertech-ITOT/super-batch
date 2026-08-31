@@ -1,5 +1,7 @@
 package com.supertech.superbatch.plant.unit.dto;
 
+import com.supertech.superbatch.plant.unit.enums.RecipeQuantityType;
+
 import jakarta.validation.constraints.*;
 
 public record CreateUnitRequest(
@@ -11,6 +13,7 @@ public record CreateUnitRequest(
                 @Size(min = 2, max = 255, message = "Description must be between 2 and 255 characters") String description,
 
                 @NotNull(message = "Area id is required") Long areaId,
+                @NotNull(message = "Recipe quantity type is required") RecipeQuantityType recipeQuantityType,
 
                 @NotNull(message = "Capacity is required") @Min(value = 1, message = "Capacity must be greater than 0") Integer capacity
 

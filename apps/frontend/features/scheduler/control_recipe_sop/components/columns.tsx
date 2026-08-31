@@ -94,6 +94,9 @@ export const columns: ColumnDef<ControlRecipeSOPResponse>[] = [
     {
         accessorKey: "parameters",
         header: "Parameters",
+        meta: {
+            align: "center",
+        },
         cell: ({ row }) => (
             <CollapsibleDataTable
                 title="Parameter(s)"
@@ -120,6 +123,9 @@ export const columns: ColumnDef<ControlRecipeSOPResponse>[] = [
     {
         accessorKey: "materials",
         header: "Materials",
+        meta: {
+            align: "center",
+        },
         cell: ({ row }) => (
             <CollapsibleDataTable
                 title="Material(s)"
@@ -146,6 +152,9 @@ export const columns: ColumnDef<ControlRecipeSOPResponse>[] = [
     {
         id: "sourceDestination",
         header: "Source → Destination",
+        meta: {
+            align: "center",
+        },
         cell: ({ row }) => {
             const { fromEquipment, toEquipment } = row.original;
             return (

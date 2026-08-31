@@ -38,11 +38,12 @@ public class ControlRecipeSOPMaterialMapper {
                 .build();
     }
 
-    public ControlRecipeSOPMaterial toEntity(ControlRecipeSOP controlRecipeSOP, RecipeSOPMaterial recipeSOPMaterial) {
+    public ControlRecipeSOPMaterial toEntity(ControlRecipeSOP controlRecipeSOP, RecipeSOPMaterial recipeSOPMaterial,
+            double controlQty) {
         return ControlRecipeSOPMaterial.builder()
                 .controlRecipeSOP(controlRecipeSOP)
                 .material(recipeSOPMaterial.getMaterial())
-                .stdQty(recipeSOPMaterial.getStdQty())
+                .stdQty(controlQty)
                 .build();
     }
 

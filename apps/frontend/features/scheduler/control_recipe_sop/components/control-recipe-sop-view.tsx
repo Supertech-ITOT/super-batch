@@ -152,7 +152,7 @@ export default function ControlRecipeSOPView({ controlRecipeId }: { controlRecip
 
                 {/* Dialog */}
                 {!hideDialog && <div className="min-w-1/4  2xl:shrink-0 border shadow hover:shadow-lg rounded-2xl overflow-hidden flex-1 min-h-100 h-full ">
-                    <ControlRecipeSOPDialog action={dialog.action} controlRecipeId={controlRecipeId} stepNo={dialog.stepNo} controlRecipeSOPId={dialog.controlRecipeSOPId} unitId={controlRecipe.unit.id} batchSize={controlRecipe.batchSize} />
+                    <ControlRecipeSOPDialog action={dialog.action} controlRecipeId={controlRecipeId} stepNo={dialog.stepNo} controlRecipeSOPId={dialog.controlRecipeSOPId} unitId={controlRecipe.unit.id} recipeQuantityType={controlRecipe.unit.recipeQuantityType} />
                     {dialog.action === "delete" && dialog.controlRecipeSOPId &&
                         (
                             <ControlRecipeSOPDeleteDialog open id={dialog.controlRecipeSOPId} controlRecipeId={controlRecipeId} onClose={handleClose} />

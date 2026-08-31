@@ -77,6 +77,7 @@ public class RecipeMapper {
                 .id(unit.getId())
                 .name(unit.getName())
                 .code(unit.getCode())
+                .recipeQuantityType(unit.getRecipeQuantityType())
                 .capacity(unit.getCapacity())
                 .build();
     }
