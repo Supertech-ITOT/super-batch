@@ -5,6 +5,7 @@ import {
   getAllRecipes,
   getRecipeById,
   getRecipesByMaterialAndStatus,
+  releaseRecipe,
   updateRecipe,
 } from "../services/recipe.service";
 import { queryKeys } from "../../../common/hooks/query-keys";
@@ -80,5 +81,17 @@ export const useGetRecipesByMaterialAndStatus = (
       return res.data;
     },
     enabled: !!materialId && !!status,
+  });
+};
+
+
+export const useReleaseRecipe = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: releaseRecipe,
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.recipes);
+    },
   });
 };

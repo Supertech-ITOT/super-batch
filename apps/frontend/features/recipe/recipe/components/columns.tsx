@@ -2,7 +2,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { RecipeResponse, RecipeStatus, RecipeStatusBadgeStyles, } from "../types/recipe.types";
 import { Button } from "@/common/components/ui/button";
 import { DialogProp } from "./recipe-view";
-import { Circle, Eye, PencilLine, Trash2, Package, Scale, Boxes, Ruler, } from "lucide-react";
+import { Circle, Eye, PencilLine, Trash2, Package, Scale, Boxes, Ruler, Rocket, } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/common/components/ui/badge";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -158,6 +158,21 @@ export const columns = (
                             }
                         >
                             <PencilLine className="size-4" />
+                        </Button>
+
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() =>
+                                setDialog({
+                                    action: "release",
+                                    id: recipe.id,
+                                    open: true,
+                                })
+                            }
+                            disabled={recipe.status === "RELEASED"}
+                        >
+                            <Rocket className="size-4" />
                         </Button>
 
                         <Button

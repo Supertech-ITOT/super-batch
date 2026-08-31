@@ -13,9 +13,10 @@ import { Button } from "@/common/components/ui/button";
 import { Plus } from "lucide-react";
 import { DataTable } from "@/common/components/data-table/data-table";
 import columns from "./columns";
+import ReleaseRecipeDialog from "./release-recipe-dialog";
 
 export type DialogProp = {
-    action: "create" | "edit" | "delete" | null;
+    action: "create" | "edit" | "delete" | "release" | null;
     id: number | null;
     open: boolean;
 };
@@ -62,6 +63,8 @@ export default function RecipeView() {
                         <UpdateRecipeDialog open={dialog.open} recipeId={dialog.id} onClose={closeDialog} />)}
                     {dialog.action === "delete" && dialog.id !== null && (
                         <DeleteRecipeDialog open={dialog.open} recipeId={dialog.id} onClose={closeDialog} />)}
+                    {dialog.action === "release" && dialog.id !== null && (
+                        <ReleaseRecipeDialog open={dialog.open} recipeId={dialog.id} onClose={closeDialog} />)}
                 </>
             }
 

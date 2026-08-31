@@ -120,6 +120,9 @@ public class RecipeServiceImpl implements RecipeService {
                 }
                 RecipeAudit oldData = recipeMapper.copy(recipe);
                 recipeMapper.updateEntity(recipe, request, material);
+                if (recipe.getStatus() == RecipeStatus.RELEASED) {
+                        validateRelease(recipe);
+                }
                 recipeRepository.save(recipe);
                 audit(BatchAuditAction.UPDATED, oldData, recipeMapper.copy(recipe));
         }
@@ -151,17 +154,24 @@ public class RecipeServiceImpl implements RecipeService {
         public void release(Long id) {
                 Recipe recipe = recipeRepository.findByIdAndDeletedFalse(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
-
                 if (recipe.getStatus() == RecipeStatus.RELEASED) {
                         throw new BadRequestException("Recipe is already released.");
                 }
+                validateRelease(recipe);
+                recipe.setStatus(RecipeStatus.RELEASED);
+                recipeRepository.save(recipe);
+        }
+
+        private void validateRelease(Recipe recipe) {
 
                 Double totalMaterialValue = recipeSOPRepository.getTotalMaterialQtyByRecipeId(recipe.getId());
 
                 RecipeQuantityType quantityType = recipe.getUnit().getRecipeQuantityType();
 
                 if (quantityType == RecipeQuantityType.KG) {
+
                         double batchSize = recipe.getBatchSize();
+
                         if (Math.abs(totalMaterialValue - batchSize) > QUANTITY_TOLERANCE) {
                                 throw new BadRequestException(String.format(
                                                 "Total material quantity (%.2f kg) must equal recipe batch size (%d kg).",
@@ -170,14 +180,12 @@ public class RecipeServiceImpl implements RecipeService {
                         }
 
                 } else if (quantityType == RecipeQuantityType.PERCENTAGE) {
+
                         if (Math.abs(totalMaterialValue - 100.0) > QUANTITY_TOLERANCE) {
                                 throw new BadRequestException(String.format(
                                                 "Total material percentage (%.2f%%) must equal 100%%.",
                                                 totalMaterialValue));
                         }
                 }
-
-                recipe.setStatus(RecipeStatus.RELEASED);
-                recipeRepository.save(recipe);
         }
 }

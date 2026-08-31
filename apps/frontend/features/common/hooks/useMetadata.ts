@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   getBatchAuditAction,
   getMaterialTypes,
+  getRecipeQuantityType,
   getRecipeStatusTypes,
   getUomTypes,
 } from "../services/metadata.service";
@@ -50,3 +51,14 @@ export const useGetRecipeStatusTypes = (enabled = true) => {
     enabled,
   });
 };
+
+export const UseGetRecipeQuantityType = (enabled = true) => {
+  return useQuery({
+    queryKey: ["recipe-qty-types"],
+    queryFn: async () => {
+      const res = await getRecipeQuantityType();
+      return res.data;
+    },
+    enabled
+  })
+}
