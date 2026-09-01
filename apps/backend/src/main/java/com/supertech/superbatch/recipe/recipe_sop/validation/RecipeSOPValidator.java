@@ -13,9 +13,6 @@ import com.supertech.superbatch.recipe.recipe.entity.Recipe;
 import com.supertech.superbatch.recipe.recipe.enums.RecipeStatus;
 import com.supertech.superbatch.recipe.recipe_sop_material.dto.RecipeSOPMaterialRequest;
 import com.supertech.superbatch.recipe.recipe_sop_material.repository.RecipeSOPMaterialRepository;
-import com.supertech.superbatch.scheduler.control_recipe.entity.ControlRecipe;
-import com.supertech.superbatch.scheduler.control_recipe.enums.ControlRecipeStatus;
-
 import lombok.RequiredArgsConstructor;
 
 @Component

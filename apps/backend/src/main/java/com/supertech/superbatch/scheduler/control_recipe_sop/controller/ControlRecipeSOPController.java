@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/control-recipe-sop")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class ControlRecipeSOPController {
 
     private final ControlRecipeSOPService controlRecipeSOPService;

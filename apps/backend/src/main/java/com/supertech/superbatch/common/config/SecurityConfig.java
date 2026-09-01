@@ -28,14 +28,13 @@ public class SecurityConfig {
                                                 SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                                .requestMatchers("/api/auth/login").permitAll()
+                                                .requestMatchers("/api/auth/**").permitAll()
                                                 .requestMatchers("/api/setup/**").permitAll()
-                                                .requestMatchers("/api/recipes/**").permitAll()
-                                                .requestMatchers("/api/batch-audits/**").permitAll()
                                                 .requestMatchers("/actuator/health").permitAll()
                                                 .requestMatchers("/api/application/**").permitAll()
                                                 .requestMatchers("/api/license/**").permitAll()
-                                                .anyRequest().authenticated())
+                                                .anyRequest()
+                                                .authenticated())
                                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                                 .build();
         }

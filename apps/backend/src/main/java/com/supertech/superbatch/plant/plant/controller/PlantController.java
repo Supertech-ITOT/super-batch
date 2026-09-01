@@ -18,7 +18,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/plants")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class PlantController {
     private final PlantService plantService;
     private final UserContextService userContextService;

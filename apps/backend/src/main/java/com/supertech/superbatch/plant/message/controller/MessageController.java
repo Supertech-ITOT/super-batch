@@ -3,7 +3,6 @@ package com.supertech.superbatch.plant.message.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/messages")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class MessageController {
     private final MessageService messageService;
 

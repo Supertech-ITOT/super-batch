@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/roles")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class RoleController {
         private final RoleService roleService;
         private final UserContextService userContextService;

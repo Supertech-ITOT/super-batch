@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/materials")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class MaterialController {
     private final MaterialService materialService;
     private final UserContextService userContextService;

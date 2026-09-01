@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/units")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class UnitController {
     private final UnitService unitService;
     private final UserContextService userContextService;

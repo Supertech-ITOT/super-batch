@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/equipments")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class EquipmentController {
         private final EquipmentService equipmentService;
         private final UserContextService userContextService;

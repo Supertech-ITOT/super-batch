@@ -10,7 +10,6 @@ import com.supertech.superbatch.plant.unit.enums.RecipeQuantityType;
 import com.supertech.superbatch.recipe.recipe.enums.RecipeStatus;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +18,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/metadata")
-@CrossOrigin("*")
 public class MetadataController {
 
     @GetMapping("/material-types")

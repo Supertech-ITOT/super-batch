@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/parameters")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class ParameterController {
     private final ParameterService parameterService;
     private final UserContextService userContextService;

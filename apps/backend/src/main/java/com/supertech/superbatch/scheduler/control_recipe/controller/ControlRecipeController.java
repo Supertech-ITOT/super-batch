@@ -3,7 +3,6 @@ package com.supertech.superbatch.scheduler.control_recipe.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/control-recipe")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class ControlRecipeController {
         private final ControlRecipeService controlRecipeService;
         private final UserContextService userContextService;
