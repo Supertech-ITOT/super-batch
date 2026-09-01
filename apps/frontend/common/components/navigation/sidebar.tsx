@@ -1,140 +1,176 @@
 "use client";
-import { ChevronUp, LogOut, PanelLeftOpen, Loader, PanelLeftClose } from "lucide-react";
+import {
+  ChevronUp,
+  LogOut,
+  PanelLeftOpen,
+  Loader,
+  PanelLeftClose,
+} from "lucide-react";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
 import { useLogout } from "@/features/manager/auth/hooks/use-auth";
 import { useGetCurrentUser } from "@/features/manager/user/hooks/use-user";
-import { ConfigurationRoutes, ModuleType, OperationRoutes } from "@/features/manager/module/types/module.types";
+import {
+  ConfigurationRoutes,
+  ModuleType,
+  OperationRoutes,
+} from "@/features/manager/module/types/module.types";
 import SessionCard from "../session-card";
 import { useIsElectron } from "../../hooks/use-is-electron";
 import { useSidebar } from "./sidebar-provider";
 import UserAvatar from "../user-avatar";
 
 export default function SideBar() {
-    const pathname = usePathname();
-    const router = useRouter();
-    const { open, setOpen } = useSidebar();
+  const pathname = usePathname();
+  const router = useRouter();
+  const { open, setOpen } = useSidebar();
 
-    const { mutateAsync: logout, isPending: logoutIsPending } = useLogout();
-    const { data: user, isLoading: userIsLoading } = useGetCurrentUser();
+  const { mutateAsync: logout, isPending: logoutIsPending } = useLogout();
+  const { data: user, isLoading: userIsLoading } = useGetCurrentUser();
 
-    const hasReadPermission = (module?: ModuleType) => {
-        if (!module) return true;
-        return user?.permissions?.some((p) => p.moduleName === module && p.access);
-    };
+  const hasReadPermission = (module?: ModuleType) => {
+    if (!module) return true;
+    return user?.permissions?.some((p) => p.moduleName === module && p.access);
+  };
 
-    const onLogout = async () => {
-        try {
-            const res = await logout();
-            toast.success(res.message ?? "LogOut Success");
-            router.replace("/");
-        }
-        catch (error) {
-            showApiError(error);
-        }
+  const onLogout = async () => {
+    try {
+      const res = await logout();
+      toast.success(res.message ?? "LogOut Success");
+      router.replace("/");
+    } catch (error) {
+      showApiError(error);
     }
+  };
 
-    const isElectron = useIsElectron();
-    if (userIsLoading) {
-        return null;
-    }
+  const isElectron = useIsElectron();
+  const loading = userIsLoading || !user;
 
-    if (!user) {
-        return null;
-    }
+  if (loading) {
     return (
-        <aside className={`h-full z-50 border-r shrink-0 transition-all duration-300 bg-card overflow-hidden flex flex-col  ${open ? "w-60 p-4" : "w-12 items-center"}`}>
-            {open && (
-                <div className="flex items-center justify-between">
-                    <h1 className="font-semibold text-sm uppercase">
-                        Operation
-                    </h1>
-                    {!isElectron && (
-                        <button
-                            onClick={() => setOpen(false)}
-                            className="rounded-sm p-2 text-muted-foreground"
-                        >
-                            <PanelLeftClose className="h-5 w-5" />
-                        </button>
-                    )}
-                </div>
-            )}
-            <div className="flex flex-col space-y-2 mt-2">
-                {!open && !isElectron && (
-                    <button
-                        onClick={() => setOpen(true)}
-                        className="rounded-lg p-2 text-muted-foreground"
-                    >
-                        <PanelLeftOpen className="h-5 w-5" />
-                    </button>
+      <div
+        className={`h-full z-50 border-r  bg-card overflow-hidden flex flex-col`}
+      ></div>
+    );
+  }
+  return (
+    <aside
+      className={`h-full z-50 border-r shrink-0 transition-all duration-300 bg-card overflow-hidden flex flex-col  ${open ? "w-60 p-4" : "w-12 items-center"}`}
+    >
+      {open && (
+        <div className="flex items-center justify-between">
+          <h1 className="font-semibold text-sm uppercase">Operation</h1>
+          {!isElectron && (
+            <button
+              onClick={() => setOpen(false)}
+              className="rounded-sm p-2 text-muted-foreground"
+            >
+              <PanelLeftClose className="h-5 w-5" />
+            </button>
+          )}
+        </div>
+      )}
+      <div className="flex flex-col space-y-2 mt-2">
+        {!open && !isElectron && (
+          <button
+            onClick={() => setOpen(true)}
+            className="rounded-lg p-2 text-muted-foreground"
+          >
+            <PanelLeftOpen className="h-5 w-5" />
+          </button>
+        )}
+        {OperationRoutes.filter((route) => hasReadPermission(route.module)).map(
+          (el) => {
+            const getBasePath = (path: string) => "/" + path.split("/")[1];
+            const active = getBasePath(pathname) === getBasePath(el.path);
+            const Icon = el.icon;
+            return (
+              <Link
+                key={el.label}
+                href={el.path}
+                className={`flex flex-row gap-2 rounded-xl items-end  text-muted-foreground px-2 py-2 text-sm transition-all duration-300  ${active ? "bg-primary text-white" : "hover:bg-background hover:shadow"}`}
+              >
+                <Icon className="w-5 h-5" />
+                {open && <span>{el.label}</span>}
+              </Link>
+            );
+          },
+        )}
+      </div>
+      {/* User Section */}
+      <div className="mt-auto p-2">
+        <Separator className="my-4" />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild className="ring-0!">
+            <Button className="w-full flex bg-card! items-center justify-between rounded-xl hover:bg-muted transition-all">
+              <div className="flex items-center gap-3">
+                {/* Avatar */}
+                <UserAvatar
+                  name={user.name ?? ""}
+                  className={open ? "size-12" : "size-8"}
+                />
+                {/* User Info */}
+                {open && (
+                  <div className="flex flex-col text-left">
+                    <span className="text-sm font-medium text-foreground">
+                      {user?.name ?? "-"}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {user?.roleName ?? "-"}
+                    </span>
+                  </div>
                 )}
-                {OperationRoutes
-                    .filter(route => hasReadPermission(route.module))
-                    .map((el) => {
-                        const getBasePath = (path: string) => "/" + path.split("/")[1];
-                        const active = getBasePath(pathname) === getBasePath(el.path);
-                        const Icon = el.icon;
-                        return (
-                            <Link
-                                key={el.label}
-                                href={el.path}
-                                className={`flex flex-row gap-2 rounded-xl items-end  text-muted-foreground px-2 py-2 text-sm transition-all duration-300  ${active ? "bg-primary text-white" : "hover:bg-background hover:shadow"}`}>
-                                <Icon className="w-5 h-5" />
-                                {open && <span>{el.label}</span>}
-                            </Link>
-                        )
-                    })}
-            </div>
-            {/* User Section */}
-            <div className="mt-auto p-2">
-                <Separator className="my-4" />
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild className="ring-0!">
-                        <Button className="w-full flex bg-card! items-center justify-between rounded-xl hover:bg-muted transition-all">
-                            <div className="flex items-center gap-3">
-                                {/* Avatar */}
-                                <UserAvatar name={user.name ?? ""} className={open ? "size-12" : "size-8"} />
-                                {/* User Info */}
-                                {open && <div className="flex flex-col text-left">
-                                    <span className="text-sm font-medium text-foreground">{user?.name ?? "-"}</span>
-                                    <span className="text-xs text-muted-foreground">{user?.roleName ?? "-"}</span>
-                                </div>}
-                            </div>
-                            {open && <ChevronUp className="w-4 h-4 text-muted-foreground" />}
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                        side="right"
-                        align="end"
-                        className="w-62 p-2 rounded-xl"
-                    >
-                        <SessionCard />
-                        <Separator className="my-2" />
-                        {ConfigurationRoutes.map((route) => {
-                            const Icon = route.icon;
-                            return (
-                                <DropdownMenuItem key={route.path} asChild>
-                                    <Link href={route.path} className="flex cursor-pointer items-center">
-                                        <Icon className="mr-2 size-4" />
-                                        {route.label}
-                                    </Link>
-                                </DropdownMenuItem>
-                            );
-                        })}
-                        <DropdownMenuItem onClick={onLogout} className="text-destructive cursor-pointer">
-                            {logoutIsPending
-                                ? (<Loader className="size-4 animate-spin" />)
-                                : (<><LogOut className="mr-2 size-4" />Logout</>)
-                            }
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-        </aside>
-    )
+              </div>
+              {open && <ChevronUp className="w-4 h-4 text-muted-foreground" />}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            side="right"
+            align="end"
+            className="w-62 p-2 rounded-xl"
+          >
+            <SessionCard />
+            <Separator className="my-2" />
+            {ConfigurationRoutes.map((route) => {
+              const Icon = route.icon;
+              return (
+                <DropdownMenuItem key={route.path} asChild>
+                  <Link
+                    href={route.path}
+                    className="flex cursor-pointer items-center"
+                  >
+                    <Icon className="mr-2 size-4" />
+                    {route.label}
+                  </Link>
+                </DropdownMenuItem>
+              );
+            })}
+            <DropdownMenuItem
+              onClick={onLogout}
+              className="text-destructive cursor-pointer"
+            >
+              {logoutIsPending ? (
+                <Loader className="size-4 animate-spin" />
+              ) : (
+                <>
+                  <LogOut className="mr-2 size-4" />
+                  Logout
+                </>
+              )}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </aside>
+  );
 }

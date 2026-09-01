@@ -1,0 +1,10 @@
+# Installer generated files
+dist/
+out/
+
+# Inno Setup generated files
+*.exe
+*.iss.bak
+
+# Optional: Inno Setup compiler cache/output
+*.~is
