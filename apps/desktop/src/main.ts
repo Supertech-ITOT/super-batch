@@ -1,7 +1,8 @@
 import { app, BrowserWindow, ipcMain, Menu } from "electron";
 import path from "path";
 
-const HOST = process.env.ELECTRON_HOST || "localhost";
+const currentPort = parseInt(process.env.PORT ?? "3000", 10);
+const hostname = process.env.HOSTNAME ?? "localhost";
 const isDev = !app.isPackaged;
 const splashPath = app.isPackaged
   ? path.join(process.resourcesPath, "assets", "splash.html")
@@ -41,7 +42,7 @@ function createWindow(): void {
   });
 
   Menu.setApplicationMenu(null);
-  win.loadURL(`http://${HOST}:3000`);
+  win.loadURL(`http://${hostname}:${currentPort}`);
   win.once("ready-to-show", () => {
     setTimeout(() => {
       splash.destroy();
