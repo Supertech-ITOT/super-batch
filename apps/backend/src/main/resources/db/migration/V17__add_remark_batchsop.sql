@@ -1,0 +1,2 @@
+ALTER TABLE batch_sop
+ADD COLUMN remark VARCHAR(500);

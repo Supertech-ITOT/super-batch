@@ -13,6 +13,7 @@ import com.supertech.superbatch.plant.transition.entity.Transition;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 @Entity
 @Table(name = "batch_sop")
 @Getter
@@ -59,6 +60,9 @@ public class BatchSOP {
     private LocalDateTime startDateTime;
 
     private LocalDateTime endDateTime;
+
+    @Column(length = 500)
+    private String remark;
 
     @OneToMany(mappedBy = "batchSOP", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

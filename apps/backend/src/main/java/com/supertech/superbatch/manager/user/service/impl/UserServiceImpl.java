@@ -16,6 +16,9 @@ import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.common.exception.UnauthorizedException;
 import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
+import com.supertech.superbatch.manager.license.entity.License;
+import com.supertech.superbatch.manager.license.enums.LicenseStatus;
+import com.supertech.superbatch.manager.license.repository.LicenseRepository;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
@@ -37,18 +40,19 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
-@RequiresPermission(ModuleType.MANAGER)
-@RequiresLicense()
+@Transactional(readOnly = true)
+
 public class UserServiceImpl implements UserService {
         private final UserRepository userRepository;
         private final RoleRepository roleRepository;
         private final UserMapper userMapper;
         private final PasswordEncoder passwordEncoder;
         private final BatchAuditService batchAuditService;
+        private final LicenseRepository licenseRepository;
 
         @Override
-        @Transactional(readOnly = true)
+        @RequiresLicense()
+        @RequiresPermission(ModuleType.MANAGER)
         public List<UserResponse> getAll() {
                 return userRepository.findByDeletedFalseAndSystemAccountFalse()
                                 .stream()
@@ -57,7 +61,17 @@ public class UserServiceImpl implements UserService {
         }
 
         @Override
+        @Transactional
+        @RequiresLicense()
+        @RequiresPermission(ModuleType.MANAGER)
         public void create(UserRequest request, Long userId) {
+                License license = licenseRepository.findByStatus(LicenseStatus.ACTIVE)
+                                .orElseThrow(() -> new ResourceNotFoundException("License not found."));
+
+                long userCount = userRepository.countByDeletedFalseAndSystemAccountFalse();
+                if (userCount >= license.getPlanMaxUser()) {
+                        throw new BadRequestException("User limit is reached for the current plan.");
+                }
                 String email = request.email().trim().toLowerCase();
                 if (userRepository.existsByEmailAndDeletedFalse(email)) {
                         throw new DuplicateResourceException("Email already exists.");
@@ -72,11 +86,16 @@ public class UserServiceImpl implements UserService {
                                 createdBy,
                                 passwordEncoder.encode(request.password()));
                 userRepository.save(user);
+                license.setUserCount(license.getUserCount() + 1);
+                licenseRepository.save(license);
                 audit(BatchAuditAction.CREATED, null, userMapper.copy(user));
 
         }
 
         @Override
+        @Transactional
+        @RequiresLicense()
+        @RequiresPermission(ModuleType.MANAGER)
         public void update(Long id, UpdateUserRequest request) {
                 String email = request.email().trim().toLowerCase();
                 User user = userRepository.findByIdAndDeletedFalse(id)
@@ -108,6 +127,9 @@ public class UserServiceImpl implements UserService {
         }
 
         @Override
+        @Transactional
+        @RequiresLicense()
+        @RequiresPermission(ModuleType.MANAGER)
         public void delete(Long id, Long currentUserId) {
                 User user = userRepository.findByIdAndDeletedFalse(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
@@ -128,10 +150,16 @@ public class UserServiceImpl implements UserService {
                 user.setDeletedAt(LocalDateTime.now());
                 user.setDeletedBy(deletedBy);
                 userRepository.save(user);
+
+                License license = licenseRepository.findByStatus(LicenseStatus.ACTIVE)
+                                .orElseThrow(() -> new ResourceNotFoundException("License not found."));
+
+                license.setUserCount(license.getUserCount() - 1);
+                licenseRepository.save(license);
         }
 
         @Override
-        @Transactional(readOnly = true)
+        @RequiresLicense()
         public UserResponse getById(Long id) {
                 User user = userRepository.findByIdAndDeletedFalse(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
@@ -150,6 +178,8 @@ public class UserServiceImpl implements UserService {
         }
 
         @Override
+        @Transactional
+        @RequiresLicense()
         public void resetFirstPassword(ResetFirstPasswordRequest request, Long currentUserId) {
 
                 User user = userRepository.findByIdAndDeletedFalse(currentUserId)
@@ -172,6 +202,8 @@ public class UserServiceImpl implements UserService {
         }
 
         @Override
+        @Transactional
+        @RequiresLicense()
         public void changePassword(ChangePasswordRequest request, Long id) {
                 User user = userRepository.findByIdAndDeletedFalse(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
@@ -189,6 +221,8 @@ public class UserServiceImpl implements UserService {
         }
 
         @Override
+        @Transactional
+        @RequiresLicense()
         public void resetPassword(ResetPasswordRequest request, Long id) {
                 User user = userRepository.findByIdAndDeletedFalse(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));

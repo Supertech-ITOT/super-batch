@@ -1,6 +1,7 @@
 package com.supertech.superbatch.manager.auth.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import com.supertech.superbatch.manager.auth.dto.LoginRequest;
 import com.supertech.superbatch.manager.auth.dto.LoginResponse;
 import com.supertech.superbatch.manager.auth.service.AuthService;
 import com.supertech.superbatch.manager.license.service.LicenseService;
+import com.supertech.superbatch.manager.permission.mapper.PermissionMapper;
 import com.supertech.superbatch.manager.role.entity.DefaultRole;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
@@ -24,6 +26,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final LicenseService licenseService;
+    private final PermissionMapper permissionMapper;
 
     @Override
     public LoginResponse login(LoginRequest request) {
@@ -52,6 +55,8 @@ public class AuthServiceImpl implements AuthService {
                 .role(user.getRole().getName())
                 .accessToken(token)
                 .passwordChangeRequired(user.isPasswordChangeRequired())
+                .permissions(permissionMapper.toResponseList(List.copyOf(user.getRole().getPermissions())))
+                .systemAccount(user.isSystemAccount())
                 .build();
 
         return loginResponse;
