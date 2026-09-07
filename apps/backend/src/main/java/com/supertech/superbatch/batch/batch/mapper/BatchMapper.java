@@ -2,6 +2,7 @@ package com.supertech.superbatch.batch.batch.mapper;
 
 import org.springframework.stereotype.Component;
 
+import com.supertech.superbatch.batch.batch.dto.RecipeInfoResponse;
 import com.supertech.superbatch.batch.batch.entity.Batch;
 import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 import com.supertech.superbatch.batch.batch_sop.entity.BatchSOP;
@@ -45,4 +46,24 @@ public class BatchMapper {
         }
         return batch;
     }
+
+    public RecipeInfoResponse toRecipeInfoResponse(Batch batch) {
+        ControlRecipe controlRecipe = batch.getControlRecipe();
+
+        return RecipeInfoResponse.builder()
+                .recipeName(controlRecipe.getRecipe().getName())
+                .recipeDescription(controlRecipe.getRecipe().getDescription())
+                .shiftIncharge(controlRecipe.getShiftIncharge().getName())
+                .batchSize(controlRecipe.getBatchSize())
+                .scheduledAt(controlRecipe.getScheduledAt())
+                .materialCode(controlRecipe.getRecipe().getMaterial().getCode())
+                .materialName(controlRecipe.getRecipe().getMaterial().getName())
+                .materialDescription(controlRecipe.getRecipe().getMaterial().getDescription())
+                .unitCode(controlRecipe.getUnit().getCode())
+                .unitName(controlRecipe.getUnit().getName())
+                .createdBy(controlRecipe.getCreatedBy().getName())
+                .build();
+
+    }
+
 }

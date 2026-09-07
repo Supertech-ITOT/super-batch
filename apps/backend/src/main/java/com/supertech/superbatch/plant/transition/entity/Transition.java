@@ -3,7 +3,6 @@ package com.supertech.superbatch.plant.transition.entity;
 import java.time.LocalDateTime;
 
 import com.supertech.superbatch.manager.user.entity.User;
-
 import jakarta.persistence.*;
 import lombok.*;
 
