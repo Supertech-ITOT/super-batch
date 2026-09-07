@@ -1,6 +1,5 @@
 package com.supertech.superbatch.batch.batch.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.EntityGraph;
