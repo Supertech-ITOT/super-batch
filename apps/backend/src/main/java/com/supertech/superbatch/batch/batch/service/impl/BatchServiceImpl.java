@@ -225,4 +225,10 @@ public class BatchServiceImpl implements BatchService {
                 return batchSOPMapper.toResponse(batchSOP);
         }
 
+        @Override
+        public List<String> getBatchNos(String unitCode, BatchStatus status) {
+                return batchRepository.findByUnit_CodeAndStatusOrderByCreatedAtDesc(unitCode, status).stream()
+                                .map(Batch::getBatchNo).toList();
+        }
+
 }

@@ -1,10 +1,12 @@
 package com.supertech.superbatch.batch.batch.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.supertech.superbatch.batch.batch.entity.Batch;
+import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 import com.supertech.superbatch.batch.batch_sop.entity.BatchSOP;
 
 public interface BatchRepository extends JpaRepository<Batch, Long> {
@@ -34,4 +36,7 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
         })
         Optional<BatchSOP> findByBatchBatchNoAndStepNo(String batchNo, Integer stepNo);
 
+        List<Batch> findByUnit_CodeAndStatusOrderByCreatedAtDesc(
+                        String unitCode,
+                        BatchStatus status);
 }
