@@ -1,6 +1,8 @@
 package com.supertech.superbatch.batch.batch.service.impl;
 
 import com.supertech.superbatch.batch.batch_sop.mapper.BatchSOPMapper;
+import com.supertech.superbatch.batch.batch_sop.repository.BatchSOPRepository;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,16 +23,19 @@ import com.supertech.superbatch.batch.batch.service.BatchService;
 import com.supertech.superbatch.batch.batch_sop.entity.BatchSOP;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
 import com.supertech.superbatch.plant.transition.enums.TransitionType;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@RequiresLicense
 public class BatchServiceImpl implements BatchService {
         private final BatchSOPMapper batchSOPMapper;
         private final BatchRepository batchRepository;
         private final BatchMapper batchMapper;
+        private final BatchSOPRepository batchSOPRepository;
 
         @Override
         @Transactional
@@ -219,7 +224,7 @@ public class BatchServiceImpl implements BatchService {
 
         @Override
         public BatchSOPResponse getStepInfoByBatchNoAndStepNo(String batchNo, Integer stepNo) {
-                BatchSOP batchSOP = batchRepository.findByBatchBatchNoAndStepNo(batchNo, stepNo).orElseThrow(
+                BatchSOP batchSOP = batchSOPRepository.findByBatch_BatchNoAndStepNo(batchNo, stepNo).orElseThrow(
                                 () -> new ResourceNotFoundException("Step not found for batch: " + batchNo));
 
                 return batchSOPMapper.toResponse(batchSOP);

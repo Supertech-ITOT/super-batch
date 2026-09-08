@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.supertech.superbatch.batch.batch.entity.Batch;
 import com.supertech.superbatch.batch.batch.enums.BatchStatus;
-import com.supertech.superbatch.batch.batch_sop.entity.BatchSOP;
 
 public interface BatchRepository extends JpaRepository<Batch, Long> {
 
@@ -22,19 +21,6 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
                         "controlRecipe.createdBy",
         })
         Optional<Batch> findWithRecipeInfoByBatchNo(String batchNo);
-
-        @EntityGraph(attributePaths = {
-                        "batch",
-                        "transition",
-                        "action",
-                        "fromEquipment",
-                        "toEquipment",
-                        "materials",
-                        "materials.material",
-                        "parameters",
-                        "parameters.parameter"
-        })
-        Optional<BatchSOP> findByBatchBatchNoAndStepNo(String batchNo, Integer stepNo);
 
         List<Batch> findByUnit_CodeAndStatusOrderByCreatedAtDesc(
                         String unitCode,
