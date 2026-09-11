@@ -36,7 +36,4 @@ public class MaterialCorrection {
 
     private Double qty;
 
-    @Column(nullable = false, length = 255)
-    private String reason;
-
 }

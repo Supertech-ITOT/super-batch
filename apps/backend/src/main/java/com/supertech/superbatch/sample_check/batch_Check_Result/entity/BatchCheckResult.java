@@ -28,8 +28,4 @@ public class BatchCheckResult {
 
     @Enumerated(EnumType.STRING)
     private ResultStatus resultStatus;
-
-    @Column(nullable = false, length = 255)
-    private String remark;
-
 }
