@@ -11,10 +11,10 @@ public interface CheckParameterService {
 
     void update(Long id, CheckParameterRequest request);
 
-    void delete(Long id);
+    void delete(Long id, Long currentUserId);
 
     List<CheckParameterResponse> getAll();
 
-    CheckParameterResponse getById();
+    CheckParameterResponse getById(Long id);
 
 }
