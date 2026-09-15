@@ -8,6 +8,7 @@ import com.supertech.superbatch.sample_check.check_Parameter.dto.CheckParameterO
 import com.supertech.superbatch.sample_check.check_Parameter.dto.CheckParameterRequest;
 import com.supertech.superbatch.sample_check.check_Parameter.dto.CheckParameterResponse;
 import com.supertech.superbatch.sample_check.check_Parameter.entity.CheckParameter;
+import com.supertech.superbatch.sample_check.check_Parameter.enums.CheckParameterType;
 import com.supertech.superbatch.sample_check.check_parameter_options.entity.CheckParameterOptions;
 import lombok.RequiredArgsConstructor;
 
@@ -29,21 +30,37 @@ public class CheckParameterMapper {
                                 .build();
         }
 
-        public CheckParameter toEntity(CheckParameterRequest request, Material material) {
+        public CheckParameter toEntity(
+                        CheckParameterRequest request,
+                        Material material) {
+
+                boolean quantitative = request.type() == CheckParameterType.QUANTITIVE;
+
                 return CheckParameter.builder()
                                 .name(request.name())
                                 .type(request.type())
-                                .min(request.min())
-                                .max(request.max())
+                                .min(quantitative ? request.min() : null)
+                                .max(quantitative ? request.max() : null)
                                 .material(material)
                                 .build();
         }
 
-        public void updateEntity(CheckParameter checkParameter, CheckParameterRequest request, Material material) {
+        public void updateEntity(
+                        CheckParameter checkParameter,
+                        CheckParameterRequest request,
+                        Material material) {
+
+                boolean quantitative = request.type() == CheckParameterType.QUANTITIVE;
+
                 checkParameter.setName(request.name());
                 checkParameter.setType(request.type());
-                checkParameter.setMin(request.min() != null ? request.min() : 0.0);
-                checkParameter.setMax(request.max() != null ? request.max() : 0.0);
+
+                checkParameter.setMin(
+                                quantitative ? request.min() : null);
+
+                checkParameter.setMax(
+                                quantitative ? request.max() : null);
+
                 checkParameter.setMaterial(material);
         }
 

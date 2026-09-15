@@ -29,9 +29,9 @@ public class CheckParameter {
     @Enumerated(EnumType.STRING)
     private UomType uom;
 
-    private double min;
+    private Double min;
 
-    private double max;
+    private Double max;
 
     @OneToMany(mappedBy = "checkParameter")
     @OrderBy("value ASC")

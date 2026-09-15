@@ -26,17 +26,8 @@ export const columns = (
   setDialog: React.Dispatch<React.SetStateAction<CheckParameterDialogState>>,
 ): ColumnDef<CheckParameterResponse>[] => [
   {
-    id: "srNo",
-    header: "Sr. No.",
-    cell: ({ row }) => row.index + 1,
-    meta: {
-      align: "center",
-    },
-  },
-
-  {
     accessorKey: "id",
-    header: "Id",
+    header: "#",
     meta: {
       align: "center",
     },

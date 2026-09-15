@@ -1,5 +1,5 @@
 import { z } from "zod";
-
+import { CheckParameterType } from "../types/checkParameter.types";
 export const CheckParameterSchemaLimit = {
   name: { min: 1, max: 100 },
   option: { min: 1, max: 100 },
@@ -21,7 +21,7 @@ export const checkParameterSchema = z
 
     product: z.string().trim().min(1, "Product is required"),
 
-    type: z.enum(["QUANTITIVE", "QUALITATIVE"], {
+    type: z.enum(CheckParameterType, {
       error: "Check parameter type is required",
     }),
 
@@ -108,7 +108,7 @@ export type CheckParameterFormValues = z.infer<typeof checkParameterSchema>;
 export const checkParameterDefaultValues: CheckParameterFormValues = {
   name: "",
   product: "",
-  type: "QUANTITIVE",
+  type: CheckParameterType.QUANTITIVE,
   min: 0,
   max: 0,
   allowedOptions: [],

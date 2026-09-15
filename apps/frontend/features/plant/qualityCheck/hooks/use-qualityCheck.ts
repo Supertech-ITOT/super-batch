@@ -60,9 +60,17 @@ export const useCreateCheckParameter = () => {
 
 export const useDeleteCheckParameter = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteCheckParameter,
-    onSuccess: async () => {
+
+    onSuccess: async (_, variables) => {
+      // Remove the deleted parameter's detail query
+      queryClient.removeQueries({
+        queryKey: queryKeys.checkParameters.detail(variables.id),
+      });
+
+      // Refresh the list
       await invalidateQueries(queryClient, queryDeps.checkParameters);
     },
   });

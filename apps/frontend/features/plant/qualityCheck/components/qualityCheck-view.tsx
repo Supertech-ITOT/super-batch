@@ -10,6 +10,10 @@ import { columns } from "./columns";
 import DataTableSearch from "@/common/components/data-table/data-table-search";
 import { Button } from "@/common/components/ui/button";
 import QualityCheckSkeleton from "./quality-check-skeleton";
+import CreateQualityCheck from "./create-qualityCheck-dialog";
+import UpdateQualityCheck from "./update-qualityCheck-dialog";
+import DeleteQualityCheck from "./delete-qualityCheck-dialog";
+import { useGetCurrentUser } from "@/features/manager/user/hooks/use-user";
 
 type CheckParameterAction = "create" | "edit" | "delete";
 export type CheckParameterDialogState = {
@@ -23,6 +27,8 @@ export default function QualityCheckView() {
     action: null,
     checkParameterId: null,
   });
+  const { data: currentUser } = useGetCurrentUser();
+  const currentUserId = currentUser?.id ?? 0;
   const {
     data: checkParameters,
     isLoading: checkParametersLoading,
@@ -93,6 +99,22 @@ export default function QualityCheckView() {
             </Button>
           </div>
         )}
+      />
+      {dialog.action === "create" && (
+        <CreateQualityCheck open onClose={closeDialog} />
+      )}
+      {dialog.action === "edit" && dialog.checkParameterId !== null && (
+        <UpdateQualityCheck
+          open={dialog.open}
+          checkParameterId={dialog.checkParameterId}
+          onClose={closeDialog}
+        />
+      )}
+      <DeleteQualityCheck
+        open={dialog.open && dialog.action === "delete"}
+        onClose={closeDialog}
+        checkParameterId={dialog.checkParameterId ?? undefined}
+        currentUserId={currentUserId}
       />
     </div>
   );
