@@ -4,12 +4,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.supertech.superbatch.audit.dto.BatchAuditRequest;
+import com.supertech.superbatch.audit.enums.BatchAuditAction;
+import com.supertech.superbatch.audit.service.BatchAuditService;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.module.enums.EntityType;
+import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.plant.material.entity.Material;
 import com.supertech.superbatch.plant.material.enums.MaterialType;
 import com.supertech.superbatch.plant.material.repository.MaterialRepository;
+import com.supertech.superbatch.sample_check.check_Parameter.dto.CheckParameterAudit;
 import com.supertech.superbatch.sample_check.check_Parameter.dto.CheckParameterRequest;
 import com.supertech.superbatch.sample_check.check_Parameter.dto.CheckParameterResponse;
 import com.supertech.superbatch.sample_check.check_Parameter.entity.CheckParameter;
@@ -28,6 +35,7 @@ public class CheckParameterServiceImpl implements CheckParameterService {
     private final CheckParameterOptionsRepository checkParameterOptionsRepository;
     private final MaterialRepository materialRepository;
     private final CheckParameterMapper checkParameterMapper;
+    private final BatchAuditService batchAuditService;
     private final UserRepository userRepository;
 
     @Override
@@ -38,6 +46,7 @@ public class CheckParameterServiceImpl implements CheckParameterService {
         CheckParameter saved = checkParameterRepository.save(checkParameter);
         saveOptions(saved, request.allowedOptions(), true);
         saveOptions(saved, request.notAllowedOptions(), false);
+        audit(BatchAuditAction.CREATED, null, checkParameterMapper.copy(saved));
     }
 
     @Override
@@ -47,12 +56,14 @@ public class CheckParameterServiceImpl implements CheckParameterService {
                 .orElseThrow(() -> new ResourceNotFoundException("Check parameter not found: " + id));
 
         Material material = getFinishedProduct(request.product());
+        CheckParameterAudit oldData = checkParameterMapper.copy(checkParameter);
         checkParameterMapper.updateEntity(checkParameter, request, material);
         checkParameterOptionsRepository.deleteAll(checkParameter.getCheckParameterOptions());
         checkParameter.getCheckParameterOptions().clear();
         saveOptions(checkParameter, request.allowedOptions(), true);
         saveOptions(checkParameter, request.notAllowedOptions(), false);
         checkParameterRepository.save(checkParameter);
+        audit(BatchAuditAction.UPDATED, oldData, checkParameterMapper.copy(checkParameter));
     }
 
     @Override
@@ -63,6 +74,7 @@ public class CheckParameterServiceImpl implements CheckParameterService {
 
         User user = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + currentUserId));
+        audit(BatchAuditAction.DELETED, checkParameterMapper.copy(checkParameter), null);
         checkParameter.setDeleted(true);
         checkParameter.setDeletedAt(LocalDateTime.now());
         checkParameter.setDeletedBy(user);
@@ -115,5 +127,20 @@ public class CheckParameterServiceImpl implements CheckParameterService {
                     .getCheckParameterOptions()
                     .add(option);
         }
+    }
+
+    private void audit(
+            BatchAuditAction action,
+            CheckParameterAudit oldData,
+            CheckParameterAudit newData) {
+
+        batchAuditService.save(
+                BatchAuditRequest.builder()
+                        .entity(EntityType.CHECK_PARAMETER)
+                        .module(ModuleType.SAMPLE_CHECK)
+                        .action(action)
+                        .oldData(oldData)
+                        .newData(newData)
+                        .build());
     }
 }

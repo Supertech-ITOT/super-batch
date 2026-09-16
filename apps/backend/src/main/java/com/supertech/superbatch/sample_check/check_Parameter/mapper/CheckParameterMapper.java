@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 import com.supertech.superbatch.plant.material.entity.Material;
+import com.supertech.superbatch.sample_check.check_Parameter.dto.CheckParameterAudit;
+import com.supertech.superbatch.sample_check.check_Parameter.dto.CheckParameterOptionAudit;
 import com.supertech.superbatch.sample_check.check_Parameter.dto.CheckParameterOptionsResponse;
 import com.supertech.superbatch.sample_check.check_Parameter.dto.CheckParameterRequest;
 import com.supertech.superbatch.sample_check.check_Parameter.dto.CheckParameterResponse;
@@ -70,5 +72,24 @@ public class CheckParameterMapper {
                                 .value(option.getValue())
                                 .isAllowed(option.isAllowed())
                                 .build();
+        }
+
+        public CheckParameterAudit copy(CheckParameter checkParameter) {
+                if (checkParameter == null) {
+                        return null;
+                }
+                return CheckParameterAudit.builder()
+                                .id(checkParameter.getId())
+                                .name(checkParameter.getName())
+                                .product(checkParameter.getMaterial().getName())
+                                .type(checkParameter.getType().name())
+                                .min(checkParameter.getMin())
+                                .max(checkParameter.getMax())
+                                .options(checkParameter.getCheckParameterOptions().stream()
+                                                .map(option -> new CheckParameterOptionAudit(option.getId(),
+                                                                option.getValue(), option.isAllowed()))
+                                                .toList())
+                                .build();
+
         }
 }

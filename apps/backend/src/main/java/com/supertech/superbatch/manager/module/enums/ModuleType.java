@@ -6,7 +6,8 @@ public enum ModuleType {
     PLANT_MODEL(2L),
     RECIPE(3L),
     SCHEDULER(4L),
-    AUDIT(5L);
+    AUDIT(5L),
+    SAMPLE_CHECK(6L);
 
     private final Long id;
 
