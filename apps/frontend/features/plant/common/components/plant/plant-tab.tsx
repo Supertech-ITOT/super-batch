@@ -32,7 +32,7 @@ const tabs: TabItem[] = [
     icon: MessageSquareQuoteIcon,
   },
   {
-    label: "Quality Check",
+    label: "Check Parameter",
     path: "/PlantModel/qualityCheck/",
     icon: LucideClipboardCheck,
   },

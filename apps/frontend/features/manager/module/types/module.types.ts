@@ -22,6 +22,8 @@ import {
   Package,
   ClipboardCheck,
   ListChecks,
+  BadgeCheck,
+  LucideClipboardCheck,
 } from "lucide-react";
 
 export enum ModuleType {
@@ -45,6 +47,7 @@ type RouteType = {
   icon: LucideIcon;
   module?: ModuleType;
   description: string;
+  hide: boolean;
 };
 
 export const OperationRoutes: RouteType[] = [
@@ -56,6 +59,7 @@ export const OperationRoutes: RouteType[] = [
     module: ModuleType.MANAGER,
     description:
       "Manage users, roles, and module permissions for secure system access.",
+    hide: false,
   },
   {
     label: "Plant Model",
@@ -65,6 +69,7 @@ export const OperationRoutes: RouteType[] = [
     module: ModuleType.PLANT_MODEL,
     description:
       "Configure the ISA-88 plant hierarchy, equipment, and process resources.",
+    hide: false,
   },
   {
     label: "Recipe Engine",
@@ -74,6 +79,7 @@ export const OperationRoutes: RouteType[] = [
     module: ModuleType.RECIPE,
     description:
       "Create and maintain recipes, procedures, operations, and phases.",
+    hide: false,
   },
   {
     label: "Batch Scheduler",
@@ -83,6 +89,7 @@ export const OperationRoutes: RouteType[] = [
     module: ModuleType.SCHEDULER,
     description:
       "Schedule, execute, and monitor production batches in real time.",
+    hide: false,
   },
   {
     label: "Batch Audit",
@@ -92,6 +99,17 @@ export const OperationRoutes: RouteType[] = [
     module: ModuleType.AUDIT,
     description:
       "Review audit trails, user activities, and system change history.",
+    hide: false,
+  },
+  {
+    label: "Sample Check",
+    short: "Sample check",
+    path: "/PlantModel/qualityCheck",
+    icon: LucideClipboardCheck,
+    module: ModuleType.SAMPLE_CHECK,
+    description:
+      "Review audit trails, user activities, and system change history.",
+    hide: true,
   },
 ];
 
@@ -103,6 +121,7 @@ export const ConfigurationRoutes: RouteType[] = [
     icon: Settings,
     description:
       "Configure system preferences, application settings, and defaults.",
+    hide: false,
   },
 ];
 

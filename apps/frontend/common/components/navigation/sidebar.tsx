@@ -89,23 +89,23 @@ export default function SideBar() {
             <PanelLeftOpen className="h-5 w-5" />
           </button>
         )}
-        {OperationRoutes.filter((route) => hasReadPermission(route.module)).map(
-          (el) => {
-            const getBasePath = (path: string) => "/" + path.split("/")[1];
-            const active = getBasePath(pathname) === getBasePath(el.path);
-            const Icon = el.icon;
-            return (
-              <Link
-                key={el.label}
-                href={el.path}
-                className={`flex flex-row gap-2 rounded-xl items-end  text-muted-foreground px-2 py-2 text-sm transition-all duration-300  ${active ? "bg-primary text-white" : "hover:bg-background hover:shadow"}`}
-              >
-                <Icon className="w-5 h-5" />
-                {open && <span>{el.label}</span>}
-              </Link>
-            );
-          },
-        )}
+        {OperationRoutes.filter(
+          (route) => hasReadPermission(route.module) && !route.hide,
+        ).map((el) => {
+          const getBasePath = (path: string) => "/" + path.split("/")[1];
+          const active = getBasePath(pathname) === getBasePath(el.path);
+          const Icon = el.icon;
+          return (
+            <Link
+              key={el.label}
+              href={el.path}
+              className={`flex flex-row gap-2 rounded-xl items-end  text-muted-foreground px-2 py-2 text-sm transition-all duration-300  ${active ? "bg-primary text-white" : "hover:bg-background hover:shadow"}`}
+            >
+              <Icon className="w-5 h-5" />
+              {open && <span>{el.label}</span>}
+            </Link>
+          );
+        })}
       </div>
       {/* User Section */}
       <div className="mt-auto p-2">

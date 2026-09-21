@@ -64,7 +64,7 @@ export default function QualityCheckView() {
           </div>
           <div className="flex flex-col">
             <h1 className="font-bold text-xl uppercase tracking-wider text-primary">
-              Quality Check
+              Check Parameter
             </h1>
             <p className="text-sm text-muted-foreground">
               Manage quality check parameters associated with finished products.
