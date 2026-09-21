@@ -79,6 +79,7 @@ export function DataTable<TData, TValue>({ columns, onRowClick, isRowSelected, d
                                                 rowClassName={rowClassName}
                                                 contextMenu={contextMenu}
                                                 onClick={() => onRowClick?.(row.original)}
+                                                onContextMenu={() => onRowClick?.(row.original)}
                                                 isSelected={isRowSelected?.(row.original)}
                                             />
                                         ))}

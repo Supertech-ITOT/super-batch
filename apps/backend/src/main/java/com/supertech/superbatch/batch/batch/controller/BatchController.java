@@ -1,3 +1,10 @@
+/*
+ * Created by EcoStruxure Automation Expert.
+ * User:  
+ * Date: 9/11/2026
+ * 
+ */
+
 package com.supertech.superbatch.batch.batch.controller;
 
 import java.util.List;
@@ -6,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.supertech.superbatch.batch.batch.dto.BatchResponse;
+import com.supertech.superbatch.batch.batch.dto.BatchStepRemarkRequest;
 import com.supertech.superbatch.batch.batch.dto.RecipeInfoResponse;
 import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 import com.supertech.superbatch.batch.batch.service.BatchService;
@@ -32,52 +40,82 @@ public class BatchController {
     }
 
     @PostMapping("/{batchNo}/pause")
-    public ResponseEntity<ApiResponse<Void>> pause(@PathVariable String batchNo) {
-        batchService.pause(batchNo);
+    public ResponseEntity<ApiResponse<Void>> pause(
+            @PathVariable String batchNo,
+            @RequestBody BatchStepRemarkRequest request) {
+
+        batchService.pause(batchNo, request.stepNo(), request.remark());
         return ResponseEntity.ok(ApiResponse.success("Batch paused successfully", null));
     }
 
-    @PostMapping("/{batchNo}/resume")
-    public ResponseEntity<ApiResponse<Void>> resume(@PathVariable String batchNo) {
-        batchService.resume(batchNo);
+    @PostMapping("/{batchNo}/resume/{stepNo}")
+    public ResponseEntity<ApiResponse<Void>> resume(
+            @PathVariable String batchNo,
+            @PathVariable Integer stepNo) {
+
+        batchService.resume(batchNo, stepNo);
         return ResponseEntity.ok(ApiResponse.success("Batch resumed successfully", null));
     }
 
     @PostMapping("/{batchNo}/abort")
-    public ResponseEntity<ApiResponse<Void>> abort(@PathVariable String batchNo) {
-        batchService.abort(batchNo);
+    public ResponseEntity<ApiResponse<Void>> abort(
+            @PathVariable String batchNo,
+            @RequestBody BatchStepRemarkRequest request) {
+
+        batchService.abort(batchNo, request.stepNo(), request.remark());
         return ResponseEntity.ok(ApiResponse.success("Batch aborted successfully", null));
     }
 
     @PostMapping("/{batchNo}/steps/{stepNo}/complete")
-    public ResponseEntity<ApiResponse<Void>> complete(@PathVariable String batchNo, @PathVariable Integer stepNo) {
+    public ResponseEntity<ApiResponse<Void>> complete(
+            @PathVariable String batchNo,
+            @PathVariable Integer stepNo) {
+
         batchService.complete(batchNo, stepNo);
         return ResponseEntity.ok(ApiResponse.success("Batch step completed successfully", null));
     }
 
     @PostMapping("/{batchNo}/remarks")
-    public ResponseEntity<ApiResponse<Void>> remark(@PathVariable String batchNo, @RequestBody String remark) {
-        batchService.remark(batchNo, remark);
+    public ResponseEntity<ApiResponse<Void>> remark(
+            @PathVariable String batchNo,
+            @RequestBody BatchStepRemarkRequest request) {
+
+        batchService.remark(batchNo, request.stepNo(), request.remark());
         return ResponseEntity.ok(ApiResponse.success("Batch remark added successfully", null));
     }
 
     @GetMapping("/{batchNo}/recipe-info")
-    public ResponseEntity<ApiResponse<RecipeInfoResponse>> getRecipeInfoByBatchNo(@PathVariable String batchNo) {
+    public ResponseEntity<ApiResponse<RecipeInfoResponse>> getRecipeInfoByBatchNo(
+            @PathVariable String batchNo) {
+
         RecipeInfoResponse recipeInfo = batchService.getRecipeInfoByBatchNo(batchNo);
-        return ResponseEntity.ok(ApiResponse.success("Recipe information fetched successfully", recipeInfo));
+        return ResponseEntity.ok(
+                ApiResponse.success("Recipe information fetched successfully", recipeInfo));
     }
 
-    @GetMapping("/{batchNo}/steps/{stepNo}/complete")
-    public ResponseEntity<ApiResponse<Void>> getStepInfoByBatchNoAndStepNo(@PathVariable String batchNo,
+    @GetMapping("/{batchNo}/steps/{stepNo}")
+    public ResponseEntity<ApiResponse<?>> getStepInfoByBatchNoAndStepNo(
+            @PathVariable String batchNo,
             @PathVariable Integer stepNo) {
-        batchService.complete(batchNo, stepNo);
-        return ResponseEntity.ok(ApiResponse.success("Step information fetched successfully", null));
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Step information fetched successfully", null));
     }
 
     @GetMapping("/batch-nos")
-    public ResponseEntity<ApiResponse<List<String>>> getBatchNos(@RequestParam String unitCode,
+    public ResponseEntity<ApiResponse<List<String>>> getBatchNos(
+            @RequestParam String unitCode,
             @RequestParam BatchStatus status) {
+
         List<String> batchNos = batchService.getBatchNos(unitCode, status);
-        return ResponseEntity.ok(ApiResponse.success("Batch number fetched successfully", batchNos));
+        return ResponseEntity.ok(
+                ApiResponse.success("Batch number fetched successfully", batchNos));
     }
+
+    @PostMapping("/{batchNo}/download")
+    public ResponseEntity<ApiResponse<Void>> download(@PathVariable String batchNo) {
+        batchService.download(batchNo);
+        return ResponseEntity.ok(ApiResponse.success("Batch downloaded successfully", null));
+    }
+
 }

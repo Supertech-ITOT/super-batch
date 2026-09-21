@@ -9,15 +9,17 @@ import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 public interface BatchService {
     void start(String batchNo);
 
-    void pause(String batchNo);
+    void download(String batchNo);
 
-    void resume(String batchNo);
+    void pause(String batchNo, Integer stepNo, String remark);
 
-    void abort(String batchNo);
+    void resume(String batchNo, Integer stepNo);
+
+    void abort(String batchNo, Integer stepNo, String remark);
 
     void complete(String batchNo, Integer stepNo);
 
-    void remark(String batchNo, String remark);
+    void remark(String batchNo, Integer stepNo, String remark);
 
     BatchResponse getByBatchNo(String batchNo);
 
