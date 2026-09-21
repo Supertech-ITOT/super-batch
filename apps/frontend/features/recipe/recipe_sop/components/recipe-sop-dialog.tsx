@@ -78,7 +78,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
     else {
       handleClear();
     }
-  }, [reset, recipeSOP]);
+  }, [action, reset, recipeSOP]);
 
 
   // Business Logic

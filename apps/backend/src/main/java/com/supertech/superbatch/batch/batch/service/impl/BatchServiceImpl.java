@@ -43,7 +43,7 @@ public class BatchServiceImpl implements BatchService {
                 Batch batch = batchRepository.findByBatchNo(batchNo)
                                 .orElseThrow(() -> new ResourceNotFoundException("Batch not found:" + batchNo));
                 if (batch.getStatus() != BatchStatus.READY) {
-                        throw new RuntimeException("Batch is not ready to start");
+                        throw new BadRequestException("Batch is not ready to start");
 
                 }
                 batch.setStatus(BatchStatus.IN_PROGRESS);
@@ -57,37 +57,46 @@ public class BatchServiceImpl implements BatchService {
 
         @Override
         @Transactional
-        public void pause(String batchNo) {
+        public void pause(String batchNo, Integer stepNo, String remark) {
                 Batch batch = batchRepository.findByBatchNo(batchNo)
                                 .orElseThrow(() -> new ResourceNotFoundException("Batch not found: " + batchNo));
 
                 if (batch.getStatus() != BatchStatus.IN_PROGRESS) {
-                        throw new RuntimeException("Only an in-progress batch can be paused");
+                        throw new BadRequestException("Only an in-progress batch can be paused");
                 }
+                remark(batchNo, stepNo, remark);
                 batch.setStatus(BatchStatus.PAUSED);
                 batchRepository.save(batch);
         }
 
         @Override
         @Transactional
-        public void resume(String batchNo) {
+        public void resume(String batchNo, Integer stepNo) {
                 Batch batch = batchRepository.findByBatchNo(batchNo)
                                 .orElseThrow(() -> new ResourceNotFoundException("Batch not found: " + batchNo));
                 if (batch.getStatus() != BatchStatus.PAUSED) {
                         throw new RuntimeException("Batch is not paused");
                 }
+
+                BatchSOP step = batch.getSops().stream()
+                                .filter(sop -> sop.getStepNo().equals(stepNo))
+                                .findFirst()
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Step " + stepNo + " not found for batch: " + batchNo));
+                step.setStartDateTime(LocalDateTime.now());
                 batch.setStatus(BatchStatus.IN_PROGRESS);
                 batchRepository.save(batch);
         }
 
         @Override
         @Transactional
-        public void abort(String batchNo) {
+        public void abort(String batchNo, Integer stepNo, String remark) {
                 Batch batch = batchRepository.findByBatchNo(batchNo)
                                 .orElseThrow(() -> new ResourceNotFoundException("Batch not found: " + batchNo));
                 if (batch.getStatus() == BatchStatus.COMPLETED || batch.getStatus() == BatchStatus.ABORTED) {
                         throw new RuntimeException("Batch cannot be aborted from current status: " + batch.getStatus());
                 }
+                remark(batchNo, stepNo, remark);
                 batch.setStatus(BatchStatus.ABORTED);
                 batch.setEndDateTime(LocalDateTime.now());
                 batchRepository.save(batch);
@@ -128,15 +137,17 @@ public class BatchServiceImpl implements BatchService {
 
         @Override
         @Transactional
-        public void remark(String batchNo, String remark) {
+        public void remark(String batchNo, Integer stepNo, String remark) {
                 Batch batch = batchRepository.findByBatchNo(batchNo)
                                 .orElseThrow(() -> new ResourceNotFoundException("Batch not found: " + batchNo));
-                BatchSOP currentStep = batch.getSops().stream()
-                                .filter(sop -> sop.getStartDateTime() != null && sop.getEndDateTime() == null)
+
+                BatchSOP step = batch.getSops().stream()
+                                .filter(sop -> sop.getStepNo().equals(stepNo))
                                 .findFirst()
                                 .orElseThrow(() -> new ResourceNotFoundException(
-                                                "No active step found for batch: " + batchNo));
-                currentStep.setRemark(remark);
+                                                "Step " + stepNo + " not found for batch: " + batchNo));
+
+                step.setRemark(remark);
                 batchRepository.save(batch);
         }
 
@@ -234,6 +245,19 @@ public class BatchServiceImpl implements BatchService {
         public List<String> getBatchNos(String unitCode, BatchStatus status) {
                 return batchRepository.findByUnit_CodeAndStatusOrderByCreatedAtDesc(unitCode, status).stream()
                                 .map(Batch::getBatchNo).toList();
+        }
+
+        @Override
+        @Transactional
+        public void download(String batchNo) {
+                Batch batch = batchRepository.findByBatchNo(batchNo)
+                                .orElseThrow(() -> new ResourceNotFoundException("Batch not found:" + batchNo));
+                if (batch.getStatus() != BatchStatus.TRANSFERRED) {
+                        throw new BadRequestException("Batch is not transferred to download.");
+
+                }
+                batch.setStatus(BatchStatus.READY);
+                batchRepository.save(batch);
         }
 
 }

@@ -36,11 +36,14 @@ export default function ControlRecipeSOPView({ controlRecipeId }: { controlRecip
     const { mutateAsync: moveUp } = useMoveUpControlRecipeSOP();
     const { mutateAsync: moveDown } = useMoveDownControlRecipeSOP();
 
+    const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
+
+
     useEffect(() => {
         setDialog((prev) => ({ ...prev, controlRecipeId: controlRecipeId, stepNo: nextStepNo, }));
-    }, [controlRecipeId, nextStepNo]);
+    }, [controlRecipeSOP, controlRecipeId, nextStepNo]);
     const handleClose = () => {
-        setDialog({ controlRecipeId: controlRecipeId, action: "create", stepNo: nextStepNo, });
+        setDialog({ controlRecipeId: controlRecipeId, action: "create" });
     }
     const handleAction = async (action: controlRecipeSOPActionType, row: ControlRecipeSOPResponse) => {
         switch (action) {
@@ -99,6 +102,8 @@ export default function ControlRecipeSOPView({ controlRecipeId }: { controlRecip
                         <DataTable
                             columns={columns}
                             data={controlRecipeSOP}
+                            onRowClick={(r) => setSelectedRowId(r.id)}
+                            isRowSelected={(r) => r.id === selectedRowId}
                             rowClassName="h-15"
                             contextMenu={!hideDialog ? {
                                 label: "Action",
@@ -152,7 +157,7 @@ export default function ControlRecipeSOPView({ controlRecipeId }: { controlRecip
 
                 {/* Dialog */}
                 {!hideDialog && <div className="min-w-1/4  2xl:shrink-0 border shadow hover:shadow-lg rounded-2xl overflow-hidden flex-1 min-h-100 h-full ">
-                    <ControlRecipeSOPDialog action={dialog.action} controlRecipeId={controlRecipeId} stepNo={dialog.stepNo} controlRecipeSOPId={dialog.controlRecipeSOPId} unitId={controlRecipe.unit.id} recipeQuantityType={controlRecipe.unit.recipeQuantityType} />
+                    <ControlRecipeSOPDialog action={dialog.action} controlRecipeId={controlRecipeId} stepNo={dialog.action === "create" ? nextStepNo : dialog.stepNo} controlRecipeSOPId={dialog.controlRecipeSOPId} unitId={controlRecipe.unit.id} recipeQuantityType={controlRecipe.unit.recipeQuantityType} />
                     {dialog.action === "delete" && dialog.controlRecipeSOPId &&
                         (
                             <ControlRecipeSOPDeleteDialog open id={dialog.controlRecipeSOPId} controlRecipeId={controlRecipeId} onClose={handleClose} />

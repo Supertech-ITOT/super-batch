@@ -78,7 +78,7 @@ export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlReci
     else {
       handleClear();
     }
-  }, [reset, controlRecipeSOP]);
+  }, [action, reset, controlRecipeSOP]);
 
 
   const selectedTransitionId = watch("transitionId");

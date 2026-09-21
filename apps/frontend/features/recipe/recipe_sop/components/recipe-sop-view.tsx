@@ -34,11 +34,14 @@ export default function RecipeSOPView({ recipeId }: { recipeId: number }) {
     const { mutateAsync: moveUp } = useMoveUpRecipeSOP();
     const { mutateAsync: moveDown } = useMoveDownRecipeSOP();
 
+    const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
+
     useEffect(() => {
         setDialog((prev) => ({ ...prev, recipeId: recipeId, stepNo: nextStepNo, }));
-    }, [recipeId, nextStepNo]);
+    }, [recipeId, nextStepNo, recipeSOP]);
     const handleClose = () => {
-        setDialog({ recipeId: recipeId, action: "create", stepNo: nextStepNo, });
+        setSelectedRowId(null);
+        setDialog({ recipeId: recipeId, action: "create" });
     }
     const handleAction = async (action: recipeSOPActionType, row: RecipeSOPResponse,) => {
         switch (action) {
@@ -98,6 +101,8 @@ export default function RecipeSOPView({ recipeId }: { recipeId: number }) {
                             columns={columns}
                             data={recipeSOP}
                             rowClassName="h-15"
+                            onRowClick={(r) => setSelectedRowId(r.id)}
+                            isRowSelected={(r) => r.id === selectedRowId}
                             contextMenu={{
                                 label: "Action",
                                 items: [
@@ -150,7 +155,7 @@ export default function RecipeSOPView({ recipeId }: { recipeId: number }) {
 
                 {/* Dialog */}
                 <div className="min-w-1/4  2xl:shrink-0 border shadow hover:shadow-lg rounded-2xl overflow-hidden flex-1 min-h-100 h-full ">
-                    <RecipeSOPDialog action={dialog.action} recipeId={recipeId} stepNo={dialog.stepNo} recipeSOPId={dialog.recipeSOPId} unitId={recipe.unitRecipeResponse.id} recipeQuantityType={recipe.unitRecipeResponse.recipeQuantityType} />
+                    <RecipeSOPDialog action={dialog.action} recipeId={recipeId} stepNo={dialog.action === "create" ? nextStepNo : dialog.stepNo} recipeSOPId={dialog.recipeSOPId} unitId={recipe.unitRecipeResponse.id} recipeQuantityType={recipe.unitRecipeResponse.recipeQuantityType} />
                     {dialog.action === "delete" && dialog.recipeSOPId &&
                         (
                             <RecipeSOPDeleteDialog open id={dialog.recipeSOPId} recipeId={recipeId} onClose={handleClose} />
