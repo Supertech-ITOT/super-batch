@@ -17,4 +17,6 @@ public interface MaterialRepository extends JpaRepository<Material, Long> {
     List<Material> findAllByDeletedFalse(Sort sort);
 
     Optional<Material> findByIdAndDeletedFalse(Long id);
+
+    Optional<Material> findByNameIgnoreCaseAndDeletedFalse(String name);
 }

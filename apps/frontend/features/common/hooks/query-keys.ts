@@ -41,6 +41,12 @@ export const queryKeys = {
     detail: (id: number) => ["parameters", "detail", id] as const,
   },
 
+  checkParameters: {
+    all: ["checkParameters"] as const,
+    list: () => ["checkParameters", "list"] as const,
+    detail: (id: number) => ["checkParameters", "detail", id] as const,
+  },
+
   actions: {
     all: ["actions"] as const,
     list: () => ["actions", "list"] as const,

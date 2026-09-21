@@ -46,6 +46,8 @@ export const queryDeps = {
     queryKeys.controlRecipes.all,
   ],
 
+  checkParameters: [queryKeys.checkParameters.all, queryKeys.audits.all],
+
   actions: [
     queryKeys.actions.all,
     queryKeys.recipeSOPs.all,
