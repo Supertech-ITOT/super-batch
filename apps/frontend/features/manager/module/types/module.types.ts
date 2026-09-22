@@ -11,18 +11,14 @@ import {
   Building,
   Boxes,
   Cpu,
-  PackageCheckIcon,
   Gauge,
   ArrowRightLeft,
   Play,
-  MessageSquareQuote,
   Hash,
-  CalendarClockIcon,
   PackageCheck,
   Package,
   ClipboardCheck,
   ListChecks,
-  BadgeCheck,
   LucideClipboardCheck,
 } from "lucide-react";
 

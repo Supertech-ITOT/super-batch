@@ -1,4 +1,5 @@
 import { BatchAuditSearchRequest } from "@/features/audit/types/audit.types";
+import { UserSearchRequest } from "@/features/manager/user/types/user.types";
 import { RecipeStatus } from "@/features/recipe/recipe/types/recipe.types";
 
 export const queryKeys = {
@@ -86,6 +87,7 @@ export const queryKeys = {
   users: {
     all: ["users"] as const,
     list: () => ["users", "list"] as const,
+    page: (request: UserSearchRequest) => ["users", "page", request] as const,
     detail: (id: number) => ["users", "detail", id] as const,
     current: () => ["users", "me"] as const,
   },

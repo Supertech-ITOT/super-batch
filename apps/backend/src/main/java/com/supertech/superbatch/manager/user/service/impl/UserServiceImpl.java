@@ -4,10 +4,14 @@ import com.supertech.superbatch.manager.user.dto.UserAudit;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.supertech.superbatch.audit.dto.BatchAuditRequest;
 import com.supertech.superbatch.audit.enums.BatchAuditAction;
 import com.supertech.superbatch.audit.service.BatchAuditService;
@@ -31,11 +35,11 @@ import com.supertech.superbatch.manager.user.dto.ResetPasswordRequest;
 import com.supertech.superbatch.manager.user.dto.UpdateUserRequest;
 import com.supertech.superbatch.manager.user.dto.UserRequest;
 import com.supertech.superbatch.manager.user.dto.UserResponse;
+import com.supertech.superbatch.manager.user.dto.UserSearchRequest;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.mapper.UserMapper;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.manager.user.service.UserService;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -239,6 +243,15 @@ public class UserServiceImpl implements UserService {
                 User user = userRepository.findByIdAndDeletedFalse(currentUserId)
                                 .orElseThrow(() -> new UnauthorizedException("TOKEN_EXPIRED"));
                 return userMapper.toResponse(user, List.copyOf(user.getRole().getPermissions()));
+        }
+
+        @Override
+        @RequiresLicense()
+        @RequiresPermission(ModuleType.MANAGER)
+        public Page<UserResponse> getAllByPage(UserSearchRequest request) {
+                Pageable pageable = PageRequest.of(request.page(), request.size(), Sort.by(Sort.Direction.ASC, "name"));
+                return userRepository.findByDeletedFalseAndSystemAccountFalse(pageable)
+                                .map(user -> userMapper.toResponse(user, List.copyOf(user.getRole().getPermissions())));
         }
 
 }

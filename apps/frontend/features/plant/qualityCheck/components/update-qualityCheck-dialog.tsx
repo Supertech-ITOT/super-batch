@@ -13,30 +13,24 @@ import {
   CheckParameterSchemaLimit,
 } from "../schemas/checkParameter.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { MaterialType } from "../../material/types/material.types";
 import { showApiError } from "@/common/lib/show-api-error";
 import { CheckParameterType } from "../types/checkParameter.types";
 import { toast } from "sonner";
 import { showFormError } from "@/common/lib/show-form-error";
 import FormDialog from "@/common/components/form/form-dialog";
-import {
-  ClipboardCheck,
-  ListChecks,
-  Package,
-  Ruler,
-  Settings2,
-  Trash2,
-} from "lucide-react";
+import { ClipboardCheck, Package, Ruler, Settings2 } from "lucide-react";
 import { TextInput } from "@/common/components/form/text-input";
 import SearchableSelect from "@/common/components/form/searchable-select";
-import { Button } from "@/common/components/ui/button";
+import QualitativeOptions from "./qualitative-options";
 
 type Props = {
   open: boolean;
   onClose: () => void;
   checkParameterId: number | null;
 };
+
 export default function UpdateQualityCheck({
   open,
   onClose,
@@ -44,9 +38,12 @@ export default function UpdateQualityCheck({
 }: Props) {
   const { mutateAsync: updateParameter, isPending: isUpdating } =
     useUpdateCheckParameter();
+
   const { data: parameter, isLoading: parameterIsLoading } =
     useGetCheckParameterById(checkParameterId ?? undefined);
+
   const { data: materials, isLoading: materialsIsLoading } = useGetMaterials();
+
   const {
     register,
     handleSubmit,
@@ -61,9 +58,6 @@ export default function UpdateQualityCheck({
   });
 
   const parameterType = watch("type");
-
-  const [allowedInput, setAllowedInput] = useState("");
-  const [notAllowedInput, setNotAllowedInput] = useState("");
 
   const allowedOptions = watch("allowedOptions") ?? [];
   const notAllowedOptions = watch("notAllowedOptions") ?? [];
@@ -100,59 +94,13 @@ export default function UpdateQualityCheck({
       allowedOptions: allowed,
       notAllowedOptions: notAllowed,
     });
-
-    setAllowedInput("");
-    setNotAllowedInput("");
   }, [parameter, open, reset]);
-
-  const addAllowedOption = () => {
-    const value = allowedInput.trim();
-    if (!value) {
-      return;
-    }
-    setValue("allowedOptions", [...allowedOptions, value], {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-    setAllowedInput("");
-  };
-  const addNotAllowedOption = () => {
-    const value = notAllowedInput.trim();
-    if (!value) {
-      return;
-    }
-    setValue("notAllowedOptions", [...notAllowedOptions, value], {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-    setNotAllowedInput("");
-  };
-  const removeAllowedOption = (index: number) => {
-    setValue(
-      "allowedOptions",
-      allowedOptions.filter((_, i) => i !== index),
-      {
-        shouldValidate: true,
-        shouldDirty: true,
-      },
-    );
-  };
-
-  const removeNotAllowedOption = (index: number) => {
-    setValue(
-      "notAllowedOptions",
-      notAllowedOptions.filter((_, i) => i !== index),
-      {
-        shouldValidate: true,
-        shouldDirty: true,
-      },
-    );
-  };
 
   const onSubmit = async (formData: CheckParameterFormValues) => {
     if (!checkParameterId) {
       return;
     }
+
     try {
       const res = await updateParameter({
         id: checkParameterId,
@@ -160,24 +108,29 @@ export default function UpdateQualityCheck({
           name: formData.name,
           product: formData.product,
           type: formData.type,
+
           min:
             formData.type === CheckParameterType.QUANTITIVE
               ? formData.min
               : undefined,
+
           max:
             formData.type === CheckParameterType.QUANTITIVE
               ? formData.max
               : undefined,
+
           allowedOptions:
             formData.type === CheckParameterType.QUALITATIVE
               ? formData.allowedOptions
               : undefined,
+
           notAllowedOptions:
             formData.type === CheckParameterType.QUALITATIVE
               ? formData.notAllowedOptions
               : undefined,
         },
       });
+
       toast.success(
         res.message ?? "Quality check parameter updated successfully",
       );
@@ -187,15 +140,16 @@ export default function UpdateQualityCheck({
       showApiError(error);
     }
   };
+
   const handleClose = () => {
     reset(checkParameterDefaultValues);
-    setAllowedInput("");
-    setNotAllowedInput("");
     onClose();
   };
+
   const onInvalid = (errors: FieldErrors<CheckParameterFormValues>) => {
     toast.error(showFormError(errors));
   };
+
   return (
     <FormDialog
       open={open}
@@ -280,7 +234,7 @@ export default function UpdateQualityCheck({
         {/* QUANTITIVE */}
 
         {parameterType === CheckParameterType.QUANTITIVE && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <TextInput
               label="Minimum Value"
               icon={Ruler}
@@ -320,131 +274,23 @@ export default function UpdateQualityCheck({
         {/* QUALITATIVE */}
 
         {parameterType === CheckParameterType.QUALITATIVE && (
-          <div className="space-y-3">
-            {/* Allowed Options */}
-
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <ListChecks className="size-4 text-primary" />
-                Allowed Options
-              </div>
-
-              <div className="flex gap-2">
-                <div className="flex-1">
-                  <TextInput
-                    label=""
-                    icon={ListChecks}
-                    placeholder="Enter allowed option"
-                    maxLength={CheckParameterSchemaLimit.option.max}
-                    disabled={loading}
-                    value={allowedInput}
-                    onChange={(e) => setAllowedInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addAllowedOption();
-                      }
-                    }}
-                  />
-                </div>
-
-                <Button
-                  type="button"
-                  className="h-10 px-3"
-                  onClick={addAllowedOption}
-                  disabled={loading || !allowedInput.trim()}
-                >
-                  Add
-                </Button>
-              </div>
-
-              {allowedOptions.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {allowedOptions.map((option, index) => (
-                    <div
-                      key={`${option}-${index}`}
-                      className="flex items-center gap-1 rounded-md border bg-muted px-2 py-1 text-sm"
-                    >
-                      <span>{option}</span>
-
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeAllowedOption(index)}
-                        disabled={loading}
-                        className="size-6 text-muted-foreground hover:text-destructive"
-                      >
-                        <Trash2 className="size-3" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Not Allowed Options */}
-
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <ListChecks className="size-4 text-destructive" />
-                Not Allowed Options
-              </div>
-
-              <div className="flex gap-2">
-                <div className="flex-1">
-                  <TextInput
-                    label=""
-                    icon={ListChecks}
-                    placeholder="Enter not allowed option"
-                    maxLength={CheckParameterSchemaLimit.option.max}
-                    disabled={loading}
-                    value={notAllowedInput}
-                    onChange={(e) => setNotAllowedInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addNotAllowedOption();
-                      }
-                    }}
-                  />
-                </div>
-
-                <Button
-                  type="button"
-                  className="h-10 px-3"
-                  onClick={addNotAllowedOption}
-                  disabled={loading || !notAllowedInput.trim()}
-                >
-                  Add
-                </Button>
-              </div>
-
-              {notAllowedOptions.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {notAllowedOptions.map((option, index) => (
-                    <div
-                      key={`${option}-${index}`}
-                      className="flex items-center gap-1 rounded-md border bg-muted px-2 py-1 text-sm"
-                    >
-                      <span>{option}</span>
-
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeNotAllowedOption(index)}
-                        disabled={loading}
-                        className="size-6 text-muted-foreground hover:text-destructive"
-                      >
-                        <Trash2 className="size-3" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+          <QualitativeOptions
+            loading={loading}
+            allowedOptions={allowedOptions}
+            notAllowedOptions={notAllowedOptions}
+            setAllowedOptions={(options, shouldValidate, shouldDirty) =>
+              setValue("allowedOptions", options, {
+                shouldValidate,
+                shouldDirty,
+              })
+            }
+            setNotAllowedOptions={(options, shouldValidate, shouldDirty) =>
+              setValue("notAllowedOptions", options, {
+                shouldValidate,
+                shouldDirty,
+              })
+            }
+          />
         )}
       </div>
     </FormDialog>

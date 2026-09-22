@@ -3,8 +3,7 @@
 import { useState } from "react";
 import UserStat from "./user-stat";
 import columns from "./columns";
-import { useGetUser } from "@/features/manager/user/hooks/use-user";
-import { Skeleton } from "@/common/components/ui/skeleton";
+import { useGetUsersByPage } from "@/features/manager/user/hooks/use-user";
 import CreateUserDialog from "./create-user-dialog";
 import UpdateUserDialog from "./update-user-dialog";
 import DeleteUserDialog from "./delete-user-dialog";
@@ -18,56 +17,91 @@ import UserSkeleton from "./user-skeleton";
 import FeedbackState from "../../../../common/components/feedback-state";
 
 export type DialogProp = {
-    action: "create" | "edit" | "delete" | "reset" | null;
-    id: number | null;
-    open: boolean
-}
+  action: "create" | "edit" | "delete" | "reset" | null;
+  id: number | null;
+  open: boolean;
+};
 export default function UserView() {
-    const { data: users, isLoading, isError } = useGetUser();
-    const [dialog, setDialog] = useState<DialogProp>({ action: null, id: null, open: false });
-    const closeDialog = () =>
-        setDialog({ open: false, action: null, id: null, });
-    const loading = isLoading;
-    if (loading) {
-        return <UserSkeleton />;
-    }
-    if (isError) {
-        return <FeedbackState variant="error" />;
-    }
-    if (!users) {
-        return <FeedbackState variant="empty" />;
-    }
-    return (
-        <div className="flex flex-col rounded-2xl border shadow  bg-card p-2 sm:p-4 flex-1">
-            <UserStat data={users} />
-            <Separator className="my-2" />
-            <DataTable
-                columns={columns(setDialog)}
-                data={users}
-                pageSize={10}
-                toolbar={(table) => (
-                    <div className="flex items-center gap-2">
-                        <DataTableSearch table={table} column="name" placeholder="Search users..." />
-                        <Button className="ml-auto text-white h-8 sm:h-10" onClick={() => setDialog({ action: "create", id: null, open: true, })}>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add User
-                        </Button>
-                    </div>
-                )}
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
+  const { data: users, isLoading, isError } = useGetUsersByPage(page, size);
+  const [dialog, setDialog] = useState<DialogProp>({
+    action: null,
+    id: null,
+    open: false,
+  });
+  const closeDialog = () => setDialog({ open: false, action: null, id: null });
+  const loading = isLoading;
+  if (loading) {
+    return <UserSkeleton />;
+  }
+  if (isError) {
+    return <FeedbackState variant="error" />;
+  }
+  if (!users) {
+    return <FeedbackState variant="empty" />;
+  }
+  return (
+    <div className="flex flex-col rounded-2xl border shadow  bg-card p-2 sm:p-4 flex-1">
+      <UserStat data={users.content} />
+      <Separator className="my-2" />
+      <DataTable
+        columns={columns(setDialog, page, size)}
+        data={users.content}
+        pageSize={size}
+        serverPagination={{
+          pageIndex: users.number,
+          pageCount: users.totalPages,
+          onPageChange: setPage,
+        }}
+        toolbar={(table) => (
+          <div className="flex items-center gap-2">
+            <DataTableSearch
+              table={table}
+              column="name"
+              placeholder="Search users..."
             />
+            <Button
+              className="ml-auto text-white h-8 sm:h-10"
+              onClick={() =>
+                setDialog({ action: "create", id: null, open: true })
+              }
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add User
+            </Button>
+          </div>
+        )}
+      />
 
-            {
-                <>
-                    {dialog.action === "create" && (
-                        <CreateUserDialog open onClose={closeDialog} />)}
-                    {dialog.action === "edit" && dialog.id !== null && (
-                        <UpdateUserDialog open={dialog.open} userId={dialog.id} onClose={closeDialog} />)}
-                    {dialog.action === "reset" && dialog.id !== null && (
-                        <ResetPasswordUserDialog open={dialog.open} userId={dialog.id} onClose={closeDialog} />)}
-                    {dialog.action === "delete" && dialog.id !== null && (
-                        <DeleteUserDialog open={dialog.open} userId={dialog.id} onClose={closeDialog} />)}
-                </>
-            }
-        </div>
-    )
-} 
+      {
+        <>
+          {dialog.action === "create" && (
+            <CreateUserDialog open onClose={closeDialog} />
+          )}
+          {dialog.action === "edit" && dialog.id !== null && (
+            <UpdateUserDialog
+              open={dialog.open}
+              userId={dialog.id}
+              onClose={closeDialog}
+            />
+          )}
+          {dialog.action === "reset" && dialog.id !== null && (
+            <ResetPasswordUserDialog
+              open={dialog.open}
+              userId={dialog.id}
+              onClose={closeDialog}
+            />
+          )}
+          {dialog.action === "delete" && dialog.id !== null && (
+            <DeleteUserDialog
+              open={dialog.open}
+              userId={dialog.id}
+              onClose={closeDialog}
+            />
+          )}
+        </>
+      }
+    </div>
+  );
+}

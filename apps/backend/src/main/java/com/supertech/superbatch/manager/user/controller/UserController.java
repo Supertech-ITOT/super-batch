@@ -1,11 +1,10 @@
 package com.supertech.superbatch.manager.user.controller;
 
 import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import com.supertech.superbatch.common.dto.ApiResponse;
 import com.supertech.superbatch.common.security.UserContextService;
 import com.supertech.superbatch.manager.user.dto.ChangePasswordRequest;
@@ -14,8 +13,9 @@ import com.supertech.superbatch.manager.user.dto.ResetPasswordRequest;
 import com.supertech.superbatch.manager.user.dto.UpdateUserRequest;
 import com.supertech.superbatch.manager.user.dto.UserRequest;
 import com.supertech.superbatch.manager.user.dto.UserResponse;
+import com.supertech.superbatch.manager.user.dto.UserSearchRequest;
 import com.supertech.superbatch.manager.user.service.UserService;
-
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -29,6 +29,12 @@ public class UserController {
         @GetMapping
         public ResponseEntity<ApiResponse<List<UserResponse>>> getAll() {
                 return ResponseEntity.ok(ApiResponse.success("Users fetched successfully", userService.getAll()));
+        }
+
+        @GetMapping(params = { "page", "size" })
+        public ResponseEntity<ApiResponse<Page<UserResponse>>> getAllByPage(@Valid UserSearchRequest request) {
+                return ResponseEntity.ok(
+                                ApiResponse.success("Users fetched successfully", userService.getAllByPage(request)));
         }
 
         @GetMapping("/{id}")

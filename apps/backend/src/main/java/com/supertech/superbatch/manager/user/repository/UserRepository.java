@@ -3,6 +3,8 @@ package com.supertech.superbatch.manager.user.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.supertech.superbatch.manager.user.entity.User;
@@ -29,6 +31,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
         @EntityGraph(attributePaths = { "role", "role.permissions", "role.permissions.module", "createdBy" })
         List<User> findByDeletedFalseAndSystemAccountFalse();
+
+        @EntityGraph(attributePaths = { "role", "role.permissions", "role.permissions.module", "createdBy" })
+        Page<User> findByDeletedFalseAndSystemAccountFalse(Pageable pageable);
 
         boolean existsByDeletedFalseAndSystemAccountFalse();
 

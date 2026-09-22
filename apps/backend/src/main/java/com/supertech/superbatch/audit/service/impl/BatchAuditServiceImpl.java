@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.supertech.superbatch.audit.dto.BatchAuditRequest;
 import com.supertech.superbatch.audit.dto.BatchAuditResponse;
 import com.supertech.superbatch.audit.dto.BatchAuditSearchRequest;
@@ -24,7 +23,6 @@ import com.supertech.superbatch.manager.module.entity.Module;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.module.repository.ModuleRepository;
 import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
-
 import lombok.RequiredArgsConstructor;
 
 @Service

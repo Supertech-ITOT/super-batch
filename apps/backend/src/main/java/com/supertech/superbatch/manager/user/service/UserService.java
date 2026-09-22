@@ -2,16 +2,21 @@ package com.supertech.superbatch.manager.user.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import com.supertech.superbatch.manager.user.dto.ChangePasswordRequest;
 import com.supertech.superbatch.manager.user.dto.ResetFirstPasswordRequest;
 import com.supertech.superbatch.manager.user.dto.ResetPasswordRequest;
 import com.supertech.superbatch.manager.user.dto.UpdateUserRequest;
 import com.supertech.superbatch.manager.user.dto.UserRequest;
 import com.supertech.superbatch.manager.user.dto.UserResponse;
+import com.supertech.superbatch.manager.user.dto.UserSearchRequest;
 
 public interface UserService {
 
     List<UserResponse> getAll();
+
+    Page<UserResponse> getAllByPage(UserSearchRequest request);
 
     UserResponse getById(Long id);
 

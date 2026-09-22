@@ -5,6 +5,7 @@ import {
   createUser,
   deleteUser,
   getAllUsers,
+  getAllUsersByPage,
   getCurrentUser,
   getUserById,
   resetFirstPassword,
@@ -21,6 +22,16 @@ export const useGetUser = () => {
     queryKey: queryKeys.users.list(),
     queryFn: async () => {
       const res = await getAllUsers();
+      return res.data;
+    },
+  });
+};
+
+export const useGetUsersByPage = (page: number, size: number) => {
+  return useQuery({
+    queryKey: queryKeys.users.page({ page, size }),
+    queryFn: async () => {
+      const res = await getAllUsersByPage({ page, size });
       return res.data;
     },
   });
