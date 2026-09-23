@@ -25,12 +25,12 @@ export interface CheckParameterRequest {
 }
 
 export enum CheckParameterType {
-  QUANTITIVE = "QUANTITIVE",
+  QUANTITATIVE = "QUANTITATIVE",
   QUALITATIVE = "QUALITATIVE",
 }
 
 export const CheckParameterTypeBadgeStyles = {
-  QUANTITIVE:
+  QUANTITATIVE:
     "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800",
 
   QUALITATIVE:

@@ -13,6 +13,9 @@ import com.supertech.superbatch.batch.batch_sop.entity.BatchSOP;
 import com.supertech.superbatch.batch.batch_sop.repository.BatchSOPRepository;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
+import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
+import com.supertech.superbatch.manager.module.enums.ModuleType;
+import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
 import com.supertech.superbatch.plant.transition.enums.TransitionType;
 import com.supertech.superbatch.sample_check.batch_check.dto.BatchCheckRequest;
 import com.supertech.superbatch.sample_check.batch_check.dto.BatchCheckResponse;
@@ -31,6 +34,8 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@RequiresLicense
+@RequiresPermission(ModuleType.SAMPLE_CHECK)
 @Transactional(readOnly = true)
 public class BatchCheckServiceImpl implements BatchCheckService {
 

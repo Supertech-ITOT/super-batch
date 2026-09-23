@@ -110,12 +110,12 @@ export default function UpdateQualityCheck({
           type: formData.type,
 
           min:
-            formData.type === CheckParameterType.QUANTITIVE
+            formData.type === CheckParameterType.QUANTITATIVE
               ? formData.min
               : undefined,
 
           max:
-            formData.type === CheckParameterType.QUANTITIVE
+            formData.type === CheckParameterType.QUANTITATIVE
               ? formData.max
               : undefined,
 
@@ -216,8 +216,8 @@ export default function UpdateQualityCheck({
               onChange={field.onChange}
               options={[
                 {
-                  value: CheckParameterType.QUANTITIVE,
-                  label: "Quantitive",
+                  value: CheckParameterType.QUANTITATIVE,
+                  label: "Quantitative",
                 },
                 {
                   value: CheckParameterType.QUALITATIVE,
@@ -233,7 +233,7 @@ export default function UpdateQualityCheck({
 
         {/* QUANTITIVE */}
 
-        {parameterType === CheckParameterType.QUANTITIVE && (
+        {parameterType === CheckParameterType.QUANTITATIVE && (
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <TextInput
               label="Minimum Value"
