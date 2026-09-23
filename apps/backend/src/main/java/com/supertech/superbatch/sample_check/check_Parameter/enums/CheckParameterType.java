@@ -1,7 +1,7 @@
-package com.supertech.superbatch.sample_check.check_Parameter.enums;
+package com.supertech.superbatch.sample_check.check_parameter.enums;
 
 public enum CheckParameterType {
-    QUANTITIVE,
+    QUANTITATIVE,
     QUALITATIVE
 
 }

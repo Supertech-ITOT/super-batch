@@ -1,4 +1,4 @@
-package com.supertech.superbatch.sample_check.material_Correction.entity;
+package com.supertech.superbatch.sample_check.material_correction.entity;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +14,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class MaterialCorrection {
 
     @Id
@@ -26,8 +27,6 @@ public class MaterialCorrection {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "batch_sop_id")
     private BatchSOP batchSOP;
-
-    private Integer loop;
 
     private LocalDateTime sampleDateTime;
 

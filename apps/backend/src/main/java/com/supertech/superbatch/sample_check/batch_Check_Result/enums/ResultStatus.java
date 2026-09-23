@@ -1,4 +1,4 @@
-package com.supertech.superbatch.sample_check.batch_Check_Result.enums;
+package com.supertech.superbatch.sample_check.batch_check_result.enums;
 
 public enum ResultStatus {
     PASS,

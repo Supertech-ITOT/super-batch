@@ -1,8 +1,8 @@
-package com.supertech.superbatch.sample_check.batch_Check_Result.entity;
+package com.supertech.superbatch.sample_check.batch_check_result.entity;
 
-import com.supertech.superbatch.sample_check.batch_Check.entity.BatchCheck;
-import com.supertech.superbatch.sample_check.batch_Check_Result.enums.ResultStatus;
-import com.supertech.superbatch.sample_check.check_Parameter.entity.CheckParameter;
+import com.supertech.superbatch.sample_check.batch_check.entity.BatchCheck;
+import com.supertech.superbatch.sample_check.batch_check_result.enums.ResultStatus;
+import com.supertech.superbatch.sample_check.check_parameter.entity.CheckParameter;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,6 +12,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class BatchCheckResult {
 
     @Id

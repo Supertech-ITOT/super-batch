@@ -1,9 +1,9 @@
-package com.supertech.superbatch.sample_check.check_Parameter.service;
+package com.supertech.superbatch.sample_check.check_parameter.service;
 
 import java.util.List;
 
-import com.supertech.superbatch.sample_check.check_Parameter.dto.CheckParameterRequest;
-import com.supertech.superbatch.sample_check.check_Parameter.dto.CheckParameterResponse;
+import com.supertech.superbatch.sample_check.check_parameter.dto.CheckParameterRequest;
+import com.supertech.superbatch.sample_check.check_parameter.dto.CheckParameterResponse;
 
 public interface CheckParameterService {
 

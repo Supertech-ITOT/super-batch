@@ -1,4 +1,4 @@
-package com.supertech.superbatch.sample_check.check_Parameter.service.impl;
+package com.supertech.superbatch.sample_check.check_parameter.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,13 +16,13 @@ import com.supertech.superbatch.manager.user.repository.UserRepository;
 import com.supertech.superbatch.plant.material.entity.Material;
 import com.supertech.superbatch.plant.material.enums.MaterialType;
 import com.supertech.superbatch.plant.material.repository.MaterialRepository;
-import com.supertech.superbatch.sample_check.check_Parameter.dto.CheckParameterAudit;
-import com.supertech.superbatch.sample_check.check_Parameter.dto.CheckParameterRequest;
-import com.supertech.superbatch.sample_check.check_Parameter.dto.CheckParameterResponse;
-import com.supertech.superbatch.sample_check.check_Parameter.entity.CheckParameter;
-import com.supertech.superbatch.sample_check.check_Parameter.mapper.CheckParameterMapper;
-import com.supertech.superbatch.sample_check.check_Parameter.repository.CheckParameterRepository;
-import com.supertech.superbatch.sample_check.check_Parameter.service.CheckParameterService;
+import com.supertech.superbatch.sample_check.check_parameter.dto.CheckParameterAudit;
+import com.supertech.superbatch.sample_check.check_parameter.dto.CheckParameterRequest;
+import com.supertech.superbatch.sample_check.check_parameter.dto.CheckParameterResponse;
+import com.supertech.superbatch.sample_check.check_parameter.entity.CheckParameter;
+import com.supertech.superbatch.sample_check.check_parameter.mapper.CheckParameterMapper;
+import com.supertech.superbatch.sample_check.check_parameter.repository.CheckParameterRepository;
+import com.supertech.superbatch.sample_check.check_parameter.service.CheckParameterService;
 import com.supertech.superbatch.sample_check.check_parameter_options.entity.CheckParameterOptions;
 import com.supertech.superbatch.sample_check.check_parameter_options.repository.CheckParameterOptionsRepository;
 import lombok.*;

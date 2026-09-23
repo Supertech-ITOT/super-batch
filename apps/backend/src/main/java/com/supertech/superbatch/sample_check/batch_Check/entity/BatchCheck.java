@@ -1,10 +1,12 @@
-package com.supertech.superbatch.sample_check.batch_Check.entity;
+package com.supertech.superbatch.sample_check.batch_check.entity;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import com.supertech.superbatch.batch.batch.entity.Batch;
 import com.supertech.superbatch.batch.batch_sop.entity.BatchSOP;
-import com.supertech.superbatch.plant.unit.entity.Unit;
+import com.supertech.superbatch.sample_check.batch_check_result.entity.BatchCheckResult;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,11 +30,11 @@ public class BatchCheck {
     @JoinColumn(name = "batch_sop_id")
     private BatchSOP batchSOP;
 
-    private Integer loop;
-
     private LocalDateTime sampleDateTime;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Unit unit;
+    @OneToMany(mappedBy = "batchCheck", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
+    @Builder.Default
+    private Set<BatchCheckResult> results = new LinkedHashSet<>();
 
 }

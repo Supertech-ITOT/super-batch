@@ -1,6 +1,6 @@
-package com.supertech.superbatch.sample_check.check_Parameter.dto;
+package com.supertech.superbatch.sample_check.check_parameter.dto;
 
-import com.supertech.superbatch.sample_check.check_Parameter.entity.CheckParameter;
+import com.supertech.superbatch.sample_check.check_parameter.entity.CheckParameter;
 
 import lombok.Builder;
 

@@ -1,7 +1,9 @@
-package com.supertech.superbatch.sample_check.check_Parameter.dto;
+package com.supertech.superbatch.sample_check.check_parameter.dto;
 
 import java.util.List;
-import com.supertech.superbatch.sample_check.check_Parameter.enums.CheckParameterType;
+
+import com.supertech.superbatch.sample_check.check_parameter.enums.CheckParameterType;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

@@ -1,11 +1,10 @@
-package com.supertech.superbatch.sample_check.check_Parameter.entity;
+package com.supertech.superbatch.sample_check.check_parameter.entity;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import com.supertech.superbatch.common.enums.UomType;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.plant.material.entity.Material;
-import com.supertech.superbatch.sample_check.check_Parameter.enums.CheckParameterType;
+import com.supertech.superbatch.sample_check.check_parameter.enums.CheckParameterType;
 import com.supertech.superbatch.sample_check.check_parameter_options.entity.CheckParameterOptions;
 
 import jakarta.persistence.*;
@@ -25,9 +24,6 @@ public class CheckParameter {
 
     @Column(nullable = false, length = 100)
     private String name;
-
-    @Enumerated(EnumType.STRING)
-    private UomType uom;
 
     private Double min;
 

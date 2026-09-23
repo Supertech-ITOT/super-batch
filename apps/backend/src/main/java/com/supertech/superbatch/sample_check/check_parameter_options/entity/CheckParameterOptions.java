@@ -1,6 +1,6 @@
 package com.supertech.superbatch.sample_check.check_parameter_options.entity;
 
-import com.supertech.superbatch.sample_check.check_Parameter.entity.CheckParameter;
+import com.supertech.superbatch.sample_check.check_parameter.entity.CheckParameter;
 
 import jakarta.persistence.*;
 import lombok.*;

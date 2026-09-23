@@ -1,4 +1,4 @@
-package com.supertech.superbatch.sample_check.check_Parameter.controller;
+package com.supertech.superbatch.sample_check.check_parameter.controller;
 
 import java.util.List;
 
@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.supertech.superbatch.common.dto.ApiResponse;
-import com.supertech.superbatch.sample_check.check_Parameter.dto.CheckParameterRequest;
-import com.supertech.superbatch.sample_check.check_Parameter.dto.CheckParameterResponse;
-import com.supertech.superbatch.sample_check.check_Parameter.service.CheckParameterService;
+import com.supertech.superbatch.sample_check.check_parameter.dto.CheckParameterRequest;
+import com.supertech.superbatch.sample_check.check_parameter.dto.CheckParameterResponse;
+import com.supertech.superbatch.sample_check.check_parameter.service.CheckParameterService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
