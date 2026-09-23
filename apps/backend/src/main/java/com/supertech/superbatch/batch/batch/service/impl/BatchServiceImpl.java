@@ -2,21 +2,30 @@ package com.supertech.superbatch.batch.batch.service.impl;
 
 import com.supertech.superbatch.batch.batch_sop.mapper.BatchSOPMapper;
 import com.supertech.superbatch.batch.batch_sop.repository.BatchSOPRepository;
+import com.supertech.superbatch.batch.batch_sop_material.entity.BatchSOPMaterial;
+import com.supertech.superbatch.batch.batch_sop_parameter.entity.BatchSOPParameter;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.supertech.superbatch.batch.batch.dto.BatchResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchSOPResponse;
+import com.supertech.superbatch.batch.batch.dto.MaterialRequest;
 import com.supertech.superbatch.batch.batch.dto.MaterialResponse;
+import com.supertech.superbatch.batch.batch.dto.ParameterRequest;
 import com.supertech.superbatch.batch.batch.dto.ParameterResponse;
 import com.supertech.superbatch.batch.batch.dto.RecipeInfoResponse;
+import com.supertech.superbatch.batch.batch.dto.StepChangeRequest;
 import com.supertech.superbatch.batch.batch.dto.StepResponse;
 import com.supertech.superbatch.batch.batch.entity.Batch;
 import com.supertech.superbatch.batch.batch.enums.BatchStatus;
+import com.supertech.superbatch.batch.batch.enums.StepChangeDirection;
 import com.supertech.superbatch.batch.batch.mapper.BatchMapper;
 import com.supertech.superbatch.batch.batch.repository.BatchRepository;
 import com.supertech.superbatch.batch.batch.service.BatchService;
@@ -191,23 +200,18 @@ public class BatchServiceImpl implements BatchService {
                                                         .criteriaName(sop.getTransition().getName())
                                                         .actionId(sop.getAction().getId())
                                                         .actionName(sop.getAction().getName())
-                                                        .fromEquipmentId(
-                                                                        sop.getFromEquipment() != null
-                                                                                        ? sop.getFromEquipment().getId()
-                                                                                        : null)
-                                                        .fromEquipmentName(
-                                                                        sop.getFromEquipment() != null
-                                                                                        ? sop.getFromEquipment()
-                                                                                                        .getName()
-                                                                                        : null)
-                                                        .toEquipmentId(
-                                                                        sop.getToEquipment() != null
-                                                                                        ? sop.getToEquipment().getId()
-                                                                                        : null)
-                                                        .toEquipmentName(
-                                                                        sop.getToEquipment() != null
-                                                                                        ? sop.getToEquipment().getName()
-                                                                                        : null)
+                                                        .fromEquipmentId(sop.getFromEquipment() != null
+                                                                        ? sop.getFromEquipment().getId()
+                                                                        : null)
+                                                        .fromEquipmentName(sop.getFromEquipment() != null
+                                                                        ? sop.getFromEquipment().getName()
+                                                                        : null)
+                                                        .toEquipmentId(sop.getToEquipment() != null
+                                                                        ? sop.getToEquipment().getId()
+                                                                        : null)
+                                                        .toEquipmentName(sop.getToEquipment() != null
+                                                                        ? sop.getToEquipment().getName()
+                                                                        : null)
                                                         .stdTime(sop.getStdTime())
                                                         .message(sop.getMessage())
                                                         .startDateTime(sop.getStartDateTime())
@@ -218,9 +222,7 @@ public class BatchServiceImpl implements BatchService {
                                 })
                                 .toList();
 
-                return BatchResponse.builder()
-                                .steps(steps)
-                                .build();
+                return BatchResponse.builder().steps(steps).build();
         }
 
         @Override
@@ -258,6 +260,90 @@ public class BatchServiceImpl implements BatchService {
                 }
                 batch.setStatus(BatchStatus.READY);
                 batchRepository.save(batch);
+        }
+
+        @Override
+        @Transactional
+        public void onStepChange(String batchNo, StepChangeRequest req) {
+                Batch batch = batchRepository.findByBatchNo(batchNo)
+                                .orElseThrow(() -> new ResourceNotFoundException("Batch not found."));
+                BatchSOP step = batch.getSops().stream()
+                                .filter(sop -> sop.getStepNo().equals(req.stepNo()))
+                                .findFirst()
+                                .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
+                LocalDateTime now = LocalDateTime.now();
+
+                if (req.direction() == StepChangeDirection.NEXT) {
+                        if (step.getTransition().getName().equals(TransitionType.AUTO_MATERIAL_CHARGE.getDisplayName())
+                                        || step.getTransition().getName().equals(
+                                                        TransitionType.MANUAL_MATERIAL_CHARGE.getDisplayName())) {
+
+                                if (req.materialRequests() == null || req.materialRequests().isEmpty()) {
+                                        throw new BadRequestException(
+                                                        "Material Qty is required in Transition criteria auto material charge and manual material charge.");
+                                }
+                        }
+                        for (BatchSOPMaterial material : step.getMaterials()) {
+                                MaterialRequest request = req.materialRequests().stream()
+                                                .filter(item -> material.getMaterial().getId()
+                                                                .equals(item.materialId()))
+                                                .findFirst()
+                                                .orElse(null);
+
+                                material.setActQty(request != null ? request.actQty() : 0.0);
+                        }
+
+                        List<ParameterRequest> parameterRequests = req.parameterRequests() != null
+                                        ? req.parameterRequests()
+                                        : List.of();
+
+                        Set<Long> stepParameterIds = step.getParameters().stream()
+                                        .map(parameter -> parameter.getParameter().getId())
+                                        .collect(Collectors.toSet());
+
+                        // Validate that supplied parameters belong to this step
+                        for (ParameterRequest request : parameterRequests) {
+                                if (!stepParameterIds.contains(request.parameterId())) {
+                                        throw new BadRequestException("Parameter does not belong to this step: "
+                                                        + request.parameterId());
+                                }
+                        }
+
+                        // Validate that every step parameter was provided
+                        for (BatchSOPParameter parameter : step.getParameters()) {
+
+                                ParameterRequest request = parameterRequests.stream()
+                                                .filter(item -> parameter.getParameter().getId()
+                                                                .equals(item.parameterId()))
+                                                .findFirst()
+                                                .orElseThrow(() -> new BadRequestException(
+                                                                "Parameter is required for this step: "
+                                                                                + parameter.getParameter().getName()));
+
+                                parameter.setActValue(request.actValue());
+                        }
+                        step.setEndDateTime(now);
+                        if (step.getStartDateTime() != null) {
+                                step.setActTime(Duration.between(step.getStartDateTime(), now).toMillis() / 60000.0);
+                        }
+
+                        // Check for end step
+                        if (step.getTransition().getName().equals(TransitionType.RELEASE_EQUIPMENT.getDisplayName())) {
+                                batch.setEndDateTime(now);
+                                batch.setStatus(BatchStatus.COMPLETED);
+
+                        } else {
+                                BatchSOP nextStep = batch.getSops().stream()
+                                                .filter(sop -> sop.getStepNo().equals(req.stepNo() + 1))
+                                                .findFirst()
+                                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                                "Step not found."));
+
+                                nextStep.setStartDateTime(now);
+                        }
+                        batchRepository.save(batch);
+                }
+
         }
 
 }

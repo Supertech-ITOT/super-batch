@@ -13,12 +13,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.supertech.superbatch.batch.batch.dto.BatchResponse;
+import com.supertech.superbatch.batch.batch.dto.BatchSOPResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchStepRemarkRequest;
 import com.supertech.superbatch.batch.batch.dto.RecipeInfoResponse;
+import com.supertech.superbatch.batch.batch.dto.StepChangeRequest;
 import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 import com.supertech.superbatch.batch.batch.service.BatchService;
 import com.supertech.superbatch.common.dto.ApiResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -87,35 +90,40 @@ public class BatchController {
     @GetMapping("/{batchNo}/recipe-info")
     public ResponseEntity<ApiResponse<RecipeInfoResponse>> getRecipeInfoByBatchNo(
             @PathVariable String batchNo) {
-
         RecipeInfoResponse recipeInfo = batchService.getRecipeInfoByBatchNo(batchNo);
         return ResponseEntity.ok(
                 ApiResponse.success("Recipe information fetched successfully", recipeInfo));
     }
 
     @GetMapping("/{batchNo}/steps/{stepNo}")
-    public ResponseEntity<ApiResponse<?>> getStepInfoByBatchNoAndStepNo(
-            @PathVariable String batchNo,
+    public ResponseEntity<ApiResponse<?>> getStepInfoByBatchNoAndStepNo(@PathVariable String batchNo,
             @PathVariable Integer stepNo) {
-
-        return ResponseEntity.ok(
-                ApiResponse.success("Step information fetched successfully", null));
+        BatchSOPResponse res = batchService.getStepInfoByBatchNoAndStepNo(batchNo, stepNo);
+        return ResponseEntity.ok(ApiResponse.success("Step information fetched successfully", res));
     }
 
     @GetMapping("/batch-nos")
     public ResponseEntity<ApiResponse<List<String>>> getBatchNos(
             @RequestParam String unitCode,
             @RequestParam BatchStatus status) {
-
         List<String> batchNos = batchService.getBatchNos(unitCode, status);
-        return ResponseEntity.ok(
-                ApiResponse.success("Batch number fetched successfully", batchNos));
+        return ResponseEntity.ok(ApiResponse.success("Batch number fetched successfully", batchNos));
     }
 
     @PostMapping("/{batchNo}/download")
     public ResponseEntity<ApiResponse<Void>> download(@PathVariable String batchNo) {
         batchService.download(batchNo);
         return ResponseEntity.ok(ApiResponse.success("Batch downloaded successfully", null));
+    }
+
+    @PostMapping("/{batchNo}/step-change")
+    public ResponseEntity<ApiResponse<Void>> onStepChange(
+            @PathVariable String batchNo,
+            @Valid @RequestBody StepChangeRequest request) {
+
+        batchService.onStepChange(batchNo, request);
+
+        return ResponseEntity.ok(ApiResponse.success("Step changed successfully", null));
     }
 
 }

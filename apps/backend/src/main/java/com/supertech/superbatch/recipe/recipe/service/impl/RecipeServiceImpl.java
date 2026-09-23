@@ -18,8 +18,10 @@ import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
+import com.supertech.superbatch.plant.action.enums.ActionType;
 import com.supertech.superbatch.plant.material.entity.Material;
 import com.supertech.superbatch.plant.material.repository.MaterialRepository;
+import com.supertech.superbatch.plant.transition.enums.TransitionType;
 import com.supertech.superbatch.plant.unit.entity.Unit;
 import com.supertech.superbatch.plant.unit.enums.RecipeQuantityType;
 import com.supertech.superbatch.plant.unit.repository.UnitRepository;
@@ -32,6 +34,7 @@ import com.supertech.superbatch.recipe.recipe.enums.RecipeStatus;
 import com.supertech.superbatch.recipe.recipe.mapper.RecipeMapper;
 import com.supertech.superbatch.recipe.recipe.repository.RecipeRepository;
 import com.supertech.superbatch.recipe.recipe.service.RecipeService;
+import com.supertech.superbatch.recipe.recipe_sop.entity.RecipeSOP;
 import com.supertech.superbatch.recipe.recipe_sop.repository.RecipeSOPRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -168,6 +171,28 @@ public class RecipeServiceImpl implements RecipeService {
 
         private void validateRelease(Recipe recipe) {
 
+                // Last Step
+                List<RecipeSOP> sops = recipeSOPRepository.findWithRelationsByRecipeId(recipe.getId());
+
+                if (sops == null || sops.isEmpty()) {
+                        throw new BadRequestException("Recipe must contain at least one step.");
+                }
+
+                RecipeSOP lastStep = sops.stream()
+                                .max(Comparator.comparing(RecipeSOP::getStepNo))
+                                .orElseThrow(() -> new BadRequestException("step not found."));
+
+                if (!lastStep.getTransition().getName()
+                                .equals(TransitionType.RELEASE_EQUIPMENT.getDisplayName())) {
+                        throw new BadRequestException("The last step must have Release Equipment transition.");
+                }
+
+                if (!lastStep.getAction().getName().equals(ActionType.OPERATOR_ACTION.getDisplayName())) {
+                        throw new BadRequestException("The last step must have Operator Action.");
+                }
+
+                // Material Check
+
                 Double totalMaterialValue = recipeSOPRepository.getTotalMaterialQtyByRecipeId(recipe.getId());
 
                 RecipeQuantityType quantityType = recipe.getUnit().getRecipeQuantityType();
@@ -191,5 +216,6 @@ public class RecipeServiceImpl implements RecipeService {
                                                 totalMaterialValue));
                         }
                 }
+
         }
 }

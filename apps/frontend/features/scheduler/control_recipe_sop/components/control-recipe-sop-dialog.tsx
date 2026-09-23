@@ -91,7 +91,9 @@ export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlReci
     if (!selectedTransition || !parentEq) return;
     if (transferStep) {
       setValue("fromEquipmentId", parentEq.id);
+      setValue("toEquipmentId", 0);
     } else {
+      setValue("fromEquipmentId", null);
       setValue("toEquipmentId", parentEq.id);
     }
   }, [selectedTransition, parentEq, transferStep, setValue]);

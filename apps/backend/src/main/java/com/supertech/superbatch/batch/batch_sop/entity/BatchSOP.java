@@ -65,10 +65,12 @@ public class BatchSOP {
     private String remark;
 
     @OneToMany(mappedBy = "batchSOP", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
     @Builder.Default
     private Set<BatchSOPMaterial> materials = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "batchSOP", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
     @Builder.Default
     private Set<BatchSOPParameter> parameters = new LinkedHashSet<>();
 }

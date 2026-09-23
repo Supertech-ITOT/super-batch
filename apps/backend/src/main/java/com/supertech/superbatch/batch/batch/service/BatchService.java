@@ -4,6 +4,7 @@ import java.util.List;
 import com.supertech.superbatch.batch.batch.dto.BatchResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchSOPResponse;
 import com.supertech.superbatch.batch.batch.dto.RecipeInfoResponse;
+import com.supertech.superbatch.batch.batch.dto.StepChangeRequest;
 import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 
 public interface BatchService {
@@ -28,5 +29,7 @@ public interface BatchService {
     BatchSOPResponse getStepInfoByBatchNoAndStepNo(String batchNo, Integer stepNo);
 
     List<String> getBatchNos(String unitCode, BatchStatus status);
+
+    void onStepChange(String batchNo, StepChangeRequest req);
 
 }

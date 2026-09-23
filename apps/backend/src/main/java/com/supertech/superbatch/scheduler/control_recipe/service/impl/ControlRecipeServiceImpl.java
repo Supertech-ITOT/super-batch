@@ -26,9 +26,11 @@ import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
 import com.supertech.superbatch.manager.user.entity.User;
 import com.supertech.superbatch.manager.user.repository.UserRepository;
+import com.supertech.superbatch.plant.action.enums.ActionType;
 import com.supertech.superbatch.plant.equipment.entity.Equipment;
 import com.supertech.superbatch.plant.equipment.enums.EquipmentType;
 import com.supertech.superbatch.plant.equipment.repository.EquipmentRepository;
+import com.supertech.superbatch.plant.transition.enums.TransitionType;
 import com.supertech.superbatch.plant.unit.entity.Unit;
 import com.supertech.superbatch.plant.unit.repository.UnitRepository;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
@@ -44,6 +46,7 @@ import com.supertech.superbatch.scheduler.control_recipe.enums.ControlRecipeStat
 import com.supertech.superbatch.scheduler.control_recipe.mapper.ControlRecipeMapper;
 import com.supertech.superbatch.scheduler.control_recipe.repository.ControlRecipeRepository;
 import com.supertech.superbatch.scheduler.control_recipe.service.ControlRecipeService;
+import com.supertech.superbatch.scheduler.control_recipe_sop.entity.ControlRecipeSOP;
 import com.supertech.superbatch.scheduler.control_recipe_sop.repository.ControlRecipeSOPRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -203,6 +206,28 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
         @Transactional
         public void transfer(Long id) {
                 ControlRecipe controlRecipe = getControlRecipe(id);
+
+                // Last Step
+                List<ControlRecipeSOP> sops = controlRecipeSOPRepository.findWithRelationsByControlRecipeId(id);
+
+                if (sops == null || sops.isEmpty()) {
+                        throw new BadRequestException("Control Recipe must contain at least one step.");
+                }
+
+                ControlRecipeSOP lastStep = sops.stream()
+                                .max(Comparator.comparing(ControlRecipeSOP::getStepNo))
+                                .orElseThrow(() -> new BadRequestException("step not found."));
+
+                if (!lastStep.getTransition().getName()
+                                .equals(TransitionType.RELEASE_EQUIPMENT.getDisplayName())) {
+                        throw new BadRequestException("The last step must have Release Equipment transition.");
+                }
+
+                if (!lastStep.getAction().getName().equals(ActionType.OPERATOR_ACTION.getDisplayName())) {
+                        throw new BadRequestException("The last step must have Operator Action.");
+                }
+
+                // Material Check
                 if (controlRecipe.getStatus() == ControlRecipeStatus.TRANSFERRED) {
                         throw new ResourceNotFoundException("Already transferred.");
                 }
