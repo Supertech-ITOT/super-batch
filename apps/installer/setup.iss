@@ -9,7 +9,6 @@
 #include "code\postgresql-installation.iss"
 #include "code\application-configuration.iss"
 #include "code\nssm-installation.iss"
-#include "code\odbc-installation.iss"
 
 procedure InitializeWizard;
 begin
@@ -102,7 +101,6 @@ begin
       CreateApplicationProperties;
       UpdateFrontendConfig;
       InstallSuperBatchServices;
-      InstallSuperBatchODBC;
     end;
   end;
 end;
@@ -159,9 +157,6 @@ Source: "dist\v1.0.0\nssm\nssm.exe"; \
 Source: "dist\v1.0.0\desktop\*"; \
     DestDir: "{app}\desktop"; \
     Flags: recursesubdirs createallsubdirs; \
-
-Source: "dist\v1.0.0\psqlodbc-setup.exe"; \
-    Flags: dontcopy
 
 [Run]
 
