@@ -20,6 +20,8 @@ import {
   ClipboardCheck,
   ListChecks,
   LucideClipboardCheck,
+  Layers3,
+  MessageCircleCode,
 } from "lucide-react";
 
 export enum ModuleType {
@@ -29,6 +31,7 @@ export enum ModuleType {
   SCHEDULER = "SCHEDULER",
   AUDIT = "AUDIT",
   SAMPLE_CHECK = "SAMPLE_CHECK",
+  BATCH = "BATCH",
 }
 
 export interface ModuleResponse {
@@ -104,7 +107,17 @@ export const OperationRoutes: RouteType[] = [
     icon: LucideClipboardCheck,
     module: ModuleType.SAMPLE_CHECK,
     description:
-      "Review audit trails, user activities, and system change history.",
+      "Configure and manage sample checks, parameters, and quality verification requirements.",
+    hide: true,
+  },
+  {
+    label: "Batch",
+    short: "Batch",
+    path: "/Batch",
+    icon: Layers3,
+    module: ModuleType.BATCH,
+    description:
+      "Execute and monitor production batches, including batch status, steps, and execution progress.",
     hide: true,
   },
 ];
@@ -143,6 +156,7 @@ export const EntityItems = [
   { type: "BATCH", label: "Batch", icon: Package },
   { type: "CHECK_PARAMETER", label: "Check Parameter", icon: ListChecks },
   { type: "SAMPLE_CHECK", label: "Sample Check", icon: ClipboardCheck },
+  { type: "MESSAGE", label: "Message", icon: MessageCircleCode },
 ];
 
 export const EntityItemMap = Object.fromEntries(

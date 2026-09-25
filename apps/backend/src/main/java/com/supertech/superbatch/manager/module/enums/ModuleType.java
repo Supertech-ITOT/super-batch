@@ -7,7 +7,8 @@ public enum ModuleType {
     RECIPE(3L),
     SCHEDULER(4L),
     AUDIT(5L),
-    SAMPLE_CHECK(6L);
+    SAMPLE_CHECK(6L),
+    BATCH(7L);
 
     private final Long id;
 

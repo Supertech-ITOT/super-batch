@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.supertech.superbatch.batch.batch.dto.BatchAuditData;
 import com.supertech.superbatch.batch.batch.dto.MaterialResponse;
 import com.supertech.superbatch.batch.batch.dto.ParameterResponse;
 import com.supertech.superbatch.batch.batch.dto.RecipeInfoResponse;
@@ -112,4 +113,13 @@ public class BatchMapper {
                 .build();
     }
 
+    public BatchAuditData copy(Batch batch) {
+        return BatchAuditData.builder()
+                .id(batch.getId())
+                .batchNo(batch.getBatchNo())
+                .status(batch.getStatus())
+                .startDateTime(batch.getStartDateTime())
+                .endDateTime(batch.getEndDateTime())
+                .build();
+    }
 }

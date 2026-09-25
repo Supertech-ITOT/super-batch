@@ -8,6 +8,8 @@ import com.supertech.superbatch.audit.dto.BatchAuditRequest;
 import com.supertech.superbatch.audit.dto.BatchAuditResponse;
 import com.supertech.superbatch.audit.dto.BatchAuditUserResponse;
 import com.supertech.superbatch.audit.entity.BatchAudit;
+import com.supertech.superbatch.batch.batch.dto.BatchAuditData;
+import com.supertech.superbatch.batch.batch.entity.Batch;
 import com.supertech.superbatch.manager.module.entity.Module;
 import com.supertech.superbatch.manager.user.entity.User;
 import lombok.RequiredArgsConstructor;

@@ -11,5 +11,6 @@ public enum BatchAuditAction {
     BATCH_RESUME,
     BATCH_PAUSE,
     BATCH_ABORT,
-    BATCH_COMPLETE
+    BATCH_COMPLETE,
+    BATCH_READY
 }

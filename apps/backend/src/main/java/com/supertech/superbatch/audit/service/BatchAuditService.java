@@ -11,4 +11,5 @@ public interface BatchAuditService {
     Page<BatchAuditResponse> getAll(BatchAuditSearchRequest request);
 
     BatchAuditResponse getById(Long id);
+
 }

@@ -15,6 +15,10 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.supertech.superbatch.audit.dto.BatchAuditRequest;
+import com.supertech.superbatch.audit.enums.BatchAuditAction;
+import com.supertech.superbatch.audit.service.BatchAuditService;
+import com.supertech.superbatch.batch.batch.dto.BatchAuditData;
 import com.supertech.superbatch.batch.batch.dto.BatchResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchSOPResponse;
 import com.supertech.superbatch.batch.batch.dto.MaterialRequest;
@@ -33,6 +37,8 @@ import com.supertech.superbatch.batch.batch_sop.entity.BatchSOP;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
+import com.supertech.superbatch.manager.module.enums.EntityType;
+import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.plant.transition.enums.TransitionType;
 
 import lombok.RequiredArgsConstructor;
@@ -46,6 +52,7 @@ public class BatchServiceImpl implements BatchService {
         private final BatchMapper batchMapper;
         private final BatchSOPRepository batchSOPRepository;
         private final BatchValidator batchValidator;
+        private final BatchAuditService batchAuditService;
 
         @Override
         @Transactional
@@ -54,11 +61,14 @@ public class BatchServiceImpl implements BatchService {
                 if (batch.getStatus() != BatchStatus.READY) {
                         throw new BadRequestException("Batch is not ready to start");
                 }
+                BatchAuditData oldData = batchMapper.copy(batch);
                 batch.setStatus(BatchStatus.IN_PROGRESS);
                 batch.setStartDateTime(LocalDateTime.now());
                 BatchSOP firstStep = getStep(batch, 1, batchNo);
                 firstStep.setStartDateTime(LocalDateTime.now());
                 batchRepository.save(batch);
+                BatchAuditData newData = batchMapper.copy(batch);
+                audit(BatchAuditAction.BATCH_START, oldData, newData);
         }
 
         @Override
@@ -68,9 +78,12 @@ public class BatchServiceImpl implements BatchService {
                 if (batch.getStatus() != BatchStatus.IN_PROGRESS) {
                         throw new BadRequestException("Only an in-progress batch can be paused");
                 }
+                BatchAuditData oldData = batchMapper.copy(batch);
                 remark(batchNo, stepNo, remark);
                 batch.setStatus(BatchStatus.PAUSED);
                 batchRepository.save(batch);
+                BatchAuditData newData = batchMapper.copy(batch);
+                audit(BatchAuditAction.BATCH_PAUSE, oldData, newData);
         }
 
         @Override
@@ -80,10 +93,13 @@ public class BatchServiceImpl implements BatchService {
                 if (batch.getStatus() != BatchStatus.PAUSED) {
                         throw new BadRequestException("Batch is not paused");
                 }
+                BatchAuditData oldData = batchMapper.copy(batch);
                 BatchSOP step = getStep(batch, stepNo, batchNo);
                 step.setStartDateTime(LocalDateTime.now());
                 batch.setStatus(BatchStatus.IN_PROGRESS);
                 batchRepository.save(batch);
+                BatchAuditData newData = batchMapper.copy(batch);
+                audit(BatchAuditAction.BATCH_RESUME, oldData, newData);
         }
 
         @Override
@@ -94,10 +110,13 @@ public class BatchServiceImpl implements BatchService {
                         throw new BadRequestException(
                                         "Batch cannot be aborted from current status: " + batch.getStatus());
                 }
+                BatchAuditData oldData = batchMapper.copy(batch);
                 remark(batchNo, stepNo, remark);
                 batch.setStatus(BatchStatus.ABORTED);
                 batch.setEndDateTime(LocalDateTime.now());
                 batchRepository.save(batch);
+                BatchAuditData newData = batchMapper.copy(batch);
+                audit(BatchAuditAction.BATCH_ABORT, oldData, newData);
         }
 
         @Override
@@ -150,8 +169,11 @@ public class BatchServiceImpl implements BatchService {
                 if (batch.getStatus() != BatchStatus.TRANSFERRED) {
                         throw new BadRequestException("Batch is not transferred to download.");
                 }
+                BatchAuditData oldData = batchMapper.copy(batch);
                 batch.setStatus(BatchStatus.READY);
                 batchRepository.save(batch);
+                BatchAuditData newData = batchMapper.copy(batch);
+                audit(BatchAuditAction.BATCH_READY, oldData, newData);
         }
 
         @Override
@@ -159,6 +181,7 @@ public class BatchServiceImpl implements BatchService {
         public void onStepChange(String batchNo, StepChangeRequest req) {
                 if (req.direction() == StepChangeDirection.NEXT) {
                         Batch batch = getBatchByBatchNo(batchNo);
+                        BatchAuditData oldData = batchMapper.copy(batch);
                         BatchSOP step = getStep(batch, req.stepNo(), batchNo);
                         LocalDateTime now = LocalDateTime.now();
 
@@ -177,12 +200,16 @@ public class BatchServiceImpl implements BatchService {
                         if (step.getTransition().getName().equals(TransitionType.RELEASE_EQUIPMENT.getDisplayName())) {
                                 batch.setEndDateTime(now);
                                 batch.setStatus(BatchStatus.COMPLETED);
-
                         } else {
                                 BatchSOP nextStep = getStep(batch, req.stepNo() + 1, batchNo);
                                 nextStep.setStartDateTime(now);
                         }
                         batchRepository.save(batch);
+
+                        if (batch.getStatus() == BatchStatus.COMPLETED) {
+                                BatchAuditData newData = batchMapper.copy(batch);
+                                audit(BatchAuditAction.BATCH_COMPLETE, oldData, newData);
+                        }
                 }
 
         }
@@ -221,6 +248,17 @@ public class BatchServiceImpl implements BatchService {
                                 .findFirst()
                                 .orElseThrow(() -> new ResourceNotFoundException(
                                                 "Step " + stepNo + " not found for batch: " + batchNo));
+        }
+
+        private void audit(BatchAuditAction action, BatchAuditData oldData, BatchAuditData newData) {
+                batchAuditService.save(
+                                BatchAuditRequest.builder()
+                                                .entity(EntityType.BATCH)
+                                                .module(ModuleType.BATCH)
+                                                .action(action)
+                                                .oldData(oldData)
+                                                .newData(newData)
+                                                .build());
         }
 
 }
