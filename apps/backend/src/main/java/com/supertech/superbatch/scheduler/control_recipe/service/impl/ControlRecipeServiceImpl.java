@@ -241,11 +241,13 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
                                         totalMaterialQty,
                                         controlRecipe.getBatchSize()));
                 }
-
+                ControlRecipeAudit oldData = controlRecipeMapper.copy(controlRecipe);
                 Batch batch = batchMapper.toEntity(controlRecipe);
                 batchRepository.save(batch);
                 controlRecipe.setStatus(ControlRecipeStatus.TRANSFERRED);
                 controlRecipeRepository.save(controlRecipe);
+                ControlRecipeAudit newData = controlRecipeMapper.copy(controlRecipe);
+                audit(BatchAuditAction.BATCH_TRANSFERED, oldData, newData);
         }
 
         private Set<Equipment> getRecipeEquipments(Recipe recipe) {

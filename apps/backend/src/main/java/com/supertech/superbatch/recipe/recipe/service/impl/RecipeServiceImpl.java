@@ -164,9 +164,12 @@ public class RecipeServiceImpl implements RecipeService {
                 if (recipe.getStatus() == RecipeStatus.RELEASED) {
                         throw new BadRequestException("Recipe is already released.");
                 }
+                RecipeAudit oldData = recipeMapper.copy(recipe);
                 validateRelease(recipe);
                 recipe.setStatus(RecipeStatus.RELEASED);
                 recipeRepository.save(recipe);
+                RecipeAudit newData = recipeMapper.copy(recipe);
+                audit(BatchAuditAction.RECIPE_RELEASED, oldData, newData);
         }
 
         private void validateRelease(Recipe recipe) {
