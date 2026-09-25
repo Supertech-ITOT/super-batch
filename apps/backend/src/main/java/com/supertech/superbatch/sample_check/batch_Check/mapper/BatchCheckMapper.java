@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import com.supertech.superbatch.batch.batch.entity.Batch;
 import com.supertech.superbatch.batch.batch_sop.entity.BatchSOP;
 import com.supertech.superbatch.sample_check.batch_check.dto.BatchCheckResponse;
-import com.supertech.superbatch.sample_check.batch_check.dto.BatchCheckResultResponse;
 import com.supertech.superbatch.sample_check.batch_check.entity.BatchCheck;
 import com.supertech.superbatch.sample_check.batch_check_result.entity.BatchCheckResult;
 import com.supertech.superbatch.sample_check.batch_check_result.enums.ResultStatus;
@@ -17,24 +16,16 @@ import com.supertech.superbatch.sample_check.check_parameter.entity.CheckParamet
 @Component
 public class BatchCheckMapper {
 
-    public BatchCheckResponse toResponse(BatchCheck batchCheck) {
+    public BatchCheckResponse toResponse(BatchCheckResult result) {
         return BatchCheckResponse.builder()
-                .id(batchCheck.getId())
-                .batchNo(batchCheck.getBatch().getBatchNo())
-                .stepNo(batchCheck.getBatchSOP().getStepNo())
-                .sampleDateTime(batchCheck.getSampleDateTime())
-                .results(batchCheck.getResults().stream()
-                        .map(this::toResponse)
-                        .toList())
-                .build();
-    }
-
-    private BatchCheckResultResponse toResponse(BatchCheckResult batchCheckResult) {
-        return BatchCheckResultResponse.builder()
-                .id(batchCheckResult.getId())
-                .checkParameterName(batchCheckResult.getCheckParameter().getName())
-                .value(batchCheckResult.getValue())
-                .resultStatus(batchCheckResult.getResultStatus())
+                .id(result.getId())
+                .batchNo(result.getBatchCheck().getBatch().getBatchNo())
+                .stepNo(result.getBatchCheck().getBatchSOP().getStepNo())
+                .loop(result.getLoop())
+                .checkParameterName(result.getCheckParameter().getName())
+                .value(result.getValue())
+                .resultStatus(result.getResultStatus())
+                .sampleDateTime(result.getBatchCheck().getSampleDateTime())
                 .build();
     }
 
@@ -47,10 +38,11 @@ public class BatchCheckMapper {
                 .build();
     }
 
-    public BatchCheckResult toEntity(CheckParameter parameter, String value, ResultStatus status) {
+    public BatchCheckResult toEntity(CheckParameter parameter, String value, ResultStatus status, Integer loop) {
         return BatchCheckResult.builder()
                 .checkParameter(parameter)
                 .value(value)
+                .loop(loop)
                 .resultStatus(status)
                 .build();
     }

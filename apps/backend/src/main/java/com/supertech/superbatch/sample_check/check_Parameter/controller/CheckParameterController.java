@@ -58,4 +58,11 @@ public class CheckParameterController {
         checkParameterService.delete(id, currentUserId);
         return ResponseEntity.ok(ApiResponse.success("CheckParameter deleted successfully", null));
     }
+
+    @GetMapping("/product")
+    public ResponseEntity<ApiResponse<List<CheckParameterResponse>>> getByProduct(@RequestParam String product) {
+        return ResponseEntity.ok(
+                ApiResponse.success("Check parameters fetched successfully",
+                        checkParameterService.getByProduct(product)));
+    }
 }

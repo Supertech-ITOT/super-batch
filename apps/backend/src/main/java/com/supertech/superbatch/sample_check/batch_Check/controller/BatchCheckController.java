@@ -24,13 +24,13 @@ public class BatchCheckController {
     public ResponseEntity<ApiResponse<Void>> create(
             @Valid @RequestBody BatchCheckRequest request) {
         batchCheckService.create(request);
-        return ResponseEntity.ok(ApiResponse.success("Batch check created successfully", null));
+        return ResponseEntity.ok(ApiResponse.success("Batch check added successfully", null));
     }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<BatchCheckResponse>>> getByBatchNo(
-            @RequestParam String batchNo) {
-        List<BatchCheckResponse> batchChecks = batchCheckService.getByBatchNo(batchNo);
+            @RequestParam String batchNo, @RequestParam Integer stepNo) {
+        List<BatchCheckResponse> batchChecks = batchCheckService.getByBatchNoAndStepNo(batchNo, stepNo);
         return ResponseEntity.ok(ApiResponse.success("Batch checks fetched successfully", batchChecks));
     }
 }

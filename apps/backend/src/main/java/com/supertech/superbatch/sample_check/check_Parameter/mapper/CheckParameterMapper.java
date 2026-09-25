@@ -25,7 +25,7 @@ public class CheckParameterMapper {
                                 .id(checkParameter.getId())
                                 .name(checkParameter.getName())
                                 .product(checkParameter.getMaterial().getName())
-                                .type(checkParameter.getType().name())
+                                .type(checkParameter.getType())
                                 .min(checkParameter.getMin())
                                 .max(checkParameter.getMax())
                                 .options(options)

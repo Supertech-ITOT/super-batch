@@ -6,13 +6,14 @@ import lombok.Builder;
 
 @Builder
 public record MaterialCorrectionResponse(
-        Long id,
-        String batchNo,
-        Integer stepNo,
-        LocalDateTime sampleDateTime,
-        Long materialId,
-        String materialName,
-        String materialCode,
-        Double qty) {
+                Long id,
+                String batchNo,
+                Integer stepNo,
+                LocalDateTime sampleDateTime,
+                Integer loop,
+                Long materialId,
+                String materialName,
+                String materialCode,
+                Double qty) {
 
 }

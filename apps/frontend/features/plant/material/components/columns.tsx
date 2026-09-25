@@ -42,6 +42,21 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<MaterialD
         },
     },
     {
+        accessorKey: "description",
+        header: "Description",
+        meta: {
+            align: "left",
+        },
+        cell: ({ row }) => (
+            <div
+                className="wrap-break-word whitespace-normal line-clamp-2 leading-5"
+                title={row.original.name}
+            >
+                {row.original.name}
+            </div>
+        ),
+    },
+    {
         accessorKey: "materialType",
         header: "Type",
         cell: ({ row }) => {

@@ -17,4 +17,6 @@ public interface CheckParameterService {
 
     CheckParameterResponse getById(Long id);
 
+    List<CheckParameterResponse> getByProduct(String product);
+
 }

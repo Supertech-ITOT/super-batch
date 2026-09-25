@@ -19,4 +19,6 @@ public interface MaterialRepository extends JpaRepository<Material, Long> {
     Optional<Material> findByIdAndDeletedFalse(Long id);
 
     Optional<Material> findByNameIgnoreCaseAndDeletedFalse(String name);
+
+    Optional<Material> findByCodeIgnoreCaseAndDeletedFalse(String code);
 }

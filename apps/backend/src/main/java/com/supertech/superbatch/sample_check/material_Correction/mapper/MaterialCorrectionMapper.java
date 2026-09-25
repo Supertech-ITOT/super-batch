@@ -18,6 +18,7 @@ public class MaterialCorrectionMapper {
                 .batchNo(materialCorrection.getBatch().getBatchNo())
                 .stepNo(materialCorrection.getBatchSOP().getStepNo())
                 .sampleDateTime(materialCorrection.getSampleDateTime())
+                .loop(materialCorrection.getLoop())
                 .materialId(materialCorrection.getMaterial().getId())
                 .materialName(materialCorrection.getMaterial().getName())
                 .materialCode(materialCorrection.getMaterial().getCode())
@@ -25,13 +26,14 @@ public class MaterialCorrectionMapper {
                 .build();
     }
 
-    public MaterialCorrection toEntity(Batch batch, BatchSOP batchSOP, Material material, Double qty) {
+    public MaterialCorrection toEntity(Batch batch, BatchSOP batchSOP, Material material, Double qty, Integer loop) {
         return MaterialCorrection
                 .builder()
                 .batch(batch)
                 .batchSOP(batchSOP)
                 .sampleDateTime(LocalDateTime.now())
                 .material(material)
+                .loop(loop)
                 .qty(qty)
                 .build();
     }

@@ -24,13 +24,13 @@ public class MaterialCorrectionController {
     public ResponseEntity<ApiResponse<Void>> create(
             @Valid @RequestBody MaterialCorrectionRequest request) {
         materialCorrectionService.create(request);
-        return ResponseEntity.ok(ApiResponse.success("Material correction created successfully", null));
+        return ResponseEntity.ok(ApiResponse.success("Material correction added successfully", null));
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<MaterialCorrectionResponse>>> getByBatchNo(
-            @RequestParam String batchNo) {
-        List<MaterialCorrectionResponse> corrections = materialCorrectionService.getByBatchNo(batchNo);
+    public ResponseEntity<ApiResponse<List<MaterialCorrectionResponse>>> getByBatchNoAndStepNo(
+            @RequestParam String batchNo, @RequestParam Integer stepNo) {
+        List<MaterialCorrectionResponse> corrections = materialCorrectionService.getByBatchNoAndStepNo(batchNo, stepNo);
         return ResponseEntity.ok(ApiResponse.success("Material corrections fetched successfully", corrections));
     }
 }

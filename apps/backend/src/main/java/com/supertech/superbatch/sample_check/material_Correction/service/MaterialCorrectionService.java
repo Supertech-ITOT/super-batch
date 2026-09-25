@@ -8,5 +8,5 @@ import com.supertech.superbatch.sample_check.material_correction.dto.MaterialCor
 public interface MaterialCorrectionService {
     void create(MaterialCorrectionRequest request);
 
-    List<MaterialCorrectionResponse> getByBatchNo(String batchNo);
+    List<MaterialCorrectionResponse> getByBatchNoAndStepNo(String batchNo, Integer stepNo);
 }

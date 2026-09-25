@@ -18,8 +18,6 @@ public interface BatchService {
 
     void abort(String batchNo, Integer stepNo, String remark);
 
-    void complete(String batchNo, Integer stepNo);
-
     void remark(String batchNo, Integer stepNo, String remark);
 
     BatchResponse getByBatchNo(String batchNo);

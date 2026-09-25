@@ -45,7 +45,7 @@ public class CheckParameterServiceImpl implements CheckParameterService {
     @Override
     @Transactional
     public void create(CheckParameterRequest request) {
-        Material material = getFinishedProduct(request.product());
+        Material material = getFinishedProductByName(request.product());
         CheckParameter checkParameter = checkParameterMapper.toEntity(request, material);
         CheckParameter saved = checkParameterRepository.save(checkParameter);
         saveOptions(saved, request.allowedOptions(), true);
@@ -59,7 +59,7 @@ public class CheckParameterServiceImpl implements CheckParameterService {
         CheckParameter checkParameter = checkParameterRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Check parameter not found: " + id));
 
-        Material material = getFinishedProduct(request.product());
+        Material material = getFinishedProductByName(request.product());
         CheckParameterAudit oldData = checkParameterMapper.copy(checkParameter);
         checkParameterMapper.updateEntity(checkParameter, request, material);
         checkParameterOptionsRepository.deleteAll(checkParameter.getCheckParameterOptions());
@@ -102,9 +102,19 @@ public class CheckParameterServiceImpl implements CheckParameterService {
         return checkParameterMapper.toResponse(checkParameter);
     }
 
-    private Material getFinishedProduct(String product) {
+    private Material getFinishedProductByName(String product) {
 
         Material material = materialRepository.findByNameIgnoreCaseAndDeletedFalse(product)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + product));
+        if (material.getMaterialType() != MaterialType.FINISHED_PRODUCT) {
+            throw new ResourceNotFoundException("Product is not a finished product: " + product);
+        }
+        return material;
+    }
+
+    private Material getFinishedProductByCode(String product) {
+
+        Material material = materialRepository.findByCodeIgnoreCaseAndDeletedFalse(product)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + product));
         if (material.getMaterialType() != MaterialType.FINISHED_PRODUCT) {
             throw new ResourceNotFoundException("Product is not a finished product: " + product);
@@ -133,11 +143,7 @@ public class CheckParameterServiceImpl implements CheckParameterService {
         }
     }
 
-    private void audit(
-            BatchAuditAction action,
-            CheckParameterAudit oldData,
-            CheckParameterAudit newData) {
-
+    private void audit(BatchAuditAction action, CheckParameterAudit oldData, CheckParameterAudit newData) {
         batchAuditService.save(
                 BatchAuditRequest.builder()
                         .entity(EntityType.CHECK_PARAMETER)
@@ -146,5 +152,16 @@ public class CheckParameterServiceImpl implements CheckParameterService {
                         .oldData(oldData)
                         .newData(newData)
                         .build());
+    }
+
+    @Override
+    public List<CheckParameterResponse> getByProduct(String product) {
+        Material material = getFinishedProductByCode(product);
+
+        return checkParameterRepository
+                .findAllByMaterialIdAndDeletedFalseOrderByNameAsc(material.getId())
+                .stream()
+                .map(checkParameterMapper::toResponse)
+                .toList();
     }
 }

@@ -35,4 +35,6 @@ public class MaterialCorrection {
 
     private Double qty;
 
+    private Integer loop;
+
 }

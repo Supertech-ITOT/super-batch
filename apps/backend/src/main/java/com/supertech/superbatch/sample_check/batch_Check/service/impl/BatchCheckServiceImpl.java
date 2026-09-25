@@ -26,6 +26,7 @@ import com.supertech.superbatch.sample_check.batch_check.repository.BatchCheckRe
 import com.supertech.superbatch.sample_check.batch_check.service.BatchCheckService;
 import com.supertech.superbatch.sample_check.batch_check_result.entity.BatchCheckResult;
 import com.supertech.superbatch.sample_check.batch_check_result.enums.ResultStatus;
+import com.supertech.superbatch.sample_check.batch_check_result.repository.BatchCheckResultRepository;
 import com.supertech.superbatch.sample_check.check_parameter.entity.CheckParameter;
 import com.supertech.superbatch.sample_check.check_parameter.enums.CheckParameterType;
 import com.supertech.superbatch.sample_check.check_parameter.repository.CheckParameterRepository;
@@ -43,6 +44,7 @@ public class BatchCheckServiceImpl implements BatchCheckService {
     private final BatchSOPRepository batchSOPRepository;
     private final CheckParameterRepository checkParameterRepository;
     private final BatchCheckRepository batchCheckRepository;
+    private final BatchCheckResultRepository batchCheckResultRepository;
     private final BatchCheckMapper batchCheckMapper;
 
     @Override
@@ -68,8 +70,11 @@ public class BatchCheckServiceImpl implements BatchCheckService {
                     .findByIdAndDeletedFalse(requestResult.checkParameterId())
                     .orElseThrow(() -> new ResourceNotFoundException("Check Parameter not found."));
 
+            Integer maxLoop = batchCheckResultRepository.findMaxLoopByBatchIdAndBatchSOPIdAndCheckParameterId(
+                    batch.getId(), batchSOP.getId(), checkParameter.getId());
+            Integer loop = maxLoop + 1;
             BatchCheckResult result = batchCheckMapper.toEntity(checkParameter, requestResult.value(),
-                    calculateResultStatus(checkParameter, requestResult.value()));
+                    calculateResultStatus(checkParameter, requestResult.value()), loop);
             results.add(result);
         }
 
@@ -79,9 +84,10 @@ public class BatchCheckServiceImpl implements BatchCheckService {
     }
 
     @Override
-    public List<BatchCheckResponse> getByBatchNo(String batchNo) {
-        return batchCheckRepository
-                .findByBatch_BatchNoOrderBySampleDateTimeAsc(batchNo)
+    public List<BatchCheckResponse> getByBatchNoAndStepNo(String batchNo, Integer stepNo) {
+        return batchCheckResultRepository
+                .findByBatchCheck_Batch_BatchNoAndBatchCheck_BatchSOP_StepNoOrderByLoopAscBatchCheck_SampleDateTimeAscIdAsc(
+                        batchNo, stepNo)
                 .stream()
                 .map(batchCheckMapper::toResponse)
                 .toList();

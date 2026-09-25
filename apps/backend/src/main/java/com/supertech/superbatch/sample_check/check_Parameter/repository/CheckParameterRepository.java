@@ -14,4 +14,7 @@ public interface CheckParameterRepository extends JpaRepository<CheckParameter, 
     @EntityGraph(attributePaths = { "checkParameterOptions", "material" })
     List<CheckParameter> findAllByDeletedFalseOrderByNameAsc();
 
+    @EntityGraph(attributePaths = { "checkParameterOptions", "material" })
+    List<CheckParameter> findAllByMaterialIdAndDeletedFalseOrderByNameAsc(Long materialId);
+
 }

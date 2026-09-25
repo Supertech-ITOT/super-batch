@@ -27,6 +27,8 @@ public class BatchCheckResult {
 
     private String value;
 
+    private Integer loop;
+
     @Enumerated(EnumType.STRING)
     private ResultStatus resultStatus;
 }

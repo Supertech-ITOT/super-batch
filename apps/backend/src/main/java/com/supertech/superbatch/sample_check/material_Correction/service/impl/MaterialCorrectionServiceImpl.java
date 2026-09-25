@@ -56,15 +56,21 @@ public class MaterialCorrectionServiceImpl implements MaterialCorrectionService 
                                 .findByIdAndDeletedFalse(request.materialId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Material not found."));
 
+                Integer maxLoop = materialCorrectionRepository.findMaxLoopByBatchIdAndBatchSOPIdAndMaterialId(
+                                batch.getId(),
+                                batchSOP.getId(),
+                                material.getId());
+                Integer loop = maxLoop + 1;
                 MaterialCorrection correction = materialCorrectionMapper.toEntity(batch, batchSOP, material,
-                                request.qty());
+                                request.qty(), loop);
                 materialCorrectionRepository.save(correction);
         }
 
         @Override
-        public List<MaterialCorrectionResponse> getByBatchNo(String batchNo) {
+        public List<MaterialCorrectionResponse> getByBatchNoAndStepNo(String batchNo, Integer stepNo) {
                 return materialCorrectionRepository
-                                .findByBatch_BatchNoOrderBySampleDateTimeAsc(batchNo)
+                                .findByBatch_BatchNoAndBatchSOP_StepNoOrderByLoopAscSampleDateTimeAscIdAsc(batchNo,
+                                                stepNo)
                                 .stream()
                                 .map(materialCorrectionMapper::toResponse)
                                 .toList();

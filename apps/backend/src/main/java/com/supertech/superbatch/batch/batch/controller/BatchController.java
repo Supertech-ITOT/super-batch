@@ -69,15 +69,6 @@ public class BatchController {
         return ResponseEntity.ok(ApiResponse.success("Batch aborted successfully", null));
     }
 
-    @PostMapping("/{batchNo}/steps/{stepNo}/complete")
-    public ResponseEntity<ApiResponse<Void>> complete(
-            @PathVariable String batchNo,
-            @PathVariable Integer stepNo) {
-
-        batchService.complete(batchNo, stepNo);
-        return ResponseEntity.ok(ApiResponse.success("Batch step completed successfully", null));
-    }
-
     @PostMapping("/{batchNo}/remarks")
     public ResponseEntity<ApiResponse<Void>> remark(
             @PathVariable String batchNo,

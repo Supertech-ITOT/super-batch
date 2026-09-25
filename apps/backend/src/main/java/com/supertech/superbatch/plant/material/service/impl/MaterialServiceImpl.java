@@ -32,7 +32,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@RequiresPermission(ModuleType.PLANT_MODEL)
 @RequiresLicense()
 public class MaterialServiceImpl implements MaterialService {
     private final MaterialRepository materialRepository;
@@ -43,6 +42,7 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void create(CreateMaterialRequest request) {
         if (materialRepository.existsByNameIgnoreCaseAndDeletedFalse(request.name())) {
             throw new DuplicateResourceException("Material name already exists");
@@ -73,6 +73,7 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void update(Long id, UpdateMaterialRequest request) {
         Material material = materialRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Material not found"));
@@ -94,6 +95,7 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void delete(Long id, Long currentUserId) {
         Material material = materialRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Material not found."));

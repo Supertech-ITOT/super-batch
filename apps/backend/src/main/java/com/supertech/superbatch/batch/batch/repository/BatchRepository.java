@@ -10,19 +10,19 @@ import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 
 public interface BatchRepository extends JpaRepository<Batch, Long> {
 
-        Optional<Batch> findByBatchNo(String batchNo);
+  Optional<Batch> findByBatchNo(String batchNo);
 
-        @EntityGraph(attributePaths = {
-                        "controlRecipe",
-                        "controlRecipe.recipe",
-                        "controlRecipe.recipe.material",
-                        "controlRecipe.unit",
-                        "controlRecipe.shiftIncharge",
-                        "controlRecipe.createdBy",
-        })
-        Optional<Batch> findWithRecipeInfoByBatchNo(String batchNo);
+  @EntityGraph(attributePaths = {
+      "controlRecipe",
+      "controlRecipe.recipe",
+      "controlRecipe.recipe.material",
+      "controlRecipe.unit",
+      "controlRecipe.shiftIncharge",
+      "controlRecipe.createdBy",
+  })
+  Optional<Batch> findWithRecipeInfoByBatchNo(String batchNo);
 
-        List<Batch> findByUnit_CodeAndStatusOrderByCreatedAtDesc(
-                        String unitCode,
-                        BatchStatus status);
+  List<Batch> findByUnit_CodeAndStatusOrderByCreatedAtDesc(
+      String unitCode,
+      BatchStatus status);
 }

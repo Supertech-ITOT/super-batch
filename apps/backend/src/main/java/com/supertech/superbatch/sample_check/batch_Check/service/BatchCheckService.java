@@ -8,5 +8,5 @@ import com.supertech.superbatch.sample_check.batch_check.dto.BatchCheckResponse;
 public interface BatchCheckService {
     void create(BatchCheckRequest request);
 
-    List<BatchCheckResponse> getByBatchNo(String batchNo);
+    List<BatchCheckResponse> getByBatchNoAndStepNo(String batchNo, Integer stepNo);
 }
