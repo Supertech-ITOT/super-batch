@@ -62,7 +62,7 @@ export const checkParameterSchema = z
       .optional(),
   })
   .superRefine((data, ctx) => {
-    if (data.type === "QUANTITIVE") {
+    if (data.type === CheckParameterType.QUANTITATIVE) {
       if (data.min === undefined) {
         ctx.addIssue({
           code: "custom",
@@ -108,7 +108,7 @@ export type CheckParameterFormValues = z.infer<typeof checkParameterSchema>;
 export const checkParameterDefaultValues: CheckParameterFormValues = {
   name: "",
   product: "",
-  type: CheckParameterType.QUANTITIVE,
+  type: CheckParameterType.QUANTITATIVE,
   min: 0,
   max: 0,
   allowedOptions: [],
