@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { Check, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/common/components/ui/button";
 import { Input } from "@/common/components/ui/input";
@@ -39,7 +39,6 @@ interface ValuePickerProps {
   disabled?: boolean;
   limit?: number;
   onChange: (value: PickerValue[]) => void;
-  initializeEmptyValues?: boolean;
 }
 
 function ValuePicker({
@@ -52,7 +51,6 @@ function ValuePicker({
   disabled = false,
   limit,
   onChange,
-  initializeEmptyValues = true,
 }: ValuePickerProps) {
   const [open, setOpen] = useState(false);
   const selectedIds = useMemo(() => new Set(value.map((v) => v.id)), [value]);
@@ -64,7 +62,7 @@ function ValuePicker({
   function add(option: PickerOption) {
     if (limit !== undefined && selectedIds.size >= limit) {
       toast.warning(
-        `You cannot add more than ${limit} item${limit > 1 ? "s" : ""}.`,
+        `You cannot add more than ${limit} item${limit > 1 ? "s" : ""}.`
       );
       return;
     }
@@ -92,32 +90,17 @@ function ValuePicker({
 
   const displayItems = isAdd
     ? value.map((item) => ({
-        item,
-        option: options.find((o) => o.id === item.id),
-      }))
+      item,
+      option: options.find((o) => o.id === item.id),
+    }))
     : options.map((option) => ({
-        option,
-        item: value.find((v) => v.id === option.id) ?? {
-          id: option.id,
-          value: 0,
-        },
-      }));
+      option,
+      item: value.find((v) => v.id === option.id) ?? {
+        id: option.id,
+        value: 0,
+      },
+    }));
 
-  useEffect(() => {
-    if (
-      initializeEmptyValues &&
-      !isAdd &&
-      value.length === 0 &&
-      options.length > 0
-    ) {
-      onChange(
-        options.map((option) => ({
-          id: option.id,
-          value: 0,
-        })),
-      );
-    }
-  }, [isAdd, options, value.length, onChange]);
 
   return (
     <div className="space-y-3">
@@ -126,14 +109,7 @@ function ValuePicker({
         {isAdd && (
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-              <Button
-                size="sm"
-                variant="outline"
-                className="w-24"
-                disabled={
-                  disabled || (limit !== undefined && value.length >= limit)
-                }
-              >
+              <Button size="sm" variant="outline" className="w-24" disabled={disabled || (limit !== undefined && value.length >= limit)}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add
               </Button>
@@ -182,7 +158,9 @@ function ValuePicker({
               className="flex-1 min-w-0"
               title={`${option?.name} (${option?.uom})`}
             >
-              <div className="truncate text-sm font-medium">{option?.name}</div>
+              <div className="truncate text-sm font-medium">
+                {option?.name}
+              </div>
 
               <div className="flex items-center gap-1 ">
                 <Badge variant="secondary" className="h-5 px-1.5 text-[10px]">

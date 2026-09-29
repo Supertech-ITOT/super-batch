@@ -90,7 +90,7 @@ function SearchableSelect<T extends SearchableSelectValue>({
                                 return (
                                     <CommandItem
                                         key={String(option.value)}
-                                        value={String(option.value)}
+                                        value={option.label}
                                         data-checked={option.value === value}
                                         onSelect={() => {
                                             if (isSelected) {

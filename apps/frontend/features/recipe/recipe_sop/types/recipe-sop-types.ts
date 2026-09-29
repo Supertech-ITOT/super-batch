@@ -76,3 +76,11 @@ export type RecipeSOPSummary = {
     totalDuration: number;
     materials: RecipeSOPMaterialSummary[];
 };
+
+export type recipeSOPActionType = "create" | "insert-below" | "insert-above" | "edit" | "move-up" | "move-down" | "delete";
+export type RecipeSOPDialogType = {
+    recipeSOPId?: number;
+    recipeId: number;
+    stepNo?: number;
+    action: recipeSOPActionType;
+}

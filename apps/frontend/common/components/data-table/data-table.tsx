@@ -39,6 +39,7 @@ export function DataTable<TData, TValue>({ columns, onRowClick, isRowSelected, d
             : setPagination,
         manualPagination: !!serverPagination,
         pageCount: serverPagination?.pageCount,
+        autoResetPageIndex: false,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         ...(!serverPagination && {
@@ -49,7 +50,7 @@ export function DataTable<TData, TValue>({ columns, onRowClick, isRowSelected, d
     const emptyRows = Math.max(0, pageSize - rows.length);
 
     return (
-        <div className={`flex flex-col gap-2 h-full ${className ?? ""}`}>
+        <div className={`flex flex-col gap-2 h-full w-full min-w-0 ${className ?? ""}`}>
             {toolbar?.(table)}
             <div className="rounded-xl border overflow-hidden flex-1 min-h-0 h-full bg-card shadow-xs">
                 <div className={`h-full overflow-auto scrollbar-none ${tableClassName}`}>

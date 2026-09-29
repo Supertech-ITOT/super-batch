@@ -76,3 +76,11 @@ export type ControlRecipeSOPMaterialSummary = {
     name: string;
     stdQty: number;
 };
+
+export type controlRecipeSOPActionType = "create" | "insert-below" | "insert-above" | "edit" | "move-up" | "move-down" | "delete";
+export type ControlRecipeSOPDialogType = {
+    controlRecipeSOPId?: number;
+    controlRecipeId: number;
+    stepNo?: number;
+    action: controlRecipeSOPActionType;
+}

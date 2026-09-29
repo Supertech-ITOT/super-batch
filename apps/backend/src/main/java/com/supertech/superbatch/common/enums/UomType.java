@@ -16,7 +16,9 @@ public enum UomType {
 
     PH("pH"),
     VOLT("V"),
-    AMPERE("A");
+    AMPERE("A"),
+
+    KG_PER_CM2("kg/cm²");
 
     private final String symbol;
 

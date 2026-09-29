@@ -51,7 +51,7 @@ export default function AuditView() {
   }
 
   return (
-    <div className="grid min-h-0 w-full grid-cols-1 gap-2 overflow-hidden 2xl:h-[calc(100dvh-6rem)] 2xl:grid-cols-[minmax(0,7fr)_minmax(320px,3fr)]">
+    <div className="grid min-h-0 w-full grid-cols-1 gap-2 overflow-hidden h-full flex-1 2xl:grid-cols-[minmax(0,7fr)_minmax(320px,3fr)]">
       {/* LEFT - TABLE */}
       <DataTable
         pageSize={PAGE_SIZE}

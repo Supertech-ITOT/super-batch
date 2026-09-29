@@ -4,14 +4,7 @@ import SearchableSelect from "@/common/components/form/searchable-select";
 import TextareaAutocomplete from "@/common/components/form/textarea-autocomplete";
 import ValuePicker from "@/common/components/form/value-picker";
 import { Button } from "@/common/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/common/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/common/components/ui/card";
 import { useGetActions } from "@/features/plant/action/hooks/use-actions";
 import { useGetMaterials } from "@/features/plant/material/hooks/use-materials";
 import { MaterialType } from "@/features/plant/material/types/material.types";
@@ -19,42 +12,20 @@ import { useGetMessages } from "@/features/plant/message/hooks/use-messages";
 import { useGetParameters } from "@/features/plant/parameter/hooks/use-parameters";
 import { useGetTransitions } from "@/features/plant/transition/hooks/use-transitions";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  ArrowRightLeft,
-  Cpu,
-  Feather,
-  GitBranch,
-  Hash,
-  Loader2,
-  Play,
-} from "lucide-react";
+import { ArrowRightLeft, Cpu, Feather, GitBranch, Hash, Loader2, Play } from "lucide-react";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import {
-  controlRecipeSopDefaultValues,
-  controlRecipeSOPSchema,
-  ControlRecipeSOPSchema,
-  ControlRecipeSOPSchemaLimit,
-} from "../schemas/control-recipe-sop-schema";
+import { controlRecipeSopDefaultValues, controlRecipeSOPSchema, ControlRecipeSOPSchema, ControlRecipeSOPSchemaLimit } from "../schemas/control-recipe-sop-schema";
 import { TransitionType } from "@/features/plant/transition/types/transition.types";
-import {
-  durationToMinutes,
-  minutesToDuration,
-} from "@/common/utils/duration.util";
+import { durationToMinutes, minutesToDuration } from "@/common/utils/duration.util";
 import { useEffect } from "react";
 import { showApiError } from "@/common/lib/show-api-error";
 import { useGetEquipmentsByUnitId } from "@/features/plant/equipment/hooks/use-equipment";
-import { controlRecipeSOPActionType } from "./control-recipe-sop-view";
-import {
-  useCreateControlRecipeSOP,
-  useGetControlRecipeSOPById,
-  useInsertAboveControlRecipeSOP,
-  useInsertBelowControlRecipeSOP,
-  useUpdateControlRecipeSOP,
-} from "../hooks/use-control-recipe-sop";
+import { useCreateControlRecipeSOP, useGetControlRecipeSOPById, useInsertAboveControlRecipeSOP, useInsertBelowControlRecipeSOP, useUpdateControlRecipeSOP } from "../hooks/use-control-recipe-sop";
 import { showFormError } from "@/common/lib/show-form-error";
 import { TextInput } from "@/common/components/form/text-input";
 import { RecipeQuantityType } from "@/features/plant/unit/types/unit.types";
+import { controlRecipeSOPActionType } from "../types/control_recipe-sop-types";
 
 type ControlRecipeSOPDialogProp = {
   controlRecipeSOPId?: number;
@@ -64,36 +35,20 @@ type ControlRecipeSOPDialogProp = {
   unitId: number;
   recipeQuantityType: RecipeQuantityType;
 };
-export default function ControlRecipeSOPDialog({
-  controlRecipeSOPId,
-  controlRecipeId,
-  action = "create",
-  stepNo,
-  unitId,
-  recipeQuantityType,
-}: ControlRecipeSOPDialogProp) {
-  const { data: transitions, isLoading: transitionsIsLoading } =
-    useGetTransitions();
+export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlRecipeId, action = "create", stepNo, unitId, recipeQuantityType }: ControlRecipeSOPDialogProp) {
+  const isEdit = action === "edit";
+  const { data: transitions, isLoading: transitionsIsLoading } = useGetTransitions();
   const { data: actions, isLoading: actionsIsLoading } = useGetActions();
   const { data: messages, isLoading: messagesIsLoading } = useGetMessages();
   const { data: materials, isLoading: materialsIsLoading } = useGetMaterials();
-  const { data: parameters, isLoading: parametersIsLoading } =
-    useGetParameters();
-  const { data: equipments, isLoading: equipmentsIsLoading } =
-    useGetEquipmentsByUnitId(unitId);
-  const { data: controlRecipeSOP, isLoading: controlRecipeSOPIsLoading } =
-    useGetControlRecipeSOPById(
-      action === "edit" ? controlRecipeSOPId : undefined,
-    );
+  const { data: parameters = [], isLoading: parametersIsLoading } = useGetParameters();
+  const { data: equipments, isLoading: equipmentsIsLoading } = useGetEquipmentsByUnitId(unitId);
+  const { data: controlRecipeSOP, isLoading: controlRecipeSOPIsLoading } = useGetControlRecipeSOPById(isEdit ? controlRecipeSOPId : undefined);
 
-  const { mutateAsync: create, isPending: createIsPending } =
-    useCreateControlRecipeSOP();
-  const { mutateAsync: insertBelow, isPending: insertBelowIsPending } =
-    useInsertBelowControlRecipeSOP();
-  const { mutateAsync: insertAbove, isPending: insertAboveIsPending } =
-    useInsertAboveControlRecipeSOP();
-  const { mutateAsync: update, isPending: updateIsPending } =
-    useUpdateControlRecipeSOP();
+  const { mutateAsync: create, isPending: createIsPending } = useCreateControlRecipeSOP();
+  const { mutateAsync: insertBelow, isPending: insertBelowIsPending } = useInsertBelowControlRecipeSOP();
+  const { mutateAsync: insertAbove, isPending: insertAboveIsPending } = useInsertAboveControlRecipeSOP();
+  const { mutateAsync: update, isPending: updateIsPending } = useUpdateControlRecipeSOP();
 
   const {
     handleSubmit,
@@ -128,7 +83,7 @@ export default function ControlRecipeSOPDialog({
     controlRecipeSOPIsLoading;
 
   useEffect(() => {
-    if (action === "edit" || controlRecipeSOP) {
+    if (isEdit || controlRecipeSOP) {
       reset({
         actionId: controlRecipeSOP?.actionId,
         materials: controlRecipeSOP?.materials,
@@ -139,19 +94,24 @@ export default function ControlRecipeSOPDialog({
         fromEquipmentId: controlRecipeSOP?.fromEquipment?.id ?? undefined,
         toEquipmentId: controlRecipeSOP?.toEquipment.id,
       });
-    } else {
-      handleClear();
+      return;
     }
-  }, [action, reset, controlRecipeSOP]);
+
+    if (!isEdit && parameters.length > 0) {
+      reset({
+        ...controlRecipeSopDefaultValues,
+        parameters: parameters.map((p) => ({
+          parameterId: p.id,
+          stdValue: 0,
+        })),
+      });
+    }
+  }, [action, controlRecipeSOP, parameters, reset]);
 
   const selectedTransitionId = watch("transitionId");
-  const selectedTransition = transitions?.find(
-    (t) => t.id === selectedTransitionId,
-  );
-  const autoMaterialStep =
-    selectedTransition?.name === TransitionType.AUTO_MATERIAL_CHARGE;
-  const manualMaterialStep =
-    selectedTransition?.name === TransitionType.MANUAL_MATERIAL_CHARGE;
+  const selectedTransition = transitions?.find((t) => t.id === selectedTransitionId);
+  const autoMaterialStep = selectedTransition?.name === TransitionType.AUTO_MATERIAL_CHARGE;
+  const manualMaterialStep = selectedTransition?.name === TransitionType.MANUAL_MATERIAL_CHARGE;
   const transferStep = selectedTransition?.name === TransitionType.TRANSFER;
   const parentEq = equipments?.find((e) => e.creatorUnitId === unitId);
   useEffect(() => {
@@ -239,10 +199,7 @@ export default function ControlRecipeSOPDialog({
 
   return (
     <Card className="h-full rounded-none flex flex-col py-0! m-0! gap-2! min-h-0">
-      <form
-        onSubmit={handleSubmit(onSubmit, onInvalid)}
-        className="flex h-full flex-col min-h-0"
-      >
+      <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="flex h-full flex-col min-h-0">
         {/* Header */}
         <CardHeader className="relative overflow-hidden border-b bg-muted/40 py-4!">
           {/* Background Icon */}
@@ -253,14 +210,8 @@ export default function ControlRecipeSOPDialog({
                 <GitBranch className="size-6 text-primary" />
               </div>
               <div>
-                <CardTitle>
-                  {action === "edit" ? "Edit Step" : "Create Step"}
-                </CardTitle>
-                <CardDescription>
-                  {action === "edit"
-                    ? "Update the step information."
-                    : "Create a new process step."}
-                </CardDescription>
+                <CardTitle>{isEdit ? "Edit Step" : "Create Step"}</CardTitle>
+                <CardDescription>{isEdit ? "Update the step information." : "Create a new process step."}</CardDescription>
               </div>
             </div>
             <h1 className="text-primary text-4xl font-bold">{stepNo ?? 0}</h1>
@@ -270,25 +221,8 @@ export default function ControlRecipeSOPDialog({
         {/* Body */}
         <CardContent className="min-h-0 h-full flex-1 overflow-y-auto scrollbar-none p-4 space-y-2">
           <div className="grid grid-cols-2 gap-2">
-            <TextInput
-              label="Step No"
-              icon={Hash}
-              disabled
-              readOnly
-              value={stepNo ?? 0}
-            />
-            <Controller
-              control={control}
-              name="stdTime"
-              render={({ field }) => (
-                <DurationInput
-                  value={field.value}
-                  label="Standard Time"
-                  onChange={field.onChange}
-                  disabled={loading}
-                />
-              )}
-            />
+            <TextInput label="Step No" icon={Hash} disabled readOnly value={stepNo ?? 0} />
+            <Controller control={control} name="stdTime" render={({ field }) => <DurationInput value={field.value} label="Standard Time" onChange={field.onChange} disabled={loading} />} />
           </div>
           <Controller
             control={control}
@@ -413,20 +347,13 @@ export default function ControlRecipeSOPDialog({
                   .map((m) => ({
                     id: m.id,
                     name: m.name,
-                    uom:
-                      recipeQuantityType === RecipeQuantityType.PERCENTAGE
-                        ? "%"
-                        : "KG",
+                    uom: recipeQuantityType === RecipeQuantityType.PERCENTAGE ? "%" : "KG",
                   }))}
                 value={(field.value ?? []).map((m) => ({
                   id: m.materialId,
                   value: m.stdQty,
                 }))}
-                onChange={(items) =>
-                  field.onChange(
-                    items.map((i) => ({ materialId: i.id, stdQty: i.value })),
-                  )
-                }
+                onChange={(items) => field.onChange(items.map((i) => ({ materialId: i.id, stdQty: i.value })))}
                 disabled={!(autoMaterialStep || manualMaterialStep)}
                 limit={autoMaterialStep ? 1 : undefined}
               />
@@ -440,7 +367,6 @@ export default function ControlRecipeSOPDialog({
                 label="Parameters"
                 placeholder="Search Parameter..."
                 valueLabel="Std Value"
-                initializeEmptyValues={false}
                 options={parameters.map((p) => ({
                   id: p.id,
                   name: p.name,
@@ -467,26 +393,11 @@ export default function ControlRecipeSOPDialog({
 
         {/* Footer */}
         <CardFooter className="sticky bottom-0 border-t bg-card justify-end gap-2 p-4!">
-          <Button
-            type="reset"
-            variant="outline"
-            className="min-w-22 "
-            onClick={handleClear}
-          >
+          <Button type="reset" variant="outline" className="min-w-22 " onClick={handleClear}>
             Clear
           </Button>
-          <Button
-            type="submit"
-            className="min-w-32 text-white"
-            disabled={loading || !isDirty}
-          >
-            {loading ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : action === "edit" ? (
-              "Update"
-            ) : (
-              "Add"
-            )}
+          <Button type="submit" className="min-w-32 text-white" disabled={loading || !isDirty}>
+            {loading ? <Loader2 className="size-4 animate-spin" /> : isEdit ? "Update" : "Add"}
           </Button>
         </CardFooter>
       </form>

@@ -31,7 +31,7 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<MaterialD
         accessorKey: "name",
         header: "Name",
         meta: {
-            align: "center",
+            align: "left",
         },
     },
     {
@@ -50,9 +50,9 @@ export const columns = (setDialog: React.Dispatch<React.SetStateAction<MaterialD
         cell: ({ row }) => (
             <div
                 className="wrap-break-word whitespace-normal line-clamp-2 leading-5"
-                title={row.original.name}
+                title={row.original.description}
             >
-                {row.original.name}
+                {row.original.description}
             </div>
         ),
     },
