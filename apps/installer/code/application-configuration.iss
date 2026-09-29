@@ -18,7 +18,7 @@ begin
     'server.port=' + Trim(BackendPortEdit.Text), True);
 
   StringChangeEx(Content,
-    'cors.allowed-origins=${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://127.0.0.1:3000,http://192.168.1.125:3000}',
+    'cors.allowed-origins=${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://127.0.0.1:3000}',
     'cors.allowed-origins=http://' + Trim(ServerIPEdit.Text) + ':' +
     Trim(FrontendPortEdit.Text), True);
 
@@ -59,7 +59,7 @@ begin
 
   StringChangeEx(
     Content,
-    'API_URL: "http://192.168.1.125:8080/api"',
+    'API_URL: "http://127.0.0.1:8080/api"',
     'API_URL: "' + APIURL + '"',
     True
   );
