@@ -15,6 +15,14 @@ begin
   Result := not IsUpdate;
 end;
 
+function GetUpdateHost: string;
+begin
+  Result := GetEnv('HOSTNAME');
+
+  if Trim(Result) = '' then
+    Result := '127.0.0.1';
+end;
+
 function PrepareToInstall(
   var NeedsRestart: Boolean
 ): String;
