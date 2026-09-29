@@ -2,6 +2,8 @@
 
 [Code]
 
+
+#include "code\update-config.iss"
 #include "code\installation-type.iss"
 #include "code\client-installation.iss"
 #include "code\server-installation.iss"
@@ -12,6 +14,8 @@
 
 procedure InitializeWizard;
 begin
+  IsUpdate := IsUpdateInstallation;
+  
   InitializeInstallationTypePage;
   InitializeClientInstallationPage;
   InitializeServerInstallationPage;
@@ -23,6 +27,19 @@ function ShouldSkipPage(PageID: Integer): Boolean;
 begin
   Result := False;
 
+  { During update skip all configuration pages }
+  if IsUpdate then
+  begin
+    if (PageID = ClientServerPage.ID) or
+       (PageID = ServerConfigurationPage.ID) or
+       (PageID = DatabasePage.ID) then
+    begin
+      Result := True;
+      Exit;
+    end;
+  end;
+
+  { Normal installation }
   if IsServerInstallation and
      (PageID = ClientServerPage.ID) then
     Result := True;
@@ -84,9 +101,13 @@ end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
-  if IsServerInstallation then
+  if not IsServerInstallation then
+    Exit;
+
+  if CurStep = ssInstall then
   begin
-    if CurStep = ssInstall then
+    { Fresh installation only }
+    if not IsUpdate then
     begin
       if not IsExistingDatabase then
         if not InstallPostgreSQL then
@@ -95,13 +116,17 @@ begin
       if not CreateSuperBatchDatabase then
         Abort;
     end;
+  end;
 
-    if CurStep = ssPostInstall then
-    begin
+  if CurStep = ssPostInstall then
+  begin
+    { Fresh installation only }
+    if not IsUpdate then
       CreateApplicationProperties;
-      UpdateFrontendConfig;
-      InstallSuperBatchServices;
-    end;
+
+    { Fresh installation + update }
+    UpdateFrontendConfig;
+    InstallSuperBatchServices;
   end;
 end;
 
@@ -123,38 +148,40 @@ end;
 
 [Files]
 
-Source: "dist\v1.0.0\postgres\postgresql-16.15-2-windows-x64.exe"; \
-    Flags: dontcopy
-
-Source: "dist\v1.0.0\postgres\init.sql"; \
+Source: "dist\postgres\postgresql-16.15-2-windows-x64.exe"; \
     Flags: dontcopy
   
-Source: "dist\v1.0.0\backend\*"; \
+Source: "dist\backend\superbatch-backend.jar"; \
     DestDir: "{app}\backend"; \
-    Flags: recursesubdirs createallsubdirs; \
+    Flags: ignoreversion; \
     Check: IsServerInstallation
 
-Source: "dist\v1.0.0\frontend\*"; \
+Source: "dist\backend\application.properties"; \
+    DestDir: "{app}\backend"; \
+    Flags: onlyifdoesntexist; \
+    Check: IsServerInstallation
+
+Source: "dist\frontend\*"; \
     DestDir: "{app}\frontend"; \
     Flags: recursesubdirs createallsubdirs; \
     Check: IsServerInstallation
 
-Source: "dist\v1.0.0\java\*"; \
+Source: "dist\java\*"; \
     DestDir: "{app}\java"; \
     Flags: recursesubdirs createallsubdirs; \
     Check: IsServerInstallation
 
-Source: "dist\v1.0.0\node\*"; \
+Source: "dist\node\*"; \
     DestDir: "{app}\node"; \
     Flags: recursesubdirs createallsubdirs; \
     Check: IsServerInstallation
 
-Source: "dist\v1.0.0\nssm\nssm.exe"; \
+Source: "dist\nssm\nssm.exe"; \
     DestDir: "{app}\nssm"; \
     Flags: ignoreversion; \
     Check: IsServerInstallation
 
-Source: "dist\v1.0.0\desktop\*"; \
+Source: "dist\desktop\*"; \
     DestDir: "{app}\desktop"; \
     Flags: recursesubdirs createallsubdirs; \
 
@@ -163,10 +190,12 @@ Source: "dist\v1.0.0\desktop\*"; \
 Filename: "{cmd}"; \
 Parameters: "/C setx HOSTNAME ""{code:GetHost}"" /M"; \
 Flags: runhidden waituntilterminated; \
+Check: IsNotUpdate
 
 Filename: "{cmd}"; \
 Parameters: "/C setx PORT ""{code:GetPort}"" /M"; \
 Flags: runhidden waituntilterminated; \
+Check: IsNotUpdate
 
 [Icons]
 

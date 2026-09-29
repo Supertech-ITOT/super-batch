@@ -13,7 +13,7 @@ C:\Program Files\Java\jdk-21.0.11
 ## Runtime Output
 
 ```text
-apps\installer\dist\v1.0.0\java
+apps\installer\dist\java
 ```
 
 ## Build Runtime
@@ -24,7 +24,7 @@ Run in PowerShell:
 & "C:\Program Files\Java\jdk-21.0.11\bin\jlink.exe" `
   --module-path "C:\Program Files\Java\jdk-21.0.11\jmods" `
   --add-modules java.base,java.desktop,java.logging,java.sql,java.naming,java.management,java.security.jgss,java.instrument,java.compiler,jdk.unsupported `
-  --output "C:\Users\Admin\Desktop\Code\super-batch\apps\installer\dist\v1.0.0\java"
+  --output "C:\Users\Admin\Desktop\Code\super-batch\apps\installer\dist\java"
 ```
 
 ## Verify
