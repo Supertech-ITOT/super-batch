@@ -10,6 +10,7 @@ import { ActionTypeBadgeStyles } from "../types/audit.types";
 import DetailRow from "@/common/components/detail-row";
 import AuditDetailTab from "./audit-detail-tab";
 import { format, parseISO } from "date-fns";
+import { toDisplayText } from "@/common/lib/format-enum";
 
 interface AuditDetailDialogProps {
   id: number | null;
@@ -64,7 +65,7 @@ export default function AuditDetailCard({ id }: AuditDetailDialogProps) {
             variant="outline"
             className={ActionTypeBadgeStyles[audit.action as keyof typeof ActionTypeBadgeStyles]}
           >
-            {audit.action}
+            {toDisplayText(audit.action)}
           </Badge>
         </div>
       </CardHeader>
