@@ -8,7 +8,9 @@ public enum ModuleType {
     SCHEDULER(4L),
     AUDIT(5L),
     SAMPLE_CHECK(6L),
-    BATCH(7L);
+    BATCH(7L),
+    DASHBOARD(8L),
+    REPORT(9L);
 
     private final Long id;
 

@@ -3,16 +3,29 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { OperationRoutes } from "@/features/manager/module/types/module.types";
+import { ModuleType, OperationRoutes } from "@/features/manager/module/types/module.types";
+import { useGetCurrentUser } from "@/features/manager/user/hooks/use-user";
 
 export default function BottomNavigation() {
     const pathname = usePathname();
     const getBasePath = (path: string) => "/" + path.split("/")[1];
+    const { data: user, isLoading: userIsLoading } = useGetCurrentUser();
+    const hasReadPermission = (module?: ModuleType) => {
+        if (!module) return true;
+        return user?.permissions?.some((p) => p.moduleName === module && p.access);
+    };
+    const loading = userIsLoading || !user;
+
+    if (loading) {
+        return;
+    }
     return (
         <nav className="fixed inset-x-0 bottom-0 z-50 w-full px-2 pb-[max(2px,env(safe-area-inset-bottom))] md:hidden">
             <div className="w-full rounded-full border bg-card/60 p-1 backdrop-blur-3xl">
                 <div className="flex w-full items-center">
-                    {OperationRoutes.map((item) => {
+                    {OperationRoutes.filter(
+                        (route) => hasReadPermission(route.module) && !route.hide,
+                    ).map((item) => {
                         const Icon = item.icon;
 
                         const active =

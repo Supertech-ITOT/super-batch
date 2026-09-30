@@ -22,9 +22,12 @@ import {
   LucideClipboardCheck,
   Layers3,
   MessageCircleCode,
+  LayoutDashboard,
+  FileBarChart,
 } from "lucide-react";
 
 export enum ModuleType {
+  DASHBOARD = "DASHBOARD",
   MANAGER = "MANAGER",
   PLANT_MODEL = "PLANT_MODEL",
   RECIPE = "RECIPE",
@@ -32,6 +35,7 @@ export enum ModuleType {
   AUDIT = "AUDIT",
   SAMPLE_CHECK = "SAMPLE_CHECK",
   BATCH = "BATCH",
+  REPORT = "REPORT",
 }
 
 export interface ModuleResponse {
@@ -51,13 +55,21 @@ type RouteType = {
 
 export const OperationRoutes: RouteType[] = [
   {
+    label: "Dashboard",
+    short: "Dashboard",
+    path: "/Dashboard",
+    icon: LayoutDashboard,
+    module: ModuleType.DASHBOARD,
+    description: "View system metrics, production status, and operational insights.",
+    hide: false,
+  },
+  {
     label: "Batch Manager",
     short: "Manager",
     path: "/Manager/roles",
     icon: UserCogIcon,
     module: ModuleType.MANAGER,
-    description:
-      "Manage users, roles, and module permissions for secure system access.",
+    description: "Manage users, roles, and module permissions for secure system access.",
     hide: false,
   },
   {
@@ -66,8 +78,7 @@ export const OperationRoutes: RouteType[] = [
     path: "/PlantModel",
     icon: Factory,
     module: ModuleType.PLANT_MODEL,
-    description:
-      "Configure the ISA-88 plant hierarchy, equipment, and process resources.",
+    description: "Configure the ISA-88 plant hierarchy, equipment, and process resources.",
     hide: false,
   },
   {
@@ -76,8 +87,7 @@ export const OperationRoutes: RouteType[] = [
     path: "/Recipe",
     icon: BookOpenText,
     module: ModuleType.RECIPE,
-    description:
-      "Create and maintain recipes, procedures, operations, and phases.",
+    description: "Create and maintain recipes, procedures, operations, and phases.",
     hide: false,
   },
   {
@@ -86,8 +96,7 @@ export const OperationRoutes: RouteType[] = [
     path: "/Scheduler",
     icon: CalendarClock,
     module: ModuleType.SCHEDULER,
-    description:
-      "Schedule, execute, and monitor production batches in real time.",
+    description: "Schedule, execute, and monitor production batches in real time.",
     hide: false,
   },
   {
@@ -96,8 +105,7 @@ export const OperationRoutes: RouteType[] = [
     path: "/Audit",
     icon: ClipboardList,
     module: ModuleType.AUDIT,
-    description:
-      "Review audit trails, user activities, and system change history.",
+    description: "Review audit trails, user activities, and system change history.",
     hide: false,
   },
   {
@@ -106,8 +114,7 @@ export const OperationRoutes: RouteType[] = [
     path: "/PlantModel/qualityCheck",
     icon: LucideClipboardCheck,
     module: ModuleType.SAMPLE_CHECK,
-    description:
-      "Configure and manage sample checks, parameters, and quality verification requirements.",
+    description: "Configure and manage sample checks, parameters, and quality verification requirements.",
     hide: true,
   },
   {
@@ -116,9 +123,17 @@ export const OperationRoutes: RouteType[] = [
     path: "/Batch",
     icon: Layers3,
     module: ModuleType.BATCH,
-    description:
-      "Execute and monitor production batches, including batch status, steps, and execution progress.",
+    description: "Execute and monitor production batches, including batch status, steps, and execution progress.",
     hide: true,
+  },
+  {
+    label: "Report",
+    short: "Report",
+    path: "/Report",
+    icon: FileBarChart,
+    module: ModuleType.REPORT,
+    description: "Generate and review production, batch, and operational reports.",
+    hide: false,
   },
 ];
 
@@ -128,8 +143,7 @@ export const ConfigurationRoutes: RouteType[] = [
     short: "Settings",
     path: "/Setting/profile",
     icon: Settings,
-    description:
-      "Configure system preferences, application settings, and defaults.",
+    description: "Configure system preferences, application settings, and defaults.",
     hide: false,
   },
 ];
@@ -159,6 +173,4 @@ export const EntityItems = [
   { type: "MESSAGE", label: "Message", icon: MessageCircleCode },
 ];
 
-export const EntityItemMap = Object.fromEntries(
-  EntityItems.map((item) => [item.type, item]),
-);
+export const EntityItemMap = Object.fromEntries(EntityItems.map((item) => [item.type, item]));

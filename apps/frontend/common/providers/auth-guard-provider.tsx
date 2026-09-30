@@ -15,6 +15,8 @@ const MODULE_ROUTES: Record<number, string> = {
   3: "/Recipe",
   4: "/Scheduler",
   5: "/Audit",
+  6: "/Dashboard",
+  7: "/Report",
 };
 
 const MODULE_HOME: Record<number, string> = {
@@ -23,15 +25,15 @@ const MODULE_HOME: Record<number, string> = {
   3: "/Recipe",
   4: "/Scheduler",
   5: "/Audit",
+  6: "/Dashboard",
+  7: "/Report",
 };
 
 const getBasePath = (path: string) => {
   return "/" + path.split("/")[1];
 };
 
-const getFirstAllowedRoute = (
-  permissions: PermissionResponse[],
-): string | null => {
+const getFirstAllowedRoute = (permissions: PermissionResponse[]): string | null => {
   const permission = [...permissions]
     .filter((p) => p.access)
     .sort((a, b) => a.moduleId - b.moduleId)
@@ -40,11 +42,7 @@ const getFirstAllowedRoute = (
   return permission ? MODULE_HOME[permission.moduleId] : null;
 };
 
-export default function AuthGuardProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AuthGuardProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -56,10 +54,7 @@ export default function AuthGuardProvider({
 
     // Not logged in
     if (!user) {
-      if (
-        currentRoute !== ROUTE.login &&
-        currentRoute !== ROUTE.resetPassword
-      ) {
+      if (currentRoute !== ROUTE.login && currentRoute !== ROUTE.resetPassword) {
         router.replace(ROUTE.login);
       }
 
@@ -96,9 +91,7 @@ export default function AuthGuardProvider({
     }
 
     // Check current module permission
-    const currentPermission = permissions.find(
-      (permission) => MODULE_ROUTES[permission.moduleId] === currentRoute,
-    );
+    const currentPermission = permissions.find((permission) => MODULE_ROUTES[permission.moduleId] === currentRoute);
 
     // User does not have access to this module
     if (!currentPermission?.access) {
