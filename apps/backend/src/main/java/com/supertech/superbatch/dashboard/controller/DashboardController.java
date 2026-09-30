@@ -19,7 +19,7 @@ public class DashboardController {
 
     @GetMapping("/status")
     public ResponseEntity<ApiResponse<BatchStatusDashboardResponse>> getBatchStatusDashboard() {
-        BatchStatusDashboardResponse res = dashboardService.getBatchStatusDashboard();
+        BatchStatusDashboardResponse res = dashboardService.getBatchStatus();
         return ResponseEntity.ok(ApiResponse.success("Batch Status fetched successfully.", res));
     }
 }

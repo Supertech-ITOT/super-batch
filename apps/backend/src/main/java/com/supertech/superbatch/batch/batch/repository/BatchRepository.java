@@ -37,4 +37,10 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
                 GROUP BY b.status
             """)
     List<Object[]> countByStatus(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @EntityGraph(attributePaths = {
+            "masterRecipe.material", "unit", "sops"
+    })
+    Optional<Batch> findFirstByStatusOrderByStartDateTimeAsc(
+            BatchStatus status);
 }

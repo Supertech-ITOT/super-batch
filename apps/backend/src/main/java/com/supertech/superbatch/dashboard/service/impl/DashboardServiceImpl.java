@@ -8,10 +8,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.supertech.superbatch.batch.batch.entity.Batch;
 import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 import com.supertech.superbatch.batch.batch.repository.BatchRepository;
+import com.supertech.superbatch.dashboard.dto.ActiveBatchesResponse;
 import com.supertech.superbatch.dashboard.dto.BatchStatusCardResponse;
 import com.supertech.superbatch.dashboard.dto.BatchStatusDashboardResponse;
+import com.supertech.superbatch.dashboard.helper.DashboardHelper;
 import com.supertech.superbatch.dashboard.mapper.DashboardMapper;
 import com.supertech.superbatch.dashboard.service.DashboardService;
 
@@ -23,9 +26,10 @@ import lombok.RequiredArgsConstructor;
 public class DashboardServiceImpl implements DashboardService {
     private final BatchRepository batchRepository;
     private final DashboardMapper dashboardMapper;
+    private final DashboardHelper dashboardHelper;
 
     @Override
-    public BatchStatusDashboardResponse getBatchStatusDashboard() {
+    public BatchStatusDashboardResponse getBatchStatus() {
 
         LocalDate today = LocalDate.now();
         LocalDateTime start = today.atStartOfDay();
@@ -87,5 +91,35 @@ public class DashboardServiceImpl implements DashboardService {
             case ABORTED ->
                 dashboardMapper.toStatusCard(status, count, comparison);
         };
+    }
+
+    @Override
+    public ActiveBatchesResponse getActiveBatch() {
+
+        Batch batch = batchRepository
+                .findFirstByStatusOrderByStartDateTimeAsc(
+                        BatchStatus.IN_PROGRESS)
+                .orElseThrow(() -> new RuntimeException("No active batch found"));
+
+        LocalDateTime startedAt = batch.getStartDateTime();
+
+        Double cycleTime = dashboardHelper.calculateCycleTime(startedAt);
+
+        Double stdTime = dashboardHelper.calculateStandardTime(batch.getSops());
+
+        Integer progress = dashboardHelper.calculateProgress(
+                batch.getStartDateTime(),
+                batch.getEndDateTime(),
+                stdTime);
+
+        return dashboardMapper.toActiveBatchResponse(
+                batch.getBatchNo(),
+                batch.getMasterRecipe().getMaterial().getCode(),
+                batch.getUnit().getName(),
+                startedAt,
+                cycleTime,
+                stdTime,
+                batch.getStatus(),
+                progress);
     }
 }
