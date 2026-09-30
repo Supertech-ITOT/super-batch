@@ -94,32 +94,28 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public ActiveBatchesResponse getActiveBatch() {
+    public List<ActiveBatchesResponse> getActiveBatches() {
 
-        Batch batch = batchRepository
-                .findFirstByStatusOrderByStartDateTimeAsc(
-                        BatchStatus.IN_PROGRESS)
-                .orElseThrow(() -> new RuntimeException("No active batch found"));
+        List<Batch> batches = batchRepository.findByStatusInOrderByStartDateTimeAsc(
+                List.of(BatchStatus.IN_PROGRESS, BatchStatus.PAUSED));
 
-        LocalDateTime startedAt = batch.getStartDateTime();
-
-        Double cycleTime = dashboardHelper.calculateCycleTime(startedAt);
-
-        Double stdTime = dashboardHelper.calculateStandardTime(batch.getSops());
-
-        Integer progress = dashboardHelper.calculateProgress(
-                batch.getStartDateTime(),
-                batch.getEndDateTime(),
-                stdTime);
-
-        return dashboardMapper.toActiveBatchResponse(
-                batch.getBatchNo(),
-                batch.getMasterRecipe().getMaterial().getCode(),
-                batch.getUnit().getName(),
-                startedAt,
-                cycleTime,
-                stdTime,
-                batch.getStatus(),
-                progress);
+        return batches.stream()
+                .map(batch -> {
+                    LocalDateTime startedAt = batch.getStartDateTime();
+                    Double cycleTime = dashboardHelper.calculateCycleTime(startedAt);
+                    Double stdTime = dashboardHelper.calculateStandardTime(batch.getSops());
+                    Integer progress = dashboardHelper.calculateProgress(batch.getStartDateTime(),
+                            batch.getEndDateTime(), stdTime);
+                    return dashboardMapper.toActiveBatchResponse(
+                            batch.getBatchNo(),
+                            batch.getMasterRecipe().getMaterial().getCode(),
+                            batch.getUnit().getName(),
+                            startedAt,
+                            cycleTime,
+                            stdTime,
+                            batch.getStatus(),
+                            progress);
+                })
+                .toList();
     }
 }
