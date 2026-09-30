@@ -7,6 +7,7 @@ import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 import com.supertech.superbatch.dashboard.dto.ActiveBatchesResponse;
 import com.supertech.superbatch.dashboard.dto.BatchStatusCardResponse;
 import com.supertech.superbatch.dashboard.dto.BatchStatusDashboardResponse;
+import com.supertech.superbatch.dashboard.dto.ScheduledBatchResponse;
 
 @Component
 public class DashboardMapper {
@@ -44,5 +45,23 @@ public class DashboardMapper {
                                 .progress(progress)
                                 .build();
 
+        }
+
+        public ScheduledBatchResponse toScheduledBatchResponse(
+                        String batchNo,
+                        Double batchSize,
+                        String product,
+                        String unit,
+                        LocalDateTime scheduledAt) {
+
+                return ScheduledBatchResponse.builder()
+                                .batchNo(batchNo)
+                                .batchSize(batchSize)
+                                .product(product)
+                                .unit(unit)
+                                .scheduledAt(scheduledAt != null
+                                                ? scheduledAt.toString()
+                                                : null)
+                                .build();
         }
 }

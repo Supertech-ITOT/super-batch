@@ -1,5 +1,6 @@
 package com.supertech.superbatch.batch.batch.mapper;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import com.supertech.superbatch.batch.batch_sop.entity.BatchSOP;
 import com.supertech.superbatch.batch.batch_sop.mapper.BatchSOPMapper;
 import com.supertech.superbatch.batch.batch_sop_material.mapper.BatchSOPMaterialMapper;
 import com.supertech.superbatch.batch.batch_sop_parameter.mapper.BatchSOPParameterMapper;
+import com.supertech.superbatch.dashboard.dto.ScheduledBatchResponse;
 import com.supertech.superbatch.scheduler.control_recipe.entity.ControlRecipe;
 import com.supertech.superbatch.scheduler.control_recipe_sop.entity.ControlRecipeSOP;
 import com.supertech.superbatch.scheduler.control_recipe_sop_material.entity.ControlRecipeSOPMaterial;
@@ -120,6 +122,24 @@ public class BatchMapper {
                 .status(batch.getStatus())
                 .startDateTime(batch.getStartDateTime())
                 .endDateTime(batch.getEndDateTime())
+                .build();
+    }
+
+    public ScheduledBatchResponse toScheduledBatchResponse(
+            String batchNo,
+            Double batchSize,
+            String product,
+            String unit,
+            LocalDateTime scheduledAt) {
+
+        return ScheduledBatchResponse.builder()
+                .batchNo(batchNo)
+                .batchSize(batchSize)
+                .product(product)
+                .unit(unit)
+                .scheduledAt(scheduledAt != null
+                        ? scheduledAt.toString()
+                        : null)
                 .build();
     }
 }

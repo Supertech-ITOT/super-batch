@@ -14,6 +14,7 @@ import com.supertech.superbatch.batch.batch.repository.BatchRepository;
 import com.supertech.superbatch.dashboard.dto.ActiveBatchesResponse;
 import com.supertech.superbatch.dashboard.dto.BatchStatusCardResponse;
 import com.supertech.superbatch.dashboard.dto.BatchStatusDashboardResponse;
+import com.supertech.superbatch.dashboard.dto.ScheduledBatchResponse;
 import com.supertech.superbatch.dashboard.helper.DashboardHelper;
 import com.supertech.superbatch.dashboard.mapper.DashboardMapper;
 import com.supertech.superbatch.dashboard.service.DashboardService;
@@ -115,6 +116,28 @@ public class DashboardServiceImpl implements DashboardService {
                             stdTime,
                             batch.getStatus(),
                             progress);
+                })
+                .toList();
+    }
+
+    @Override
+    public List<ScheduledBatchResponse> getScheduledBatches() {
+
+        List<Batch> batches = batchRepository.findByStatusAndStartDateTimeAfterOrderByStartDateTimeAsc(
+                BatchStatus.READY,
+                LocalDateTime.now());
+
+        return batches.stream()
+                .map(batch -> {
+                    Double batchSize = batch.getControlRecipe().getBatchSize().doubleValue();
+                    return dashboardMapper.toScheduledBatchResponse(
+                            batch.getBatchNo(),
+                            batchSize,
+                            batch.getMasterRecipe()
+                                    .getMaterial()
+                                    .getCode(),
+                            batch.getUnit().getName(),
+                            batch.getStartDateTime());
                 })
                 .toList();
     }
