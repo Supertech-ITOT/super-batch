@@ -6,10 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 import com.supertech.superbatch.batch.batch.repository.BatchRepository;
 import com.supertech.superbatch.dashboard.dto.BatchStatusCardResponse;
@@ -40,7 +38,10 @@ public class DashboardServiceImpl implements DashboardService {
         List<BatchStatusCardResponse> statuses = Arrays.stream(BatchStatus.values())
                 .map(status -> {
                     long count = todayCounts.getOrDefault(status, 0L);
-                    long comparison = count - yesterdayCounts.getOrDefault(status, 0L);
+                    Long comparison = calculateComparison(
+                            status,
+                            todayCounts,
+                            yesterdayCounts);
                     return createStatusCard(status, count, comparison);
                 })
                 .toList();
@@ -69,22 +70,22 @@ public class DashboardServiceImpl implements DashboardService {
     private BatchStatusCardResponse createStatusCard(BatchStatus status, long count, Long comparison) {
         return switch (status) {
             case TRANSFERRED ->
-                dashboardMapper.toStatusCard(status, count, "Pending workflow", count + " batches", comparison);
+                dashboardMapper.toStatusCard(status, count, comparison);
 
             case READY ->
-                dashboardMapper.toStatusCard(status, count, "Ready to start", count + " batches", comparison);
+                dashboardMapper.toStatusCard(status, count, comparison);
 
             case IN_PROGRESS ->
-                dashboardMapper.toStatusCard(status, count, "Active batches", count + " running", comparison);
+                dashboardMapper.toStatusCard(status, count, comparison);
 
             case PAUSED ->
-                dashboardMapper.toStatusCard(status, count, "Attention required", count + " paused", comparison);
+                dashboardMapper.toStatusCard(status, count, comparison);
 
             case COMPLETED ->
-                dashboardMapper.toStatusCard(status, count, "Finished today", count + " batches", comparison);
+                dashboardMapper.toStatusCard(status, count, comparison);
 
             case ABORTED ->
-                dashboardMapper.toStatusCard(status, count, "Stopped", count + " batches", comparison);
+                dashboardMapper.toStatusCard(status, count, comparison);
         };
     }
 }
