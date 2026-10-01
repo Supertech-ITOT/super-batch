@@ -107,7 +107,7 @@ public class LicenseServiceImpl implements LicenseService {
     }
 
     @Override
-    @Transactional
+    @Transactional(noRollbackFor = BadRequestException.class)
     public boolean validateLicense() {
         License license = licenseRepository
                 .findByStatus(LicenseStatus.ACTIVE)
@@ -119,13 +119,14 @@ public class LicenseServiceImpl implements LicenseService {
             licenseValidator.validateLicensePayload(payload);
             license.setLastValidatedAt(LocalDateTime.now());
             licenseRepository.save(license);
+
             return true;
+
         } catch (BadRequestException e) {
-            if ("License has expired.".equals(e.getMessage())) {
-                license.setStatus(LicenseStatus.EXPIRED);
-            } else {
-                license.setStatus(LicenseStatus.SUSPENDED);
-            }
+            LicenseStatus status = "License has expired.".equals(e.getMessage())
+                    ? LicenseStatus.EXPIRED
+                    : LicenseStatus.SUSPENDED;
+            license.setStatus(status);
             licenseRepository.save(license);
             throw e;
 

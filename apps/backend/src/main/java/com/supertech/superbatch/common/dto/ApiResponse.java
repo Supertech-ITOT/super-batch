@@ -24,7 +24,7 @@ public class ApiResponse<T> {
                                 .status(200)
                                 .data(data)
                                 .build();
-        }
+        }       
 
         public static <T> ApiResponse<T> error(String msg, T data, int status) {
                 return ApiResponse.<T>builder()

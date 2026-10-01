@@ -67,7 +67,10 @@ export function DataTable<TData, TValue>({
               {table.getHeaderGroups().map((group) => (
                 <TableRow key={group.id} className="hover:bg-primary">
                   {group.headers.map((header) => (
-                    <TableHead key={header.id} className={`border-r last:border-r-0 text-center text-white ${compact ? "px-1.5 text-[10px] sm:px-2 sm:text-xs" : "px-2 text-xs sm:px-4 sm:text-sm"}`}>
+                    <TableHead
+                      key={header.id}
+                      className={`border-r last:border-r-0 text-center text-white ${compact ? "px-1.5 text-[10px] sm:px-2 sm:text-xs" : "px-2 text-xs sm:px-4 sm:text-sm"}`}
+                    >
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   ))}
@@ -84,7 +87,6 @@ export function DataTable<TData, TValue>({
                       rowClassName={rowClassName}
                       contextMenu={contextMenu}
                       onClick={() => onRowClick?.(row.original)}
-                      onContextMenu={() => onRowClick?.(row.original)}
                       isSelected={isRowSelected?.(row.original)}
                       compact={compact}
                     />
