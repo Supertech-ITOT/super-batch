@@ -38,7 +38,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@RequiresPermission(ModuleType.PLANT_MODEL)
 @RequiresLicense()
 public class EquipmentServiceImpl implements EquipmentService {
     private final EquipmentRepository equipmentRepository;
@@ -50,6 +49,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void create(CreateEquipmentRequest request) {
         if (equipmentRepository.existsByNameIgnoreCaseAndDeletedFalse(request.name())) {
             throw new DuplicateResourceException("Equipment name already exists");
@@ -86,6 +86,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void update(Long id, UpdateEquipmentRequest request) {
 
         Equipment equipment = equipmentRepository.findByIdAndDeletedFalse(id)
@@ -111,6 +112,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void delete(Long id, Long currentUserId) {
         Equipment equipment = equipmentRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipment not found"));
@@ -134,6 +136,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void assign(AssignEquipmentRequest request) {
 
         Equipment equipment = equipmentRepository.findByIdAndDeletedFalse(request.equipmentId())
@@ -157,6 +160,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void unassign(UnAssignEquipmentRequest request) {
 
         Equipment equipment = equipmentRepository.findByIdAndDeletedFalse(request.equipmentId())

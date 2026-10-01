@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @RequiresLicense
-@RequiresPermission(ModuleType.AUDIT)
+
 public class BatchAuditServiceImpl implements BatchAuditService {
     private final BatchAuditRepository batchAuditRepository;
     private final BatchAuditMapper batchAuditMapper;
@@ -50,6 +50,7 @@ public class BatchAuditServiceImpl implements BatchAuditService {
     }
 
     @Override
+    @RequiresPermission(ModuleType.AUDIT)
     public Page<BatchAuditResponse> getAll(BatchAuditSearchRequest request) {
         Pageable pageable = PageRequest.of(request.page(), request.size(), Sort.by(Sort.Direction.DESC, "performedAt"));
         return batchAuditRepository.findAll(BatchAuditSpecification.filter(request), pageable)
@@ -57,6 +58,7 @@ public class BatchAuditServiceImpl implements BatchAuditService {
     }
 
     @Override
+    @RequiresPermission(ModuleType.AUDIT)
     public BatchAuditResponse getById(Long id) {
         BatchAudit batchAudit = batchAuditRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Audit not found."));

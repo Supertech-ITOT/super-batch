@@ -12,13 +12,11 @@ import com.supertech.superbatch.dashboard.dto.ScheduledBatchResponse;
 @Component
 public class DashboardMapper {
 
-        public BatchStatusCardResponse toStatusCard(BatchStatus status, long count,
-                        Long comparison) {
+        public BatchStatusCardResponse toStatusCard(BatchStatus status, long count) {
                 return BatchStatusCardResponse
                                 .builder()
                                 .status(status)
                                 .count(count)
-                                .comparison(comparison)
                                 .build();
         }
 
@@ -30,11 +28,12 @@ public class DashboardMapper {
                                 .build();
         }
 
-        public ActiveBatchesResponse toActiveBatchResponse(String batchNo, String product, String unit,
+        public ActiveBatchesResponse toActiveBatchResponse(Long batchId, String batchNo, String product, String unit,
                         LocalDateTime startedAt, Double cycleTime, Double stdTime, BatchStatus status,
                         Integer progress) {
                 return ActiveBatchesResponse
                                 .builder()
+                                .batchId(batchId)
                                 .batchNo(batchNo)
                                 .product(product)
                                 .unit(unit)

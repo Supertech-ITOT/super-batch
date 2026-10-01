@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.supertech.superbatch.audit.dto.BatchAuditRequest;
 import com.supertech.superbatch.audit.enums.BatchAuditAction;
 import com.supertech.superbatch.audit.service.BatchAuditService;
+import com.supertech.superbatch.batch.batch.dto.BatchAbortResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchAuditData;
 import com.supertech.superbatch.batch.batch.dto.BatchResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchSOPResponse;
@@ -39,6 +40,7 @@ import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
+import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
 import com.supertech.superbatch.plant.transition.enums.TransitionType;
 
 import lombok.RequiredArgsConstructor;
@@ -56,6 +58,7 @@ public class BatchServiceImpl implements BatchService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.BATCH)
         public void start(String batchNo) {
                 Batch batch = getBatchByBatchNo(batchNo);
                 if (batch.getStatus() != BatchStatus.READY) {
@@ -73,6 +76,7 @@ public class BatchServiceImpl implements BatchService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.BATCH)
         public void pause(String batchNo, Integer stepNo, String remark) {
                 Batch batch = getBatchByBatchNo(batchNo);
                 if (batch.getStatus() != BatchStatus.IN_PROGRESS) {
@@ -88,6 +92,7 @@ public class BatchServiceImpl implements BatchService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.BATCH)
         public void resume(String batchNo, Integer stepNo) {
                 Batch batch = getBatchByBatchNo(batchNo);
                 if (batch.getStatus() != BatchStatus.PAUSED) {
@@ -104,6 +109,7 @@ public class BatchServiceImpl implements BatchService {
 
         @Override
         @Transactional
+        @RequiresPermission(anyOf = { ModuleType.MANAGER, ModuleType.BATCH })
         public void abort(String batchNo, Integer stepNo, String remark) {
                 Batch batch = getBatchByBatchNo(batchNo);
                 if (batch.getStatus() == BatchStatus.COMPLETED || batch.getStatus() == BatchStatus.ABORTED) {
@@ -121,6 +127,7 @@ public class BatchServiceImpl implements BatchService {
 
         @Override
         @Transactional
+        @RequiresPermission(anyOf = { ModuleType.MANAGER, ModuleType.BATCH })
         public void remark(String batchNo, Integer stepNo, String remark) {
                 Batch batch = getBatchByBatchNo(batchNo);
                 BatchSOP step = getStep(batch, stepNo, batchNo);
@@ -164,6 +171,7 @@ public class BatchServiceImpl implements BatchService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.BATCH)
         public void download(String batchNo) {
                 Batch batch = getBatchByBatchNo(batchNo);
                 if (batch.getStatus() != BatchStatus.TRANSFERRED) {
@@ -177,7 +185,16 @@ public class BatchServiceImpl implements BatchService {
         }
 
         @Override
+        public BatchAbortResponse getAbortDetails(Long batchId) {
+                Batch batch = batchRepository.findForAbortById(batchId)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Batch not found with id: " + batchId));
+                return batchMapper.toBatchAbortResponse(batch);
+        }
+
+        @Override
         @Transactional
+        @RequiresPermission(ModuleType.BATCH)
         public void onStepChange(String batchNo, StepChangeRequest req) {
                 if (req.direction() == StepChangeDirection.NEXT) {
                         Batch batch = getBatchByBatchNo(batchNo);

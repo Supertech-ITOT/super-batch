@@ -49,8 +49,6 @@ public class DashboardHelper {
 
         long elapsedMinutes = Duration.between(startDateTime, end).toMinutes();
 
-        int progress = (int) ((elapsedMinutes * 100) / stdTime);
-
-        return Math.min(progress, 100);
+        return (int) Math.round((elapsedMinutes * 100.0) / stdTime);
     }
 }

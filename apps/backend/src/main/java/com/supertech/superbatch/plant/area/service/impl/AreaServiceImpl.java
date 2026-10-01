@@ -35,7 +35,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@RequiresPermission(ModuleType.PLANT_MODEL)
 @RequiresLicense()
 public class AreaServiceImpl implements AreaService {
     private final AreaRepository areaRepository;
@@ -47,6 +46,7 @@ public class AreaServiceImpl implements AreaService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void create(CreateAreaRequest request) {
 
         if (areaRepository.existsByNameIgnoreCaseAndPlantIdAndDeletedFalse(request.name(), request.plantId())) {
@@ -80,6 +80,7 @@ public class AreaServiceImpl implements AreaService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void update(Long id, UpdateAreaRequest request) {
         Area area = areaRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
@@ -101,6 +102,7 @@ public class AreaServiceImpl implements AreaService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void delete(Long id, Long currentUserId) {
         Area area = areaRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Area not found"));

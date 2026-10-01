@@ -24,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@RequiresPermission(ModuleType.PLANT_MODEL)
 @RequiresLicense()
 public class MessageServiceImpl implements MessageService {
     private final MessageRepository messageRepository;
@@ -41,6 +40,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void create(CreateMessageRequest request) {
         Message messages = messagesMapper.toEntity(request);
         messageRepository.save(messages);
@@ -50,6 +50,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void update(Long id, UpdateMessageRequest request) {
         Message messages = messageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Message Not Found"));
@@ -61,6 +62,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void delete(long id) {
         Message messages = messageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Message Not Found"));

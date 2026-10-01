@@ -1,6 +1,7 @@
 package com.supertech.superbatch.manager.permission.aspect;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -31,13 +32,20 @@ public class PermissionCheckAspect {
 
         Long userId = userContextService.getCurrentUserId();
         RequiresPermission requiresPermission = findPermissionAnnotation(joinPoint);
-
         if (requiresPermission == null) {
             throw new BadRequestException("Permission configuration not found.");
         }
 
-        ModuleType module = requiresPermission.value();
-        boolean hasAccess = permissionService.hasAccess(userId, module);
+        boolean hasAccess;
+        ModuleType[] anyOfModules = requiresPermission.anyOf();
+
+        if (anyOfModules.length > 0) {
+            hasAccess = Arrays.stream(anyOfModules)
+                    .anyMatch(module -> permissionService.hasAccess(userId, module));
+
+        } else {
+            hasAccess = permissionService.hasAccess(userId, requiresPermission.value());
+        }
 
         if (!hasAccess) {
             throw new BadRequestException(

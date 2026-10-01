@@ -30,7 +30,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@RequiresPermission(ModuleType.PLANT_MODEL)
 @RequiresLicense()
 public class PlantServiceImpl implements PlantService {
     private final PlantRepository plantRepository;
@@ -41,6 +40,7 @@ public class PlantServiceImpl implements PlantService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void create(CreatePlantRequest request) {
         if (plantRepository.existsByNameIgnoreCaseAndDeletedFalse(request.name())) {
             throw new DuplicateResourceException("Plant already exists");
@@ -65,6 +65,7 @@ public class PlantServiceImpl implements PlantService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void update(Long id, UpdatePlantRequest request) {
         Plant plant = plantRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Plant not found"));
@@ -81,6 +82,7 @@ public class PlantServiceImpl implements PlantService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void delete(Long id, Long currentUserId) {
         Plant plant = plantRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Plant not found"));

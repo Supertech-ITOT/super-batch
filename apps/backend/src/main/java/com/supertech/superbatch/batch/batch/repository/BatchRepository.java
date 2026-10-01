@@ -1,6 +1,5 @@
 package com.supertech.superbatch.batch.batch.repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,41 +13,40 @@ import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 
 public interface BatchRepository extends JpaRepository<Batch, Long> {
 
-    Optional<Batch> findByBatchNo(String batchNo);
+        Optional<Batch> findByBatchNo(String batchNo);
 
-    @EntityGraph(attributePaths = {
-            "controlRecipe",
-            "controlRecipe.recipe",
-            "controlRecipe.recipe.material",
-            "controlRecipe.unit",
-            "controlRecipe.shiftIncharge",
-            "controlRecipe.createdBy",
-    })
-    Optional<Batch> findWithRecipeInfoByBatchNo(String batchNo);
+        @EntityGraph(attributePaths = {
+                        "controlRecipe",
+                        "controlRecipe.recipe",
+                        "controlRecipe.recipe.material",
+                        "controlRecipe.unit",
+                        "controlRecipe.shiftIncharge",
+                        "controlRecipe.createdBy",
+        })
+        Optional<Batch> findWithRecipeInfoByBatchNo(String batchNo);
 
-    List<Batch> findByUnit_CodeAndStatusOrderByCreatedAtDesc(
-            String unitCode,
-            BatchStatus status);
+        List<Batch> findByUnit_CodeAndStatusOrderByCreatedAtDesc(
+                        String unitCode,
+                        BatchStatus status);
 
-    @Query("""
-                SELECT b.status, COUNT(b)
-                FROM Batch b
-                WHERE b.createdAt >= :start AND b.createdAt < :end
-                GROUP BY b.status
-            """)
-    List<Object[]> countByStatus(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+        @Query("""
+                            SELECT b.status, COUNT(b)
+                            FROM Batch b
+                            GROUP BY b.status
+                        """)
+        List<Object[]> countByStatus();
 
-    @EntityGraph(attributePaths = {
-            "masterRecipe.material", "unit", "sops"
-    })
-    List<Batch> findByStatusInOrderByStartDateTimeAsc(
-            List<BatchStatus> statuses);
+        @EntityGraph(attributePaths = {
+                        "masterRecipe.material", "unit", "sops"
+        })
+        List<Batch> findByStatusInOrderByStartDateTimeAsc(List<BatchStatus> statuses);
 
-    @EntityGraph(attributePaths = {
-            "masterRecipe.material",
-            "unit"
-    })
-    List<Batch> findByStatusAndStartDateTimeAfterOrderByStartDateTimeAsc(
-            BatchStatus status,
-            LocalDateTime startDateTime);
+        @EntityGraph(attributePaths = { "masterRecipe", "controlRecipe", "unit", "sops" })
+        @Query("""
+                        SELECT b
+                        FROM Batch b
+                        WHERE b.id = :batchId
+                        """)
+        Optional<Batch> findForAbortById(@Param("batchId") Long batchId);
+
 }

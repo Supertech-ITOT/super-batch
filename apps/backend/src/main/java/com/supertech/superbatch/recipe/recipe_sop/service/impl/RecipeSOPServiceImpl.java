@@ -42,7 +42,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@RequiresPermission(ModuleType.RECIPE)
 @RequiresLicense()
 public class RecipeSOPServiceImpl implements RecipeSOPService {
         private final RecipeSOPValidator recipeSOPValidator;
@@ -72,6 +71,7 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.RECIPE)
         public void create(CreateRecipeSOPRequest request) {
                 List<RecipeSOP> steps = recipeSOPRepository.findAllByRecipeId(request.recipeId());
                 Integer stepNo = steps.isEmpty() ? 1 : steps.size() + 1;
@@ -95,6 +95,7 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.RECIPE)
         public void update(UpdateRecipeSOPRequest request) {
                 RecipeSOP recipeSOP = getRecipeSOP(request.id());
                 Recipe recipe = getRecipe(request.recipeId());
@@ -121,6 +122,7 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.RECIPE)
         public void delete(Long id) {
                 RecipeSOP recipeSOP = getRecipeSOP(id);
                 recipeSOPValidator.validateEditable(recipeSOP.getRecipe());
@@ -143,24 +145,28 @@ public class RecipeSOPServiceImpl implements RecipeSOPService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.RECIPE)
         public void moveUp(Long recipeSOPId) {
                 move(recipeSOPId, -1);
         }
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.RECIPE)
         public void moveDown(Long recipeSOPId) {
                 move(recipeSOPId, 1);
         }
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.RECIPE)
         public void insertAbove(Long recipeSOPId, CreateRecipeSOPRequest request) {
                 insert(recipeSOPId, request, true);
         }
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.RECIPE)
         public void insertBelow(Long recipeSOPId, CreateRecipeSOPRequest request) {
                 insert(recipeSOPId, request, false);
         }

@@ -6,7 +6,6 @@ import lombok.Builder;
 
 @Builder
 public record BatchStatusCardResponse(
-        BatchStatus status,
-        long count,
-        Long comparison) {
+                BatchStatus status,
+                long count) {
 }

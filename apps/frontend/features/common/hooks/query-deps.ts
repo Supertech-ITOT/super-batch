@@ -99,6 +99,8 @@ export const queryDeps = {
   applications: [queryKeys.applications.all, queryKeys.audits.all],
 
   audits: [queryKeys.audits.all],
+
+  batches: [queryKeys.batches.all],
 } as const;
 
 import { QueryClient, QueryKey } from "@tanstack/react-query";

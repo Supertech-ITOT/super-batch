@@ -1,6 +1,5 @@
 package com.supertech.superbatch.dashboard.service.impl;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -18,127 +17,83 @@ import com.supertech.superbatch.dashboard.dto.ScheduledBatchResponse;
 import com.supertech.superbatch.dashboard.helper.DashboardHelper;
 import com.supertech.superbatch.dashboard.mapper.DashboardMapper;
 import com.supertech.superbatch.dashboard.service.DashboardService;
+import com.supertech.superbatch.manager.module.enums.ModuleType;
+import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
+import com.supertech.superbatch.scheduler.control_recipe.entity.ControlRecipe;
+import com.supertech.superbatch.scheduler.control_recipe.enums.ControlRecipeStatus;
+import com.supertech.superbatch.scheduler.control_recipe.repository.ControlRecipeRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@RequiresPermission(ModuleType.DASHBOARD)
 public class DashboardServiceImpl implements DashboardService {
-    private final BatchRepository batchRepository;
-    private final DashboardMapper dashboardMapper;
-    private final DashboardHelper dashboardHelper;
+        private final BatchRepository batchRepository;
+        private final DashboardMapper dashboardMapper;
+        private final DashboardHelper dashboardHelper;
+        private final ControlRecipeRepository controlRecipeRepository;
 
-    @Override
-    public BatchStatusDashboardResponse getBatchStatus() {
+        @Override
+        public BatchStatusDashboardResponse getBatchStatus() {
+                Map<BatchStatus, Long> counts = batchRepository.countByStatus()
+                                .stream()
+                                .collect(Collectors.toMap(row -> (BatchStatus) row[0], row -> (Long) row[1]));
 
-        LocalDate today = LocalDate.now();
-        LocalDateTime start = today.atStartOfDay();
-        LocalDateTime end = today.plusDays(1).atStartOfDay();
+                List<BatchStatusCardResponse> statuses = Arrays.stream(BatchStatus.values())
+                                .map(status -> dashboardMapper.toStatusCard(status, counts.getOrDefault(status, 0L)))
+                                .toList();
 
-        Map<BatchStatus, Long> todayCounts = toStatusCountMap(batchRepository.countByStatus(start, end));
-        Map<BatchStatus, Long> yesterdayCounts = toStatusCountMap(
-                batchRepository.countByStatus(start.minusDays(1), start));
+                long total = statuses.stream().mapToLong(BatchStatusCardResponse::count).sum();
+                return dashboardMapper.toDashboard(total, statuses);
+        }
 
-        List<BatchStatusCardResponse> statuses = Arrays.stream(BatchStatus.values())
-                .map(status -> {
-                    long count = todayCounts.getOrDefault(status, 0L);
-                    Long comparison = calculateComparison(
-                            status,
-                            todayCounts,
-                            yesterdayCounts);
-                    return createStatusCard(status, count, comparison);
-                })
-                .toList();
+        @Override
+        public List<ActiveBatchesResponse> getActiveBatches() {
 
-        long total = statuses.stream().mapToLong(BatchStatusCardResponse::count).sum();
+                List<Batch> batches = batchRepository.findByStatusInOrderByStartDateTimeAsc(
+                                List.of(BatchStatus.IN_PROGRESS, BatchStatus.PAUSED));
 
-        return dashboardMapper.toDashboard(total, statuses);
-    }
+                return batches.stream()
+                                .map(batch -> {
+                                        LocalDateTime startedAt = batch.getStartDateTime();
+                                        Double cycleTime = dashboardHelper.calculateCycleTime(startedAt);
+                                        Double stdTime = dashboardHelper.calculateStandardTime(batch.getSops());
+                                        Integer progress = dashboardHelper.calculateProgress(batch.getStartDateTime(),
+                                                        batch.getEndDateTime(), stdTime);
+                                        return dashboardMapper.toActiveBatchResponse(
+                                                        batch.getId(),
+                                                        batch.getBatchNo(),
+                                                        batch.getMasterRecipe().getMaterial().getCode(),
+                                                        batch.getUnit().getCode(),
+                                                        startedAt,
+                                                        cycleTime,
+                                                        stdTime,
+                                                        batch.getStatus(),
+                                                        progress);
+                                })
+                                .toList();
+        }
 
-    private Map<BatchStatus, Long> toStatusCountMap(List<Object[]> results) {
-        return results.stream()
-                .collect(Collectors.toMap(row -> (BatchStatus) row[0], row -> (Long) row[1]));
-    }
+        @Override
+        public List<ScheduledBatchResponse> getScheduledBatches() {
 
-    private Long calculateComparison(
-            BatchStatus status,
-            Map<BatchStatus, Long> todayCounts,
-            Map<BatchStatus, Long> yesterdayCounts) {
+                List<ControlRecipe> controlRecipes = controlRecipeRepository
+                                .findByStatusAndScheduledAtAfterOrderByScheduledAtAsc(
+                                                ControlRecipeStatus.SCHEDULED,
+                                                LocalDateTime.now());
 
-        long today = todayCounts.getOrDefault(status, 0L);
-        long yesterday = yesterdayCounts.getOrDefault(status, 0L);
-
-        return today - yesterday;
-    }
-
-    private BatchStatusCardResponse createStatusCard(BatchStatus status, long count, Long comparison) {
-        return switch (status) {
-            case TRANSFERRED ->
-                dashboardMapper.toStatusCard(status, count, comparison);
-
-            case READY ->
-                dashboardMapper.toStatusCard(status, count, comparison);
-
-            case IN_PROGRESS ->
-                dashboardMapper.toStatusCard(status, count, comparison);
-
-            case PAUSED ->
-                dashboardMapper.toStatusCard(status, count, comparison);
-
-            case COMPLETED ->
-                dashboardMapper.toStatusCard(status, count, comparison);
-
-            case ABORTED ->
-                dashboardMapper.toStatusCard(status, count, comparison);
-        };
-    }
-
-    @Override
-    public List<ActiveBatchesResponse> getActiveBatches() {
-
-        List<Batch> batches = batchRepository.findByStatusInOrderByStartDateTimeAsc(
-                List.of(BatchStatus.IN_PROGRESS, BatchStatus.PAUSED));
-
-        return batches.stream()
-                .map(batch -> {
-                    LocalDateTime startedAt = batch.getStartDateTime();
-                    Double cycleTime = dashboardHelper.calculateCycleTime(startedAt);
-                    Double stdTime = dashboardHelper.calculateStandardTime(batch.getSops());
-                    Integer progress = dashboardHelper.calculateProgress(batch.getStartDateTime(),
-                            batch.getEndDateTime(), stdTime);
-                    return dashboardMapper.toActiveBatchResponse(
-                            batch.getBatchNo(),
-                            batch.getMasterRecipe().getMaterial().getCode(),
-                            batch.getUnit().getName(),
-                            startedAt,
-                            cycleTime,
-                            stdTime,
-                            batch.getStatus(),
-                            progress);
-                })
-                .toList();
-    }
-
-    @Override
-    public List<ScheduledBatchResponse> getScheduledBatches() {
-
-        List<Batch> batches = batchRepository.findByStatusAndStartDateTimeAfterOrderByStartDateTimeAsc(
-                BatchStatus.READY,
-                LocalDateTime.now());
-
-        return batches.stream()
-                .map(batch -> {
-                    Double batchSize = batch.getControlRecipe().getBatchSize().doubleValue();
-                    return dashboardMapper.toScheduledBatchResponse(
-                            batch.getBatchNo(),
-                            batchSize,
-                            batch.getMasterRecipe()
-                                    .getMaterial()
-                                    .getCode(),
-                            batch.getUnit().getName(),
-                            batch.getStartDateTime());
-                })
-                .toList();
-    }
+                return controlRecipes.stream()
+                                .map(controlRecipe -> {
+                                        Double batchSize = controlRecipe.getBatchSize().doubleValue();
+                                        return dashboardMapper.toScheduledBatchResponse(
+                                                        controlRecipe.getBatchNo(),
+                                                        batchSize,
+                                                        controlRecipe.getRecipe().getMaterial().getCode(),
+                                                        controlRecipe.getUnit().getCode(),
+                                                        controlRecipe.getScheduledAt());
+                                })
+                                .toList();
+        }
 }

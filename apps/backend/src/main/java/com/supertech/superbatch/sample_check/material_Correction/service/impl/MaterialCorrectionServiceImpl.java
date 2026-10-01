@@ -29,7 +29,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @RequiresLicense
-@RequiresPermission(ModuleType.SAMPLE_CHECK)
 @Transactional(readOnly = true)
 public class MaterialCorrectionServiceImpl implements MaterialCorrectionService {
         private final MaterialCorrectionRepository materialCorrectionRepository;
@@ -40,6 +39,7 @@ public class MaterialCorrectionServiceImpl implements MaterialCorrectionService 
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.SAMPLE_CHECK)
         public void create(MaterialCorrectionRequest request) {
                 Batch batch = batchRepository.findByBatchNo(request.batchNo())
                                 .orElseThrow(() -> new ResourceNotFoundException("Batch not found."));

@@ -16,6 +16,7 @@ export interface DataTableProps<TData, TValue> {
             label: string;
             icon?: LucideIcon;
             variant?: "default" | "destructive";
+            show?: (row: TData) => boolean;
             onClick: (row: TData) => void;
         }[];
     };
@@ -26,6 +27,7 @@ export interface DataTableProps<TData, TValue> {
     };
     onRowClick?: (row: TData) => void;
     isRowSelected?: (row: TData) => boolean;
+    compact?: boolean;
 }
 
 export const alignClass = { left: "text-left", center: "text-center", right: "text-right", };

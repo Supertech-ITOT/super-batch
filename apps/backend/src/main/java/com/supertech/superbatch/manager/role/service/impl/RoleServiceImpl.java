@@ -42,7 +42,6 @@ import com.supertech.superbatch.manager.module.entity.Module;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@RequiresPermission(ModuleType.MANAGER)
 @RequiresLicense()
 public class RoleServiceImpl implements RoleService {
 
@@ -73,6 +72,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @RequiresPermission(ModuleType.MANAGER)
     public void create(RoleCreateRequest request) {
         if (roleRepository.existsByNameAndDeletedFalse(request.name())) {
             throw new DuplicateResourceException("Role already exists with name: " + request.name());
@@ -88,6 +88,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @RequiresPermission(ModuleType.MANAGER)
     public void update(Long id, RoleUpdateRequest request) {
         Role role = roleRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
@@ -113,6 +114,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @RequiresPermission(ModuleType.MANAGER)
     public void delete(Long id, Long currentUserId) {
         Role role = roleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Role not found."));
         if (role.isSystemRole() || DefaultRole.ADMINISTRATOR.equals(role.getName())) {

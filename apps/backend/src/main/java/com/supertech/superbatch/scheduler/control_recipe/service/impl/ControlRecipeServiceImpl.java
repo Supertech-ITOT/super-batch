@@ -54,7 +54,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@RequiresPermission(ModuleType.SCHEDULER)
 @RequiresLicense()
 public class ControlRecipeServiceImpl implements ControlRecipeService {
         private final UserRepository userRepository;
@@ -70,6 +69,7 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.SCHEDULER)
         public void delete(Long id, Long currentUserId) {
                 ControlRecipe controlRecipe = getControlRecipe(id);
                 User deletedBy = getUser(currentUserId, "User not found.");
@@ -82,6 +82,7 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.SCHEDULER)
         public void create(CreateControlRecipeRequest request, Long userId) {
                 if (controlRecipeRepository.existsByBatchNoIgnoreCaseAndDeletedFalse(request.batchNo())) {
                         throw new DuplicateResourceException("Batch No already exists.");
@@ -142,6 +143,7 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.SCHEDULER)
         public void update(Long id, UpdateControlRecipeRequest request) {
                 if (controlRecipeRepository.existsByBatchNoIgnoreCaseAndIdNotAndDeletedFalse(request.batchNo(), id)) {
                         throw new DuplicateResourceException("Batch No already exist.");
@@ -204,6 +206,7 @@ public class ControlRecipeServiceImpl implements ControlRecipeService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.SCHEDULER)
         public void transfer(Long id) {
                 ControlRecipe controlRecipe = getControlRecipe(id);
 

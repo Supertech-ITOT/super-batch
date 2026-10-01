@@ -11,5 +11,7 @@ import com.supertech.superbatch.manager.module.enums.ModuleType;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequiresPermission {
 
-    ModuleType value();
+    ModuleType value() default ModuleType.MANAGER;
+
+    ModuleType[] anyOf() default {};
 }

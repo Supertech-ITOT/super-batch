@@ -15,16 +15,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PermissionServiceImpl implements PermissionService {
-    private final UserRepository userRepository;
+        private final UserRepository userRepository;
 
-    @Override
-    public boolean hasAccess(Long userId, ModuleType module) {
-        User user = userRepository.findByIdAndDeletedFalse(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+        @Override
+        public boolean hasAccess(Long userId, ModuleType module) {
+                User user = userRepository.findByIdAndDeletedFalse(userId)
+                                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
-        return user.getRole()
-                .getPermissions()
-                .stream()
-                .anyMatch(permission -> permission.getModule().getId().equals(module.getId()) && permission.isAccess());
-    }
+                return user.getRole()
+                                .getPermissions()
+                                .stream()
+                                .anyMatch(permission -> permission.getModule().getId().equals(module.getId())
+                                                && permission.isAccess());
+        }
 }

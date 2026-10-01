@@ -109,7 +109,8 @@ public class LicenseServiceImpl implements LicenseService {
     @Override
     @Transactional
     public boolean validateLicense() {
-        License license = licenseRepository.findByStatus(LicenseStatus.ACTIVE)
+        License license = licenseRepository
+                .findByStatus(LicenseStatus.ACTIVE)
                 .orElseThrow(() -> new ResourceNotFoundException("License not activated."));
 
         try {
@@ -120,12 +121,17 @@ public class LicenseServiceImpl implements LicenseService {
             licenseRepository.save(license);
             return true;
         } catch (BadRequestException e) {
-            if (e.getMessage() != null && e.getMessage().equals("License has expired.")) {
+            if ("License has expired.".equals(e.getMessage())) {
                 license.setStatus(LicenseStatus.EXPIRED);
-                licenseRepository.save(license);
+            } else {
+                license.setStatus(LicenseStatus.SUSPENDED);
             }
+            licenseRepository.save(license);
             throw e;
+
         } catch (Exception e) {
+            license.setStatus(LicenseStatus.SUSPENDED);
+            licenseRepository.save(license);
             throw new BadRequestException("License validation failed. " + e.getMessage());
         }
     }
@@ -143,7 +149,6 @@ public class LicenseServiceImpl implements LicenseService {
                             .build());
 
             byte[] licenseFile = res.getData().licenseFile();
-
             if (licenseFile == null || licenseFile.length == 0) {
                 throw new BadRequestException("License server returned an empty license file.");
             }

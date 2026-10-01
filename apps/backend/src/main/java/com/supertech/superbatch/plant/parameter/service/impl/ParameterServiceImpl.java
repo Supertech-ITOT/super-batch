@@ -34,7 +34,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@RequiresPermission(ModuleType.PLANT_MODEL)
 @RequiresLicense()
 public class ParameterServiceImpl implements ParameterService {
     private final ParameterRepository parameterRepository;
@@ -59,6 +58,7 @@ public class ParameterServiceImpl implements ParameterService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void create(CreateParameterRequest request) {
 
         if (parameterRepository.existsByNameIgnoreCaseAndDeletedFalse(request.name())) {
@@ -73,6 +73,7 @@ public class ParameterServiceImpl implements ParameterService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void update(Long id, UpdateParameterRequest request) {
         Parameter parameter = parameterRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Parameter not found"));
@@ -89,6 +90,7 @@ public class ParameterServiceImpl implements ParameterService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void delete(Long id, Long currentUserId) {
         Parameter parameter = parameterRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Parameter not found."));

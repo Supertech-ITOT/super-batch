@@ -41,7 +41,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@RequiresPermission(ModuleType.SCHEDULER)
 @RequiresLicense()
 public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
         private static final int STEP_OFFSET = 1_000_000;
@@ -74,6 +73,7 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.SCHEDULER)
         public void create(CreateControlRecipeSOPRequest request) {
                 ControlRecipe controlRecipe = getControlRecipe(request.controlRecipeId());
                 controlRecipeSOPValidator.validateEditable(controlRecipe);
@@ -98,6 +98,7 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.SCHEDULER)
         public void update(UpdateControlRecipeSOPRequest request) {
                 ControlRecipeSOP controlRecipeSOP = getControlRecipeSOP(request.id());
                 ControlRecipe controlRecipe = getControlRecipe(request.controlRecipeId());
@@ -124,6 +125,7 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.SCHEDULER)
         public void delete(Long id) {
                 ControlRecipeSOP controlRecipeSOP = getControlRecipeSOP(id);
 
@@ -149,18 +151,21 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.SCHEDULER)
         public void moveUp(Long controlRecipeSOPId) {
                 move(controlRecipeSOPId, -1);
         }
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.SCHEDULER)
         public void moveDown(Long controlRecipeSOPId) {
                 move(controlRecipeSOPId, 1);
         }
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.SCHEDULER)
         public void insertAbove(Long controlRecipeSOPId,
                         CreateControlRecipeSOPRequest request) {
                 insert(controlRecipeSOPId, request, true);
@@ -168,6 +173,7 @@ public class ControlRecipeSOPServiceImpl implements ControlRecipeSOPService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.SCHEDULER)
         public void insertBelow(Long controlRecipeSOPId,
                         CreateControlRecipeSOPRequest request) {
                 insert(controlRecipeSOPId, request, false);

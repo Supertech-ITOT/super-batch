@@ -32,7 +32,6 @@ import lombok.*;
 @Component
 @RequiredArgsConstructor
 @RequiresLicense
-@RequiresPermission(ModuleType.SAMPLE_CHECK)
 @Transactional(readOnly = true)
 public class CheckParameterServiceImpl implements CheckParameterService {
     private final CheckParameterRepository checkParameterRepository;
@@ -44,6 +43,7 @@ public class CheckParameterServiceImpl implements CheckParameterService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.SAMPLE_CHECK)
     public void create(CheckParameterRequest request) {
         Material material = getFinishedProductByName(request.product());
         CheckParameter checkParameter = checkParameterMapper.toEntity(request, material);
@@ -55,6 +55,7 @@ public class CheckParameterServiceImpl implements CheckParameterService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.SAMPLE_CHECK)
     public void update(Long id, CheckParameterRequest request) {
         CheckParameter checkParameter = checkParameterRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Check parameter not found: " + id));
@@ -72,6 +73,7 @@ public class CheckParameterServiceImpl implements CheckParameterService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.SAMPLE_CHECK)
     public void delete(Long id, Long currentUserId) {
         CheckParameter checkParameter = checkParameterRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Check parameter not found: " + id));

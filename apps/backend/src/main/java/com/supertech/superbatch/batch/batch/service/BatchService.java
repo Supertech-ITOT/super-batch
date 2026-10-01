@@ -1,6 +1,8 @@
 package com.supertech.superbatch.batch.batch.service;
 
 import java.util.List;
+
+import com.supertech.superbatch.batch.batch.dto.BatchAbortResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchSOPResponse;
 import com.supertech.superbatch.batch.batch.dto.RecipeInfoResponse;
@@ -11,6 +13,8 @@ public interface BatchService {
     void start(String batchNo);
 
     void download(String batchNo);
+
+    BatchAbortResponse getAbortDetails(Long batchId);
 
     void pause(String batchNo, Integer stepNo, String remark);
 

@@ -42,7 +42,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@RequiresPermission(ModuleType.RECIPE)
 @RequiresLicense()
 public class RecipeServiceImpl implements RecipeService {
         private final RecipeRepository recipeRepository;
@@ -55,6 +54,7 @@ public class RecipeServiceImpl implements RecipeService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.RECIPE)
         public void delete(Long id, Long currentUserId) {
                 Recipe recipe = recipeRepository.findByIdAndDeletedFalse(id)
                                 .orElseThrow(() -> new RuntimeException("Recipe not found."));
@@ -72,6 +72,7 @@ public class RecipeServiceImpl implements RecipeService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.RECIPE)
         public void create(CreateRecipeRequest request, Long userId) {
                 if (recipeRepository.existsByNameIgnoreCaseAndDeletedFalse(request.name())) {
                         throw new DuplicateResourceException("Recipe already exists.");
@@ -112,6 +113,7 @@ public class RecipeServiceImpl implements RecipeService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.RECIPE)
         public void update(Long id, UpdateRecipeRequest request) {
                 Material material = materialRepository.findByIdAndDeletedFalse(request.materialId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Material not found."));
@@ -158,6 +160,7 @@ public class RecipeServiceImpl implements RecipeService {
 
         @Override
         @Transactional
+        @RequiresPermission(ModuleType.RECIPE)
         public void release(Long id) {
                 Recipe recipe = recipeRepository.findByIdAndDeletedFalse(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));

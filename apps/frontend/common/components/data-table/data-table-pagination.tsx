@@ -2,49 +2,56 @@ import { Table } from "@tanstack/react-table";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Props<TData> {
-    table: Table<TData>;
-    serverPagination?: {
-        pageIndex: number;
-        pageCount: number;
-    };
+  table: Table<TData>;
+  serverPagination?: {
+    pageIndex: number;
+    pageCount: number;
+  };
+  compact?: boolean;
 }
 
-export default function DataTablePagination<TData>({ table, serverPagination }: Props<TData>) {
-    const { pageIndex } = table.getState().pagination;
-    const pageCount = serverPagination?.pageCount ?? table.getPageCount();
-    const canPrevious = serverPagination ? pageIndex > 0 : table.getCanPreviousPage();
-    const canNext = serverPagination ? pageIndex < pageCount - 1 : table.getCanNextPage();
-    return (
-        <div className="flex items-center justify-between">
-            <p className="text-sm ">
-                Page <span className="font-medium">{pageIndex + 1}</span> of{" "}
-                <span className="font-medium">{pageCount}</span>
-            </p>
+export default function DataTablePagination<TData>({ table, serverPagination, compact = false }: Props<TData>) {
+  const { pageIndex } = table.getState().pagination;
 
-            <div className="flex items-center gap-2">
-                <button
-                    onClick={() => table.previousPage()}
-                    disabled={!canPrevious}
-                    className="inline-flex size-8 items-center justify-center rounded-lg border bg-card transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
-                >
-                    <ChevronLeft className="size-6" />
-                </button>
+  const pageCount = serverPagination?.pageCount ?? table.getPageCount();
 
-                <span
-                    key={pageIndex}
-                    className="animate-in zoom-in duration-300 text-2xl font-bold text-primary"
-                >
-                    {pageIndex + 1}
-                </span>
+  const canPrevious = serverPagination ? pageIndex > 0 : table.getCanPreviousPage();
 
-                <button
-                    onClick={() => table.nextPage()}
-                    disabled={!canNext}
-                    className="inline-flex size-8 items-center justify-center rounded-lg border bg-card transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
-                >
-                    <ChevronRight className="size-6" />
-                </button>
-            </div>
-        </div>
-    );
+  const canNext = serverPagination ? pageIndex < pageCount - 1 : table.getCanNextPage();
+
+  return (
+    <div className={`flex items-center justify-between ${compact ? "pt-1" : ""}`}>
+      <p className={compact ? "text-[10px] sm:text-xs" : "text-sm"}>
+        Page <span className="font-medium">{pageIndex + 1}</span> of <span className="font-medium">{pageCount}</span>
+      </p>
+
+      <div className={compact ? "flex items-center gap-1" : "flex items-center gap-2"}>
+        <button
+          onClick={() => table.previousPage()}
+          disabled={!canPrevious}
+          className={
+            compact
+              ? "inline-flex size-6 items-center justify-center rounded-md border bg-card transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50 sm:size-7"
+              : "inline-flex size-8 items-center justify-center rounded-lg border bg-card transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+          }
+        >
+          <ChevronLeft className={compact ? "size-4" : "size-6"} />
+        </button>
+
+        <span className={compact ? "animate-in zoom-in px-1 text-lg font-bold text-primary duration-300 sm:text-xl" : "animate-in zoom-in text-2xl font-bold text-primary duration-300"}>{pageIndex + 1}</span>
+
+        <button
+          onClick={() => table.nextPage()}
+          disabled={!canNext}
+          className={
+            compact
+              ? "inline-flex size-6 items-center justify-center rounded-md border bg-card transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50 sm:size-7"
+              : "inline-flex size-8 items-center justify-center rounded-lg border bg-card transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+          }
+        >
+          <ChevronRight className={compact ? "size-4" : "size-6"} />
+        </button>
+      </div>
+    </div>
+  );
 }

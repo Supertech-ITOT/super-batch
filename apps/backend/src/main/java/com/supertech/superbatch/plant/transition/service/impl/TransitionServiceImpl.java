@@ -34,7 +34,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@RequiresPermission(ModuleType.PLANT_MODEL)
 @RequiresLicense()
 public class TransitionServiceImpl implements TransitionService {
     private final TransitionRepository transitionRepository;
@@ -59,6 +58,7 @@ public class TransitionServiceImpl implements TransitionService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void create(CreateTransitionRequest request) {
         if (transitionRepository.existsByNameIgnoreCaseAndDeletedFalse(request.name())) {
             throw new DuplicateResourceException("Transition name already exists");
@@ -70,6 +70,7 @@ public class TransitionServiceImpl implements TransitionService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void update(Long id, UpdateTransitionRequest request) {
         Transition transition = transitionRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transition not found"));
@@ -86,6 +87,7 @@ public class TransitionServiceImpl implements TransitionService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void delete(Long id, Long currentUserId) {
         Transition transition = transitionRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transition not found."));

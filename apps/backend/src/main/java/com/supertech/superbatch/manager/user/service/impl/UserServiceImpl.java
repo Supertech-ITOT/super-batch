@@ -56,7 +56,6 @@ public class UserServiceImpl implements UserService {
 
         @Override
         @RequiresLicense()
-        @RequiresPermission(ModuleType.MANAGER)
         public List<UserResponse> getAll() {
                 return userRepository.findByDeletedFalseAndSystemAccountFalse()
                                 .stream()
@@ -247,7 +246,6 @@ public class UserServiceImpl implements UserService {
 
         @Override
         @RequiresLicense()
-        @RequiresPermission(ModuleType.MANAGER)
         public Page<UserResponse> getAllByPage(UserSearchRequest request) {
                 Pageable pageable = PageRequest.of(request.page(), request.size(), Sort.by(Sort.Direction.ASC, "name"));
                 return userRepository.findByDeletedFalseAndSystemAccountFalse(pageable)

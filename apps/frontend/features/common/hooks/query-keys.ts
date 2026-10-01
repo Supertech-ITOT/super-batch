@@ -152,13 +152,22 @@ export const queryKeys = {
 
   metadata: {
     all: ["metadata"] as const,
-
     uomTypes: () => ["metadata", "uom-types"] as const,
-
     materialTypes: () => ["metadata", "material-types"] as const,
-
     batchAuditActions: () => ["metadata", "batch-audit-action"] as const,
-
     recipeStatusTypes: () => ["metadata", "recipe-status-types"] as const,
+  },
+
+  dashboard: {
+    all: ["dashboard"] as const,
+    status: () => ["dashboard", "status"] as const,
+    activeBatch: () => ["dashboard", "active-batch"] as const,
+    scheduledBatch: () => ["dashboard", "scheduled-batch"] as const,
+  },
+
+  batches: {
+    all: ["batches"] as const,
+    abortDetails: (batchId: number) =>
+      ["batches", "abort-details", batchId] as const,
   },
 } as const;

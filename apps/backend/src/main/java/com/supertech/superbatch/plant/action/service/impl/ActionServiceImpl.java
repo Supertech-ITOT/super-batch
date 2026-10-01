@@ -34,7 +34,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@RequiresPermission(ModuleType.PLANT_MODEL)
 @RequiresLicense()
 public class ActionServiceImpl implements ActionService {
     private final ActionRepository actionMasterRepository;
@@ -59,6 +58,7 @@ public class ActionServiceImpl implements ActionService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void create(CreateActionRequest request) {
         if (actionMasterRepository.existsByNameIgnoreCaseAndDeletedFalse(request.name())) {
             throw new DuplicateResourceException("Action name already exists");
@@ -70,6 +70,7 @@ public class ActionServiceImpl implements ActionService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void update(Long id, UpdateActionRequest request) {
         Action actionMaster = actionMasterRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Action not found"));
@@ -86,6 +87,7 @@ public class ActionServiceImpl implements ActionService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.PLANT_MODEL)
     public void delete(Long id, Long currentUserId) {
         Action actionMaster = actionMasterRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Action not found."));

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.supertech.superbatch.batch.batch.dto.BatchAbortResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchAuditData;
 import com.supertech.superbatch.batch.batch.dto.MaterialResponse;
 import com.supertech.superbatch.batch.batch.dto.ParameterResponse;
@@ -27,119 +28,141 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class BatchMapper {
-    private final BatchSOPMapper batchSOPMapper;
-    private final BatchSOPMaterialMapper batchSOPMaterialMapper;
-    private final BatchSOPParameterMapper batchSOPParameterMapper;
+        private final BatchSOPMapper batchSOPMapper;
+        private final BatchSOPMaterialMapper batchSOPMaterialMapper;
+        private final BatchSOPParameterMapper batchSOPParameterMapper;
 
-    public Batch toEntity(ControlRecipe controlRecipe) {
-        Batch batch = Batch.builder()
-                .batchNo(controlRecipe.getBatchNo())
-                .unit(controlRecipe.getUnit())
-                .masterRecipe(controlRecipe.getRecipe())
-                .controlRecipe(controlRecipe)
-                .status(BatchStatus.TRANSFERRED)
-                .build();
+        public Batch toEntity(ControlRecipe controlRecipe) {
+                Batch batch = Batch.builder()
+                                .batchNo(controlRecipe.getBatchNo())
+                                .unit(controlRecipe.getUnit())
+                                .masterRecipe(controlRecipe.getRecipe())
+                                .controlRecipe(controlRecipe)
+                                .status(BatchStatus.TRANSFERRED)
+                                .build();
 
-        for (ControlRecipeSOP controlSop : controlRecipe.getSops()) {
-            BatchSOP batchSop = batchSOPMapper.toEntity(controlSop, batch);
-            // Materials
-            for (ControlRecipeSOPMaterial material : controlSop.getMaterials()) {
-                batchSop.getMaterials().add(batchSOPMaterialMapper.toEntity(material, batchSop));
-            }
-            // Parameters
-            for (ControlRecipeSOPParameter parameter : controlSop.getParameters()) {
-                batchSop.getParameters().add(batchSOPParameterMapper.toEntity(parameter, batchSop));
-            }
-            batch.getSops().add(batchSop);
+                for (ControlRecipeSOP controlSop : controlRecipe.getSops()) {
+                        BatchSOP batchSop = batchSOPMapper.toEntity(controlSop, batch);
+                        // Materials
+                        for (ControlRecipeSOPMaterial material : controlSop.getMaterials()) {
+                                batchSop.getMaterials().add(batchSOPMaterialMapper.toEntity(material, batchSop));
+                        }
+                        // Parameters
+                        for (ControlRecipeSOPParameter parameter : controlSop.getParameters()) {
+                                batchSop.getParameters().add(batchSOPParameterMapper.toEntity(parameter, batchSop));
+                        }
+                        batch.getSops().add(batchSop);
+                }
+                return batch;
         }
-        return batch;
-    }
 
-    public RecipeInfoResponse toRecipeInfoResponse(Batch batch) {
-        ControlRecipe controlRecipe = batch.getControlRecipe();
+        public RecipeInfoResponse toRecipeInfoResponse(Batch batch) {
+                ControlRecipe controlRecipe = batch.getControlRecipe();
 
-        return RecipeInfoResponse.builder()
-                .recipeName(controlRecipe.getRecipe().getName())
-                .recipeDescription(controlRecipe.getRecipe().getDescription())
-                .shiftIncharge(controlRecipe.getShiftIncharge().getName())
-                .batchSize(controlRecipe.getBatchSize())
-                .scheduledAt(controlRecipe.getScheduledAt())
-                .materialCode(controlRecipe.getRecipe().getMaterial().getCode())
-                .materialName(controlRecipe.getRecipe().getMaterial().getName())
-                .materialDescription(controlRecipe.getRecipe().getMaterial().getDescription())
-                .unitCode(controlRecipe.getUnit().getCode())
-                .unitName(controlRecipe.getUnit().getName())
-                .createdBy(controlRecipe.getCreatedBy().getName())
-                .build();
+                return RecipeInfoResponse.builder()
+                                .recipeName(controlRecipe.getRecipe().getName())
+                                .recipeDescription(controlRecipe.getRecipe().getDescription())
+                                .shiftIncharge(controlRecipe.getShiftIncharge().getName())
+                                .batchSize(controlRecipe.getBatchSize())
+                                .scheduledAt(controlRecipe.getScheduledAt())
+                                .materialCode(controlRecipe.getRecipe().getMaterial().getCode())
+                                .materialName(controlRecipe.getRecipe().getMaterial().getName())
+                                .materialDescription(controlRecipe.getRecipe().getMaterial().getDescription())
+                                .unitCode(controlRecipe.getUnit().getCode())
+                                .unitName(controlRecipe.getUnit().getName())
+                                .createdBy(controlRecipe.getCreatedBy().getName())
+                                .build();
 
-    }
+        }
 
-    public StepResponse toStepResponse(BatchSOP sop) {
-        List<MaterialResponse> materials = sop.getMaterials()
-                .stream()
-                .map(material -> MaterialResponse.builder()
-                        .id(material.getId())
-                        .materialId(material.getMaterial().getId())
-                        .materialCode(material.getMaterial().getCode())
-                        .materialName(material.getMaterial().getName())
-                        .stdQty(material.getStdQty())
-                        .build())
-                .toList();
+        public StepResponse toStepResponse(BatchSOP sop) {
+                List<MaterialResponse> materials = sop.getMaterials()
+                                .stream()
+                                .map(material -> MaterialResponse.builder()
+                                                .id(material.getId())
+                                                .materialId(material.getMaterial().getId())
+                                                .materialCode(material.getMaterial().getCode())
+                                                .materialName(material.getMaterial().getName())
+                                                .stdQty(material.getStdQty())
+                                                .build())
+                                .toList();
 
-        List<ParameterResponse> parameters = sop.getParameters()
-                .stream()
-                .map(parameter -> ParameterResponse.builder()
-                        .id(parameter.getId())
-                        .parameterId(parameter.getParameter().getId())
-                        .parameterName(parameter.getParameter().getName())
-                        .stdValue(parameter.getStdValue())
-                        .build())
-                .toList();
+                List<ParameterResponse> parameters = sop.getParameters()
+                                .stream()
+                                .map(parameter -> ParameterResponse.builder()
+                                                .id(parameter.getId())
+                                                .parameterId(parameter.getParameter().getId())
+                                                .parameterName(parameter.getParameter().getName())
+                                                .stdValue(parameter.getStdValue())
+                                                .build())
+                                .toList();
 
-        return StepResponse.builder()
-                .stepNo(sop.getStepNo())
-                .criteriaId(sop.getTransition().getId())
-                .criteriaName(sop.getTransition().getName())
-                .actionId(sop.getAction().getId())
-                .actionName(sop.getAction().getName())
-                .fromEquipmentId(sop.getFromEquipment() != null ? sop.getFromEquipment().getId() : null)
-                .fromEquipmentName(sop.getFromEquipment() != null ? sop.getFromEquipment().getName() : null)
-                .toEquipmentId(sop.getToEquipment() != null ? sop.getToEquipment().getId() : null)
-                .toEquipmentName(sop.getToEquipment() != null ? sop.getToEquipment().getName() : null)
-                .stdTime(sop.getStdTime())
-                .message(sop.getMessage())
-                .startDateTime(sop.getStartDateTime())
-                .endDateTime(sop.getEndDateTime())
-                .materials(materials)
-                .parameters(parameters)
-                .build();
-    }
+                return StepResponse.builder()
+                                .stepNo(sop.getStepNo())
+                                .criteriaId(sop.getTransition().getId())
+                                .criteriaName(sop.getTransition().getName())
+                                .actionId(sop.getAction().getId())
+                                .actionName(sop.getAction().getName())
+                                .fromEquipmentId(sop.getFromEquipment() != null ? sop.getFromEquipment().getId() : null)
+                                .fromEquipmentName(sop.getFromEquipment() != null ? sop.getFromEquipment().getName()
+                                                : null)
+                                .toEquipmentId(sop.getToEquipment() != null ? sop.getToEquipment().getId() : null)
+                                .toEquipmentName(sop.getToEquipment() != null ? sop.getToEquipment().getName() : null)
+                                .stdTime(sop.getStdTime())
+                                .message(sop.getMessage())
+                                .startDateTime(sop.getStartDateTime())
+                                .endDateTime(sop.getEndDateTime())
+                                .materials(materials)
+                                .parameters(parameters)
+                                .build();
+        }
 
-    public BatchAuditData copy(Batch batch) {
-        return BatchAuditData.builder()
-                .id(batch.getId())
-                .batchNo(batch.getBatchNo())
-                .status(batch.getStatus())
-                .startDateTime(batch.getStartDateTime())
-                .endDateTime(batch.getEndDateTime())
-                .build();
-    }
+        public BatchAuditData copy(Batch batch) {
+                return BatchAuditData.builder()
+                                .id(batch.getId())
+                                .batchNo(batch.getBatchNo())
+                                .status(batch.getStatus())
+                                .startDateTime(batch.getStartDateTime())
+                                .endDateTime(batch.getEndDateTime())
+                                .build();
+        }
 
-    public ScheduledBatchResponse toScheduledBatchResponse(
-            String batchNo,
-            Double batchSize,
-            String product,
-            String unit,
-            LocalDateTime scheduledAt) {
+        public ScheduledBatchResponse toScheduledBatchResponse(
+                        String batchNo,
+                        Double batchSize,
+                        String product,
+                        String unit,
+                        LocalDateTime scheduledAt) {
 
-        return ScheduledBatchResponse.builder()
-                .batchNo(batchNo)
-                .batchSize(batchSize)
-                .product(product)
-                .unit(unit)
-                .scheduledAt(scheduledAt != null
-                        ? scheduledAt.toString()
-                        : null)
-                .build();
-    }
+                return ScheduledBatchResponse.builder()
+                                .batchNo(batchNo)
+                                .batchSize(batchSize)
+                                .product(product)
+                                .unit(unit)
+                                .scheduledAt(scheduledAt != null
+                                                ? scheduledAt.toString()
+                                                : null)
+                                .build();
+        }
+
+        public BatchAbortResponse toBatchAbortResponse(Batch batch) {
+                Integer currentStepNo = batch.getSops()
+                                .stream()
+                                .filter(sop -> sop.getStartDateTime() != null
+                                                && sop.getEndDateTime() == null)
+                                .map(BatchSOP::getStepNo)
+                                .findFirst()
+                                .orElse(null);
+
+                return BatchAbortResponse.builder()
+                                .batchId(batch.getId())
+                                .batchNo(batch.getBatchNo())
+                                .masterRecipeName(batch.getMasterRecipe().getName())
+                                .controlRecipeName(batch.getControlRecipe().getName())
+                                .unitName(batch.getUnit().getName())
+                                .status(batch.getStatus())
+                                .startDateTime(batch.getStartDateTime())
+                                .currentStepNo(currentStepNo)
+                                .build();
+        }
 }

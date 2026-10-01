@@ -6,14 +6,15 @@ import lombok.Builder;
 
 @Builder
 public record ActiveBatchesResponse(
-        String batchNo,
-        String product,
-        String unit,
-        LocalDateTime startedAt,
-        Double cycleTime,
-        Double stdTime,
-        BatchStatus status,
-        Integer progress
+                Long batchId,
+                String batchNo,
+                String product,
+                String unit,
+                LocalDateTime startedAt,
+                Double cycleTime,
+                Double stdTime,
+                BatchStatus status,
+                Integer progress
 
 ) {
 

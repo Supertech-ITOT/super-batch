@@ -1,0 +1,18 @@
+import api from "@/common/lib/axios";
+import { ApiResponse } from "@/common/types/api.types";
+import { ActiveBatchResponse, BatchStatusDashboardResponse, ScheduledBatchResponse } from "../type/dashboard.types";
+
+export const getBatchStatus = async () => {
+    const res = await api.get<ApiResponse<BatchStatusDashboardResponse>>(`/dashboard/status`);
+    return res.data;
+};
+
+export const getActiveBatch = async () => {
+    const res = await api.get<ApiResponse<ActiveBatchResponse[]>>(`/dashboard/active-batches`);
+    return res.data;
+};
+
+export const getScheduledBatch = async () => {
+    const res = await api.get<ApiResponse<ScheduledBatchResponse[]>>(`/dashboard/scheduled-batches`);
+    return res.data;
+};

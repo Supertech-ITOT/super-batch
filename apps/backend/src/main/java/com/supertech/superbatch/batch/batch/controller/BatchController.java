@@ -1,10 +1,3 @@
-/*
- * Created by EcoStruxure Automation Expert.
- * User:  
- * Date: 9/11/2026
- * 
- */
-
 package com.supertech.superbatch.batch.batch.controller;
 
 import java.util.List;
@@ -12,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.supertech.superbatch.batch.batch.dto.BatchAbortResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchSOPResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchStepRemarkRequest;
@@ -63,7 +57,7 @@ public class BatchController {
     @PostMapping("/{batchNo}/abort")
     public ResponseEntity<ApiResponse<Void>> abort(
             @PathVariable String batchNo,
-            @RequestBody BatchStepRemarkRequest request) {
+            @Valid @RequestBody BatchStepRemarkRequest request) {
 
         batchService.abort(batchNo, request.stepNo(), request.remark());
         return ResponseEntity.ok(ApiResponse.success("Batch aborted successfully", null));
@@ -72,7 +66,7 @@ public class BatchController {
     @PostMapping("/{batchNo}/remarks")
     public ResponseEntity<ApiResponse<Void>> remark(
             @PathVariable String batchNo,
-            @RequestBody BatchStepRemarkRequest request) {
+            @Valid @RequestBody BatchStepRemarkRequest request) {
 
         batchService.remark(batchNo, request.stepNo(), request.remark());
         return ResponseEntity.ok(ApiResponse.success("Batch remark added successfully", null));
@@ -115,6 +109,13 @@ public class BatchController {
         batchService.onStepChange(batchNo, request);
 
         return ResponseEntity.ok(ApiResponse.success("Step changed successfully", null));
+    }
+
+    @GetMapping("/{batchId}/abort-details")
+    public ResponseEntity<ApiResponse<BatchAbortResponse>> getAbortDetails(@PathVariable Long batchId) {
+        BatchAbortResponse response = batchService.getAbortDetails(batchId);
+        return ResponseEntity.ok(
+                ApiResponse.success("Batch abort details fetched successfully", response));
     }
 
 }

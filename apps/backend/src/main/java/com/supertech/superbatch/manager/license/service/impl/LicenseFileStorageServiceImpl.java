@@ -21,7 +21,7 @@ public class LicenseFileStorageServiceImpl implements LicenseFileStorageService 
         if (programData == null || programData.isBlank()) {
             throw new IllegalStateException("PROGRAMDATA environment variable not found.");
         }
-        this.licenseDirectory = Paths.get(programData, "SuperBatch", "licenses");
+        this.licenseDirectory = Paths.get(programData, "Supertech", "SuperBatch", "licenses");
     }
 
     @Override

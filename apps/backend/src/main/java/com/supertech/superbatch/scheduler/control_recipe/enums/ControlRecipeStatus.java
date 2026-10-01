@@ -3,5 +3,4 @@ package com.supertech.superbatch.scheduler.control_recipe.enums;
 public enum ControlRecipeStatus {
     SCHEDULED,
     TRANSFERRED,
-    BATCH_TRANSFERED
 }

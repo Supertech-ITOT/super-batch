@@ -36,7 +36,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @RequiresLicense
-@RequiresPermission(ModuleType.SAMPLE_CHECK)
 @Transactional(readOnly = true)
 public class BatchCheckServiceImpl implements BatchCheckService {
 
@@ -49,6 +48,7 @@ public class BatchCheckServiceImpl implements BatchCheckService {
 
     @Override
     @Transactional
+    @RequiresPermission(ModuleType.SAMPLE_CHECK)
     public void create(BatchCheckRequest request) {
 
         Batch batch = batchRepository.findByBatchNo(request.batchNo())
