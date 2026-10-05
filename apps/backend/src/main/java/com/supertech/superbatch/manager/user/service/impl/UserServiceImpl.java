@@ -20,9 +20,6 @@ import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.common.exception.UnauthorizedException;
 import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
-import com.supertech.superbatch.manager.license.entity.License;
-import com.supertech.superbatch.manager.license.enums.LicenseStatus;
-import com.supertech.superbatch.manager.license.repository.LicenseRepository;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
@@ -52,7 +49,6 @@ public class UserServiceImpl implements UserService {
         private final UserMapper userMapper;
         private final PasswordEncoder passwordEncoder;
         private final BatchAuditService batchAuditService;
-        private final LicenseRepository licenseRepository;
 
         @Override
         @RequiresLicense()
@@ -68,13 +64,6 @@ public class UserServiceImpl implements UserService {
         @RequiresLicense()
         @RequiresPermission(ModuleType.MANAGER)
         public void create(UserRequest request, Long userId) {
-                License license = licenseRepository.findByStatus(LicenseStatus.ACTIVE)
-                                .orElseThrow(() -> new ResourceNotFoundException("License not found."));
-
-                long userCount = userRepository.countByDeletedFalseAndSystemAccountFalse();
-                if (userCount >= license.getPlanMaxUser()) {
-                        throw new BadRequestException("User limit is reached for the current plan.");
-                }
                 String email = request.email().trim().toLowerCase();
                 if (userRepository.existsByEmailAndDeletedFalse(email)) {
                         throw new DuplicateResourceException("Email already exists.");
@@ -89,8 +78,6 @@ public class UserServiceImpl implements UserService {
                                 createdBy,
                                 passwordEncoder.encode(request.password()));
                 userRepository.save(user);
-                license.setUserCount(license.getUserCount() + 1);
-                licenseRepository.save(license);
                 audit(BatchAuditAction.CREATED, null, userMapper.copy(user));
 
         }
@@ -153,12 +140,6 @@ public class UserServiceImpl implements UserService {
                 user.setDeletedAt(LocalDateTime.now());
                 user.setDeletedBy(deletedBy);
                 userRepository.save(user);
-
-                License license = licenseRepository.findByStatus(LicenseStatus.ACTIVE)
-                                .orElseThrow(() -> new ResourceNotFoundException("License not found."));
-
-                license.setUserCount(license.getUserCount() - 1);
-                licenseRepository.save(license);
         }
 
         @Override

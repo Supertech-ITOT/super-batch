@@ -53,7 +53,7 @@ public class License {
     private LocalDateTime lastValidatedAt;
 
     @Column(nullable = false)
-    private Integer userCount;
+    private Integer unitCount;
 
     @Column(nullable = false)
     private Long planId;
@@ -65,5 +65,5 @@ public class License {
     private String planDescription;
 
     @Column(nullable = false)
-    private Integer planMaxUser;
+    private Integer planMaxUnits;
 }

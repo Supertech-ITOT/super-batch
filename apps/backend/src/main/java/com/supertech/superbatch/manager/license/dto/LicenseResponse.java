@@ -20,9 +20,9 @@ public record LicenseResponse(
                 LocalDate expiryDate,
                 LocalDate activationDate,
                 LocalDateTime lastValidatedAt,
-                Integer userCount,
+                Integer unitCount,
                 Long planId,
                 String planName,
                 String planDescription,
-                Integer planMaxUser) {
+                Integer planMaxUnits) {
 }

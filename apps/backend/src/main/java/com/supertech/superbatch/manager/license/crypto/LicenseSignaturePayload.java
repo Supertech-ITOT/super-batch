@@ -8,21 +8,21 @@ import lombok.Builder;
 
 @Builder
 public record LicenseSignaturePayload(
-        String licenseNumber,
-        String licenseKey,
-        String type,
-        LicenseStatus status,
-        LocalDate issueDate,
-        LocalDate activationDate,
-        LocalDate expiryDate,
-        String machineFingerprint,
-        Long customerId,
-        String customerName,
-        String customerEmail,
-        String companyName,
-        Long planId,
-        String planName,
-        String planDescription,
-        Integer planMaxUsers,
-        Long productId) {
+                String licenseNumber,
+                String licenseKey,
+                String type,
+                LicenseStatus status,
+                LocalDate issueDate,
+                LocalDate activationDate,
+                LocalDate expiryDate,
+                String machineFingerprint,
+                Long customerId,
+                String customerName,
+                String customerEmail,
+                String companyName,
+                Long planId,
+                String planName,
+                String planDescription,
+                Integer planMaxUnits,
+                Long productId) {
 }

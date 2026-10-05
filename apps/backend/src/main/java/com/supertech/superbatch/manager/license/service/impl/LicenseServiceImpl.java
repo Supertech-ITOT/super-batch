@@ -29,6 +29,7 @@ import com.supertech.superbatch.manager.license.service.LicenseFileStorageServic
 import com.supertech.superbatch.manager.license.service.LicenseService;
 import com.supertech.superbatch.manager.license.service.MachineFingerprintService;
 import com.supertech.superbatch.manager.license.validation.LicenseValidator;
+import com.supertech.superbatch.plant.unit.repository.UnitRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -43,11 +44,13 @@ public class LicenseServiceImpl implements LicenseService {
     private final MachineFingerprintService machineFingerprintService;
     private final LicenseServerClient licenseServerClient;
     private final LicenseValidator licenseValidator;
+    private final UnitRepository unitRepository;
 
     @Override
     public LicenseResponse get() {
-        License license = licenseRepository.findByStatus(LicenseStatus.ACTIVE)
-                .orElseThrow(() -> new ResourceNotFoundException("License not activated."));
+        License license = licenseRepository.findFirstByOrderByActivationDateDescIdDesc()
+                .orElseThrow(() -> new ResourceNotFoundException("License not found."));
+
         return licenseMapper.toResponse(license);
     }
 
@@ -70,7 +73,8 @@ public class LicenseServiceImpl implements LicenseService {
             LicenseFilePayload payload = readLicenseFile(licenseFile);
             licenseValidator.validateLicensePayload(payload);
             licenseFileStorageService.save(payload.licenseNumber(), licenseFile);
-            License license = licenseMapper.toEntity(payload);
+            long unitCount = unitRepository.countByDeletedFalse();
+            License license = licenseMapper.toEntity(payload, unitCount);
             licenseRepository.save(license);
         } catch (BadRequestException e) {
             throw e;
@@ -96,7 +100,8 @@ public class LicenseServiceImpl implements LicenseService {
             if (oldLicense != null) {
                 oldLicense.setStatus(LicenseStatus.EXPIRED);
             }
-            License saved = licenseRepository.save(licenseMapper.toEntity(payload));
+            long unitCount = unitRepository.countByDeletedFalse();
+            License saved = licenseRepository.save(licenseMapper.toEntity(payload, unitCount));
             licenseFileStorageService.save(payload.licenseNumber(), fileBytes);
             return licenseMapper.toResponse(saved);
         } catch (BadRequestException e) {
@@ -163,7 +168,8 @@ public class LicenseServiceImpl implements LicenseService {
                 oldLicense.setStatus(LicenseStatus.EXPIRED);
             }
             licenseFileStorageService.save(payload.licenseNumber(), licenseFile);
-            License license = licenseMapper.toEntity(payload);
+            long unitCount = unitRepository.countByDeletedFalse();
+            License license = licenseMapper.toEntity(payload, unitCount);
             License saved = licenseRepository.save(license);
             return licenseMapper.toResponse(saved);
         } catch (BadRequestException e) {

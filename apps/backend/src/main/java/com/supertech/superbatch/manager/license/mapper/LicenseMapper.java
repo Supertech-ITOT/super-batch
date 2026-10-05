@@ -27,15 +27,15 @@ public class LicenseMapper {
                 .expiryDate(license.getExpiryDate())
                 .activationDate(license.getActivationDate())
                 .lastValidatedAt(license.getLastValidatedAt())
-                .userCount(license.getUserCount())
+                .unitCount(license.getUnitCount())
                 .planId(license.getPlanId())
                 .planName(license.getPlanName())
                 .planDescription(license.getPlanDescription())
-                .planMaxUser(license.getPlanMaxUser())
+                .planMaxUnits(license.getPlanMaxUnits())
                 .build();
     }
 
-    public License toEntity(LicenseFilePayload res) {
+    public License toEntity(LicenseFilePayload res, long unitCount) {
         return License.builder()
                 .licenseKey(res.licenseKey())
                 .licenseNumber(res.licenseNumber())
@@ -46,12 +46,12 @@ public class LicenseMapper {
                 .status(res.status())
                 .expiryDate(res.expiryDate())
                 .activationDate(res.activationDate())
-                .userCount(1)
+                .unitCount(Math.toIntExact(unitCount))
                 .lastValidatedAt(LocalDateTime.now())
                 .planId(res.planId())
                 .planDescription(res.planDescription())
                 .planName(res.planName())
-                .planMaxUser(res.planMaxUsers())
+                .planMaxUnits(res.planMaxUnits())
                 .build();
 
     }

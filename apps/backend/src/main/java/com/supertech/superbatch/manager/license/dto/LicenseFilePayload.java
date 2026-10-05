@@ -11,7 +11,7 @@ public record LicenseFilePayload(
                 String companyName,
                 Long customerId,
                 Long planId,
-                Integer planMaxUsers,
+                Integer planMaxUnits,
                 String planName,
                 String planDescription,
                 String licenseKey,

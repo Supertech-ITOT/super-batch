@@ -36,4 +36,6 @@ public interface UnitRepository extends JpaRepository<Unit, Long> {
 
     boolean existsByAreaIdAndDeletedFalse(Long areaId);
 
+    long countByDeletedFalse();
+
 }

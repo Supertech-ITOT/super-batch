@@ -11,4 +11,6 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
     Optional<License> findByStatus(LicenseStatus status);
 
     boolean existsByStatus(LicenseStatus status);
+
+    Optional<License> findFirstByOrderByActivationDateDescIdDesc();
 }

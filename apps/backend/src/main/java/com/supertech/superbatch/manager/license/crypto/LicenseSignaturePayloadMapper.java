@@ -24,7 +24,7 @@ public class LicenseSignaturePayloadMapper {
                 .planId(payload.planId())
                 .planName(payload.planName())
                 .planDescription(payload.planDescription())
-                .planMaxUsers(payload.planMaxUsers())
+                .planMaxUnits(payload.planMaxUnits())
                 .productId(payload.productId())
                 .build();
     }

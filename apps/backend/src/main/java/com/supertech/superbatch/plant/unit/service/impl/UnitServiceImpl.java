@@ -13,6 +13,9 @@ import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.DuplicateResourceException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
+import com.supertech.superbatch.manager.license.entity.License;
+import com.supertech.superbatch.manager.license.enums.LicenseStatus;
+import com.supertech.superbatch.manager.license.repository.LicenseRepository;
 import com.supertech.superbatch.manager.module.enums.EntityType;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
 import com.supertech.superbatch.manager.permission.annotation.RequiresPermission;
@@ -52,12 +55,19 @@ public class UnitServiceImpl implements UnitService {
         private final BatchAuditService batchAuditService;
         private final UserRepository userRepository;
         private final RecipeRepository recipeRepository;
+        private final LicenseRepository licenseRepository;
 
         @Override
         @Transactional
         @RequiresPermission(ModuleType.PLANT_MODEL)
         public void create(CreateUnitRequest request) {
+                License license = licenseRepository.findByStatus(LicenseStatus.ACTIVE)
+                                .orElseThrow(() -> new ResourceNotFoundException("License not found."));
 
+                long unitCount = unitRepository.countByDeletedFalse();
+                if (unitCount >= license.getPlanMaxUnits()) {
+                        throw new BadRequestException("Unit limit is reached for the current plan.");
+                }
                 Area area = areaRepository
                                 .findByIdAndDeletedFalse(request.areaId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Area not found"));
@@ -78,6 +88,9 @@ public class UnitServiceImpl implements UnitService {
 
                 Unit unit = unitMapper.toEntity(request, area);
                 unitRepository.save(unit);
+
+                license.setUnitCount(license.getUnitCount() + 1);
+                licenseRepository.save(license);
 
                 CreateEquipmentRequest createEquipmentRequest = CreateEquipmentRequest.builder()
                                 .name(request.name())
@@ -168,6 +181,8 @@ public class UnitServiceImpl implements UnitService {
         @Transactional
         @RequiresPermission(ModuleType.PLANT_MODEL)
         public void delete(Long id, Long currentUserId) {
+                License license = licenseRepository.findByStatus(LicenseStatus.ACTIVE)
+                                .orElseThrow(() -> new ResourceNotFoundException("License not found."));
 
                 Unit unit = unitRepository.findByIdAndDeletedFalse(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
@@ -207,6 +222,9 @@ public class UnitServiceImpl implements UnitService {
                 mainEquipment.setDeletedAt(LocalDateTime.now());
                 mainEquipment.setDeletedBy(deletedBy);
                 equipmentRepository.save(mainEquipment);
+
+                license.setUnitCount(license.getUnitCount() - 1);
+                licenseRepository.save(license);
 
         }
 
