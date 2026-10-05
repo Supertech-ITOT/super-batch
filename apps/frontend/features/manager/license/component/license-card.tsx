@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { getLicenseInfo, LicenseResponse, LicenseStatusConfig } from "../types/license.types";
 import LicenseActions from "./license-actions";
 import LicenseSummary from "./license-summary";
-import { Check, Copy, XCircle } from "lucide-react";
+import { Copy } from "lucide-react";
 
 interface LicenseCardProps {
   license: LicenseResponse;

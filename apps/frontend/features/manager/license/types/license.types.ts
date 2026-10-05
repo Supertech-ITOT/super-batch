@@ -41,6 +41,7 @@ export const LicenseStatusConfig: Record<
         icon: React.ElementType;
         iconClass: string;
         bgClass: string;
+        badgeClass: string;
     }
 > = {
     [LicenseStatus.INACTIVE]: {
@@ -48,6 +49,8 @@ export const LicenseStatusConfig: Record<
         icon: AlertCircle,
         iconClass: "text-gray-600 dark:text-gray-400",
         bgClass: "bg-gray-50 dark:bg-gray-950/40",
+        badgeClass:
+            "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-950 dark:text-gray-300 dark:border-gray-800",
     },
 
     [LicenseStatus.ACTIVE]: {
@@ -55,6 +58,8 @@ export const LicenseStatusConfig: Record<
         icon: CheckCircle2,
         iconClass: "text-green-600 dark:text-green-400",
         bgClass: "bg-green-50 dark:bg-green-950/40",
+        badgeClass:
+            "bg-green-100 text-green-800 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-800",
     },
 
     [LicenseStatus.REVOKED]: {
@@ -62,6 +67,8 @@ export const LicenseStatusConfig: Record<
         icon: Ban,
         iconClass: "text-red-600 dark:text-red-400",
         bgClass: "bg-red-50 dark:bg-red-950/40",
+        badgeClass:
+            "bg-red-100 text-red-800 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800",
     },
 
     [LicenseStatus.SUSPENDED]: {
@@ -69,6 +76,8 @@ export const LicenseStatusConfig: Record<
         icon: Clock3,
         iconClass: "text-yellow-600 dark:text-yellow-400",
         bgClass: "bg-yellow-50 dark:bg-yellow-950/40",
+        badgeClass:
+            "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-300 dark:border-yellow-800",
     },
 
     [LicenseStatus.EXPIRED]: {
@@ -76,6 +85,8 @@ export const LicenseStatusConfig: Record<
         icon: XCircle,
         iconClass: "text-orange-600 dark:text-orange-400",
         bgClass: "bg-orange-50 dark:bg-orange-950/40",
+        badgeClass:
+            "bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-800",
     },
 };
 
@@ -89,13 +100,6 @@ export const getLicenseInfo = (license: LicenseResponse, expiryDate?: Date | nul
     { label: "Plan ID", value: license.planId, icon: Tag, mono: true },
     { label: "Plan Name", value: license.planName, icon: Tag },
     { label: "Plan Description", value: license.planDescription, icon: Info },
-    { label: "Plan Max Unit", value: String(license.planMaxUnits ?? 0), icon: Users },
-    { label: "Unit Count", value: String(license.unitCount ?? 0), icon: Users },
-    {
-        label: "Expiry Date",
-        value: expiryDate ? format(expiryDate, "dd MMM yyyy") : "-",
-        icon: CalendarDays,
-    },
     {
         label: "Activation Date",
         value: license.activationDate
