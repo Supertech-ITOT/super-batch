@@ -1,5 +1,6 @@
 package com.supertech.superbatch.dashboard.mapper;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -7,6 +8,7 @@ import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 import com.supertech.superbatch.dashboard.dto.ActiveBatchesResponse;
 import com.supertech.superbatch.dashboard.dto.BatchStatusCardResponse;
 import com.supertech.superbatch.dashboard.dto.BatchStatusDashboardResponse;
+import com.supertech.superbatch.dashboard.dto.ProductionInsightsResponse;
 import com.supertech.superbatch.dashboard.dto.ScheduledBatchResponse;
 
 @Component
@@ -61,6 +63,32 @@ public class DashboardMapper {
                                 .scheduledAt(scheduledAt != null
                                                 ? scheduledAt.toString()
                                                 : null)
+                                .build();
+        }
+
+        public ProductionInsightsResponse toResponse(
+                        int days,
+                        LocalDate startDate,
+                        LocalDate endDate,
+                        ProductionInsightsResponse.AverageBatchCycleTime cycleTime,
+                        ProductionInsightsResponse.PercentageMetric successRate,
+                        ProductionInsightsResponse.PercentageMetric processEfficiency,
+                        ProductionInsightsResponse.PercentageMetric materialAccuracy) {
+
+                return ProductionInsightsResponse.builder()
+                                .period(
+                                                ProductionInsightsResponse.Period.builder()
+                                                                .days(days)
+                                                                .startDate(startDate.toString())
+                                                                .endDate(endDate.toString())
+                                                                .build())
+                                .insights(
+                                                ProductionInsightsResponse.Insights.builder()
+                                                                .averageBatchCycleTime(cycleTime)
+                                                                .batchSuccessRate(successRate)
+                                                                .processTimeEfficiency(processEfficiency)
+                                                                .materialConsumptionAccuracy(materialAccuracy)
+                                                                .build())
                                 .build();
         }
 }

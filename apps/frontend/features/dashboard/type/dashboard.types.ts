@@ -38,3 +38,43 @@ export const BatchStatusConfig: Record<BatchStatus, { label: string; icon: React
     [BatchStatus.COMPLETED]: { label: "Finished", icon: CheckCircle2, iconClass: "text-emerald-600 dark:text-emerald-400", bgClass: "bg-emerald-50 dark:bg-emerald-950/40" },
     [BatchStatus.ABORTED]: { label: "Aborted", icon: XCircle, iconClass: "text-red-600 dark:text-red-400", bgClass: "bg-red-50 dark:bg-red-950/40" },
 };
+
+
+
+export type ProductionInsightsResponse = {
+    period: {
+        days: 7 | 30 | 90;
+        startDate: string;
+        endDate: string;
+    };
+
+    insights: {
+        averageBatchCycleTime: {
+            valueMinutes: number;
+            changePercent: number;
+            trend: number[];
+        };
+
+        batchSuccessRate: {
+            valuePercent: number;
+            changePercent: number;
+            trend: number[];
+        };
+
+        processTimeEfficiency: {
+            valuePercent: number;
+            changePercent: number;
+            trend: number[];
+        };
+
+        materialConsumptionAccuracy: {
+            valuePercent: number;
+            changePercent: number;
+            trend: number[];
+        };
+    };
+};
+
+export type InsightPeriod = "SEVEN_DAYS" | "THIRTY_DAYS" | "NINETY_DAYS";
+
+

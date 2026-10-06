@@ -1,5 +1,6 @@
 package com.supertech.superbatch.dashboard.service.impl;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -13,8 +14,14 @@ import com.supertech.superbatch.batch.batch.repository.BatchRepository;
 import com.supertech.superbatch.dashboard.dto.ActiveBatchesResponse;
 import com.supertech.superbatch.dashboard.dto.BatchStatusCardResponse;
 import com.supertech.superbatch.dashboard.dto.BatchStatusDashboardResponse;
+import com.supertech.superbatch.dashboard.dto.ProductionInsightsResponse;
 import com.supertech.superbatch.dashboard.dto.ScheduledBatchResponse;
+import com.supertech.superbatch.dashboard.enums.InsightPeriod;
+import com.supertech.superbatch.dashboard.helper.BatchCycleTimeCalculator;
+import com.supertech.superbatch.dashboard.helper.BatchSuccessRateCalculator;
 import com.supertech.superbatch.dashboard.helper.DashboardHelper;
+import com.supertech.superbatch.dashboard.helper.MaterialAccuracyCalculator;
+import com.supertech.superbatch.dashboard.helper.ProcessEfficiencyCalculator;
 import com.supertech.superbatch.dashboard.mapper.DashboardMapper;
 import com.supertech.superbatch.dashboard.service.DashboardService;
 import com.supertech.superbatch.manager.module.enums.ModuleType;
@@ -33,6 +40,10 @@ public class DashboardServiceImpl implements DashboardService {
         private final BatchRepository batchRepository;
         private final DashboardMapper dashboardMapper;
         private final DashboardHelper dashboardHelper;
+        private final BatchCycleTimeCalculator batchCycleTimeCalculator;
+        private final BatchSuccessRateCalculator batchSuccessRateCalculator;
+        private final MaterialAccuracyCalculator materialAccuracyCalculator;
+        private final ProcessEfficiencyCalculator processEfficiencyCalculator;
         private final ControlRecipeRepository controlRecipeRepository;
 
         @Override
@@ -96,4 +107,45 @@ public class DashboardServiceImpl implements DashboardService {
                                 })
                                 .toList();
         }
+
+        @Override
+        public ProductionInsightsResponse getProductionInsights(InsightPeriod period) {
+                int days = period.getDays();
+
+                // Current
+                LocalDate currentEndDate = LocalDate.now();
+                LocalDate currentStartDate = currentEndDate.minusDays(days - 1);
+                LocalDateTime currentStartDateTime = currentStartDate.atStartOfDay();
+                LocalDateTime currentEndDateTime = currentEndDate.plusDays(1).atStartOfDay();
+                List<Batch> currentBatches = batchRepository
+                                .findByStartDateTimeGreaterThanEqualAndStartDateTimeLessThan(
+                                                currentStartDateTime, currentEndDateTime);
+
+                // Previous
+                LocalDate previousEndDate = currentStartDate.minusDays(1);
+                LocalDate previousStartDate = previousEndDate.minusDays(days - 1);
+                LocalDateTime previousStartDateTime = previousStartDate.atStartOfDay();
+                LocalDateTime previousEndDateTime = currentStartDate.atStartOfDay();
+                List<Batch> previousBatches = batchRepository
+                                .findByStartDateTimeGreaterThanEqualAndStartDateTimeLessThan(
+                                                previousStartDateTime, previousEndDateTime);
+
+                ProductionInsightsResponse.AverageBatchCycleTime cycleTime = batchCycleTimeCalculator
+                                .calculateAverageBatchCycleTime(currentBatches, previousBatches, currentStartDate,
+                                                currentEndDate);
+                ProductionInsightsResponse.PercentageMetric successRate = batchSuccessRateCalculator
+                                .calculateBatchSuccessRate(currentBatches, previousBatches, currentStartDate,
+                                                currentEndDate);
+                ProductionInsightsResponse.PercentageMetric processEfficiency = processEfficiencyCalculator
+                                .calculateProcessTimeEfficiency(currentBatches, previousBatches, currentStartDate,
+                                                currentEndDate);
+                ProductionInsightsResponse.PercentageMetric materialAccuracy = materialAccuracyCalculator
+                                .calculateMaterialConsumptionAccuracy(
+                                                currentBatches, previousBatches, currentStartDate, currentEndDate);
+
+                return dashboardMapper.toResponse(days, currentStartDate, currentEndDate, cycleTime, successRate,
+                                processEfficiency,
+                                materialAccuracy);
+        }
+
 }

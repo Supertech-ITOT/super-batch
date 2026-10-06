@@ -1,4 +1,5 @@
 import { BatchAuditSearchRequest } from "@/features/audit/types/audit.types";
+import { InsightPeriod } from "@/features/dashboard/type/dashboard.types";
 import { UserSearchRequest } from "@/features/manager/user/types/user.types";
 import { RecipeStatus } from "@/features/recipe/recipe/types/recipe.types";
 
@@ -163,6 +164,7 @@ export const queryKeys = {
     status: () => ["dashboard", "status"] as const,
     activeBatch: () => ["dashboard", "active-batch"] as const,
     scheduledBatch: () => ["dashboard", "scheduled-batch"] as const,
+    productionInsights: (period: InsightPeriod) => ["dashboard", "production-insights", period] as const,
   },
 
   batches: {
