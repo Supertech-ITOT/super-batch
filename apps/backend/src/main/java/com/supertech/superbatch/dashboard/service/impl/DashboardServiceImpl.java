@@ -14,6 +14,7 @@ import com.supertech.superbatch.batch.batch.repository.BatchRepository;
 import com.supertech.superbatch.dashboard.dto.ActiveBatchesResponse;
 import com.supertech.superbatch.dashboard.dto.BatchStatusCardResponse;
 import com.supertech.superbatch.dashboard.dto.BatchStatusDashboardResponse;
+import com.supertech.superbatch.dashboard.dto.BatchThroughputResponse;
 import com.supertech.superbatch.dashboard.dto.ProductionInsightsResponse;
 import com.supertech.superbatch.dashboard.dto.ScheduledBatchResponse;
 import com.supertech.superbatch.dashboard.enums.InsightPeriod;
@@ -146,6 +147,16 @@ public class DashboardServiceImpl implements DashboardService {
                 return dashboardMapper.toResponse(days, currentStartDate, currentEndDate, cycleTime, successRate,
                                 processEfficiency,
                                 materialAccuracy);
+        }
+
+        @Override
+        public BatchThroughputResponse getBatchThroughput(InsightPeriod period) {
+                int days = period.getDays();
+                LocalDate endDate = LocalDate.now();
+                LocalDate startDate = endDate.minusDays(days - 1);
+                List<Batch> batches = batchRepository.findByStartDateTimeGreaterThanEqualAndStartDateTimeLessThan(
+                                startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
+                return dashboardMapper.toBatchThroughputResponse(days, startDate, endDate, batches);
         }
 
 }

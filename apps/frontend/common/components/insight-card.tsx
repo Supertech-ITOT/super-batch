@@ -53,29 +53,30 @@ function MiniChart({ values, type, status }: { values: number[]; type: InsightCh
   );
 }
 
-function ExplanationPanel({ explanation, color }: { explanation: InsightExplanation; color: string }) {
+function ExplanationPanel({ explanation }: { explanation: InsightExplanation }) {
   return (
-    <div className="relative rounded-xl border bg-card p-4 shadow-xl ring-1 ring-black/5 dark:ring-white/10">
+    <div className="relative rounded-xl border bg-background p-4 shadow-xl">
       {/* Small arrow */}
       <div className="absolute -bottom-1.5 left-1/2 size-3 -translate-x-1/2 rotate-45 border-b border-r bg-card" />
 
+      {/* Primary glow */}
+      <div className="pointer-events-none absolute -left-5 -top-5 size-20 rounded-full bg-primary/20 blur-3xl" />
+
       {/* Title */}
       <div className="relative mb-3">
-        <p className="text-sm font-semibold tracking-tight">{explanation.title}</p>
-
-        <p className="mt-1 text-[11px] text-muted-foreground">Metric explanation</p>
+        <p className="text-sm font-semibold tracking-tight text-primary">{explanation.title}</p>
       </div>
 
       {/* Calculation */}
-      <div className="relative mb-3 rounded-lg border bg-muted/30 p-2.5">
-        <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Calculation</p>
+      <div className="relative mb-3 rounded-lg border bg-card p-2.5">
+        <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-primary">Calculation</p>
 
         <p className="text-xs leading-relaxed">{explanation.calculation}</p>
       </div>
 
       {/* Description */}
       <div className="relative mb-3">
-        <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">What it means</p>
+        <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-primary">What it means</p>
 
         <p className="text-xs leading-relaxed text-muted-foreground">{explanation.description}</p>
       </div>
@@ -83,13 +84,12 @@ function ExplanationPanel({ explanation, color }: { explanation: InsightExplanat
       {/* How to improve */}
       {explanation.improve.length > 0 && (
         <div className="relative mb-3">
-          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">How to improve</p>
+          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-primary">How to improve</p>
 
           <ul className="space-y-1.5">
             {explanation.improve.map((item, index) => (
               <li key={index} className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
-                <span className="mt-1.5 size-1.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
-
+                <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
                 <span>{item}</span>
               </li>
             ))}
@@ -100,13 +100,12 @@ function ExplanationPanel({ explanation, color }: { explanation: InsightExplanat
       {/* Benefits */}
       {explanation.benefits.length > 0 && (
         <div className="relative">
-          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Benefits</p>
+          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-primary">Benefits</p>
 
           <ul className="space-y-1.5">
             {explanation.benefits.map((item, index) => (
               <li key={index} className="flex gap-2 text-xs leading-relaxed">
-                <span className="mt-1.5 size-1.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
-
+                <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
                 <span>{item}</span>
               </li>
             ))}
@@ -135,7 +134,7 @@ export function InsightCard({
   return (
     <div className="group relative">
       {/* Card */}
-      <div className="relative flex min-h-0 overflow-hidden rounded-xl border bg-card p-3.5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+      <div className="relative flex min-h-0 overflow-hidden rounded-2xl border bg-background/60 p-3.5 shadow-sm transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md">
         {/* Status glow */}
         <div
           className="pointer-events-none absolute -bottom-5 -right-5 size-20 rounded-full blur-3xl"
@@ -144,19 +143,17 @@ export function InsightCard({
             opacity: 0.2,
           }}
         />
-
         {/* Chart */}
         {chart.length > 0 && (
           <div className="pointer-events-none absolute bottom-2 right-2">
             <MiniChart values={chart} type={chartType} status={status} />
           </div>
         )}
-
         {/* Main content */}
         <div className="relative z-10 flex min-w-0 flex-1 flex-col">
           {/* Header */}
           <div className="flex items-center gap-2.5">
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-xl border" style={{ color }}>
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-xl border bg-card" style={{ color }}>
               <Icon className="size-6" />
             </div>
 
@@ -187,8 +184,8 @@ export function InsightCard({
 
       {/* Outside tooltip */}
       {explanation && (
-        <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 w-[340px] -translate-x-1/2 translate-y-2 scale-95 opacity-0 transition-all duration-200 ease-out group-hover:translate-y-0 group-hover:scale-100 group-hover:opacity-100">
-          <ExplanationPanel explanation={explanation} color={color} />
+        <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 w-85 -translate-x-1/2 translate-y-2 scale-95 opacity-0 transition-all duration-200 ease-out group-hover:translate-y-0 group-hover:scale-100 group-hover:opacity-100">
+          <ExplanationPanel explanation={explanation} />
         </div>
       )}
     </div>

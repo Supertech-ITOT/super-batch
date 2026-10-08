@@ -112,7 +112,7 @@ export default function ScheduledBatchBar() {
   const { data, isLoading, isError } = useGetScheduledBatch();
 
   return (
-    <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col rounded-2xl border bg-card p-3 shadow-sm">
+    <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col border bg-card/60 p-4 shadow-sm backdrop-blur-xl rounded-2xl">
       {/* Header */}
       <div className="mb-2 flex shrink-0 items-center justify-between">
         <h2 className="text-sm font-semibold text-primary sm:text-base">Upcoming Batches</h2>

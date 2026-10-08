@@ -3,11 +3,17 @@ package com.supertech.superbatch.dashboard.mapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Component;
+
+import com.supertech.superbatch.batch.batch.entity.Batch;
 import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 import com.supertech.superbatch.dashboard.dto.ActiveBatchesResponse;
 import com.supertech.superbatch.dashboard.dto.BatchStatusCardResponse;
 import com.supertech.superbatch.dashboard.dto.BatchStatusDashboardResponse;
+import com.supertech.superbatch.dashboard.dto.BatchThroughputResponse;
 import com.supertech.superbatch.dashboard.dto.ProductionInsightsResponse;
 import com.supertech.superbatch.dashboard.dto.ScheduledBatchResponse;
 
@@ -89,6 +95,44 @@ public class DashboardMapper {
                                                                 .processTimeEfficiency(processEfficiency)
                                                                 .materialConsumptionAccuracy(materialAccuracy)
                                                                 .build())
+                                .build();
+        }
+
+        public BatchThroughputResponse toBatchThroughputResponse(int days, LocalDate startDate, LocalDate endDate,
+                        List<Batch> batches) {
+                Map<LocalDate, Long> completedByDate = batches.stream()
+                                .filter(batch -> batch.getStatus() == BatchStatus.COMPLETED)
+                                .filter(batch -> batch.getStartDateTime() != null)
+                                .collect(Collectors.groupingBy(
+                                                batch -> batch.getStartDateTime().toLocalDate(),
+                                                Collectors.counting()));
+
+                Map<LocalDate, Long> abortedByDate = batches.stream()
+                                .filter(batch -> batch.getStatus() == BatchStatus.ABORTED)
+                                .filter(batch -> batch.getStartDateTime() != null)
+                                .collect(Collectors.groupingBy(
+                                                batch -> batch.getStartDateTime().toLocalDate(),
+                                                Collectors.counting()));
+
+                List<BatchThroughputResponse.DailyThroughput> data = startDate.datesUntil(endDate.plusDays(1))
+                                .map(date -> toDailyThroughput(date, completedByDate, abortedByDate))
+                                .toList();
+
+                return BatchThroughputResponse.builder()
+                                .period(BatchThroughputResponse.Period.builder()
+                                                .days(days)
+                                                .startDate(startDate)
+                                                .endDate(endDate).build())
+                                .data(data)
+                                .build();
+        }
+
+        private BatchThroughputResponse.DailyThroughput toDailyThroughput(LocalDate date,
+                        Map<LocalDate, Long> completedByDate, Map<LocalDate, Long> abortedByDate) {
+                return BatchThroughputResponse.DailyThroughput.builder()
+                                .date(date)
+                                .completed(completedByDate.getOrDefault(date, 0L))
+                                .aborted(abortedByDate.getOrDefault(date, 0L))
                                 .build();
         }
 }

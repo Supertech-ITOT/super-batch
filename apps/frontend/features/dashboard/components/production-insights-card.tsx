@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/common/components/ui/select";
 import { InsightCard } from "@/common/components/insight-card";
-import { InsightPeriod } from "../type/dashboard.types";
+import { InsightPeriod, PERIODS } from "../type/dashboard.types";
 import { useGetProductionInsights } from "../hook/use-dashboard";
 import { mapProductionInsights } from "../constants/insights";
 
@@ -13,10 +13,10 @@ export default function ProductionInsightsCard() {
   const { data, isLoading, isError } = useGetProductionInsights(period);
   const productionInsights = data ? mapProductionInsights(data) : [];
   return (
-    <section className="flex h-full flex-1 flex-col rounded-2xl border bg-card p-4">
+    <section className="flex h-full flex-col rounded-2xl border bg-card/60 p-4 shadow-sm backdrop-blur-xl">
       <div className="mb-3 flex shrink-0 items-center justify-between gap-2">
         <div className="min-w-0">
-          <h2 className="text-base font-semibold text-primary sm:text-lg">Production Insights</h2>
+          <h2 className="text-sm font-semibold text-primary sm:text-base">Production Insights</h2>
           <p className="mt-0.5 truncate text-xs text-muted-foreground">Key production performance indicators</p>
         </div>
 
@@ -24,11 +24,12 @@ export default function ProductionInsightsCard() {
           <SelectTrigger className="h-8 w-32 shrink-0 text-xs">
             <SelectValue />
           </SelectTrigger>
-
           <SelectContent>
-            <SelectItem value="SEVEN_DAYS">Last 7 Days</SelectItem>
-            <SelectItem value="THIRTY_DAYS">Last 30 Days</SelectItem>
-            <SelectItem value="NINETY_DAYS">Last 90 Days</SelectItem>
+            {PERIODS.map((item) => (
+              <SelectItem key={item.value} value={item.value}>
+                {item.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

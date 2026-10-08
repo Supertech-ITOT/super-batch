@@ -1,30 +1,15 @@
 "use client";
-import {
-  ChevronUp,
-  LogOut,
-  PanelLeftOpen,
-  Loader,
-  PanelLeftClose,
-} from "lucide-react";
+import { ChevronUp, LogOut, PanelLeftOpen, Loader, PanelLeftClose } from "lucide-react";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
 import { useLogout } from "@/features/manager/auth/hooks/use-auth";
 import { useGetCurrentUser } from "@/features/manager/user/hooks/use-user";
-import {
-  ConfigurationRoutes,
-  ModuleType,
-  OperationRoutes,
-} from "@/features/manager/module/types/module.types";
+import { ConfigurationRoutes, ModuleType, OperationRoutes } from "@/features/manager/module/types/module.types";
 import SessionCard from "../session-card";
 import { useIsElectron } from "../../hooks/use-is-electron";
 import { useSidebar } from "./sidebar-provider";
@@ -57,24 +42,17 @@ export default function SideBar() {
   const loading = userIsLoading || !user;
 
   if (loading) {
-    return (
-      <div
-        className={`h-full z-50 border-r  bg-card overflow-hidden flex flex-col`}
-      ></div>
-    );
+    return <div className={`h-[calc(100%-1rem)] m-2 rounded-2xl z-50 border  bg-card overflow-hidden flex flex-col`}></div>;
   }
   return (
     <aside
-      className={`h-full z-50 border-r shrink-0 transition-all duration-300 bg-card overflow-hidden flex flex-col  ${open ? "w-60 p-4" : "w-12 items-center"}`}
+      className={`h-[calc(100%-1rem)] m-2 rounded-2xl z-50 border shrink-0 transition-all duration-300 bg-card/95 backdrop-blur supports-backdrop-filter:bg-card/80 overflow-hidden flex flex-col  ${open ? "w-60 p-4" : "w-12 items-center"}`}
     >
       {open && (
         <div className="flex items-center justify-between">
           <h1 className="font-semibold text-sm uppercase">Operation</h1>
           {!isElectron && (
-            <button
-              onClick={() => setOpen(false)}
-              className="rounded-sm p-2 text-muted-foreground"
-            >
+            <button onClick={() => setOpen(false)} className="rounded-sm p-2 text-muted-foreground">
               <PanelLeftClose className="h-5 w-5" />
             </button>
           )}
@@ -82,16 +60,11 @@ export default function SideBar() {
       )}
       <div className="flex flex-col space-y-2 mt-2">
         {!open && !isElectron && (
-          <button
-            onClick={() => setOpen(true)}
-            className="rounded-lg p-2 text-muted-foreground"
-          >
+          <button onClick={() => setOpen(true)} className="rounded-lg p-2 text-muted-foreground">
             <PanelLeftOpen className="h-5 w-5" />
           </button>
         )}
-        {OperationRoutes.filter(
-          (route) => hasReadPermission(route.module) && !route.hide,
-        ).map((el) => {
+        {OperationRoutes.filter((route) => hasReadPermission(route.module) && !route.hide).map((el) => {
           const getBasePath = (path: string) => "/" + path.split("/")[1];
           const active = getBasePath(pathname) === getBasePath(el.path);
           const Icon = el.icon;
@@ -115,50 +88,33 @@ export default function SideBar() {
             <Button className="w-full flex bg-card! items-center justify-between rounded-xl hover:bg-muted transition-all">
               <div className="flex items-center gap-3">
                 {/* Avatar */}
-                <UserAvatar
-                  name={user.name ?? ""}
-                  className={open ? "size-12" : "size-8"}
-                />
+                <UserAvatar name={user.name ?? ""} className={open ? "size-12" : "size-8"} />
                 {/* User Info */}
                 {open && (
                   <div className="flex flex-col text-left">
-                    <span className="text-sm font-medium text-foreground">
-                      {user?.name ?? "-"}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {user?.roleName ?? "-"}
-                    </span>
+                    <span className="text-sm font-medium text-foreground">{user?.name ?? "-"}</span>
+                    <span className="text-xs text-muted-foreground">{user?.roleName ?? "-"}</span>
                   </div>
                 )}
               </div>
               {open && <ChevronUp className="w-4 h-4 text-muted-foreground" />}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            side="right"
-            align="end"
-            className="w-62 p-2 rounded-xl"
-          >
+          <DropdownMenuContent side="right" align="end" className="w-62 p-2 rounded-xl">
             <SessionCard />
             <Separator className="my-2" />
             {ConfigurationRoutes.map((route) => {
               const Icon = route.icon;
               return (
                 <DropdownMenuItem key={route.path} asChild>
-                  <Link
-                    href={route.path}
-                    className="flex cursor-pointer items-center"
-                  >
+                  <Link href={route.path} className="flex cursor-pointer items-center">
                     <Icon className="mr-2 size-4" />
                     {route.label}
                   </Link>
                 </DropdownMenuItem>
               );
             })}
-            <DropdownMenuItem
-              onClick={onLogout}
-              className="text-destructive cursor-pointer"
-            >
+            <DropdownMenuItem onClick={onLogout} className="text-destructive cursor-pointer">
               {logoutIsPending ? (
                 <Loader className="size-4 animate-spin" />
               ) : (

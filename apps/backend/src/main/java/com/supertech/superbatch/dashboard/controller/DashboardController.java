@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.supertech.superbatch.common.dto.ApiResponse;
 import com.supertech.superbatch.dashboard.dto.ActiveBatchesResponse;
 import com.supertech.superbatch.dashboard.dto.BatchStatusDashboardResponse;
+import com.supertech.superbatch.dashboard.dto.BatchThroughputResponse;
 import com.supertech.superbatch.dashboard.dto.ProductionInsightsResponse;
 import com.supertech.superbatch.dashboard.dto.ScheduledBatchResponse;
 import com.supertech.superbatch.dashboard.enums.InsightPeriod;
@@ -44,5 +45,12 @@ public class DashboardController {
             @RequestParam(defaultValue = "SEVEN_DAYS") InsightPeriod period) {
         ProductionInsightsResponse res = dashboardService.getProductionInsights(period);
         return ResponseEntity.ok(ApiResponse.success("Production Insight fetched successfully.", res));
+    }
+
+    @GetMapping("/batch-throughput")
+    public ResponseEntity<ApiResponse<BatchThroughputResponse>> getBatchThroughput(
+            @RequestParam(defaultValue = "SEVEN_DAYS") InsightPeriod period) {
+        BatchThroughputResponse res = dashboardService.getBatchThroughput(period);
+        return ResponseEntity.ok(ApiResponse.success("Batch Throughput fetched successfully.", res));
     }
 }

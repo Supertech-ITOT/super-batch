@@ -10,18 +10,14 @@ import { useGetActiveBatch } from "../hook/use-dashboard";
 import { activeBatchColumns } from "./active-batch-columns";
 import RecoveryDialog from "@/features/batch/component/recovery-dialog";
 
-interface ActiveBatchTableProps {
-  onBatchClick: (batchId: number) => void;
-}
-
-export default function ActiveBatchTable({ onBatchClick }: ActiveBatchTableProps) {
+export default function ActiveBatchTable() {
   const { data } = useGetActiveBatch();
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
   const [recoveryBatchId, setRecoveryBatchId] = useState<number | null>(null);
 
   return (
     <>
-      <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col rounded-2xl border bg-card p-2 shadow-sm sm:p-4">
+      <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col border bg-card/60 p-4 shadow-sm backdrop-blur-xl rounded-2xl">
         <DataTable
           columns={activeBatchColumns}
           compact
@@ -31,15 +27,13 @@ export default function ActiveBatchTable({ onBatchClick }: ActiveBatchTableProps
           tableClassName="min-h-0"
           toolbar={(table) => (
             <div className="flex items-center justify-between gap-2">
-              <h2 className="text-base font-semibold text-primary sm:text-lg">Active Batches</h2>
-
-              <DataTableSearch table={table} column="batchNo" placeholder="Search batch no, product or unit..." compact />
+              <h2 className="text-sm font-semibold text-primary sm:text-base min-w-28">Active Batches</h2>
+              <DataTableSearch table={table} column="batchNo" placeholder="Search batch no" compact />
             </div>
           )}
           emptyMessage="No active batches."
           onRowClick={(row) => {
             setSelectedRowId(row.batchId);
-            onBatchClick(row.batchId);
           }}
           isRowSelected={(row) => row.batchId === selectedRowId}
           contextMenu={{

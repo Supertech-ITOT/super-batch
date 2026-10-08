@@ -165,6 +165,7 @@ export const queryKeys = {
     activeBatch: () => ["dashboard", "active-batch"] as const,
     scheduledBatch: () => ["dashboard", "scheduled-batch"] as const,
     productionInsights: (period: InsightPeriod) => ["dashboard", "production-insights", period] as const,
+    batchThroughput: (period: InsightPeriod) => ["dashboard", "batch-throughput", period] as const,
   },
 
   batches: {

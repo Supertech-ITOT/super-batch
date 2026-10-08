@@ -82,35 +82,41 @@ export function mapProductionInsights(data: ProductionInsightsResponse): Insight
 const INSIGHT_EXPLANATIONS: Record<string, InsightExplanation> = {
     "Average Batch Cycle Time": {
         title: "Average Batch Cycle Time",
+
         calculation:
-            "Average of completed batch duration: End Date/Time - Start Date/Time.",
+            "Σ (End Time − Start Time) ÷ Completed Batches",
+
         description:
-            "Measures how long batches typically take from start to completion.",
+            "Shows how long a batch takes from start to completion.",
+
         improve: [
-            "Identify SOP steps with the highest actual execution time.",
-            "Investigate equipment waiting, transfer, and process delays.",
-            "Remove unnecessary waiting or handoff time where possible.",
-            "If actual process time consistently differs from the recipe standard, validate and update the standard time.",
+            "Find SOP steps causing the most delay.",
+            "Reduce equipment, transfer, and waiting time.",
+            "Validate and update standard time when actual time consistently differs.",
         ],
+
         benefits: [
-            "Shorter production cycles",
-            "Higher batch throughput",
+            "Shorter batch cycles",
+            "Higher production capacity",
             "Better production planning",
         ],
     },
 
     "Batch Success Rate": {
         title: "Batch Success Rate",
+
         calculation:
-            "Completed batches ÷ (Completed batches + Aborted batches) x 100.",
+            "Completed ÷ (Completed + Aborted) x 100",
+
         description:
-            "Shows the percentage of finished batches that completed successfully.",
+            "Shows how many finished batches complete successfully.",
+
         improve: [
-            "Review aborted batches and identify recurring failure reasons.",
-            "Identify the SOP, equipment, or transition associated with failures.",
-            "Investigate recurring operator or process deviations.",
-            "Address root causes instead of repeatedly restarting or aborting batches.",
+            "Review aborted batches and failure reasons.",
+            "Identify recurring SOP or equipment issues.",
+            "Fix root causes instead of repeatedly aborting batches.",
         ],
+
         benefits: [
             "Fewer aborted batches",
             "Less material waste",
@@ -120,18 +126,21 @@ const INSIGHT_EXPLANATIONS: Record<string, InsightExplanation> = {
 
     "Process Time Efficiency": {
         title: "Process Time Efficiency",
+
         calculation:
-            "Total Standard SOP Time ÷ Total Actual SOP Time x 100.",
+            "Σ Standard Time ÷ Σ Actual Time x 100",
+
         description:
-            "Compares the time defined by the recipe with the actual time used to execute the process.",
+            "Compares recipe process time with actual execution time. Values above 100% indicate the process was completed faster than the standard time.",
+
         improve: [
-            "Execute each process step according to the recipe standard time.",
-            "Investigate SOPs where actual time is consistently higher than standard time.",
-            "Check equipment, material transfer, waiting, and operator delays.",
-            "If the process consistently requires less or more time, validate the process and update the recipe standard time.",
+            "Follow the recipe's standard process time.",
+            "Find steps where actual time consistently differs.",
+            "Validate the process before updating the recipe standard time.",
         ],
+
         benefits: [
-            "More predictable batch duration",
+            "Predictable batch duration",
             "Better production scheduling",
             "More accurate recipe standards",
         ],
@@ -139,20 +148,22 @@ const INSIGHT_EXPLANATIONS: Record<string, InsightExplanation> = {
 
     "Material Consumption Accuracy": {
         title: "Material Consumption Accuracy",
+
         calculation:
-            "100 - (|Actual Quantity - Standard Quantity| ÷ Standard Quantity x 100).",
+            "100 − (|Actual − Standard| ÷ Standard x 100)",
+
         description:
-            "Measures how closely actual material consumption matches the quantity defined by the recipe.",
+            "Shows how closely actual material usage matches the recipe.",
+
         improve: [
-            "Follow the recipe's standard material quantities.",
-            "Investigate repeated over-consumption or under-consumption.",
-            "Verify weighing and dosing equipment calibration.",
-            "Check whether material losses, transfers, or process conditions explain the variance.",
-            "Update the recipe quantity only after validating that the process standard has changed.",
+            "Follow the recipe's standard quantities.",
+            "Investigate repeated over- or under-consumption.",
+            "Check dosing, weighing, and material loss causes.",
         ],
+
         benefits: [
             "Lower material waste",
-            "More consistent batches",
+            "Consistent batch quality",
             "Better material cost control",
         ],
     },
