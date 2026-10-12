@@ -6,10 +6,7 @@ import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
 import ConfirmDialog from "@/common/components/form/confirm-dialog";
 
-import {
-  useDeleteCheckParameter,
-  useGetCheckParameterById,
-} from "../hooks/use-qualityCheck";
+import { useDeleteCheckParameter, useGetCheckParameterById } from "../hooks/use-qualityCheck";
 
 type Props = {
   open: boolean;
@@ -18,19 +15,10 @@ type Props = {
   currentUserId: number;
 };
 
-export default function DeleteQualityCheck({
-  open,
-  onClose,
-  checkParameterId,
-  currentUserId,
-}: Props) {
-  const {
-    mutateAsync: deleteCheckParameter,
-    isPending: deleteCheckParameterIsPending,
-  } = useDeleteCheckParameter();
+export default function DeleteCheckParameterDialog({ open, onClose, checkParameterId, currentUserId }: Props) {
+  const { mutateAsync: deleteCheckParameter, isPending: deleteCheckParameterIsPending } = useDeleteCheckParameter();
 
-  const { data: checkParameter, isLoading: checkParameterIsLoading } =
-    useGetCheckParameterById(checkParameterId);
+  const { data: checkParameter, isLoading: checkParameterIsLoading } = useGetCheckParameterById(checkParameterId);
 
   const loading = checkParameterIsLoading || deleteCheckParameterIsPending;
 
@@ -45,9 +33,7 @@ export default function DeleteQualityCheck({
         currentUserId,
       });
 
-      toast.success(
-        res.message ?? `${checkParameter.name} deleted successfully.`,
-      );
+      toast.success(res.message ?? `${checkParameter.name} deleted successfully.`);
 
       onClose();
     } catch (error) {

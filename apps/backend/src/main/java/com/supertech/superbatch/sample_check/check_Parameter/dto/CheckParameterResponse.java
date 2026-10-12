@@ -8,12 +8,17 @@ import lombok.Builder;
 
 @Builder
 public record CheckParameterResponse(
-                Long id,
-                String name,
-                String product,
-                CheckParameterType type,
-                Double min,
-                Double max,
-                List<CheckParameterOptionsResponse> options) {
+        Long id,
+        String name,
+        List<MaterialResponse> product,
+        CheckParameterType type,
+        Double min,
+        Double max,
+        List<CheckParameterOptionsResponse> options) {
+
+    public record MaterialResponse(
+            Long id,
+            String name) {
+    }
 
 }

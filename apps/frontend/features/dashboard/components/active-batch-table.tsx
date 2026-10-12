@@ -8,12 +8,14 @@ import DataTableSearch from "@/common/components/data-table/data-table-search";
 
 import { useGetActiveBatch } from "../hook/use-dashboard";
 import { activeBatchColumns } from "./active-batch-columns";
-import RecoveryDialog from "@/features/batch/component/recovery-dialog";
+import RecoveryDialog from "@/features/batch/components/recovery-dialog";
+import { useRouter } from "next/navigation";
 
 export default function ActiveBatchTable() {
   const { data } = useGetActiveBatch();
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
   const [recoveryBatchId, setRecoveryBatchId] = useState<number | null>(null);
+  const router = useRouter();
 
   return (
     <>
@@ -39,6 +41,11 @@ export default function ActiveBatchTable() {
           contextMenu={{
             label: "Action",
             items: [
+              {
+                label: "View",
+                icon: Eye,
+                onClick: (row) => router.push(`/Batch/view/?id=${row.batchId}`),
+              },
               {
                 label: "Recovery",
                 icon: TriangleAlert,

@@ -111,7 +111,7 @@ export const OperationRoutes: RouteType[] = [
   {
     label: "Sample Check",
     short: "Sample check",
-    path: "/PlantModel/qualityCheck",
+    path: "/PlantModel/check-parameter",
     icon: LucideClipboardCheck,
     module: ModuleType.SAMPLE_CHECK,
     description: "Configure and manage sample checks, parameters, and quality verification requirements.",

@@ -42,3 +42,27 @@ export type AbortRequest = {
     stepNo: number;
     remark?: string;
 };
+
+export type RecipeInfo = {
+    id: number;
+    name: string;
+};
+
+export type BatchInfoResponse = {
+    batchNo: string;
+    product: string;
+    unit: string;
+    shiftIncharge: string;
+    masterRecipe: RecipeInfo;
+    controlRecipe: RecipeInfo;
+    batchStatus: BatchStatus;
+};
+
+export type BatchProgressResponse = {
+    progress: number;
+    totalStep: number;
+    completedStep: number;
+    currentStep: number;
+    pendingStep: number;
+    skippedStep: number;
+}

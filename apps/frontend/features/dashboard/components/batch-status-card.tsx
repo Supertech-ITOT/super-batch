@@ -11,7 +11,7 @@ function StatusCard({ data }: { data: BatchStatusCardResponse }) {
   const Icon = config.icon;
 
   return (
-    <div className="relative h-full overflow-hidden rounded-2xl border bg-card/60 p-4 shadow-sm backdrop-blur-xl">
+    <div className="relative h-21 overflow-hidden rounded-2xl border bg-card/60 p-4 shadow-sm backdrop-blur-xl">
       {/* Bottom-right status glow */}
       <div className={`pointer-events-none absolute -bottom-8 -right-8 size-24 rounded-full blur-3xl ${config.glowClass}`} />
 
@@ -39,7 +39,7 @@ export default function BatchStatusCard() {
         <CarouselContent>
           {Array.from({ length: 6 }).map((_, index) => (
             <CarouselItem key={index} className="basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/6">
-              <Skeleton className="h-31.5 rounded-2xl border bg-card p-4 shadow-sm" />
+              <Skeleton className="h-21 rounded-2xl border bg-card p-4 shadow-sm" />
             </CarouselItem>
           ))}
         </CarouselContent>
@@ -59,7 +59,7 @@ export default function BatchStatusCard() {
     <Carousel className="w-full">
       <CarouselContent>
         <CarouselItem className="basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/6 ">
-          <div className="h-full rounded-2xl border bg-primary p-4 shadow-sm backdrop-blur-xl">
+          <div className="h-21 rounded-2xl border bg-primary p-4 shadow-sm backdrop-blur-xl">
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-card">
                 <Database className="h-6 w-6 text-primary" strokeWidth={2.5} />

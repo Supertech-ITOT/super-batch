@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.supertech.superbatch.batch.batch.dto.BatchAbortResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchAuditData;
+import com.supertech.superbatch.batch.batch.dto.BatchInfoResponse;
 import com.supertech.superbatch.batch.batch.dto.MaterialResponse;
 import com.supertech.superbatch.batch.batch.dto.ParameterResponse;
 import com.supertech.superbatch.batch.batch.dto.RecipeInfoResponse;
@@ -163,6 +164,27 @@ public class BatchMapper {
                                 .status(batch.getStatus())
                                 .startDateTime(batch.getStartDateTime())
                                 .currentStepNo(currentStepNo)
+                                .build();
+        }
+
+        public BatchInfoResponse toBatchInfoResponse(Batch batch) {
+                return BatchInfoResponse
+                                .builder()
+                                .batchNo(batch.getBatchNo())
+                                .product(batch.getMasterRecipe().getMaterial().getName())
+                                .unit(batch.getControlRecipe().getUnit().getName())
+                                .shiftIncharge(batch.getControlRecipe().getShiftIncharge().getName())
+                                .masterRecipe(BatchInfoResponse.RecipeInfo
+                                                .builder()
+                                                .id(batch.getMasterRecipe().getId())
+                                                .name(batch.getMasterRecipe().getName())
+                                                .build())
+                                .controlRecipe(BatchInfoResponse.RecipeInfo
+                                                .builder()
+                                                .id(batch.getControlRecipe().getId())
+                                                .name(batch.getControlRecipe().getName())
+                                                .build())
+                                .batchStatus(batch.getStatus())
                                 .build();
         }
 }

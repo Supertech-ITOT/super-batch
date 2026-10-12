@@ -4,10 +4,15 @@ export interface CheckParameterOption {
   isAllowed: boolean;
 }
 
+export interface CheckParameterMaterial {
+  id: number;
+  name: string;
+}
+
 export interface CheckParameterResponse {
   id: number;
   name: string;
-  product: string;
+  product: CheckParameterMaterial[];
   type: CheckParameterType;
   min: number;
   max: number;
@@ -16,7 +21,7 @@ export interface CheckParameterResponse {
 
 export interface CheckParameterRequest {
   name: string;
-  product: string;
+  materialIds: number[];
   type: CheckParameterType;
   min?: number;
   max?: number;

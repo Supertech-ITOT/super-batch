@@ -9,11 +9,12 @@ import { DataTable } from "@/common/components/data-table/data-table";
 import { columns } from "./columns";
 import DataTableSearch from "@/common/components/data-table/data-table-search";
 import { Button } from "@/common/components/ui/button";
-import QualityCheckSkeleton from "./quality-check-skeleton";
-import CreateQualityCheck from "./create-qualityCheck-dialog";
-import UpdateQualityCheck from "./update-qualityCheck-dialog";
-import DeleteQualityCheck from "./delete-qualityCheck-dialog";
+import QualityCheckSkeleton from "./check-parameter-skeleton";
+
 import { useGetCurrentUser } from "@/features/manager/user/hooks/use-user";
+import CreateCheckParameterDialog from "./create-check-parameter-dialog";
+import UpdateCheckParameterDialog from "./update-check-parameter-dialog";
+import DeleteCheckParameterDialog from "./delete-check-parameter-dialog";
 
 type CheckParameterAction = "create" | "edit" | "delete";
 export type CheckParameterDialogState = {
@@ -21,7 +22,7 @@ export type CheckParameterDialogState = {
   action: CheckParameterAction | null;
   checkParameterId: number | null;
 };
-export default function QualityCheckView() {
+export default function CheckParameterView() {
   const [dialog, setDialog] = useState<CheckParameterDialogState>({
     open: false,
     action: null,
@@ -29,11 +30,7 @@ export default function QualityCheckView() {
   });
   const { data: currentUser } = useGetCurrentUser();
   const currentUserId = currentUser?.id ?? 0;
-  const {
-    data: checkParameters,
-    isLoading: checkParametersLoading,
-    isError: checkParametersIsError,
-  } = useGetCheckParameters();
+  const { data: checkParameters, isLoading: checkParametersLoading, isError: checkParametersIsError } = useGetCheckParameters();
   const loading = checkParametersLoading;
   const error = checkParametersIsError;
 
@@ -63,12 +60,8 @@ export default function QualityCheckView() {
             <ClipboardCheckIcon className="size-16 text-primary" />
           </div>
           <div className="flex flex-col">
-            <h1 className="font-bold text-xl uppercase tracking-wider text-primary">
-              Check Parameter
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Manage quality check parameters associated with finished products.
-            </p>
+            <h1 className="font-bold text-xl uppercase tracking-wider text-primary">Check Parameter</h1>
+            <p className="text-sm text-muted-foreground">Manage quality check parameters associated with finished products.</p>
           </div>
         </div>
       </div>
@@ -79,11 +72,7 @@ export default function QualityCheckView() {
         pageSize={10}
         toolbar={(table) => (
           <div className="flex items-center gap-2">
-            <DataTableSearch
-              table={table}
-              column="name"
-              placeholder="Search parameters..."
-            />
+            <DataTableSearch table={table} column="name" placeholder="Search parameters..." />
             <Button
               className="ml-auto text-white h-8 sm:h-10"
               onClick={() =>
@@ -100,17 +89,11 @@ export default function QualityCheckView() {
           </div>
         )}
       />
-      {dialog.action === "create" && (
-        <CreateQualityCheck open onClose={closeDialog} />
-      )}
+      {dialog.action === "create" && <CreateCheckParameterDialog open onClose={closeDialog} />}
       {dialog.action === "edit" && dialog.checkParameterId !== null && (
-        <UpdateQualityCheck
-          open={dialog.open}
-          checkParameterId={dialog.checkParameterId}
-          onClose={closeDialog}
-        />
+        <UpdateCheckParameterDialog open={dialog.open} checkParameterId={dialog.checkParameterId} onClose={closeDialog} />
       )}
-      <DeleteQualityCheck
+      <DeleteCheckParameterDialog
         open={dialog.open && dialog.action === "delete"}
         onClose={closeDialog}
         checkParameterId={dialog.checkParameterId ?? undefined}

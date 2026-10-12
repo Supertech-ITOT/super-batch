@@ -6,12 +6,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.supertech.superbatch.batch.batch.dto.BatchAbortResponse;
+import com.supertech.superbatch.batch.batch.dto.BatchInfoResponse;
+import com.supertech.superbatch.batch.batch.dto.BatchProgressResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchSOPResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchStepRemarkRequest;
 import com.supertech.superbatch.batch.batch.dto.RecipeInfoResponse;
 import com.supertech.superbatch.batch.batch.dto.StepChangeRequest;
 import com.supertech.superbatch.batch.batch.enums.BatchStatus;
+import com.supertech.superbatch.batch.batch.service.BatchExecutionService;
 import com.supertech.superbatch.batch.batch.service.BatchService;
 import com.supertech.superbatch.common.dto.ApiResponse;
 
@@ -23,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BatchController {
     private final BatchService batchService;
+    private final BatchExecutionService batchExecutionService;
 
     @GetMapping("/{batchNo}")
     public ResponseEntity<ApiResponse<BatchResponse>> getByBatchNo(@PathVariable String batchNo) {
@@ -32,7 +36,7 @@ public class BatchController {
 
     @PostMapping("/{batchNo}/start")
     public ResponseEntity<ApiResponse<Void>> start(@PathVariable String batchNo) {
-        batchService.start(batchNo);
+        batchExecutionService.start(batchNo);
         return ResponseEntity.ok(ApiResponse.success("Batch started successfully", null));
     }
 
@@ -41,7 +45,7 @@ public class BatchController {
             @PathVariable String batchNo,
             @RequestBody BatchStepRemarkRequest request) {
 
-        batchService.pause(batchNo, request.stepNo(), request.remark());
+        batchExecutionService.pause(batchNo, request.stepNo(), request.remark());
         return ResponseEntity.ok(ApiResponse.success("Batch paused successfully", null));
     }
 
@@ -50,7 +54,7 @@ public class BatchController {
             @PathVariable String batchNo,
             @PathVariable Integer stepNo) {
 
-        batchService.resume(batchNo, stepNo);
+        batchExecutionService.resume(batchNo, stepNo);
         return ResponseEntity.ok(ApiResponse.success("Batch resumed successfully", null));
     }
 
@@ -59,7 +63,7 @@ public class BatchController {
             @PathVariable String batchNo,
             @Valid @RequestBody BatchStepRemarkRequest request) {
 
-        batchService.abort(batchNo, request.stepNo(), request.remark());
+        batchExecutionService.abort(batchNo, request.stepNo(), request.remark());
         return ResponseEntity.ok(ApiResponse.success("Batch aborted successfully", null));
     }
 
@@ -68,7 +72,7 @@ public class BatchController {
             @PathVariable String batchNo,
             @Valid @RequestBody BatchStepRemarkRequest request) {
 
-        batchService.remark(batchNo, request.stepNo(), request.remark());
+        batchExecutionService.remark(batchNo, request.stepNo(), request.remark());
         return ResponseEntity.ok(ApiResponse.success("Batch remark added successfully", null));
     }
 
@@ -97,7 +101,7 @@ public class BatchController {
 
     @PostMapping("/{batchNo}/download")
     public ResponseEntity<ApiResponse<Void>> download(@PathVariable String batchNo) {
-        batchService.download(batchNo);
+        batchExecutionService.download(batchNo);
         return ResponseEntity.ok(ApiResponse.success("Batch downloaded successfully", null));
     }
 
@@ -105,17 +109,26 @@ public class BatchController {
     public ResponseEntity<ApiResponse<Void>> onStepChange(
             @PathVariable String batchNo,
             @Valid @RequestBody StepChangeRequest request) {
-
-        batchService.onStepChange(batchNo, request);
-
+        batchExecutionService.onStepChange(batchNo, request);
         return ResponseEntity.ok(ApiResponse.success("Step changed successfully", null));
     }
 
     @GetMapping("/{batchId}/abort-details")
     public ResponseEntity<ApiResponse<BatchAbortResponse>> getAbortDetails(@PathVariable Long batchId) {
-        BatchAbortResponse response = batchService.getAbortDetails(batchId);
-        return ResponseEntity.ok(
-                ApiResponse.success("Batch abort details fetched successfully", response));
+        BatchAbortResponse res = batchService.getAbortDetails(batchId);
+        return ResponseEntity.ok(ApiResponse.success("Batch abort details fetched successfully", res));
+    }
+
+    @GetMapping("/{batchId}/info")
+    public ResponseEntity<ApiResponse<BatchInfoResponse>> getBatchInfo(@PathVariable Long batchId) {
+        BatchInfoResponse res = batchService.getBatchInfoById(batchId);
+        return ResponseEntity.ok(ApiResponse.success("Batch info fetched successfully", res));
+    }
+
+    @GetMapping("/{batchId}/progress")
+    public ResponseEntity<ApiResponse<BatchProgressResponse>> getBatchProgress(@PathVariable Long batchId) {
+        BatchProgressResponse res = batchService.getBatchProgressById(batchId);
+        return ResponseEntity.ok(ApiResponse.success("Batch Progress fetched successfully", res));
     }
 
 }

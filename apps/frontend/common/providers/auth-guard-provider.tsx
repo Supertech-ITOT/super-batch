@@ -15,8 +15,10 @@ const MODULE_ROUTES: Record<number, string> = {
   3: "/Recipe",
   4: "/Scheduler",
   5: "/Audit",
-  6: "/Dashboard",
-  7: "/Report",
+  6: "/SampleCheck",
+  7: "/Batch",
+  8: "/Dashboard",
+  9: "/Report",
 };
 
 const MODULE_HOME: Record<number, string> = {
@@ -25,8 +27,10 @@ const MODULE_HOME: Record<number, string> = {
   3: "/Recipe",
   4: "/Scheduler",
   5: "/Audit",
-  6: "/Dashboard",
-  7: "/Report",
+  6: "/SampleCheck",
+  7: "/Batch",
+  8: "/Dashboard",
+  9: "/Report",
 };
 
 const getBasePath = (path: string) => {

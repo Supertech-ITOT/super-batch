@@ -1,46 +1,36 @@
 "use client";
 
-import { Controller, FieldErrors, useForm } from "react-hook-form";
+import { Controller, FieldErrors } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { ClipboardCheck, Package, Ruler, Settings2 } from "lucide-react";
+
+import { showApiError } from "@/common/lib/show-api-error";
+import { showFormError } from "@/common/lib/show-form-error";
+import FormDialog from "@/common/components/form/form-dialog";
+import { TextInput } from "@/common/components/form/text-input";
+import SearchableSelect from "@/common/components/form/searchable-select";
+
 import { useGetMaterials } from "../../material/hooks/use-materials";
-import {
-  useGetCheckParameterById,
-  useUpdateCheckParameter,
-} from "../hooks/use-qualityCheck";
+import { MaterialType } from "../../material/types/material.types";
+import { useCreateCheckParameter } from "../hooks/use-qualityCheck";
 import {
   checkParameterDefaultValues,
   CheckParameterFormValues,
   checkParameterSchema,
   CheckParameterSchemaLimit,
 } from "../schemas/checkParameter.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
-import { MaterialType } from "../../material/types/material.types";
-import { showApiError } from "@/common/lib/show-api-error";
 import { CheckParameterType } from "../types/checkParameter.types";
-import { toast } from "sonner";
-import { showFormError } from "@/common/lib/show-form-error";
-import FormDialog from "@/common/components/form/form-dialog";
-import { ClipboardCheck, Package, Ruler, Settings2 } from "lucide-react";
-import { TextInput } from "@/common/components/form/text-input";
-import SearchableSelect from "@/common/components/form/searchable-select";
 import QualitativeOptions from "./qualitative-options";
 
 type Props = {
   open: boolean;
   onClose: () => void;
-  checkParameterId: number | null;
 };
 
-export default function UpdateQualityCheck({
-  open,
-  onClose,
-  checkParameterId,
-}: Props) {
-  const { mutateAsync: updateParameter, isPending: isUpdating } =
-    useUpdateCheckParameter();
-
-  const { data: parameter, isLoading: parameterIsLoading } =
-    useGetCheckParameterById(checkParameterId ?? undefined);
+export default function CreateCheckParameterDialog({ open, onClose }: Props) {
+  const { mutateAsync: createParameter, isPending: isCreating } = useCreateCheckParameter();
 
   const { data: materials, isLoading: materialsIsLoading } = useGetMaterials();
 
@@ -62,78 +52,23 @@ export default function UpdateQualityCheck({
   const allowedOptions = watch("allowedOptions") ?? [];
   const notAllowedOptions = watch("notAllowedOptions") ?? [];
 
-  const finishedProducts =
-    materials?.filter(
-      (material) => material.materialType === MaterialType.FINISHED_PRODUCT,
-    ) ?? [];
+  const loading = materialsIsLoading || isCreating || isSubmitting;
 
-  const loading =
-    parameterIsLoading || materialsIsLoading || isUpdating || isSubmitting;
-
-  useEffect(() => {
-    if (!open || !parameter) {
-      return;
-    }
-
-    const allowed =
-      parameter.options
-        ?.filter((option) => option.isAllowed)
-        .map((option) => option.value) ?? [];
-
-    const notAllowed =
-      parameter.options
-        ?.filter((option) => !option.isAllowed)
-        .map((option) => option.value) ?? [];
-
-    reset({
-      name: parameter.name,
-      product: parameter.product,
-      type: parameter.type,
-      min: parameter.min ?? undefined,
-      max: parameter.max ?? undefined,
-      allowedOptions: allowed,
-      notAllowedOptions: notAllowed,
-    });
-  }, [parameter, open, reset]);
+  const finishedProducts = materials?.filter((material) => material.materialType === MaterialType.FINISHED_PRODUCT) ?? [];
 
   const onSubmit = async (formData: CheckParameterFormValues) => {
-    if (!checkParameterId) {
-      return;
-    }
-
     try {
-      const res = await updateParameter({
-        id: checkParameterId,
-        data: {
-          name: formData.name,
-          product: formData.product,
-          type: formData.type,
-
-          min:
-            formData.type === CheckParameterType.QUANTITATIVE
-              ? formData.min
-              : undefined,
-
-          max:
-            formData.type === CheckParameterType.QUANTITATIVE
-              ? formData.max
-              : undefined,
-
-          allowedOptions:
-            formData.type === CheckParameterType.QUALITATIVE
-              ? formData.allowedOptions
-              : undefined,
-
-          notAllowedOptions:
-            formData.type === CheckParameterType.QUALITATIVE
-              ? formData.notAllowedOptions
-              : undefined,
-        },
+      const res = await createParameter({
+        name: formData.name,
+        materialIds: formData.materialIds,
+        type: formData.type,
+        min: formData.type === CheckParameterType.QUANTITATIVE ? formData.min : undefined,
+        max: formData.type === CheckParameterType.QUANTITATIVE ? formData.max : undefined,
+        allowedOptions: formData.type === CheckParameterType.QUALITATIVE ? formData.allowedOptions : undefined,
+        notAllowedOptions: formData.type === CheckParameterType.QUALITATIVE ? formData.notAllowedOptions : undefined,
       });
 
-      toast.success(
-        res.message ?? "Quality check parameter updated successfully",
-      );
+      toast.success(res.message ?? "Quality check parameter created successfully");
 
       handleClose();
     } catch (error) {
@@ -155,16 +90,14 @@ export default function UpdateQualityCheck({
       open={open}
       loading={loading}
       onClose={handleClose}
-      title="Update Quality Check Parameter"
-      description="Update the quality check parameter."
+      title="Create Quality Check Parameter"
+      description="Create a new quality check parameter."
       submitDisabled={!isDirty}
-      submitLabel="Update"
+      submitLabel="Create"
       onSubmit={handleSubmit(onSubmit, onInvalid)}
       icon={ClipboardCheck}
     >
       <div className="space-y-2">
-        {/* Parameter Name */}
-
         <TextInput
           label="Parameter Name"
           icon={Settings2}
@@ -177,33 +110,28 @@ export default function UpdateQualityCheck({
           {...register("name")}
         />
 
-        {/* Finished Product */}
-
         <Controller
           control={control}
-          name="product"
+          name="materialIds"
           render={({ field }) => (
-            <SearchableSelect
-              label="Finished Product"
+            <SearchableSelect<number>
+              label="Finished Products"
               value={field.value}
               icon={Package}
-              onChange={field.onChange}
+              multiSelect
+              onChange={(value) => {
+                field.onChange(Array.isArray(value) ? value : []);
+              }}
               options={finishedProducts.map((material) => ({
-                value: material.name,
+                value: material.id,
                 label: material.name,
               }))}
-              placeholder={
-                materialsIsLoading
-                  ? "Loading products..."
-                  : "Select Finished Product"
-              }
+              placeholder={materialsIsLoading ? "Loading products..." : "Select Finished Products"}
               searchPlaceholder="Search Finished Products..."
               disabled={loading}
             />
           )}
         />
-
-        {/* Parameter Type */}
 
         <Controller
           control={control}
@@ -230,8 +158,6 @@ export default function UpdateQualityCheck({
             />
           )}
         />
-
-        {/* QUANTITIVE */}
 
         {parameterType === CheckParameterType.QUANTITATIVE && (
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -270,8 +196,6 @@ export default function UpdateQualityCheck({
             />
           </div>
         )}
-
-        {/* QUALITATIVE */}
 
         {parameterType === CheckParameterType.QUALITATIVE && (
           <QualitativeOptions

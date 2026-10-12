@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.supertech.superbatch.audit.dto.BatchAuditRequest;
 import com.supertech.superbatch.audit.enums.BatchAuditAction;
 import com.supertech.superbatch.audit.service.BatchAuditService;
+import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
 import com.supertech.superbatch.manager.license.annotation.RequiresLicense;
 import com.supertech.superbatch.manager.module.enums.EntityType;
@@ -45,8 +46,11 @@ public class CheckParameterServiceImpl implements CheckParameterService {
     @Transactional
     @RequiresPermission(ModuleType.SAMPLE_CHECK)
     public void create(CheckParameterRequest request) {
-        Material material = getFinishedProductByName(request.product());
-        CheckParameter checkParameter = checkParameterMapper.toEntity(request, material);
+        if (checkParameterRepository.existsByNameIgnoreCaseAndDeletedFalse(request.name())) {
+            throw new BadRequestException("Check parameter name already exists: " + request.name());
+        }
+        List<Material> materials = getFinishedProductsByIds(request.materialIds());
+        CheckParameter checkParameter = checkParameterMapper.toEntity(request, materials);
         CheckParameter saved = checkParameterRepository.save(checkParameter);
         saveOptions(saved, request.allowedOptions(), true);
         saveOptions(saved, request.notAllowedOptions(), false);
@@ -60,9 +64,13 @@ public class CheckParameterServiceImpl implements CheckParameterService {
         CheckParameter checkParameter = checkParameterRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Check parameter not found: " + id));
 
-        Material material = getFinishedProductByName(request.product());
+        if (checkParameterRepository.existsByNameIgnoreCaseAndDeletedFalseAndIdNot(request.name(), id)) {
+            throw new BadRequestException("Check parameter name already exists: " + request.name());
+        }
+
+        List<Material> materials = getFinishedProductsByIds(request.materialIds());
         CheckParameterAudit oldData = checkParameterMapper.copy(checkParameter);
-        checkParameterMapper.updateEntity(checkParameter, request, material);
+        checkParameterMapper.updateEntity(checkParameter, request, materials);
         checkParameterOptionsRepository.deleteAll(checkParameter.getCheckParameterOptions());
         checkParameter.getCheckParameterOptions().clear();
         saveOptions(checkParameter, request.allowedOptions(), true);
@@ -102,16 +110,6 @@ public class CheckParameterServiceImpl implements CheckParameterService {
                 .orElseThrow(() -> new ResourceNotFoundException("Check parameter not found: " + id));
 
         return checkParameterMapper.toResponse(checkParameter);
-    }
-
-    private Material getFinishedProductByName(String product) {
-
-        Material material = materialRepository.findByNameIgnoreCaseAndDeletedFalse(product)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + product));
-        if (material.getMaterialType() != MaterialType.FINISHED_PRODUCT) {
-            throw new ResourceNotFoundException("Product is not a finished product: " + product);
-        }
-        return material;
     }
 
     private Material getFinishedProductByCode(String product) {
@@ -161,9 +159,35 @@ public class CheckParameterServiceImpl implements CheckParameterService {
         Material material = getFinishedProductByCode(product);
 
         return checkParameterRepository
-                .findAllByMaterialIdAndDeletedFalseOrderByNameAsc(material.getId())
+                .findDistinctByMaterials_IdAndDeletedFalseOrderByNameAsc(material.getId())
                 .stream()
                 .map(checkParameterMapper::toResponse)
                 .toList();
+    }
+
+    private List<Material> getFinishedProductsByIds(List<Long> materialIds) {
+
+        if (materialIds == null || materialIds.isEmpty()) {
+            throw new ResourceNotFoundException("At least one material is required");
+        }
+
+        List<Long> uniqueIds = materialIds.stream().distinct().toList();
+
+        List<Material> materials = materialRepository.findAllById(uniqueIds);
+
+        if (materials.size() != uniqueIds.size()) {
+            throw new ResourceNotFoundException("One or more materials were not found");
+        }
+
+        for (Material material : materials) {
+            if (material.isDeleted()) {
+                throw new ResourceNotFoundException("Material not found: " + material.getId());
+            }
+            if (material.getMaterialType() != MaterialType.FINISHED_PRODUCT) {
+                throw new ResourceNotFoundException("Material is not a finished product: " + material.getId());
+            }
+        }
+
+        return materials;
     }
 }

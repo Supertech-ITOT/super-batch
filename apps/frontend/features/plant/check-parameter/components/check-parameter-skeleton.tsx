@@ -1,7 +1,7 @@
 import { Separator } from "@/common/components/ui/separator";
 import { Skeleton } from "@/common/components/ui/skeleton";
 
-export default function QualityCheckSkeleton() {
+export default function CheckParameterSkeleton() {
   return (
     <div className="flex flex-col rounded-2xl border shadow bg-card p-2 sm:p-4 flex-1">
       <div className="flex justify-between">

@@ -34,8 +34,10 @@ public class CheckParameter {
     @Builder.Default
     private Set<CheckParameterOptions> checkParameterOptions = new LinkedHashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Material material;
+    @ManyToMany
+    @JoinTable(name = "check_parameter_material", joinColumns = @JoinColumn(name = "check_parameter_id"), inverseJoinColumns = @JoinColumn(name = "material_id"))
+    @Builder.Default
+    private Set<Material> materials = new LinkedHashSet<>();
 
     @Enumerated(EnumType.STRING)
     private CheckParameterType type;

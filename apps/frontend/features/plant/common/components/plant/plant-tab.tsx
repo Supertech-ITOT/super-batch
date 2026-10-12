@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  LayoutGrid,
-  LucideClipboardCheck,
-  MessageSquareQuoteIcon,
-  Package,
-  Workflow,
-} from "lucide-react";
+import { LayoutGrid, LucideClipboardCheck, MessageSquareQuoteIcon, Package, Workflow } from "lucide-react";
 
 import CommonTabs, { TabItem } from "@/common/components/common-tabs";
 
@@ -33,7 +27,7 @@ const tabs: TabItem[] = [
   },
   {
     label: "Check Parameter",
-    path: "/PlantModel/qualityCheck/",
+    path: "/PlantModel/check-parameter/",
     icon: LucideClipboardCheck,
   },
 ];

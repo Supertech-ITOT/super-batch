@@ -19,7 +19,9 @@ export const checkParameterSchema = z
         `Check parameter name cannot exceed ${CheckParameterSchemaLimit.name.max} characters`,
       ),
 
-    product: z.string().trim().min(1, "Product is required"),
+    materialIds: z
+      .array(z.number().int().positive("Invalid material ID"))
+      .min(1, "At least one material is required"),
 
     type: z.enum(CheckParameterType, {
       error: "Check parameter type is required",
@@ -107,7 +109,7 @@ export type CheckParameterFormValues = z.infer<typeof checkParameterSchema>;
 
 export const checkParameterDefaultValues: CheckParameterFormValues = {
   name: "",
-  product: "",
+  materialIds: [],
   type: CheckParameterType.QUANTITATIVE,
   min: 0,
   max: 0,

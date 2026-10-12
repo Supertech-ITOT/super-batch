@@ -8,13 +8,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.supertech.superbatch.sample_check.check_parameter.entity.CheckParameter;
 
 public interface CheckParameterRepository extends JpaRepository<CheckParameter, Long> {
-    @EntityGraph(attributePaths = { "checkParameterOptions", "material" })
+    @EntityGraph(attributePaths = { "checkParameterOptions", "materials" })
     Optional<CheckParameter> findByIdAndDeletedFalse(Long id);
 
-    @EntityGraph(attributePaths = { "checkParameterOptions", "material" })
+    @EntityGraph(attributePaths = { "checkParameterOptions", "materials" })
     List<CheckParameter> findAllByDeletedFalseOrderByNameAsc();
 
-    @EntityGraph(attributePaths = { "checkParameterOptions", "material" })
-    List<CheckParameter> findAllByMaterialIdAndDeletedFalseOrderByNameAsc(Long materialId);
+    @EntityGraph(attributePaths = { "checkParameterOptions", "materials" })
+    List<CheckParameter> findDistinctByMaterials_IdAndDeletedFalseOrderByNameAsc(Long materialId);
+
+    boolean existsByNameIgnoreCaseAndDeletedFalse(String name);
+
+    boolean existsByNameIgnoreCaseAndDeletedFalseAndIdNot(String name, Long id);
 
 }

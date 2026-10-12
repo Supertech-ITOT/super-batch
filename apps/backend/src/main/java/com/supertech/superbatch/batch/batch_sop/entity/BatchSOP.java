@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.supertech.superbatch.batch.batch.entity.Batch;
+import com.supertech.superbatch.batch.batch_sop.enums.BatchSOPStatus;
 import com.supertech.superbatch.batch.batch_sop_material.entity.BatchSOPMaterial;
 import com.supertech.superbatch.batch.batch_sop_parameter.entity.BatchSOPParameter;
 import com.supertech.superbatch.plant.action.entity.Action;
@@ -36,7 +37,9 @@ public class BatchSOP {
 
     private Double stdTime;
 
-    private Double actTime;
+    @Column(nullable = false)
+    @Builder.Default
+    private Double actTime = 0.0;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "transition_id", nullable = false)
@@ -63,6 +66,11 @@ public class BatchSOP {
 
     @Column(length = 500)
     private String remark;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    @Builder.Default
+    private BatchSOPStatus status = BatchSOPStatus.PENDING;
 
     @OneToMany(mappedBy = "batchSOP", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id ASC")
