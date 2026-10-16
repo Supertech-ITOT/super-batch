@@ -16,6 +16,8 @@ public interface BatchService {
 
     BatchResponse getByBatchNo(String batchNo);
 
+    BatchResponse getById(Long id);
+
     RecipeInfoResponse getRecipeInfoByBatchNo(String batchNo);
 
     BatchSOPResponse getStepInfoByBatchNoAndStepNo(String batchNo, Integer stepNo);
@@ -25,5 +27,7 @@ public interface BatchService {
     BatchInfoResponse getBatchInfoById(Long id);
 
     BatchProgressResponse getBatchProgressById(Long id);
+
+    BatchSOPResponse getCurrentStepInfoById(Long id);
 
 }

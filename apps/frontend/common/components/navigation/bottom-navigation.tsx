@@ -5,64 +5,55 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { ModuleType, OperationRoutes } from "@/features/manager/module/types/module.types";
 import { useGetCurrentUser } from "@/features/manager/user/hooks/use-user";
+import { Skeleton } from "../ui/skeleton";
 
 export default function BottomNavigation() {
-    const pathname = usePathname();
-    const getBasePath = (path: string) => "/" + path.split("/")[1];
-    const { data: user, isLoading: userIsLoading } = useGetCurrentUser();
-    const hasReadPermission = (module?: ModuleType) => {
-        if (!module) return true;
-        return user?.permissions?.some((p) => p.moduleName === module && p.access);
-    };
-    const loading = userIsLoading || !user;
+  const pathname = usePathname();
+  const getBasePath = (path: string) => "/" + path.split("/")[1];
+  const { data: user, isLoading: userIsLoading } = useGetCurrentUser();
+  const hasReadPermission = (module?: ModuleType) => {
+    if (!module) return true;
+    return user?.permissions?.some((p) => p.moduleName === module && p.access);
+  };
+  const loading = userIsLoading || !user;
 
-    if (loading) {
-        return;
-    }
-    return (
-        <nav className="fixed inset-x-0 bottom-0 z-50 w-full px-2 pb-[max(2px,env(safe-area-inset-bottom))] md:hidden">
-            <div className="w-full rounded-full border bg-card/60 p-1 backdrop-blur-3xl">
-                <div className="flex w-full items-center">
-                    {OperationRoutes.filter(
-                        (route) => hasReadPermission(route.module) && !route.hide,
-                    ).map((item) => {
-                        const Icon = item.icon;
+  if (loading) {
+    <nav className="fixed inset-x-0 bottom-0 z-50 w-full px-2 pb-[max(2px,env(safe-area-inset-bottom))] md:hidden">
+      <Skeleton className="w-full rounded-full border bg-card/60 p-1 backdrop-blur-3xl min-h-12"></Skeleton>
+    </nav>;
+  }
+  return (
+    <nav className="fixed inset-x-0 bottom-0 z-50 w-full px-2 pb-[max(2px,env(safe-area-inset-bottom))] md:hidden">
+      <div className="w-full rounded-full border bg-card/60 p-1 backdrop-blur-3xl min-h-12">
+        <div className="flex w-full items-center">
+          {OperationRoutes.filter((route) => hasReadPermission(route.module) && !route.hide).map((item) => {
+            const Icon = item.icon;
 
-                        const active =
-                            getBasePath(pathname) === getBasePath(item.path);
+            const active = getBasePath(pathname) === getBasePath(item.path);
 
-                        return (
-                            <Link
-                                key={item.path}
-                                href={item.path}
-                                className="relative flex min-w-0 flex-1 flex-col items-center justify-center rounded-full py-2"
-                            >
-                                {active && (
-                                    <motion.div
-                                        layoutId="bottom-nav-active"
-                                        className="absolute inset-0 rounded-full bg-primary shadow-lg shadow-primary/30"
-                                        transition={{
-                                            type: "spring",
-                                            stiffness: 500,
-                                            damping: 35,
-                                            mass: 0.8,
-                                        }}
-                                    >
-                                        <div className="absolute inset-0 rounded-full bg-linear-to-b from-white/35 via-white/10 to-transparent" />
-                                    </motion.div>
-                                )}
+            return (
+              <Link key={item.path} href={item.path} className="relative flex min-w-0 flex-1 flex-col items-center justify-center rounded-full py-2">
+                {active && (
+                  <motion.div
+                    layoutId="bottom-nav-active"
+                    className="absolute inset-0 rounded-full bg-primary shadow-lg shadow-primary/30"
+                    transition={{
+                      type: "spring",
+                      stiffness: 500,
+                      damping: 35,
+                      mass: 0.8,
+                    }}
+                  >
+                    <div className="absolute inset-0 rounded-full bg-linear-to-b from-white/35 via-white/10 to-transparent" />
+                  </motion.div>
+                )}
 
-                                <Icon
-                                    className={`relative z-10 size-6 transition-colors duration-200 ${active
-                                        ? "text-white"
-                                        : "text-muted-foreground"
-                                        }`}
-                                />
-                            </Link>
-                        );
-                    })}
-                </div>
-            </div>
-        </nav>
-    );
+                <Icon className={`relative z-10 size-6 transition-colors duration-200 ${active ? "text-white" : "text-muted-foreground"}`} />
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    </nav>
+  );
 }

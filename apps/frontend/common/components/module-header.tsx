@@ -29,7 +29,7 @@ export default function ModuleHeader() {
   return (
     <header
       className={`fixed ${isElectron && !isMobile ? "top-8" : "top-2"} ${
-        isMobile ? "left-2 right-2" : open ? "left-66 right-2" : "left-18 right-2"
+        isMobile ? "left-1.5 right-2" : open ? "left-66 right-6" : "left-18 right-6"
       } z-40 h-20 rounded-2xl border bg-card/95 p-2 backdrop-blur supports-backdrop-filter:bg-card/80 sm:p-4 transition-all duration-300`}
     >
       <div className="flex items-center gap-1.5 sm:gap-4 h-full">

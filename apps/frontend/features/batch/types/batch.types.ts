@@ -27,6 +27,36 @@ export const BatchStatusBadgeStyles = {
         "bg-red-100 text-red-800 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800",
 } as const;
 
+
+export enum BatchSOPStatus {
+    PENDING = "PENDING",
+    IN_PROGRESS = "IN_PROGRESS",
+    PAUSED = "PAUSED",
+    COMPLETED = "COMPLETED",
+    SKIPPED = "SKIPPED",
+    ABORTED = "ABORTED",
+}
+
+export const BatchSOPStatusBadgeStyles = {
+    PENDING:
+        "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-700",
+
+    IN_PROGRESS:
+        "bg-green-100 text-green-800 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-800",
+
+    PAUSED:
+        "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-300 dark:border-yellow-800",
+
+    COMPLETED:
+        "bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800",
+
+    SKIPPED:
+        "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700",
+
+    ABORTED:
+        "bg-red-100 text-red-800 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800",
+} as const;
+
 export type BatchAbortResponse = {
     batchId: number;
     batchNo: string;
@@ -65,4 +95,49 @@ export type BatchProgressResponse = {
     currentStep: number;
     pendingStep: number;
     skippedStep: number;
+}
+
+export type BatchSOPResponse = {
+    id: number;
+    batchId: number;
+    stepNo: number;
+    stdTime: number;
+    actTime: number;
+    transitionId: number;
+    transitionName: string;
+    actionId: number;
+    actionName: string;
+    message: string;
+    fromEquipmentId: number;
+    fromEquipmentName: string;
+    fromEquipmentCode: string;
+    toEquipmentId: number;
+    toEquipmentName: string;
+    toEquipmentCode: string;
+    startDateTime: string;
+    endDateTime: string;
+    status: BatchSOPStatus;
+    remark: string;
+    materials: BatchSOPMaterialResponse[];
+    parameters: BatchSOPParameterResponse[];
+}
+
+export type BatchSOPMaterialResponse = {
+    id: number;
+    materialId: number;
+    materialName: string;
+    stdQty: number;
+    actQty: number;
+}
+
+export type BatchSOPParameterResponse = {
+    id: number;
+    parameterId: number;
+    parameterName: string;
+    stdValue: number;
+    actValue: number;
+}
+
+export type BatchResponse = {
+    steps: BatchSOPResponse[];
 }

@@ -172,6 +172,8 @@ export const queryKeys = {
     all: ["batches"] as const,
     abortDetails: (batchId: number) => ["batches", "abort-details", batchId] as const,
     info: (batchId: number) => ["batches", "info", batchId] as const,
+    currentStep: (batchId: number) => ["batches", "info", batchId, "current-step"] as const,
+    allStepInfo: (batchId: number) => ["batches", "all", "info", batchId] as const,
     progress: (batchId: number) => ["batches", "progress", batchId] as const,
   },
 } as const;

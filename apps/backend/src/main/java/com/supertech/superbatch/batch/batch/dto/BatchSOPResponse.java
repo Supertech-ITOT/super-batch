@@ -3,6 +3,8 @@ package com.supertech.superbatch.batch.batch.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.supertech.superbatch.batch.batch_sop.enums.BatchSOPStatus;
+
 import lombok.Builder;
 
 @Builder
@@ -19,10 +21,13 @@ public record BatchSOPResponse(
                 String message,
                 Long fromEquipmentId,
                 String fromEquipmentName,
+                String fromEquipmentCode,
                 Long toEquipmentId,
                 String toEquipmentName,
+                String toEquipmentCode,
                 LocalDateTime startDateTime,
                 LocalDateTime endDateTime,
+                BatchSOPStatus status,
                 String remark,
                 List<BatchSOPMaterialResponse> materials,
                 List<BatchSOPParameterResponse> parameters

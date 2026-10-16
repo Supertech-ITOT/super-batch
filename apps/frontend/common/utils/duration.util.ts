@@ -42,3 +42,20 @@ export const minutesToADuration = (minutes: number | string): string => {
 
     return parts.length ? parts.join(" ") : "0M";
 };
+
+
+export const getActualMinutes = (startDateTime: string | null): number => {
+    if (!startDateTime) return 0;
+
+    return Math.floor(
+        (Date.now() - new Date(startDateTime).getTime()) / 60000
+    );
+};
+
+export const getRemainingMinutes = (startDateTime: string | null, stdMinutes: number): number => {
+    if (!startDateTime) return stdMinutes;
+
+    const actualMinutes = getActualMinutes(startDateTime);
+
+    return Math.max(0, stdMinutes - actualMinutes);
+};

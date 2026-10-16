@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { invalidateQueries, queryDeps } from "@/features/common/hooks/query-deps";
-import { abortBatch, getAbortDetails, getBatchInfo, getBatchProgress } from "../service/batch.service";
+import { abortBatch, getAbortDetails, getAllStepsById, getBatchInfo, getBatchProgress, getCurrentStepInfo } from "../service/batch.service";
 import { queryKeys } from "@/features/common/hooks/query-keys";
 
 export const useAbortBatch = () => {
@@ -45,7 +45,37 @@ export const useGetBatchProgress = (batchId?: number) => {
             const res = await getBatchProgress(batchId!);
             return res.data;
         },
+        refetchInterval: 10 * 1000,
         staleTime: 0,
+        refetchOnWindowFocus: true,
         enabled: !!batchId,
     });
 };
+
+export const useGetCurrentStepInfo = (batchId?: number) => {
+    return useQuery({
+        queryKey: queryKeys.batches.currentStep(batchId ?? 0),
+        queryFn: async () => {
+            const res = await getCurrentStepInfo(batchId!);
+            return res.data;
+        },
+        refetchInterval: 10 * 1000,
+        staleTime: 0,
+        refetchOnWindowFocus: true,
+        enabled: !!batchId,
+    });
+}
+
+export const useGetAllStepInfo = (batchId?: number) => {
+    return useQuery({
+        queryKey: queryKeys.batches.allStepInfo(batchId ?? 0),
+        queryFn: async () => {
+            const res = await getAllStepsById(batchId!);
+            return res.data;
+        },
+        refetchInterval: 10 * 1000,
+        staleTime: 0,
+        refetchOnWindowFocus: true,
+        enabled: !!batchId,
+    });
+}

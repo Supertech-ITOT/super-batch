@@ -42,7 +42,11 @@ export default function SideBar() {
   const loading = userIsLoading || !user;
 
   if (loading) {
-    return <div className={`h-[calc(100%-1rem)] m-2 rounded-2xl z-50 border  bg-card overflow-hidden flex flex-col`}></div>;
+    return (
+      <div
+        className={`h-[calc(100%-1rem)] m-2 rounded-2xl z-50 border shrink-0 transition-all duration-300 bg-card/95 backdrop-blur supports-backdrop-filter:bg-card/80 overflow-hidden flex flex-col  ${open ? "w-60 p-4" : "w-12 items-center"}`}
+      ></div>
+    );
   }
   return (
     <aside

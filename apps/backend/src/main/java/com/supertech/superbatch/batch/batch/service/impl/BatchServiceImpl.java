@@ -13,7 +13,6 @@ import com.supertech.superbatch.batch.batch.dto.BatchProgressResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchSOPResponse;
 import com.supertech.superbatch.batch.batch.dto.RecipeInfoResponse;
-import com.supertech.superbatch.batch.batch.dto.StepResponse;
 import com.supertech.superbatch.batch.batch.entity.Batch;
 import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 import com.supertech.superbatch.batch.batch.mapper.BatchMapper;
@@ -38,7 +37,15 @@ public class BatchServiceImpl implements BatchService {
         @Override
         public BatchResponse getByBatchNo(String batchNo) {
                 Batch batch = getBatchByBatchNo(batchNo);
-                List<StepResponse> steps = batch.getSops().stream().map(batchMapper::toStepResponse).toList();
+                List<BatchSOPResponse> steps = batch.getSops().stream().map(batchSOPMapper::toResponse).toList();
+                return BatchResponse.builder().steps(steps).build();
+        }
+
+        @Override
+        public BatchResponse getById(Long id) {
+                Batch batch = batchRepository.findByIdWithRelation(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Batch not found."));
+                List<BatchSOPResponse> steps = batch.getSops().stream().map(batchSOPMapper::toResponse).toList();
                 return BatchResponse.builder().steps(steps).build();
         }
 
@@ -116,6 +123,18 @@ public class BatchServiceImpl implements BatchService {
                                 .pendingStep(pendingStep)
                                 .skippedStep(skippedStep)
                                 .build();
+        }
+
+        @Override
+        public BatchSOPResponse getCurrentStepInfoById(Long id) {
+                Batch batch = batchRepository.findByIdWithRelation(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Batch not found."));
+                BatchSOP batchSOP = batch.getSops()
+                                .stream()
+                                .filter(sop -> sop.getStatus() == BatchSOPStatus.IN_PROGRESS)
+                                .findFirst()
+                                .orElse(null);
+                return batchSOPMapper.toResponse(batchSOP);
         }
 
 }

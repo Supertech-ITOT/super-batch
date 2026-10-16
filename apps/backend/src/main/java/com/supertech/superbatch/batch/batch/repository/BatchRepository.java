@@ -14,10 +14,28 @@ import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 
 public interface BatchRepository extends JpaRepository<Batch, Long> {
 
+        @EntityGraph(attributePaths = { "masterRecipe", "masterRecipe.material", "controlRecipe",
+                        "controlRecipe.shiftIncharge", "controlRecipe.unit", "sops",
+                        "sops.transition",
+                        "sops.action",
+                        "sops.fromEquipment",
+                        "sops.toEquipment",
+                        "sops.materials",
+                        "sops.materials.material",
+                        "sops.parameters",
+                        "sops.parameters.parameter" })
         Optional<Batch> findByBatchNo(String batchNo);
 
         @EntityGraph(attributePaths = { "masterRecipe", "masterRecipe.material", "controlRecipe",
-                        "controlRecipe.shiftIncharge", "controlRecipe.unit", "sops" })
+                        "controlRecipe.shiftIncharge", "controlRecipe.unit", "sops",
+                        "sops.transition",
+                        "sops.action",
+                        "sops.fromEquipment",
+                        "sops.toEquipment",
+                        "sops.materials",
+                        "sops.materials.material",
+                        "sops.parameters",
+                        "sops.parameters.parameter" })
         @Query("SELECT b FROM Batch b WHERE b.id = :id")
         Optional<Batch> findByIdWithRelation(@Param("id") Long id);
 

@@ -6,7 +6,7 @@ type Props = {
   id: number;
 };
 export default function BatchProgressCard({ id }: Props) {
-  const { data, isLoading } = useGetBatchProgress(id);
+  const { data } = useGetBatchProgress(id);
   const progress = data?.progress ?? 0;
 
   const stats = [
@@ -51,7 +51,7 @@ export default function BatchProgressCard({ id }: Props) {
               padding: "11px",
             }}
           >
-            <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-background text-center">
+            <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-card text-center">
               <span className="text-3xl font-bold tracking-tight">{progress}%</span>
               <span className="text-xs text-muted-foreground">Completed</span>
             </div>

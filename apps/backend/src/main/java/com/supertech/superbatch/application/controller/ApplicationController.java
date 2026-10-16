@@ -12,7 +12,7 @@ import com.supertech.superbatch.common.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequiredArgsConstructor
+@RequiredArgsConstructor 
 @RequestMapping("/api/application")
 public class ApplicationController {
 

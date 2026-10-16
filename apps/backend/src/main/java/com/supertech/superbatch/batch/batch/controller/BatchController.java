@@ -131,4 +131,16 @@ public class BatchController {
         return ResponseEntity.ok(ApiResponse.success("Batch Progress fetched successfully", res));
     }
 
+    @GetMapping("/{batchId}/current-step-info")
+    public ResponseEntity<ApiResponse<BatchSOPResponse>> getCurrentStepInfo(@PathVariable Long batchId) {
+        BatchSOPResponse res = batchService.getCurrentStepInfoById(batchId);
+        return ResponseEntity.ok(ApiResponse.success("Batch SOP info fetched successfully", res));
+    }
+
+    @GetMapping("/{batchId}/all-steps-info")
+    public ResponseEntity<ApiResponse<BatchResponse>> getAllStepById(@PathVariable Long batchId) {
+        BatchResponse res = batchService.getById(batchId);
+        return ResponseEntity.ok(ApiResponse.success("Batch All SOP info fetched successfully", res));
+    }
+
 }

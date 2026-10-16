@@ -123,7 +123,7 @@ export default function BatchInfoCard({ id }: Props) {
     <Carousel className="w-full">
       <CarouselContent>
         {cards.map((c) => (
-          <CarouselItem key={c.label} className="basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/6 pl-2!">
+          <CarouselItem key={c.label} className="basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/6">
             <StatusCard data={c} />
           </CarouselItem>
         ))}

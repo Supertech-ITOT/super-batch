@@ -6,5 +6,5 @@ import lombok.Builder;
 
 @Builder
 public record BatchResponse(
-        List<StepResponse> steps) {
+                List<BatchSOPResponse> steps) {
 }

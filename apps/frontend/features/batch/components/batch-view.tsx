@@ -1,5 +1,7 @@
 import BatchInfoCard from "./batch-info-card";
 import BatchProgressCard from "./batch-progress-card";
+import BatchStepsTable from "./batch-steps-table";
+import StepInfoCard from "./step-info-card";
 
 export default function BatchView({ id }: { id: number }) {
   return (
@@ -12,11 +14,11 @@ export default function BatchView({ id }: { id: number }) {
           <BatchProgressCard id={id} />
         </div>
         <div className="min-h-0 min-w-0">
-          <BatchProgressCard id={id} />
+          <StepInfoCard id={id} />
         </div>
       </div>
       <div className="grid min-h-0 flex-1">
-        <BatchProgressCard id={id} />
+        <BatchStepsTable id={id} />
       </div>
     </div>
   );
