@@ -10,83 +10,32 @@ export const queryDeps = {
     queryKeys.audits.all,
   ],
 
-  areas: [
-    queryKeys.areas.all,
-    queryKeys.units.all,
-    queryKeys.plantHierarchy.all,
-    queryKeys.audits.all,
-  ],
+  areas: [queryKeys.areas.all, queryKeys.units.all, queryKeys.plantHierarchy.all, queryKeys.audits.all],
 
-  plants: [
-    queryKeys.plants.all,
-    queryKeys.areas.all,
-    queryKeys.units.all,
-    queryKeys.plantHierarchy.all,
-    queryKeys.audits.all,
-  ],
-  equipments: [
-    queryKeys.equipments.all,
-    queryKeys.plantHierarchy.all,
-    queryKeys.recipes.all,
-    queryKeys.audits.all,
-    queryKeys.controlRecipes.all,
-  ],
+  plants: [queryKeys.plants.all, queryKeys.areas.all, queryKeys.units.all, queryKeys.plantHierarchy.all, queryKeys.audits.all],
+  equipments: [queryKeys.equipments.all, queryKeys.plantHierarchy.all, queryKeys.recipes.all, queryKeys.audits.all, queryKeys.controlRecipes.all],
 
-  materials: [
-    queryKeys.materials.all,
-    queryKeys.audits.all,
-    queryKeys.recipes.all,
-    queryKeys.controlRecipeSOPs.all,
-  ],
+  materials: [queryKeys.materials.all, queryKeys.audits.all, queryKeys.recipes.all, queryKeys.controlRecipeSOPs.all],
 
-  parameters: [
-    queryKeys.parameters.all,
-    queryKeys.audits.all,
-    queryKeys.recipeSOPs.all,
-    queryKeys.controlRecipes.all,
-  ],
+  parameters: [queryKeys.parameters.all, queryKeys.audits.all, queryKeys.recipeSOPs.all, queryKeys.controlRecipes.all],
 
   checkParameters: [queryKeys.checkParameters.all, queryKeys.audits.all],
 
-  actions: [
-    queryKeys.actions.all,
-    queryKeys.recipeSOPs.all,
-    queryKeys.audits.all,
-    queryKeys.controlRecipeSOPs.all,
-  ],
+  actions: [queryKeys.actions.all, queryKeys.recipeSOPs.all, queryKeys.audits.all, queryKeys.controlRecipeSOPs.all],
 
-  transitions: [
-    queryKeys.transitions.all,
-    queryKeys.recipeSOPs.all,
-    queryKeys.audits.all,
-    queryKeys.controlRecipeSOPs.all,
-  ],
+  transitions: [queryKeys.transitions.all, queryKeys.recipeSOPs.all, queryKeys.audits.all, queryKeys.controlRecipeSOPs.all],
 
   messages: [queryKeys.messages.all, queryKeys.audits.all],
 
-  recipes: [
-    queryKeys.recipes.all,
-    queryKeys.recipeSOPs.all,
-    queryKeys.audits.all,
-  ],
+  recipes: [queryKeys.recipes.all, queryKeys.recipeSOPs.all, queryKeys.audits.all],
 
-  recipeSOPs: [
-    queryKeys.recipeSOPs.all,
-    queryKeys.recipes.all,
-    queryKeys.audits.all,
-  ],
+  recipeSOPs: [queryKeys.recipeSOPs.all, queryKeys.recipes.all, queryKeys.audits.all],
 
-  controlRecipes: [
-    queryKeys.controlRecipes.all,
-    queryKeys.controlRecipeSOPs.all,
-    queryKeys.audits.all,
-  ],
+  controlRecipes: [queryKeys.controlRecipes.all, queryKeys.controlRecipeSOPs.all, queryKeys.audits.all],
 
-  controlRecipeSOPs: [
-    queryKeys.controlRecipeSOPs.all,
-    queryKeys.controlRecipes.all,
-    queryKeys.audits.all,
-  ],
+  controlRecipeSOPs: [queryKeys.controlRecipeSOPs.all, queryKeys.controlRecipes.all, queryKeys.audits.all],
+
+  batchChecks: [queryKeys.batchChecks.all],
 
   roles: [queryKeys.roles.all, queryKeys.users.all, queryKeys.audits.all],
 
@@ -105,13 +54,6 @@ export const queryDeps = {
 
 import { QueryClient, QueryKey } from "@tanstack/react-query";
 
-export const invalidateQueries = (
-  queryClient: QueryClient,
-  queryKeysToInvalidate: readonly QueryKey[],
-) => {
-  return Promise.all(
-    queryKeysToInvalidate.map((queryKey) =>
-      queryClient.invalidateQueries({ queryKey }),
-    ),
-  );
+export const invalidateQueries = (queryClient: QueryClient, queryKeysToInvalidate: readonly QueryKey[]) => {
+  return Promise.all(queryKeysToInvalidate.map((queryKey) => queryClient.invalidateQueries({ queryKey })));
 };

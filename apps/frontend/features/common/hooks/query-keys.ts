@@ -97,26 +97,22 @@ export const queryKeys = {
     all: ["recipes"] as const,
     list: () => ["recipes", "list"] as const,
     detail: (id: number) => ["recipes", "detail", id] as const,
-    byMaterialAndStatus: (materialId: number, status: RecipeStatus) =>
-      ["recipes", "by-material-and-status", materialId, status] as const,
+    byMaterialAndStatus: (materialId: number, status: RecipeStatus) => ["recipes", "by-material-and-status", materialId, status] as const,
   },
 
   recipeSOPs: {
     all: ["recipe-sops"] as const,
     list: () => ["recipe-sops", "list"] as const,
     detail: (id: number) => ["recipe-sops", "detail", id] as const,
-    byRecipe: (recipeId: number) =>
-      ["recipe-sops", "recipe", recipeId] as const,
-    summaryByRecipe: (recipeId: number) =>
-      ["recipe-sops", "recipe", recipeId, "summary"] as const,
+    byRecipe: (recipeId: number) => ["recipe-sops", "recipe", recipeId] as const,
+    summaryByRecipe: (recipeId: number) => ["recipe-sops", "recipe", recipeId, "summary"] as const,
   },
 
   controlRecipes: {
     all: ["control-recipes"] as const,
     list: () => ["control-recipes", "list"] as const,
     detail: (id: number) => ["control-recipes", "detail", id] as const,
-    equipmentMapping: (recipeId: number, unitId: number) =>
-      ["control-recipes", "equipment-mapping", recipeId, unitId] as const,
+    equipmentMapping: (recipeId: number, unitId: number) => ["control-recipes", "equipment-mapping", recipeId, unitId] as const,
   },
 
   controlRecipeSOPs: {
@@ -124,11 +120,9 @@ export const queryKeys = {
     list: () => ["control-recipe-sops", "list"] as const,
     detail: (id: number) => ["control-recipe-sops", "detail", id] as const,
 
-    byControlRecipe: (recipeId: number) =>
-      ["control-recipe-sops", "control-recipe", recipeId] as const,
+    byControlRecipe: (recipeId: number) => ["control-recipe-sops", "control-recipe", recipeId] as const,
 
-    summaryByControlRecipe: (recipeId: number) =>
-      ["control-recipe-sops", "control-recipe", recipeId, "summary"] as const,
+    summaryByControlRecipe: (recipeId: number) => ["control-recipe-sops", "control-recipe", recipeId, "summary"] as const,
   },
 
   license: {
@@ -146,8 +140,7 @@ export const queryKeys = {
   audits: {
     all: ["audits"] as const,
     lists: () => ["audits", "list"] as const,
-    list: (request: BatchAuditSearchRequest) =>
-      ["audits", "list", request] as const,
+    list: (request: BatchAuditSearchRequest) => ["audits", "list", request] as const,
     detail: (id: number) => ["audits", "detail", id] as const,
   },
 
@@ -175,5 +168,10 @@ export const queryKeys = {
     currentStep: (batchId: number) => ["batches", "info", batchId, "current-step"] as const,
     allStepInfo: (batchId: number) => ["batches", "all", "info", batchId] as const,
     progress: (batchId: number) => ["batches", "progress", batchId] as const,
+  },
+
+  batchChecks: {
+    all: ["batch-checks"] as const,
+    byBatchAndStep: (batchNo: string, stepNo: number) => ["batch-checks", batchNo, stepNo] as const,
   },
 } as const;
