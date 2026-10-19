@@ -28,6 +28,7 @@ export interface DataTableProps<TData, TValue> {
     onRowClick?: (row: TData) => void;
     isRowSelected?: (row: TData) => boolean;
     compact?: boolean;
+    showEmptyRows?: boolean;
 }
 
 export const alignClass = { left: "text-left", center: "text-center", right: "text-right", };

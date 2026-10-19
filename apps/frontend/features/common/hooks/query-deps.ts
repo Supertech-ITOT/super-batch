@@ -37,6 +37,8 @@ export const queryDeps = {
 
   batchChecks: [queryKeys.batchChecks.all],
 
+  materialCorrection: [queryKeys.materialCorrection.all],
+
   roles: [queryKeys.roles.all, queryKeys.users.all, queryKeys.audits.all],
 
   users: [queryKeys.users.all, queryKeys.audits.all],

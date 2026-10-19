@@ -22,6 +22,7 @@ export function DataTable<TData, TValue>({
   contextMenu,
   serverPagination,
   compact = false,
+  showEmptyRows = true,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize });
@@ -55,7 +56,7 @@ export function DataTable<TData, TValue>({
     }),
   });
   const rows = table.getRowModel().rows;
-  const emptyRows = Math.max(0, pageSize - rows.length);
+  const emptyRows = showEmptyRows ? Math.max(0, pageSize - rows.length) : 0;
 
   return (
     <div className={`flex flex-col gap-2 h-full w-full min-w-0 ${className ?? ""}`}>

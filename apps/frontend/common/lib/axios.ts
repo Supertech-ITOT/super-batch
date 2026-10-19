@@ -21,6 +21,9 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+
+let isRedirectingForAuth = false;
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -28,18 +31,27 @@ api.interceptors.response.use(
     const status = error.response?.status;
 
     if (
+      typeof window !== "undefined" &&
       status === 401 &&
-      (message === "TOKEN_EXPIRED" || message === "INVALID_TOKEN")
+      ["TOKEN_EXPIRED", "INVALID_TOKEN"].includes(message) &&
+      !isRedirectingForAuth
     ) {
+      isRedirectingForAuth = true;
+
       localStorage.removeItem("user");
-      toast.error("Session expired. Please login again to continue.");
-      setTimeout(() => {
-        window.location.replace("/");
-      }, 1500);
+
+      toast.error(
+        message === "TOKEN_EXPIRED"
+          ? "Your session has expired. Please log in again."
+          : "Your session is invalid. Please log in again."
+      );
+
+      window.location.replace("/");
     }
 
     return Promise.reject(error);
-  },
+  }
 );
+
 
 export default api;

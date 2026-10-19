@@ -6,7 +6,7 @@ import com.supertech.superbatch.sample_check.batch_check.dto.BatchCheckRequest;
 import com.supertech.superbatch.sample_check.batch_check.dto.BatchCheckResponse;
 
 public interface BatchCheckService {
-    void create(BatchCheckRequest request);
+    void create(BatchCheckRequest request, Long batchId);
 
-    List<BatchCheckResponse> getByBatchNoAndStepNo(String batchNo, Integer stepNo);
+    List<BatchCheckResponse> getById(Long batchId);
 }

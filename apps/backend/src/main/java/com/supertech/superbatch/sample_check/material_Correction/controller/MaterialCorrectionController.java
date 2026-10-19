@@ -20,17 +20,18 @@ public class MaterialCorrectionController {
 
     private final MaterialCorrectionService materialCorrectionService;
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<Void>> create(
+    @PostMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> create( @PathVariable Long id,
             @Valid @RequestBody MaterialCorrectionRequest request) {
-        materialCorrectionService.create(request);
+        materialCorrectionService.create(request,id);
         return ResponseEntity.ok(ApiResponse.success("Material correction added successfully", null));
     }
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<MaterialCorrectionResponse>>> getByBatchNoAndStepNo(
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<List<MaterialCorrectionResponse>>> getById(
+         @PathVariable Long id,
             @RequestParam String batchNo, @RequestParam Integer stepNo) {
-        List<MaterialCorrectionResponse> corrections = materialCorrectionService.getByBatchNoAndStepNo(batchNo, stepNo);
+        List<MaterialCorrectionResponse> corrections = materialCorrectionService.getById(id);
         return ResponseEntity.ok(ApiResponse.success("Material corrections fetched successfully", corrections));
     }
 }

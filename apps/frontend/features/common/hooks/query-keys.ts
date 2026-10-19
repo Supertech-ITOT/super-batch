@@ -172,6 +172,11 @@ export const queryKeys = {
 
   batchChecks: {
     all: ["batch-checks"] as const,
-    byBatchAndStep: (batchNo: string, stepNo: number) => ["batch-checks", batchNo, stepNo] as const,
+    byBatchId: (batchId: number) => ["batch-checks", batchId] as const,
+  },
+
+  materialCorrection: {
+    all: ["material-correction"] as const,
+    byBatchId: (batchId: number) => ["material-correction", batchId] as const,
   },
 } as const;

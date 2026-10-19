@@ -16,11 +16,7 @@ import { format } from "date-fns";
 import { getColorByText } from "@/common/utils/color.util";
 import { Badge } from "@/common/components/ui/badge";
 
-export const columns = (
-  setDialog: React.Dispatch<React.SetStateAction<DialogProp>>,
-  page: number,
-  size: number,
-): ColumnDef<UserResponse>[] => [
+export const columns = (setDialog: React.Dispatch<React.SetStateAction<DialogProp>>, page: number, size: number): ColumnDef<UserResponse>[] => [
   {
     id: "srNo",
     header: "Sr. No.",
@@ -43,9 +39,7 @@ export const columns = (
         .toUpperCase();
       return (
         <div className="flex items-center gap-3">
-          <div
-            className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold ${getColorByText(user.name)}`}
-          >
+          <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold ${getColorByText(user.name)}`}>
             {initials}
           </div>
           <div className="flex flex-col">
@@ -63,10 +57,7 @@ export const columns = (
       align: "center",
     },
     cell: ({ row }) => (
-      <Badge
-        variant={"outline"}
-        className={getColorByText(row.original.roleName)}
-      >
+      <Badge variant={"outline"} className={getColorByText(row.original.roleName)}>
         <Circle className="size-2.5 fill-current" />
         {row.original.roleName}
       </Badge>
@@ -116,11 +107,7 @@ export const columns = (
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="h-8 w-8 p-0"
-              onClick={(e) => e.stopPropagation()}
-            >
+            <Button variant="ghost" className="h-8 w-8 p-0" onClick={(e) => e.stopPropagation()}>
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>

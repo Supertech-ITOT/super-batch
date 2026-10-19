@@ -1,29 +1,56 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { invalidateQueries, queryDeps } from "@/features/common/hooks/query-deps";
 import { queryKeys } from "@/features/common/hooks/query-keys";
-import { createBatchCheck, getBatchChecks } from "../service/check.service";
+import { createBatchCheck, createMaterialCorrection, getBatchChecks, getMaterialCorrection } from "../service/check.service";
+import { BatchCheckRequest, MaterialCorrectionRequest } from "../types/check.types";
 
 export const useCreateBatchCheck = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: createBatchCheck,
+    mutationFn: ({ batchId, request, }: {
+      batchId: number;
+      request: BatchCheckRequest;
+    }) => createBatchCheck(batchId, request),
+
     onSuccess: async () => {
       await invalidateQueries(queryClient, queryDeps.batchChecks);
     },
   });
 };
 
-export const useGetBatchChecks = (batchNo?: string, stepNo?: number) => {
+export const useGetBatchChecks = (batchId: number) => {
   return useQuery({
-    queryKey: queryKeys.batchChecks.byBatchAndStep(batchNo ?? "", stepNo ?? 0),
+    queryKey: queryKeys.batchChecks.byBatchId(batchId ?? 0),
     queryFn: async () => {
-      const res = await getBatchChecks({
-        batchNo: batchNo!,
-        stepNo: stepNo!,
-      });
+      const res = await getBatchChecks(batchId);
       return res.data;
     },
     staleTime: 0,
-    enabled: !!batchNo && !!stepNo,
+  });
+};
+
+
+export const useCreateMaterialCorrection = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ batchId, request, }: {
+      batchId: number;
+      request: MaterialCorrectionRequest;
+    }) => createMaterialCorrection(batchId, request),
+
+    onSuccess: async () => {
+      await invalidateQueries(queryClient, queryDeps.batchChecks);
+    },
+  });
+};
+
+export const useGetMaterialCorrection = (batchId: number) => {
+  return useQuery({
+    queryKey: queryKeys.materialCorrection.byBatchId(batchId ?? 0),
+    queryFn: async () => {
+      const res = await getMaterialCorrection(batchId);
+      return res.data;
+    },
+    staleTime: 0,
   });
 };

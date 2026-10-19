@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.supertech.superbatch.batch.batch.entity.Batch;
 import com.supertech.superbatch.batch.batch.repository.BatchRepository;
 import com.supertech.superbatch.batch.batch_sop.entity.BatchSOP;
+import com.supertech.superbatch.batch.batch_sop.enums.BatchSOPStatus;
 import com.supertech.superbatch.batch.batch_sop.repository.BatchSOPRepository;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
@@ -40,18 +41,17 @@ public class MaterialCorrectionServiceImpl implements MaterialCorrectionService 
         @Override
         @Transactional
         @RequiresPermission(ModuleType.SAMPLE_CHECK)
-        public void create(MaterialCorrectionRequest request) {
-                Batch batch = batchRepository.findByBatchNo(request.batchNo())
-                                .orElseThrow(() -> new ResourceNotFoundException("Batch not found."));
+        public void create(MaterialCorrectionRequest request, Long id) {
+                Batch batch = batchRepository.findByIdWithRelation(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Batch not found."));
 
-                BatchSOP batchSOP = batchSOPRepository
-                                .findByBatch_BatchNoAndStepNo(request.batchNo(), request.stepNo())
-                                .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
+        BatchSOP batchSOP = batchSOPRepository
+                .findFirstByBatch_IdAndStatusOrderByStepNoDesc(id,BatchSOPStatus.IN_PROGRESS)
+                .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
                 if (!batchSOP.getTransition().getName().equals(TransitionType.SAMPLE_CHECK.getDisplayName())) {
                         throw new BadRequestException(
                                         "Material Correction cannot be added as it is not a Sample Check Transition.");
                 }
-
                 Material material = materialRepository
                                 .findByIdAndDeletedFalse(request.materialId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Material not found."));
@@ -67,10 +67,15 @@ public class MaterialCorrectionServiceImpl implements MaterialCorrectionService 
         }
 
         @Override
-        public List<MaterialCorrectionResponse> getByBatchNoAndStepNo(String batchNo, Integer stepNo) {
+        public List<MaterialCorrectionResponse> getById(Long id) {
+                  Batch batch = batchRepository.findByIdWithRelation(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Batch not found."));
+                 BatchSOP batchSOP = batchSOPRepository
+                .findFirstByBatch_IdAndStatusOrderByStepNoDesc(id,BatchSOPStatus.IN_PROGRESS)
+                .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
                 return materialCorrectionRepository
-                                .findByBatch_BatchNoAndBatchSOP_StepNoOrderByLoopAscSampleDateTimeAscIdAsc(batchNo,
-                                                stepNo)
+                                .findByBatch_BatchNoAndBatchSOP_StepNoOrderByLoopAscSampleDateTimeAscIdAsc(batch.getBatchNo(),
+                                                batchSOP.getStepNo())
                                 .stream()
                                 .map(materialCorrectionMapper::toResponse)
                                 .toList();

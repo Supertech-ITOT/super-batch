@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.supertech.superbatch.batch.batch.entity.Batch;
 import com.supertech.superbatch.batch.batch.repository.BatchRepository;
 import com.supertech.superbatch.batch.batch_sop.entity.BatchSOP;
+import com.supertech.superbatch.batch.batch_sop.enums.BatchSOPStatus;
 import com.supertech.superbatch.batch.batch_sop.repository.BatchSOPRepository;
 import com.supertech.superbatch.common.exception.BadRequestException;
 import com.supertech.superbatch.common.exception.ResourceNotFoundException;
@@ -49,13 +50,12 @@ public class BatchCheckServiceImpl implements BatchCheckService {
     @Override
     @Transactional
     @RequiresPermission(ModuleType.SAMPLE_CHECK)
-    public void create(BatchCheckRequest request) {
-
-        Batch batch = batchRepository.findByBatchNo(request.batchNo())
+    public void create(BatchCheckRequest request,Long batchId) {
+        Batch batch = batchRepository.findByIdWithRelation(batchId)
                 .orElseThrow(() -> new ResourceNotFoundException("Batch not found."));
 
         BatchSOP batchSOP = batchSOPRepository
-                .findByBatch_BatchNoAndStepNo(request.batchNo(), request.stepNo())
+                .findFirstByBatch_IdAndStatusOrderByStepNoDesc(batchId,BatchSOPStatus.IN_PROGRESS)
                 .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
 
         if (!batchSOP.getTransition().getName().equals(TransitionType.SAMPLE_CHECK.getDisplayName())) {
@@ -84,10 +84,15 @@ public class BatchCheckServiceImpl implements BatchCheckService {
     }
 
     @Override
-    public List<BatchCheckResponse> getByBatchNoAndStepNo(String batchNo, Integer stepNo) {
+    public List<BatchCheckResponse> getById(Long batchId) {
+           Batch batch = batchRepository.findByIdWithRelation(batchId)
+                .orElseThrow(() -> new ResourceNotFoundException("Batch not found."));
+        BatchSOP batchSOP = batchSOPRepository
+                .findFirstByBatch_IdAndStatusOrderByStepNoDesc(batchId,BatchSOPStatus.IN_PROGRESS)
+                .orElseThrow(() -> new ResourceNotFoundException("Step not found."));
         return batchCheckResultRepository
                 .findByBatchCheck_Batch_BatchNoAndBatchCheck_BatchSOP_StepNoOrderByLoopAscBatchCheck_SampleDateTimeAscIdAsc(
-                        batchNo, stepNo)
+                        batch.getBatchNo(), batchSOP.getStepNo())
                 .stream()
                 .map(batchCheckMapper::toResponse)
                 .toList();

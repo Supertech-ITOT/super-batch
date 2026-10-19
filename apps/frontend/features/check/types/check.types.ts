@@ -4,8 +4,6 @@ export interface BatchCheckResultRequest {
 }
 
 export interface BatchCheckRequest {
-  batchNo: string;
-  stepNo: number;
   results: BatchCheckResultRequest[];
 }
 
@@ -17,7 +15,24 @@ export interface BatchCheckResponse {
   checkParameterName: string;
   value: string;
   loop: number;
-  resultStatus: ResultStatus[];
+  resultStatus: ResultStatus;
 }
 
 export type ResultStatus = "PASS" | "FAIL";
+
+export type MaterialCorrectionRequest = {
+  materialId: number;
+  qty: number;
+}
+
+export type MaterialCorrectionResponse = {
+  id: number;
+  batchNo: string;
+  stepNo: number;
+  sampleDateTime: string;
+  loop: number;
+  materialId: number;
+  materialName: string;
+  materialCode: string;
+  qty: number;
+}
