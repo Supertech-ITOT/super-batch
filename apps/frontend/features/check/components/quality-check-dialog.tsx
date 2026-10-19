@@ -3,7 +3,6 @@ import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash2, LoaderCircle, Save } from "lucide-react";
 import { toast } from "sonner";
-
 import { useGetCheckParameters } from "@/features/plant/check-parameter/hooks/use-qualityCheck";
 import { CheckParameterType } from "@/features/plant/check-parameter/types/checkParameter.types";
 import { useCreateBatchCheck } from "../hooks/use-check";
@@ -17,7 +16,7 @@ import { Badge } from "@/common/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/common/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/common/components/ui/table";
 
-export default function QualityCheck() {
+export default function QualityCheckDialog() {
   const { mutateAsync: createBatchCheck, isPending: isCreating } = useCreateBatchCheck();
   const { data: parameters, isLoading: parameterIsLoading } = useGetCheckParameters();
   const {

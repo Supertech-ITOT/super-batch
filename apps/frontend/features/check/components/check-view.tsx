@@ -1,7 +1,8 @@
 import CheckInfoCard from "./check-info-card";
 import MaterialCorrection from "./material-correction";
-import QualityCheck from "./quality-check";
+import QualityCheck from "./quality-check-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/common/components/ui/tabs";
+import QualityCheckView from "./quality-check-view";
 
 export default function CheckView({ id }: { id: number }) {
   return (
@@ -27,7 +28,7 @@ export default function CheckView({ id }: { id: number }) {
           </div>
 
           <TabsContent value="quality-check" className="m-0 min-h-0 flex-1 overflow-auto p-3">
-            <QualityCheck />
+            <QualityCheckView />
           </TabsContent>
 
           <TabsContent value="material-correction" className="m-0 min-h-0 flex-1 overflow-auto p-3">
