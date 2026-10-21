@@ -85,7 +85,7 @@ public class BatchController {
     }
 
     @GetMapping("/{batchNo}/steps/{stepNo}")
-    public ResponseEntity<ApiResponse<?>> getStepInfoByBatchNoAndStepNo(@PathVariable String batchNo,
+    public ResponseEntity<ApiResponse<BatchSOPResponse>> getStepInfoByBatchNoAndStepNo(@PathVariable String batchNo,
             @PathVariable Integer stepNo) {
         BatchSOPResponse res = batchService.getStepInfoByBatchNoAndStepNo(batchNo, stepNo);
         return ResponseEntity.ok(ApiResponse.success("Step information fetched successfully", res));
