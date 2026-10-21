@@ -3,10 +3,7 @@
 import { ChevronRight, ChevronDown } from "lucide-react";
 import { memo, Suspense, useState } from "react";
 import { Button } from "@/common/components/ui/button";
-import {
-  ActionType,
-  PlantHierarchyResponse,
-} from "@/features/plant/common/types/plant-hierarchy.types";
+import { ActionType, PlantHierarchyResponse } from "@/features/plant/common/types/plant-hierarchy.types";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -18,6 +15,7 @@ import {
 import { TREE_CONFIG } from "@/features/plant/common/constants/tree-config";
 import { cn } from "@/common/lib/utils";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Loading from "@/common/components/loading";
 
 type Props = {
   node: PlantHierarchyResponse;
@@ -27,13 +25,7 @@ type Props = {
   onAction: (action: ActionType, node: PlantHierarchyResponse) => void;
 };
 
-function TreeNodeContent({
-  node,
-  level = 0,
-  onSelect,
-  onAction,
-  selectedNodeKey,
-}: Props) {
+function TreeNodeContent({ node, level = 0, onSelect, onAction, selectedNodeKey }: Props) {
   const [open, setOpen] = useState(true);
 
   const router = useRouter();
@@ -47,8 +39,7 @@ function TreeNodeContent({
 
   const nodeKey = `${node.type}-${node.id}`;
 
-  const isRouteActive =
-    activeId === String(node.id) && currentType === node.type;
+  const isRouteActive = activeId === String(node.id) && currentType === node.type;
 
   const isContextActive = selectedNodeKey === nodeKey;
   const isActive = isRouteActive || isContextActive;
@@ -77,11 +68,7 @@ function TreeNodeContent({
             }}
             className="flex items-center justify-center w-8"
           >
-            {open ? (
-              <ChevronDown className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )}
+            {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
           </Button>
         ) : (
           <div className="w-8" />
@@ -92,9 +79,7 @@ function TreeNodeContent({
           <ContextMenuTrigger asChild>
             <Button
               variant="ghost"
-              onClick={() =>
-                router.push(`/PlantModel/${node.type}?id=${node.id}`)
-              }
+              onClick={() => router.push(`/PlantModel/${node.type}?id=${node.id}`)}
               onContextMenu={() => onSelect(node)}
               className={cn(
                 "flex h-8 flex-1 items-center justify-start gap-2 rounded-md text-primary px-2 transition-all",
@@ -102,55 +87,26 @@ function TreeNodeContent({
                 isActive && "bg-primary/5",
               )}
             >
-              <Icon
-                className={cn(
-                  "w-4! h-4!",
-                  isActive ? "text-primary" : "text-muted-foreground",
-                )}
-              />
+              <Icon className={cn("w-4! h-4!", isActive ? "text-primary" : "text-muted-foreground")} />
 
-              <span
-                className={cn(
-                  "text-sm w-44 text-left truncate",
-                  isActive ? "text-primary" : "text-muted-foreground",
-                )}
-              >
-                {node.name}
-              </span>
+              <span className={cn("text-sm w-44 text-left truncate", isActive ? "text-primary" : "text-muted-foreground")}>{node.name}</span>
             </Button>
           </ContextMenuTrigger>
 
           <ContextMenuContent>
             <ContextMenuLabel>Action</ContextMenuLabel>
 
-            {config.addLabel && (
-              <ContextMenuItem onClick={() => onAction("create", node)}>
-                {config.addLabel}
-              </ContextMenuItem>
-            )}
+            {config.addLabel && <ContextMenuItem onClick={() => onAction("create", node)}>{config.addLabel}</ContextMenuItem>}
 
-            {node.type === "equipment" && (
-              <ContextMenuItem onClick={() => onAction("unassign", node)}>
-                Unassign Equipment
-              </ContextMenuItem>
-            )}
+            {node.type === "equipment" && <ContextMenuItem onClick={() => onAction("unassign", node)}>Unassign Equipment</ContextMenuItem>}
 
-            {node.type === "unit" && (
-              <ContextMenuItem onClick={() => onAction("assign", node)}>
-                Assign Equipment
-              </ContextMenuItem>
-            )}
+            {node.type === "unit" && <ContextMenuItem onClick={() => onAction("assign", node)}>Assign Equipment</ContextMenuItem>}
 
-            <ContextMenuItem onClick={() => onAction("edit", node)}>
-              Edit
-            </ContextMenuItem>
+            <ContextMenuItem onClick={() => onAction("edit", node)}>Edit</ContextMenuItem>
 
             <ContextMenuSeparator />
 
-            <ContextMenuItem
-              onClick={() => onAction("delete", node)}
-              variant="destructive"
-            >
+            <ContextMenuItem onClick={() => onAction("delete", node)} variant="destructive">
               Delete
             </ContextMenuItem>
           </ContextMenuContent>
@@ -186,7 +142,7 @@ function TreeNodeContent({
 
 function TreeNode(props: Props) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<Loading />}>
       <TreeNodeContent {...props} />
     </Suspense>
   );

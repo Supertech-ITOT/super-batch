@@ -17,14 +17,17 @@ type ProcessCardProp = {
   clr: string;
 };
 const ProcessCard = ({ label, name, code, icon: Icon, clr }: ProcessCardProp) => (
-  <div className="rounded-2xl bg-card p-1.5 sm:p-3 border gap-2 shadow min-w-34 flex-1 flex min-h-16">
-    <div style={{ backgroundColor: clr + "20" }} className="rounded-2xl border size-12 sm:size-14 flex justify-center items-center">
-      <Icon style={{ color: clr }} className="size-6 sm:size-8  " />
+  <div className="flex min-h-16 min-w-34 flex-1 gap-2 rounded-2xl border bg-card p-1.5 shadow sm:p-3">
+    <div style={{ backgroundColor: clr + "20" }} className="flex size-12 shrink-0 items-center justify-center rounded-2xl border sm:size-14">
+      <Icon style={{ color: clr }} className="size-6 sm:size-8" />
     </div>
-    <div className="leading-3">
-      <h2 className="text-muted-foreground text-[11px] sm:text-xs">{label}</h2>
-      <strong className="block max-w-16 overflow-x-auto whitespace-nowrap text-xs font-semibold sm:text-sm scrollbar-none">{code}</strong>
-      <h3 className="block max-w-16 overflow-x-auto whitespace-nowrap  text-muted-foreground text-[11px] sm:text-xs scrollbar-none">{name}</h3>
+
+    <div className="min-w-0 flex-1 overflow-hidden leading-4">
+      <h2 className="text-[11px] text-muted-foreground sm:text-xs">{label}</h2>
+
+      <strong className="block w-full overflow-x-auto whitespace-nowrap text-xs font-semibold scrollbar-none sm:text-sm">{code}</strong>
+
+      <h3 className="block w-full overflow-x-auto whitespace-nowrap text-[11px] text-muted-foreground scrollbar-none sm:text-xs">{name}</h3>
     </div>
   </div>
 );

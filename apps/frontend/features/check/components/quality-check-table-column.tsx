@@ -1,7 +1,8 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/common/components/ui/badge";
-import { BatchCheckResponse } from "../types/check.types";
+import { BatchCheckResponse, ResultStatusBadgeStyles } from "../types/check.types";
 import { toDisplayText } from "@/common/lib/format-enum";
+import { format, isValid, parseISO } from "date-fns";
 
 export const qualityCheckTableColumn: ColumnDef<BatchCheckResponse>[] = [
   {
@@ -13,25 +14,29 @@ export const qualityCheckTableColumn: ColumnDef<BatchCheckResponse>[] = [
     },
   },
   {
+    accessorKey: "loop",
+    header: "Loop",
+    meta: {
+      align: "center",
+    },
+  },
+  {
     accessorKey: "stepNo",
     header: "Step No.",
     meta: {
       align: "center",
     },
   },
+
   {
     accessorKey: "sampleDateTime",
-    header: "Sample Date & Time",
+    header: "Sample DateTime",
     cell: ({ row }) => {
       const value = row.original.sampleDateTime;
-
       if (!value) return "—";
-
-      const date = new Date(value);
-
-      if (Number.isNaN(date.getTime())) return "—";
-
-      return <span className="whitespace-nowrap text-sm">{date.toLocaleString()}</span>;
+      const date = parseISO(value);
+      if (!isValid(date)) return "-";
+      return <span className="whitespace-nowrap text-sm">{format(date, "dd MMM yy hh:mm a")}</span>;
     },
   },
   {
@@ -45,15 +50,19 @@ export const qualityCheckTableColumn: ColumnDef<BatchCheckResponse>[] = [
     cell: ({ row }) => <span className="font-medium tabular-nums">{row.original.value || "—"}</span>,
   },
   {
-    accessorKey: "loop",
-    header: "Loop",
+    accessorKey: "resultStatus",
+    header: "Status",
+    cell: ({ row }) => {
+      const type = row.original.resultStatus;
+      return (
+        <Badge variant="outline" className={ResultStatusBadgeStyles[type as keyof typeof ResultStatusBadgeStyles]}>
+          {type}
+        </Badge>
+      );
+    },
     meta: {
       align: "center",
     },
-  },
-  {
-    accessorKey: "resultStatus",
-    header: "Status",
   },
 ];
 

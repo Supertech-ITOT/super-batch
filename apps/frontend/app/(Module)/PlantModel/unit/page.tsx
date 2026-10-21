@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import UnitView from "@/features/plant/unit/components/unit-view";
 import { useSearchParams } from "next/navigation";
+import Loading from "@/common/components/loading";
 
 function UnitPageContent() {
   const searchParams = useSearchParams();
@@ -17,7 +18,7 @@ function UnitPageContent() {
 
 export default function UnitPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<Loading />}>
       <UnitPageContent />
     </Suspense>
   );

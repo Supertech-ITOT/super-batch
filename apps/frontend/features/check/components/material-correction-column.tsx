@@ -1,7 +1,8 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { MaterialCorrectionResponse } from "../types/check.types";
+import { format, isValid, parseISO } from "date-fns";
 
-export const materialCorrectionColumns : ColumnDef<MaterialCorrectionResponse>[]=  [
+export const materialCorrectionColumns: ColumnDef<MaterialCorrectionResponse>[] = [
   {
     id: "srNo",
     header: "Sr. No.",
@@ -18,19 +19,6 @@ export const materialCorrectionColumns : ColumnDef<MaterialCorrectionResponse>[]
     },
   },
   {
-    accessorKey: "sampleDateTime",
-    header: "Sample Date & Time",
-    cell: ({ row }) => {
-      const value = row.original.sampleDateTime;
-      if (!value) return "—";
-
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return "—";
-
-      return <span className="whitespace-nowrap text-sm">{date.toLocaleString()}</span>;
-    },
-  },
-  {
     accessorKey: "loop",
     header: "Loop",
     meta: {
@@ -38,19 +26,31 @@ export const materialCorrectionColumns : ColumnDef<MaterialCorrectionResponse>[]
     },
   },
   {
+    accessorKey: "sampleDateTime",
+    header: "Sample DateTime",
+    cell: ({ row }) => {
+      const value = row.original.sampleDateTime;
+      if (!value) return "—";
+      const date = parseISO(value);
+      if (!isValid(date)) return "-";
+      return <span className="whitespace-nowrap text-sm">{format(date, "dd MMM yy hh:mm a")}</span>;
+    },
+  },
+
+  {
     accessorKey: "materialCode",
-    header: "Material Code",
+    header: "Code",
     cell: ({ row }) => <span className="font-mono text-sm font-medium">{row.original.materialCode || "—"}</span>,
   },
   {
-    accessorKey: "materialName",
-    header: "Material Name",
+    accessorKey: "name",
+    header: "Name",
     cell: ({ row }) => <span className="font-medium">{row.original.materialName || "—"}</span>,
   },
   {
     accessorKey: "qty",
     header: "Quantity",
-    cell: ({ row }) => <span className="tabular-nums font-medium">{row.original.qty ?? "—"}</span>,
+    cell: ({ row }) => <span className="tabular-nums font-medium">{row.original.qty.toFixed(2) ?? "—"}</span>,
     meta: {
       align: "right",
     },

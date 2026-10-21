@@ -18,7 +18,6 @@ export interface BatchCheckResponse {
   resultStatus: ResultStatus;
 }
 
-export type ResultStatus = "PASS" | "FAIL";
 
 export type MaterialCorrectionRequest = {
   materialId: number;
@@ -36,3 +35,13 @@ export type MaterialCorrectionResponse = {
   materialCode: string;
   qty: number;
 }
+
+export enum ResultStatus {
+  PASS = "PASS",
+  FAIL = "FAIL",
+}
+
+export const ResultStatusBadgeStyles = {
+  PASS: "bg-primary text-white border-primary",
+  FAIL: "bg-destructive text-white border-destructive",
+} as const;

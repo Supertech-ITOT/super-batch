@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import EquipmentView from "@/features/plant/equipment/components/equipment-view";
 import { useSearchParams } from "next/navigation";
+import Loading from "@/common/components/loading";
 
 function EquipmentPageContent() {
   const searchParams = useSearchParams();
@@ -17,7 +18,7 @@ function EquipmentPageContent() {
 
 export default function EquipmentPage() {
   return (
-    <Suspense fallback={null}>
+      <Suspense fallback={<Loading />}>
       <EquipmentPageContent />
     </Suspense>
   );

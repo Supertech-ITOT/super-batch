@@ -16,6 +16,7 @@ const titleMap: Record<string, string> = {
   create: "Create",
   edit: "Edit",
   view: "View",
+  check: "Check",
   materials: "Materials",
   process: "Process",
   message: "Predefiend Message",

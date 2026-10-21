@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import RecipeSOPView from "@/features/recipe/recipe_sop/components/recipe-sop-view";
 import { useSearchParams } from "next/navigation";
+import Loading from "@/common/components/loading";
 
 function RecipePageContent() {
   const searchParams = useSearchParams();
@@ -17,7 +18,7 @@ function RecipePageContent() {
 
 export default function RecipePage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<Loading />}>
       <RecipePageContent />
     </Suspense>
   );

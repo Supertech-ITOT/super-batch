@@ -14,7 +14,7 @@ import { Button } from "@/common/components/ui/button";
 import { DataTable } from "@/common/components/data-table/data-table";
 import { qualityCheckColumns } from "./quality-check-dialog-column";
 import type { CheckParameterResponse } from "@/features/plant/check-parameter/types/checkParameter.types";
-import type { FieldArrayWithId } from "react-hook-form";
+import type { FieldArrayWithId, FieldErrors } from "react-hook-form";
 import DataTableSearch from "@/common/components/data-table/data-table-search";
 
 export type QualityCheckRow = FieldArrayWithId<BatchCheckFormValues, "results"> & {
@@ -97,8 +97,8 @@ export default function QualityCheckDialog({ id }: Prop) {
     }
   };
 
-  const onInvalid = (formErrors: typeof errors) => {
-    toast.error(showFormError(formErrors));
+  const onInvalid = (errors: FieldErrors<BatchCheckFormValues>) => {
+    toast.error(showFormError(errors));
   };
 
   return (
@@ -113,7 +113,7 @@ export default function QualityCheckDialog({ id }: Prop) {
           toolbar={(table) => (
             <div className="flex items-center justify-between">
               <DataTableSearch table={table} column="name" placeholder="Search parameters..." />
-              <Button type="submit" disabled={loading || fields.length === 0} className="min-w-32 px-5 h-10 text-sm">
+              <Button type="submit" disabled={loading || fields.length === 0} className="min-w-32 px-5 h-10 text-sm text-white">
                 {loading ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                 Save
               </Button>

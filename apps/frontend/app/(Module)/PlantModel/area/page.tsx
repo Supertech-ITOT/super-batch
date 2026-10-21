@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import AreaView from "@/features/plant/area/components/area-view";
 import { useSearchParams } from "next/navigation";
+import Loading from "@/common/components/loading";
 
 function AreaPageContent() {
   const searchParams = useSearchParams();
@@ -17,7 +18,7 @@ function AreaPageContent() {
 
 export default function AreaPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<Loading />}>
       <AreaPageContent />
     </Suspense>
   );

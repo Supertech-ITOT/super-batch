@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import CheckView from "@/features/check/components/check-view";
+import Loading from "@/common/components/loading";
 
 function CheckPageContent() {
   const searchParams = useSearchParams();
@@ -17,7 +18,7 @@ function CheckPageContent() {
 
 export default function CheckPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<Loading />}>
       <CheckPageContent />
     </Suspense>
   );

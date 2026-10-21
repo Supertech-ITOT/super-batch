@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import PlantView from "@/features/plant/plant/components/plant-view";
 import { useSearchParams } from "next/navigation";
+import Loading from "@/common/components/loading";
 
 function PlantPageContent() {
   const searchParams = useSearchParams();
@@ -17,7 +18,7 @@ function PlantPageContent() {
 
 export default function PlantPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<Loading />}>
       <PlantPageContent />
     </Suspense>
   );

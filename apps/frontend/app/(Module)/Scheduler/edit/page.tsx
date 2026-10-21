@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import ControlRecipeSOPView from "@/features/scheduler/control_recipe_sop/components/control-recipe-sop-view";
 import { useSearchParams } from "next/navigation";
+import Loading from "@/common/components/loading";
 
 function ControlRecipeSOPPageContent() {
   const searchParams = useSearchParams();
@@ -17,7 +18,7 @@ function ControlRecipeSOPPageContent() {
 
 export default function ControlRecipeSOPPage() {
   return (
-    <Suspense fallback={null}>
+     <Suspense fallback={<Loading />}>
       <ControlRecipeSOPPageContent />
     </Suspense>
   );

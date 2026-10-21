@@ -39,7 +39,7 @@ export const useCreateMaterialCorrection = () => {
     }) => createMaterialCorrection(batchId, request),
 
     onSuccess: async () => {
-      await invalidateQueries(queryClient, queryDeps.batchChecks);
+      await invalidateQueries(queryClient, queryDeps.materialCorrection);
     },
   });
 };

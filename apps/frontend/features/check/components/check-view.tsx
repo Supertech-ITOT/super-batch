@@ -47,12 +47,12 @@ export default function CheckView({ id }: { id: number }) {
             </div>
           </TabsContent>
 
-          <TabsContent value="material-correction" className="m-0 flex min-h-0 flex-1 flex-col">
+          <TabsContent value="material-correction" className="m-0 flex min-h-0 flex-1 flex-col sm:flex-row gap-2">
             <div className="min-h-0 flex-1 overflow-auto">
-              <MaterialCorrectionDialog />
+              <MaterialCorrectionDialog id={id} />
             </div>
             <div className="min-h-0 flex-1 overflow-auto">
-              <MaterialCorrectionTable />
+              <MaterialCorrectionTable id={id} />
             </div>
           </TabsContent>
         </Tabs>

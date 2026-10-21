@@ -28,9 +28,7 @@ public class MaterialCorrectionController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<List<MaterialCorrectionResponse>>> getById(
-         @PathVariable Long id,
-            @RequestParam String batchNo, @RequestParam Integer stepNo) {
+    public ResponseEntity<ApiResponse<List<MaterialCorrectionResponse>>> getById(@PathVariable Long id) {
         List<MaterialCorrectionResponse> corrections = materialCorrectionService.getById(id);
         return ResponseEntity.ok(ApiResponse.success("Material corrections fetched successfully", corrections));
     }

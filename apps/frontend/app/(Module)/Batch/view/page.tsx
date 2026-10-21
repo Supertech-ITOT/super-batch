@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import BatchView from "@/features/batch/components/batch-view";
+import Loading from "@/common/components/loading";
 
 function ViewPageContent() {
   const searchParams = useSearchParams();
@@ -17,7 +18,7 @@ function ViewPageContent() {
 
 export default function ViewPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<Loading />}>
       <ViewPageContent />
     </Suspense>
   );
