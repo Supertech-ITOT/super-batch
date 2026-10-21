@@ -23,6 +23,21 @@ public interface BatchSOPRepository extends JpaRepository<BatchSOP, Long> {
 })
 Optional<BatchSOP> findFirstByBatch_IdAndStatusOrderByStepNoDesc(
         Long batchId,
-        BatchSOPStatus status
+        BatchSOPStatus status);
+
+@EntityGraph(attributePaths = {
+        "batch",
+        "transition",
+        "action",
+        "fromEquipment",
+        "toEquipment",
+        "materials",
+        "materials.material",
+        "parameters",
+        "parameters.parameter"
+})
+Optional<BatchSOP> findByBatch_BatchNoAndStepNo(
+        String batchNo,
+        Integer stepNo
 );
 }
