@@ -1,7 +1,7 @@
 
 import { format } from "date-fns";
 import {
-    Building2, CalendarDays, Clock3, Fingerprint, Info, KeyRound, Package, ShieldCheck, Tag, UserRound, Users, AlertCircle,
+    Building2, Clock3, Fingerprint, Info, KeyRound, Package, ShieldCheck, Tag, UserRound, AlertCircle,
     Ban,
     CheckCircle2,
     XCircle,
@@ -90,7 +90,7 @@ export const LicenseStatusConfig: Record<
     },
 };
 
-export const getLicenseInfo = (license: LicenseResponse, expiryDate?: Date | null) => [
+export const getLicenseInfo = (license: LicenseResponse) => [
     { label: "License Key", value: license.licenseKey, icon: KeyRound, mono: true, copy: true },
     { label: "License Number", value: license.licenseNumber, icon: Tag, mono: true, copy: true },
     { label: "Customer Name", value: license.customerName, icon: UserRound },

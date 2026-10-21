@@ -15,13 +15,24 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightLeft, Cpu, Feather, GitBranch, Hash, Loader2, Play } from "lucide-react";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { controlRecipeSopDefaultValues, controlRecipeSOPSchema, ControlRecipeSOPSchema, ControlRecipeSOPSchemaLimit } from "../schemas/control-recipe-sop-schema";
+import {
+  controlRecipeSopDefaultValues,
+  controlRecipeSOPSchema,
+  ControlRecipeSOPSchema,
+  ControlRecipeSOPSchemaLimit,
+} from "../schemas/control-recipe-sop-schema";
 import { TransitionType } from "@/features/plant/transition/types/transition.types";
 import { durationToMinutes, minutesToDuration } from "@/common/utils/duration.util";
 import { useEffect } from "react";
 import { showApiError } from "@/common/lib/show-api-error";
 import { useGetEquipmentsByUnitId } from "@/features/plant/equipment/hooks/use-equipment";
-import { useCreateControlRecipeSOP, useGetControlRecipeSOPById, useInsertAboveControlRecipeSOP, useInsertBelowControlRecipeSOP, useUpdateControlRecipeSOP } from "../hooks/use-control-recipe-sop";
+import {
+  useCreateControlRecipeSOP,
+  useGetControlRecipeSOPById,
+  useInsertAboveControlRecipeSOP,
+  useInsertBelowControlRecipeSOP,
+  useUpdateControlRecipeSOP,
+} from "../hooks/use-control-recipe-sop";
 import { showFormError } from "@/common/lib/show-form-error";
 import { TextInput } from "@/common/components/form/text-input";
 import { RecipeQuantityType } from "@/features/plant/unit/types/unit.types";
@@ -35,7 +46,14 @@ type ControlRecipeSOPDialogProp = {
   unitId: number;
   recipeQuantityType: RecipeQuantityType;
 };
-export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlRecipeId, action = "create", stepNo, unitId, recipeQuantityType }: ControlRecipeSOPDialogProp) {
+export default function ControlRecipeSOPDialog({
+  controlRecipeSOPId,
+  controlRecipeId,
+  action = "create",
+  stepNo,
+  unitId,
+  recipeQuantityType,
+}: ControlRecipeSOPDialogProp) {
   const isEdit = action === "edit";
   const { data: transitions, isLoading: transitionsIsLoading } = useGetTransitions();
   const { data: actions, isLoading: actionsIsLoading } = useGetActions();
@@ -106,7 +124,7 @@ export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlReci
         })),
       });
     }
-  }, [action, controlRecipeSOP, parameters, reset]);
+  }, [action, controlRecipeSOP, parameters, reset, isEdit]);
 
   const selectedTransitionId = watch("transitionId");
   const selectedTransition = transitions?.find((t) => t.id === selectedTransitionId);
@@ -222,7 +240,11 @@ export default function ControlRecipeSOPDialog({ controlRecipeSOPId, controlReci
         <CardContent className="min-h-0 h-full flex-1 overflow-y-auto scrollbar-none p-4 space-y-2">
           <div className="grid grid-cols-2 gap-2">
             <TextInput label="Step No" icon={Hash} disabled readOnly value={stepNo ?? 0} />
-            <Controller control={control} name="stdTime" render={({ field }) => <DurationInput value={field.value} label="Standard Time" onChange={field.onChange} disabled={loading} />} />
+            <Controller
+              control={control}
+              name="stdTime"
+              render={({ field }) => <DurationInput value={field.value} label="Standard Time" onChange={field.onChange} disabled={loading} />}
+            />
           </div>
           <Controller
             control={control}

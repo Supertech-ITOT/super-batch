@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { showApiError } from "@/common/lib/show-api-error";
 import { AssignEquipmentSchema, equipmentAssignmentSchema, } from "../schemas/equipment-schema";
 import { useAssignEquipment, useGetEquipment, } from "../hooks/use-equipment";
-import FormLoadingButton from "@/common/components/form/form-loading-button";
 import FormDialog from "@/common/components/form/form-dialog";
 import { showFormError } from "@/common/lib/show-form-error";
 import SearchableSelect from "@/common/components/form/searchable-select";

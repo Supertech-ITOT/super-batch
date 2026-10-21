@@ -1,6 +1,6 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import { Circle, MoreHorizontal, User } from "lucide-react";
+import { Circle, MoreHorizontal } from "lucide-react";
 import { Button } from "@/common/components/ui/button";
 import {
   DropdownMenu,

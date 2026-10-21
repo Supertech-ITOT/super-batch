@@ -1,7 +1,6 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/common/components/ui/badge";
 import { BatchCheckResponse, ResultStatusBadgeStyles } from "../types/check.types";
-import { toDisplayText } from "@/common/lib/format-enum";
 import { format, isValid, parseISO } from "date-fns";
 
 export const qualityCheckTableColumn: ColumnDef<BatchCheckResponse>[] = [

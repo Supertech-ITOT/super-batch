@@ -23,7 +23,7 @@ export type DialogProp = {
 };
 export default function UserView() {
   const [page, setPage] = useState(0);
-  const [size, setSize] = useState(10);
+  const size = 10;
   const { data: users, isLoading, isError } = useGetUsersByPage(page, size);
   const [dialog, setDialog] = useState<DialogProp>({
     action: null,
@@ -56,17 +56,8 @@ export default function UserView() {
         }}
         toolbar={(table) => (
           <div className="flex items-center gap-2">
-            <DataTableSearch
-              table={table}
-              column="name"
-              placeholder="Search users..."
-            />
-            <Button
-              className="ml-auto text-white h-8 sm:h-10"
-              onClick={() =>
-                setDialog({ action: "create", id: null, open: true })
-              }
-            >
+            <DataTableSearch table={table} column="name" placeholder="Search users..." />
+            <Button className="ml-auto text-white h-8 sm:h-10" onClick={() => setDialog({ action: "create", id: null, open: true })}>
               <Plus className="mr-2 h-4 w-4" />
               Add User
             </Button>
@@ -76,30 +67,10 @@ export default function UserView() {
 
       {
         <>
-          {dialog.action === "create" && (
-            <CreateUserDialog open onClose={closeDialog} />
-          )}
-          {dialog.action === "edit" && dialog.id !== null && (
-            <UpdateUserDialog
-              open={dialog.open}
-              userId={dialog.id}
-              onClose={closeDialog}
-            />
-          )}
-          {dialog.action === "reset" && dialog.id !== null && (
-            <ResetPasswordUserDialog
-              open={dialog.open}
-              userId={dialog.id}
-              onClose={closeDialog}
-            />
-          )}
-          {dialog.action === "delete" && dialog.id !== null && (
-            <DeleteUserDialog
-              open={dialog.open}
-              userId={dialog.id}
-              onClose={closeDialog}
-            />
-          )}
+          {dialog.action === "create" && <CreateUserDialog open onClose={closeDialog} />}
+          {dialog.action === "edit" && dialog.id !== null && <UpdateUserDialog open={dialog.open} userId={dialog.id} onClose={closeDialog} />}
+          {dialog.action === "reset" && dialog.id !== null && <ResetPasswordUserDialog open={dialog.open} userId={dialog.id} onClose={closeDialog} />}
+          {dialog.action === "delete" && dialog.id !== null && <DeleteUserDialog open={dialog.open} userId={dialog.id} onClose={closeDialog} />}
         </>
       }
     </div>

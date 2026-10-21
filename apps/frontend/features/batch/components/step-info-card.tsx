@@ -1,7 +1,6 @@
-import { ArrowDown, ArrowRight, CalendarClock, Clock, Cpu, Feather, Hourglass, LucideIcon, Play, Timer } from "lucide-react";
+import { ArrowRight, CalendarClock, Cpu, Feather, Hourglass, LucideIcon, Play, Timer } from "lucide-react";
 import { useGetCurrentStepInfo } from "../hook/use-batch";
 import { useIsMobile } from "@/common/hooks/use-mobile";
-import { Separator } from "@/common/components/ui/separator";
 import { getActualMinutes, getRemainingMinutes, minutesToADuration } from "@/common/utils/duration.util";
 import { format, parseISO } from "date-fns";
 

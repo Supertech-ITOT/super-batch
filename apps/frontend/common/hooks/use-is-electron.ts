@@ -1,13 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
+
+const subscribe = () => () => { };
+
+const getSnapshot = () => !!window.electron;
+
+const getServerSnapshot = () => false;
 
 export function useIsElectron() {
-    const [isElectron, setIsElectron] = useState(false);
-
-    useEffect(() => {
-        setIsElectron(!!window.electron);
-    }, []);
-
-    return isElectron;
+    return useSyncExternalStore(
+        subscribe,
+        getSnapshot,
+        getServerSnapshot,
+    );
 }

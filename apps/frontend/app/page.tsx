@@ -1,6 +1,5 @@
 import FeatureCard from "@/common/components/featurecard";
 import FooterCard from "@/common/components/footercard";
-import LoginCard from "@/features/manager/auth/components/login-form";
 import SetupView from "@/features/manager/setup/component/setup-view";
 
 import { Activity, BadgeCheck, FileText, Layers3, ShieldCheck } from "lucide-react";
@@ -11,29 +10,15 @@ const finfo = [
   { icon: FileText, title: "Recipe", subtitle: "Management" },
   { icon: ShieldCheck, title: "Audit", subtitle: "Compliance" },
   { icon: BadgeCheck, title: "Scalable", subtitle: "Secure" },
-]
+];
 
 export default function Home() {
   return (
     <div className="h-full min-h-0 w-full flex flex-row overflow-hidden relative">
       <div className="absolute inset-0">
-        <Image
-          src="/light-bg.png"
-          alt="Background"
-          fill
-          priority
-          draggable={false}
-          className="object-cover dark:hidden"
-        />
+        <Image src="/light-bg.png" alt="Background" fill priority draggable={false} className="object-cover dark:hidden" />
 
-        <Image
-          src="/dark-bg.png"
-          alt="Background"
-          fill
-          priority
-          draggable={false}
-          className="hidden object-cover dark:block"
-        />
+        <Image src="/dark-bg.png" alt="Background" fill priority draggable={false} className="hidden object-cover dark:block" />
       </div>
       <div className="xl:flex hidden flex-1 flex-col ">
         <div className="relative z-10 flex flex-col h-full px-10 pt-10">
@@ -60,24 +45,16 @@ export default function Home() {
             />
           </div>
           <div className="mt-8">
-            <h2 className="text-3xl font-bold">
-              Enterprise Batch Management Solution
-            </h2>
+            <h2 className="text-3xl font-bold">Enterprise Batch Management Solution</h2>
             <p className="text-md font-semibold leading-5 text-muted-foreground  max-w-xl text-justify mt-3">
-              SuperBatch is an advanced ISA-88 based batch management system
-              designed for process industries to achieve operational
-              excellence, product quality and regulatory compliance.
+              SuperBatch is an advanced ISA-88 based batch management system designed for process industries to achieve operational excellence,
+              product quality and regulatory compliance.
             </p>
           </div>
           {/* Features */}
           <div className="mt-12 flex flex-wrap gap-6">
             {finfo.map((item) => (
-              <FeatureCard
-                key={item.title}
-                icon={item.icon}
-                title={item.title}
-                subtitle={item.subtitle}
-              />
+              <FeatureCard key={item.title} icon={item.icon} title={item.title} subtitle={item.subtitle} />
             ))}
           </div>
         </div>
@@ -86,8 +63,6 @@ export default function Home() {
         <SetupView />
       </div>
       <FooterCard />
-    </div >
-  )
+    </div>
+  );
 }
-
-

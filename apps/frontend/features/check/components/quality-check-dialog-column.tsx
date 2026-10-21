@@ -24,7 +24,7 @@ interface QualityCheckColumnsProps {
   remove: (index: number) => void;
 }
 
-export const qualityCheckColumns = ({ register, setValue, errors, remove }: QualityCheckColumnsProps): ColumnDef<QualityCheckRow>[] => [
+export const qualityCheckColumns = ({ register, setValue, remove }: QualityCheckColumnsProps): ColumnDef<QualityCheckRow>[] => [
   {
     id: "srNo",
     header: "Sr. No.",

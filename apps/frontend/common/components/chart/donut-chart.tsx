@@ -1,174 +1,160 @@
 import { useCallback, useMemo } from "react";
-import { Label, Pie, PieChart, Tooltip } from "recharts";
+import { Label, Pie, PieChart, Tooltip, type TooltipContentProps } from "recharts";
 import { getChartColorByText } from "@/common/utils/color.util";
 
 type DonutChartData = {
-    label: string;
-    value: number;
-    fill?: string;
+  label: string;
+  value: number;
+  fill?: string;
 };
 
 type DonutChartProps = {
-    title?: string;
-    data: DonutChartData[];
-    targetSize: number;
-
+  title?: string;
+  data: DonutChartData[];
+  targetSize: number;
 };
 
 export default function DonutChart({ data, targetSize }: DonutChartProps) {
-    const chartData = useMemo(
-        () => data.map((item) => ({
-            ...item,
-            fill: item.fill ?? getChartColorByText(item.label),
-        })),
-        [data]
-    );
+  const chartData = useMemo(
+    () =>
+      data.map((item) => ({
+        ...item,
+        fill: item.fill ?? getChartColorByText(item.label),
+      })),
+    [data],
+  );
 
-    const totalValue = useMemo(() => chartData.reduce((sum, item) => sum + item.value, 0),
-        [chartData]
-    );
+  const totalValue = useMemo(() => chartData.reduce((sum, item) => sum + item.value, 0), [chartData]);
 
+  type DonutTooltipProps = TooltipContentProps;
+  const renderTooltip = useCallback(({ active, payload }: DonutTooltipProps) => {
+    if (!active || !payload?.length) return null;
 
+    const rawItem: unknown = payload[0]?.payload;
 
-    const renderTooltip = useCallback(
-        ({ active, payload }: any) => {
-            if (!active || !payload?.length) return null;
-            const item = payload[0].payload;
-            const qty = item.value;
-            return (
-                <div className="relative min-w-52 overflow-hidden rounded-xl border border-border/50 bg-background/75 shadow-xl backdrop-blur-xl">
-                    <div
-                        className="absolute -bottom-6 -right-6 h-24 w-24 rounded-full opacity-30 blur-3xl"
-                        style={{ backgroundColor: item.fill }}
-                    />
-                    {/* Header */}
-                    <div className="flex items-center gap-3 border-b px-4 py-3">
-                        <span
-                            className="h-3.5 w-3.5 rounded-full ring-2 ring-background"
-                            style={{ backgroundColor: item.fill }}
-                        />
-                        <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-semibold text-foreground">{item.label}</p>
-                            <p className="text-xs text-muted-foreground">Material</p>
-                        </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="space-y-3 p-4">
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground">Quantity</span>
-                            <span
-                                className="rounded-md px-2 py-1 text-sm font-semibold"
-                                style={{ backgroundColor: `${item.fill}20`, color: item.fill, }}
-                            >
-                                {qty.toFixed(2)}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            );
-        }, []
-    );
-
-
-    if (!chartData.length) {
-        return (
-            <div className="flex h-80 items-center justify-center rounded-xl border bg-card text-muted-foreground">
-                No data available
-            </div>
-        );
+    if (
+      typeof rawItem !== "object" ||
+      rawItem === null ||
+      !("label" in rawItem) ||
+      !("value" in rawItem) ||
+      typeof rawItem.label !== "string" ||
+      typeof rawItem.value !== "number"
+    ) {
+      return null;
     }
 
-
+    const item = rawItem as DonutChartData & { fill?: string };
+    const fill = item.fill ?? getChartColorByText(item.label);
 
     return (
-        <div className="flex h-full w-full flex-col gap-4 lg:flex-row">
-            {/* Donut Chart */}
-            <div className="flex-1 min-w-0">
-                <PieChart
-                    responsive
-                    tabIndex={-1}
-                    style={{ width: "100%", height: "100%", outline: "none", }}
-                >
-                    <Pie
-                        data={chartData}
-                        dataKey="value"
-                        nameKey="label"
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={"55%"}
-                        outerRadius={"75%"}
-                        paddingAngle={3}
-                        cornerRadius={8}
-                        stroke="none"
-                        isAnimationActive
-                        animationDuration={600}
-                        rootTabIndex={-1}
+      <div className="relative min-w-52 overflow-hidden rounded-xl border border-border/50 bg-background/75 shadow-xl backdrop-blur-xl">
+        <div className="absolute -bottom-6 -right-6 h-24 w-24 rounded-full opacity-30 blur-3xl" style={{ backgroundColor: fill }} />
 
-                    >
-                        <Label
-                            position="left"
-                            content={({ viewBox }) => {
-                                if (!viewBox || !("cx" in viewBox)) return null;
-                                return (
-                                    <g>
-                                        <text x={viewBox.cx} y={viewBox.cy - 10} textAnchor="middle" className="fill-muted-foreground text-sm">
-                                            Target
-                                        </text>
-                                        <text x={viewBox.cx} y={viewBox.cy + 10} textAnchor="middle" className="fill-foreground text-lg font-bold">
-                                            {targetSize.toFixed(2)} KG
-                                        </text>
-                                    </g>
-                                );
-                            }}
-                        />
-
-
-                    </Pie>
-                    <Tooltip
-                        cursor={false}
-                        content={renderTooltip}
-                    />
-                </PieChart>
-            </div>
-
-            {/* Legend */}
-            <div className="w-full lg:w-82 lg:shrink-0 p-2 flex flex-col justify-between ">
-                <div>
-                    <div className="border-b px-4 py-1.5 bg-muted/30  flex justify-between">
-                        <h4 className="text-sm font-semibold">Materials</h4>
-                        <strong className="text-primary font-bold">{chartData.length}</strong>
-                    </div>
-
-                    <div className="max-h-34 overflow-y-auto scrollbar-none">
-                        {chartData.map((item, idx) => (
-                            <div
-                                key={item.label}
-                                className="flex items-center justify-between gap-3 border-b px-4 py-1.5 last:border-b-0 hover:bg-muted/40"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <span
-                                        className="size-4 shrink-0 rounded-full text-xs flex justify-center items-center text-white"
-                                        style={{ backgroundColor: item.fill }}
-                                    >
-                                        {idx + 1}
-                                    </span>
-                                    <span className="truncate text-sm" title={item.label}>{item.label}</span>
-                                </div>
-                                <strong className="text-sm font-semibold">{item.value.toFixed(2)}</strong>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                <div className="border-t bg-muted/30 px-4 py-1.5">
-                    <div className="flex items-center justify-between text-sm font-semibold">
-                        <span>Total</span>
-                        <span className="text-primary">
-                            {totalValue.toFixed(2)}
-                        </span>
-                    </div>
-                </div>
-            </div>
+        <div className="flex items-center gap-3 border-b px-4 py-3">
+          <span className="h-3.5 w-3.5 rounded-full ring-2 ring-background" style={{ backgroundColor: fill }} />
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-foreground">{item.label}</p>
+            <p className="text-xs text-muted-foreground">Material</p>
+          </div>
         </div>
+
+        <div className="space-y-3 p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Quantity</span>
+            <span
+              className="rounded-md px-2 py-1 text-sm font-semibold"
+              style={{
+                backgroundColor: `${fill}20`,
+                color: fill,
+              }}
+            >
+              {item.value.toFixed(2)}
+            </span>
+          </div>
+        </div>
+      </div>
     );
+  }, []);
+
+  if (!chartData.length) {
+    return <div className="flex h-80 items-center justify-center rounded-xl border bg-card text-muted-foreground">No data available</div>;
+  }
+
+  return (
+    <div className="flex h-full w-full flex-col gap-4 lg:flex-row">
+      {/* Donut Chart */}
+      <div className="flex-1 min-w-0">
+        <PieChart responsive tabIndex={-1} style={{ width: "100%", height: "100%", outline: "none" }}>
+          <Pie
+            data={chartData}
+            dataKey="value"
+            nameKey="label"
+            cx="50%"
+            cy="50%"
+            innerRadius={"55%"}
+            outerRadius={"75%"}
+            paddingAngle={3}
+            cornerRadius={8}
+            stroke="none"
+            isAnimationActive
+            animationDuration={600}
+            rootTabIndex={-1}
+          >
+            <Label
+              position="left"
+              content={({ viewBox }) => {
+                if (!viewBox || !("cx" in viewBox)) return null;
+                return (
+                  <g>
+                    <text x={viewBox.cx} y={viewBox.cy - 10} textAnchor="middle" className="fill-muted-foreground text-sm">
+                      Target
+                    </text>
+                    <text x={viewBox.cx} y={viewBox.cy + 10} textAnchor="middle" className="fill-foreground text-lg font-bold">
+                      {targetSize.toFixed(2)} KG
+                    </text>
+                  </g>
+                );
+              }}
+            />
+          </Pie>
+          <Tooltip cursor={false} content={renderTooltip} />
+        </PieChart>
+      </div>
+
+      {/* Legend */}
+      <div className="w-full lg:w-82 lg:shrink-0 p-2 flex flex-col justify-between ">
+        <div>
+          <div className="border-b px-4 py-1.5 bg-muted/30  flex justify-between">
+            <h4 className="text-sm font-semibold">Materials</h4>
+            <strong className="text-primary font-bold">{chartData.length}</strong>
+          </div>
+
+          <div className="max-h-34 overflow-y-auto scrollbar-none">
+            {chartData.map((item, idx) => (
+              <div key={item.label} className="flex items-center justify-between gap-3 border-b px-4 py-1.5 last:border-b-0 hover:bg-muted/40">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="size-4 shrink-0 rounded-full text-xs flex justify-center items-center text-white"
+                    style={{ backgroundColor: item.fill }}
+                  >
+                    {idx + 1}
+                  </span>
+                  <span className="truncate text-sm" title={item.label}>
+                    {item.label}
+                  </span>
+                </div>
+                <strong className="text-sm font-semibold">{item.value.toFixed(2)}</strong>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="border-t bg-muted/30 px-4 py-1.5">
+          <div className="flex items-center justify-between text-sm font-semibold">
+            <span>Total</span>
+            <span className="text-primary">{totalValue.toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

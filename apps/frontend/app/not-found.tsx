@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/common/components/ui/button";
 import { ArrowLeft, Home, SearchX } from "lucide-react";
+import Link from "next/link";
 
 export default function NotFound() {
   const router = useRouter();
@@ -18,7 +19,7 @@ export default function NotFound() {
 
         <h1 className="mt-2 text-3xl font-bold tracking-tight">Page not found</h1>
 
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">The page you are looking for doesn't exist or may have been moved.</p>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">The page you are looking for doesn&apos;t exist or may have been moved.</p>
 
         <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
           <Button variant="outline" onClick={() => router.back()} className="gap-2">
@@ -27,10 +28,10 @@ export default function NotFound() {
           </Button>
 
           <Button asChild className="gap-2">
-            <a href="/">
+            <Link href={"/"}>
               <Home className="size-4" />
               Go Home
-            </a>
+            </Link>
           </Button>
         </div>
       </div>

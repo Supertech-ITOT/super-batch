@@ -26,7 +26,7 @@ type Prop = {
 };
 export default function QualityCheckDialog({ id }: Prop) {
   const { mutateAsync: createBatchCheck, isPending: isCreating } = useCreateBatchCheck();
-  const { data: checkParameters, isLoading: checkParametersIsLoading } = useGetCheckParameters();
+  const { data: checkParameters } = useGetCheckParameters();
   const {
     handleSubmit,
     reset,

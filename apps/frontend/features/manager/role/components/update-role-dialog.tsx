@@ -4,138 +4,137 @@ import { FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Feather, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-import { Tabs, TabsContent, TabsList, TabsTrigger, } from "@/common/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/common/components/ui/tabs";
 import { showApiError } from "@/common/lib/show-api-error";
-import { roleDefaultValues, roleSchema, RoleSchema, RoleSchemaLimit, } from "@/features/manager/role/schemas/role-schema";
+import { roleDefaultValues, roleSchema, RoleSchema, RoleSchemaLimit } from "@/features/manager/role/schemas/role-schema";
 import { useGetRolesById, useUpdateRole } from "@/features/manager/role/hooks/use-role";
 import { useGetModules } from "@/features/manager/module/hooks/use-module";
 import { showFormError } from "@/common/lib/show-form-error";
 import { TextAreaInput } from "@/common/components/form/text-area-input";
 import { TextInput } from "@/common/components/form/text-input";
-import FormLoadingButton from "@/common/components/form/form-loading-button";
 import FormDialog from "@/common/components/form/form-dialog";
 import PermissionTable from "./permission-table";
 
 type Props = { open: boolean; onClose: () => void; roleId: number };
 type tab = "role" | "permissions";
 export default function UpdateRoleDialog({ open, onClose, roleId }: Props) {
-    const [tab, setTab] = useState<tab>("role");
-    const { mutateAsync: updateRole, isPending: isUpdating, isSuccess } = useUpdateRole();
-    const { data: role, isLoading: roleIsLoading } = useGetRolesById(roleId);
-    const { data: modules, isLoading: modulesIsLoading } = useGetModules();
-    const { register, control, handleSubmit, reset, watch, formState: { isSubmitting, isDirty, }, } = useForm<RoleSchema>({
-        resolver: zodResolver(roleSchema),
-        defaultValues: roleDefaultValues,
+  const [tab, setTab] = useState<tab>("role");
+  const { mutateAsync: updateRole, isPending: isUpdating } = useUpdateRole();
+  const { data: role, isLoading: roleIsLoading } = useGetRolesById(roleId);
+  const { data: modules, isLoading: modulesIsLoading } = useGetModules();
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { isSubmitting, isDirty },
+  } = useForm<RoleSchema>({
+    resolver: zodResolver(roleSchema),
+    defaultValues: roleDefaultValues,
+  });
+  const loading = roleIsLoading || modulesIsLoading || isSubmitting || isUpdating;
+
+  useEffect(() => {
+    if (!modules || !role) return;
+    reset({
+      name: role.name,
+      description: role.description,
+      permissions: modules.map((module) => {
+        const existing = role.permissions.find((p) => p.moduleId === module.id);
+
+        return {
+          moduleId: String(module.id),
+          access: existing?.access ?? false,
+        };
+      }),
     });
-    const loading = roleIsLoading || modulesIsLoading || isSubmitting || isUpdating;
+  }, [modules, role, reset]);
 
-    useEffect(() => {
-        if (!modules || !role) return;
-        reset({
-            name: role.name,
-            description: role.description,
-            permissions: modules.map((module) => {
-                const existing = role.permissions.find(
-                    (p) => p.moduleId === module.id
-                );
+  const handleClose = () => {
+    setTab("role");
+    reset(roleDefaultValues);
+    onClose();
+  };
 
-                return {
-                    moduleId: String(module.id),
-                    access: existing?.access ?? false,
-                };
-            }),
-        });
-    }, [modules, role, reset]);
+  const onSubmit = async (formData: RoleSchema) => {
+    try {
+      const res = await updateRole({
+        id: roleId,
+        data: {
+          name: formData.name,
+          description: formData.description,
+          permissions: formData.permissions
+            .filter((p) => p.access)
+            .map((m) => ({
+              moduleId: Number(m.moduleId),
+              access: m.access,
+            })),
+        },
+      });
+      toast.success(res.message ?? "Role updated successfully.");
+      handleClose();
+    } catch (error) {
+      showApiError(error);
+    }
+  };
 
-    const handleClose = () => {
-        setTab("role");
-        reset(roleDefaultValues);
-        onClose();
-    };
+  const onInvalid = (errors: FieldErrors<RoleSchema>) => {
+    toast.error(showFormError(errors));
+  };
 
-    const onSubmit = async (formData: RoleSchema) => {
-        try {
-            const res = await updateRole({
-                id: roleId, data: {
-                    name: formData.name,
-                    description: formData.description,
-                    permissions: formData.permissions.filter((p) => p.access).map((m) => ({
-                        moduleId: Number(m.moduleId),
-                        access: m.access,
-                    })),
-                }
-            });
-            toast.success(res.message ?? "Role updated successfully.");
-            handleClose();
-        } catch (error) {
-            showApiError(error);
-        }
-    };
+  return (
+    <FormDialog
+      open={open}
+      onClose={handleClose}
+      loading={loading}
+      title="Update Role"
+      description="Update a role and assign module permissions."
+      showFooter={tab === "permissions"}
+      submitDisabled={!isDirty}
+      submitLabel="Update"
+      onSubmit={handleSubmit(onSubmit, onInvalid)}
+      icon={ShieldCheck}
+    >
+      <Tabs value={tab} className="mt-4">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger onClick={() => setTab("role")} value="role">
+            Role Details
+          </TabsTrigger>
+          <TabsTrigger onClick={() => setTab("permissions")} value="permissions">
+            Permissions
+          </TabsTrigger>
+        </TabsList>
 
-    const onInvalid = (errors: FieldErrors<RoleSchema>) => {
-        toast.error(showFormError(errors));
-    };
-
-
-    return (
-        <FormDialog
-            open={open}
-            onClose={handleClose}
-            loading={loading}
-            title="Update Role"
-            description="Update a role and assign module permissions."
-            showFooter={tab === "permissions"}
-            submitDisabled={!isDirty}
-            submitLabel="Update"
-            onSubmit={handleSubmit(onSubmit, onInvalid)}
+        <TabsContent value="role" className="space-y-2 pt-4">
+          <TextInput
+            label="Name"
+            counter
+            maxCharacters={RoleSchemaLimit.name.max}
             icon={ShieldCheck}
-        >
-            <Tabs value={tab} className="mt-4">
-                <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger onClick={() => setTab("role")} value="role">
-                        Role Details
-                    </TabsTrigger>
-                    <TabsTrigger onClick={() => setTab("permissions")} value="permissions">
-                        Permissions
-                    </TabsTrigger>
-                </TabsList>
+            placeholder="Operator"
+            maxLength={RoleSchemaLimit.name.max}
+            disabled={loading}
+            value={watch("name")}
+            {...register("name")}
+          />
+          <TextAreaInput
+            label="Description"
+            icon={Feather}
+            placeholder="Brief role overview"
+            counter
+            maxCharacters={RoleSchemaLimit.description.max}
+            maxLength={RoleSchemaLimit.description.max}
+            value={watch("description")}
+            disabled={loading}
+            {...register("description")}
+          />
+        </TabsContent>
 
-                <TabsContent value="role" className="space-y-2 pt-4">
-                    <TextInput
-                        label="Name"
-                        counter
-                        maxCharacters={RoleSchemaLimit.name.max}
-                        icon={ShieldCheck}
-                        placeholder="Operator"
-                        maxLength={RoleSchemaLimit.name.max}
-                        disabled={loading}
-                        value={watch("name")}
-                        {...register("name")}
-                    />
-                    <TextAreaInput
-                        label="Description"
-                        icon={Feather}
-                        placeholder="Brief role overview"
-                        counter
-                        maxCharacters={RoleSchemaLimit.description.max}
-                        maxLength={RoleSchemaLimit.description.max}
-                        value={watch("description")}
-                        disabled={loading}
-                        {...register("description")}
-                    />
-                </TabsContent>
-
-                <TabsContent
-                    value="permissions"
-                    className="pt-4"
-                >
-                    <PermissionTable
-                        modules={modules}
-                        control={control}
-                        name="permissions"
-                    />
-                </TabsContent>
-            </Tabs>
-        </FormDialog>
-    );
+        <TabsContent value="permissions" className="pt-4">
+          <PermissionTable modules={modules} control={control} name="permissions" />
+        </TabsContent>
+      </Tabs>
+    </FormDialog>
+  );
 }
