@@ -1,3 +1,4 @@
+"use client";
 import BatchInfoCard from "./batch-info-card";
 import BatchProgressCard from "./batch-progress-card";
 import BatchStepsTable from "./batch-steps-table";

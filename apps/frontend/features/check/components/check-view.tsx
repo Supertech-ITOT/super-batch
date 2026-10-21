@@ -1,3 +1,4 @@
+"use client";
 import CheckInfoCard from "./check-info-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/common/components/ui/tabs";
 import QualityCheckDialog from "./quality-check-dialog";

@@ -1,25 +1,21 @@
-"use client";
-
-import { Suspense } from "react";
 import ControlRecipeSOPView from "@/features/scheduler/control_recipe_sop/components/control-recipe-sop-view";
-import { useSearchParams } from "next/navigation";
-import Loading from "@/common/components/loading";
+import { connection } from "next/server";
 
-function ControlRecipeSOPPageContent() {
-  const searchParams = useSearchParams();
-  const controlRecipeId = Number(searchParams.get("id"));
+type ControlRecipeSOPPageProps = {
+  searchParams: Promise<{
+    id?: string;
+  }>;
+};
+
+export default async function ControlRecipeSOPPage({ searchParams }: ControlRecipeSOPPageProps) {
+  await connection();
+
+  const { id } = await searchParams;
+  const controlRecipeId = Number(id);
 
   return (
     <div className="flex flex-col gap-1 p-1 sm:p-2 min-h-full">
       <ControlRecipeSOPView controlRecipeId={controlRecipeId} />
     </div>
-  );
-}
-
-export default function ControlRecipeSOPPage() {
-  return (
-     <Suspense fallback={<Loading />}>
-      <ControlRecipeSOPPageContent />
-    </Suspense>
   );
 }

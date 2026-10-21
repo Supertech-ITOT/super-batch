@@ -1,25 +1,21 @@
-"use client";
-
-import { Suspense } from "react";
 import EquipmentView from "@/features/plant/equipment/components/equipment-view";
-import { useSearchParams } from "next/navigation";
-import Loading from "@/common/components/loading";
+import { connection } from "next/server";
 
-function EquipmentPageContent() {
-  const searchParams = useSearchParams();
-  const id = Number(searchParams.get("id"));
+type EquipmentPageProps = {
+  searchParams: Promise<{
+    id?: string;
+  }>;
+};
+
+export default async function EquipmentPage({ searchParams }: EquipmentPageProps) {
+  await connection();
+
+  const { id } = await searchParams;
+  const equipmentId = Number(id);
 
   return (
     <div className="flex flex-col gap-1 p-1 sm:p-2 min-h-full">
-      <EquipmentView id={id} />
+      <EquipmentView id={equipmentId} />
     </div>
-  );
-}
-
-export default function EquipmentPage() {
-  return (
-      <Suspense fallback={<Loading />}>
-      <EquipmentPageContent />
-    </Suspense>
   );
 }

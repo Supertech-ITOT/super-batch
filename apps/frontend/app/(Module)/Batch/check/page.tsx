@@ -1,25 +1,21 @@
-"use client";
-
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
 import CheckView from "@/features/check/components/check-view";
-import Loading from "@/common/components/loading";
+import { connection } from "next/server";
 
-function CheckPageContent() {
-  const searchParams = useSearchParams();
-  const id = Number(searchParams.get("id"));
+type CheckPageProps = {
+  searchParams: Promise<{
+    id?: string;
+  }>;
+};
+
+export default async function CheckPage({ searchParams }: CheckPageProps) {
+  await connection();
+
+  const { id } = await searchParams;
+  const checkId = Number(id);
 
   return (
     <div className="flex flex-col gap-1 p-1 sm:p-2 min-h-full">
-      <CheckView id={id} />
+      <CheckView id={checkId} />
     </div>
-  );
-}
-
-export default function CheckPage() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <CheckPageContent />
-    </Suspense>
   );
 }

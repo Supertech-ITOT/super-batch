@@ -1,25 +1,21 @@
-"use client";
-
-import { Suspense } from "react";
 import AreaView from "@/features/plant/area/components/area-view";
-import { useSearchParams } from "next/navigation";
-import Loading from "@/common/components/loading";
+import { connection } from "next/server";
 
-function AreaPageContent() {
-  const searchParams = useSearchParams();
-  const id = Number(searchParams.get("id"));
+type AreaPageProps = {
+  searchParams: Promise<{
+    id?: string;
+  }>;
+};
+
+export default async function AreaPage({ searchParams }: AreaPageProps) {
+  await connection();
+
+  const { id } = await searchParams;
+  const areaId = Number(id);
 
   return (
     <div className="flex flex-col gap-1 p-1 sm:p-2 min-h-full">
-      <AreaView id={id} />
+      <AreaView id={areaId} />
     </div>
-  );
-}
-
-export default function AreaPage() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <AreaPageContent />
-    </Suspense>
   );
 }

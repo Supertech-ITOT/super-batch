@@ -33,32 +33,22 @@ function TreeNodeContent({ node, level = 0, onSelect, onAction, selectedNodeKey 
   const searchParams = useSearchParams();
 
   const activeId = searchParams.get("id");
-
   const segments = pathname.split("/").filter(Boolean);
   const currentType = segments[segments.length - 1];
 
   const nodeKey = `${node.type}-${node.id}`;
-
   const isRouteActive = activeId === String(node.id) && currentType === node.type;
 
   const isContextActive = selectedNodeKey === nodeKey;
   const isActive = isRouteActive || isContextActive;
 
   const hasChildren = !!node.children?.length;
-
   const config = TREE_CONFIG[node.type];
   const Icon = config.icon;
 
   return (
     <div>
-      {/* Row */}
-      <div
-        className="flex items-center rounded-md cursor-pointer select-none"
-        style={{
-          paddingLeft: `${level * 20 + 8}px`,
-        }}
-      >
-        {/* Expand Icon */}
+      <div className="flex items-center rounded-md cursor-pointer select-none" style={{ paddingLeft: `${level * 20 + 8}px` }}>
         {hasChildren ? (
           <Button
             variant="ghost"
@@ -74,7 +64,6 @@ function TreeNodeContent({ node, level = 0, onSelect, onAction, selectedNodeKey 
           <div className="w-8" />
         )}
 
-        {/* Node Icon + Label */}
         <ContextMenu>
           <ContextMenuTrigger asChild>
             <Button
@@ -88,7 +77,6 @@ function TreeNodeContent({ node, level = 0, onSelect, onAction, selectedNodeKey 
               )}
             >
               <Icon className={cn("w-4! h-4!", isActive ? "text-primary" : "text-muted-foreground")} />
-
               <span className={cn("text-sm w-44 text-left truncate", isActive ? "text-primary" : "text-muted-foreground")}>{node.name}</span>
             </Button>
           </ContextMenuTrigger>
@@ -113,16 +101,9 @@ function TreeNodeContent({ node, level = 0, onSelect, onAction, selectedNodeKey 
         </ContextMenu>
       </div>
 
-      {/* Children */}
       {open && hasChildren && (
         <div className="relative">
-          {/* Tree Line */}
-          <div
-            className="absolute top-0 bottom-0 w-px bg-border"
-            style={{
-              left: `${level * 20 + 25}px`,
-            }}
-          />
+          <div className="absolute top-0 bottom-0 w-px bg-border" style={{ left: `${level * 20 + 25}px` }} />
 
           {node.children?.map((child) => (
             <TreeNode

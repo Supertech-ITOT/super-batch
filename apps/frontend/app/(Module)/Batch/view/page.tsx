@@ -1,25 +1,21 @@
-"use client";
-
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
 import BatchView from "@/features/batch/components/batch-view";
-import Loading from "@/common/components/loading";
+import { connection } from "next/server";
 
-function ViewPageContent() {
-  const searchParams = useSearchParams();
-  const id = Number(searchParams.get("id"));
+type ViewPageProps = {
+  searchParams: Promise<{
+    id?: string;
+  }>;
+};
+
+export default async function ViewPage({ searchParams }: ViewPageProps) {
+  await connection();
+
+  const { id } = await searchParams;
+  const batchId = Number(id);
 
   return (
     <div className="flex flex-col gap-1 p-1 sm:p-2 min-h-full">
-      <BatchView id={id} />
+      <BatchView id={batchId} />
     </div>
-  );
-}
-
-export default function ViewPage() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <ViewPageContent />
-    </Suspense>
   );
 }

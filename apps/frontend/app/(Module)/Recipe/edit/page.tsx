@@ -1,25 +1,21 @@
-"use client";
-
-import { Suspense } from "react";
 import RecipeSOPView from "@/features/recipe/recipe_sop/components/recipe-sop-view";
-import { useSearchParams } from "next/navigation";
-import Loading from "@/common/components/loading";
+import { connection } from "next/server";
 
-function RecipePageContent() {
-  const searchParams = useSearchParams();
-  const recipeId = Number(searchParams.get("id"));
+type RecipePageProps = {
+  searchParams: Promise<{
+    id?: string;
+  }>;
+};
+
+export default async function RecipePage({ searchParams }: RecipePageProps) {
+  await connection();
+
+  const { id } = await searchParams;
+  const recipeId = Number(id);
 
   return (
     <div className="flex flex-col gap-1 p-1 sm:p-2 min-h-full">
       <RecipeSOPView recipeId={recipeId} />
     </div>
-  );
-}
-
-export default function RecipePage() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <RecipePageContent />
-    </Suspense>
   );
 }

@@ -1,25 +1,21 @@
-"use client";
-
-import { Suspense } from "react";
 import UnitView from "@/features/plant/unit/components/unit-view";
-import { useSearchParams } from "next/navigation";
-import Loading from "@/common/components/loading";
+import { connection } from "next/server";
 
-function UnitPageContent() {
-  const searchParams = useSearchParams();
-  const id = Number(searchParams.get("id"));
+type UnitPageProps = {
+  searchParams: Promise<{
+    id?: string;
+  }>;
+};
+
+export default async function UnitPage({ searchParams }: UnitPageProps) {
+  await connection();
+
+  const { id } = await searchParams;
+  const unitId = Number(id);
 
   return (
     <div className="flex flex-col gap-1 p-1 sm:p-2 min-h-full">
-      <UnitView id={id} />
+      <UnitView id={unitId} />
     </div>
-  );
-}
-
-export default function UnitPage() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <UnitPageContent />
-    </Suspense>
   );
 }

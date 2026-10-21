@@ -1,25 +1,21 @@
-"use client";
-
-import { Suspense } from "react";
 import PlantView from "@/features/plant/plant/components/plant-view";
-import { useSearchParams } from "next/navigation";
-import Loading from "@/common/components/loading";
+import { connection } from "next/server";
 
-function PlantPageContent() {
-  const searchParams = useSearchParams();
-  const id = Number(searchParams.get("id"));
+type PlantPageProps = {
+  searchParams: Promise<{
+    id?: string;
+  }>;
+};
+
+export default async function PlantPage({ searchParams }: PlantPageProps) {
+  await connection();
+
+  const { id } = await searchParams;
+  const plantId = Number(id);
 
   return (
     <div className="flex flex-col gap-1 p-1 sm:p-2 min-h-full">
-      <PlantView id={id} />
+      <PlantView id={plantId} />
     </div>
-  );
-}
-
-export default function PlantPage() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <PlantPageContent />
-    </Suspense>
   );
 }
