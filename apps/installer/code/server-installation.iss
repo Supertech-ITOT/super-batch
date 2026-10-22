@@ -67,7 +67,7 @@ begin
   FrontendPortEdit.Left := 0;
   FrontendPortEdit.Top := 130;
   FrontendPortEdit.Width := ServerConfigurationPage.SurfaceWidth;
-  FrontendPortEdit.Text := '3000';
+  FrontendPortEdit.Text := '3030';
 
 
   { Test Ports }

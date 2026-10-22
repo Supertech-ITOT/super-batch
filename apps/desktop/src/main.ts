@@ -2,7 +2,7 @@
 import { app, BrowserWindow, ipcMain, Menu } from "electron";
 import path from "path";
 
-const currentPort = parseInt(process.env.PORT ?? "3000", 10);
+const currentPort = parseInt(process.env.PORT ?? "3030", 10);
 const hostname = process.env.HOSTNAME ?? "localhost";
 const isDev = !app.isPackaged;
 const PROTOCOL = "superbatch";

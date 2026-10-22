@@ -39,7 +39,7 @@ begin
   ClientServerPortEdit.Left := 0;
   ClientServerPortEdit.Top := 75;
   ClientServerPortEdit.Width := ClientServerPage.SurfaceWidth;
-  ClientServerPortEdit.Text := '3000';
+  ClientServerPortEdit.Text := '3030';
 
   { Test }
   ClientTestButton := TNewButton.Create(ClientServerPage);

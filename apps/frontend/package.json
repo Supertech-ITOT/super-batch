@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3030",
     "build": "next build",
     "start": "next start",
     "build:standalone": "npm run build && xcopy .next\\static .next\\standalone\\.next\\static /E /I /Y && if exist public xcopy public .next\\standalone\\public /E /I /Y",
