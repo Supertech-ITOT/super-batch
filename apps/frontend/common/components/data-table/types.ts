@@ -29,6 +29,7 @@ export interface DataTableProps<TData, TValue> {
     isRowSelected?: (row: TData) => boolean;
     compact?: boolean;
     showEmptyRows?: boolean;
+    fitContent?: boolean;
 }
 
 export const alignClass = { left: "text-left", center: "text-center", right: "text-right", };

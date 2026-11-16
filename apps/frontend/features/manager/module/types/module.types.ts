@@ -127,7 +127,7 @@ export const OperationRoutes: RouteType[] = [
     hide: true,
   },
   {
-    label: "Report",
+    label: "Production Report",
     short: "Report",
     path: "/Report",
     icon: FileBarChart,

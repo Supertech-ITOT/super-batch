@@ -1,6 +1,6 @@
 import api from "@/common/lib/axios";
 import { ApiResponse } from "@/common/types/api.types";
-import { AbortRequest, BatchAbortResponse, BatchInfoResponse, BatchProgressResponse, BatchResponse, BatchSOPResponse } from "../types/batch.types";
+import { AbortRequest, BatchAbortResponse, BatchInfoResponse, BatchNoResponse, BatchProgressResponse, BatchResponse, BatchSOPResponse, BatchStatus } from "../types/batch.types";
 
 export const abortBatch = async ({ batchNo, request, }: { batchNo: string; request: AbortRequest; }) => {
     const res = await api.post<ApiResponse<null>>(`/batches/${batchNo}/abort`, request,);
@@ -31,3 +31,8 @@ export const getAllStepsById = async (batchId: number) => {
     const res = await api.get<ApiResponse<BatchResponse>>(`/batches/${batchId}/all-steps-info`);
     return res.data;
 }
+
+export const getBatchNosByStatuses = async (statuses: BatchStatus[]) => {
+    const res = await api.get<ApiResponse<BatchNoResponse[]>>("/batches/batch-nos/by-statuses", { params: { statuses }, });
+    return res.data;
+};

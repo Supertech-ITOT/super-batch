@@ -3,11 +3,11 @@ import { queryKeys } from "@/features/common/hooks/query-keys";
 import { getActiveBatch, getBatchStatus, getBatchThroughput, getProductionInsights, getScheduledBatch } from "../service/dashboard.service";
 import { InsightPeriod } from "../type/dashboard.types";
 
-export const useGetBatchStatus = () => {
+export const useGetBatchStatus = (period: InsightPeriod = "SEVEN_DAYS") => {
     return useQuery({
-        queryKey: queryKeys.dashboard.status(),
+        queryKey: queryKeys.dashboard.status(period),
         queryFn: async () => {
-            const res = await getBatchStatus();
+            const res = await getBatchStatus(period);
             return res.data;
         },
         refetchInterval: 10 * 1000,

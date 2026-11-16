@@ -48,16 +48,26 @@ public class DashboardServiceImpl implements DashboardService {
         private final ControlRecipeRepository controlRecipeRepository;
 
         @Override
-        public BatchStatusDashboardResponse getBatchStatus() {
-                Map<BatchStatus, Long> counts = batchRepository.countByStatus()
+        public BatchStatusDashboardResponse getBatchStatus(InsightPeriod period) {
+                int days = period.getDays();
+                LocalDate endDate = LocalDate.now();
+                LocalDate startDate = endDate.minusDays(days - 1);
+                LocalDateTime startDateTime = startDate.atStartOfDay();
+                LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
+
+                Map<BatchStatus, Long> counts = batchRepository
+                                .countByStatusBetween(startDateTime, endDateTime)
                                 .stream()
-                                .collect(Collectors.toMap(row -> (BatchStatus) row[0], row -> (Long) row[1]));
+                                .collect(Collectors.toMap(row -> (BatchStatus) row[0],row -> (Long) row[1]));
 
                 List<BatchStatusCardResponse> statuses = Arrays.stream(BatchStatus.values())
-                                .map(status -> dashboardMapper.toStatusCard(status, counts.getOrDefault(status, 0L)))
+                                .map(status -> dashboardMapper.toStatusCard( status, counts.getOrDefault(status, 0L)))
                                 .toList();
 
-                long total = statuses.stream().mapToLong(BatchStatusCardResponse::count).sum();
+                long total = statuses.stream()
+                                .mapToLong(BatchStatusCardResponse::count)
+                                .sum();
+
                 return dashboardMapper.toDashboard(total, statuses);
         }
 

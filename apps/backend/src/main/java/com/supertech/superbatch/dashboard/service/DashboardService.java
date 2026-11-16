@@ -10,7 +10,7 @@ import com.supertech.superbatch.dashboard.dto.ScheduledBatchResponse;
 import com.supertech.superbatch.dashboard.enums.InsightPeriod;
 
 public interface DashboardService {
-    BatchStatusDashboardResponse getBatchStatus();
+    BatchStatusDashboardResponse getBatchStatus(InsightPeriod period);
 
     List<ActiveBatchesResponse> getActiveBatches();
 

@@ -3,7 +3,6 @@
 import { format } from "date-fns";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from "recharts";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/common/components/ui/select";
 import { BatchThroughputResponse, InsightPeriod, PERIODS } from "../type/dashboard.types";
 import { useGetBatchThroughput } from "../hook/use-dashboard";
 
@@ -121,18 +120,14 @@ const ThroughputChart = memo(({ data, width }: ThroughputChartProps) => {
 });
 
 ThroughputChart.displayName = "ThroughputChart";
-
-export default function BatchThroughputChart() {
-  const [period, setPeriod] = useState<InsightPeriod>("SEVEN_DAYS");
-
+type prop = {
+  period: InsightPeriod;
+};
+export default function BatchThroughputChart({ period }: prop) {
   const { data, isLoading } = useGetBatchThroughput(period);
-
   const chartContainerRef = useRef<HTMLDivElement>(null);
-
   const containerWidth = useElementWidth(chartContainerRef);
-
   const chartData = useMemo(() => data?.data ?? [], [data?.data]);
-
   const chartWidth = useMemo(() => {
     if (!chartData.length) {
       return containerWidth;
@@ -143,28 +138,7 @@ export default function BatchThroughputChart() {
 
   return (
     <div className="flex h-full min-h-0 flex-col rounded-2xl border bg-card/60 p-4 shadow-sm backdrop-blur-xl">
-      <div className="mb-3 flex shrink-0 items-center justify-between">
-        <div className="min-w-0">
-          <h2 className="text-sm font-semibold tracking-tight text-primary sm:text-base">Batch Throughput</h2>
-
-          <p className="mt-0.5 text-xs text-muted-foreground">Completed vs aborted batches</p>
-        </div>
-
-        <Select value={period} onValueChange={(value) => setPeriod(value as InsightPeriod)}>
-          <SelectTrigger className="h-8 w-32 shrink-0 text-xs">
-            <SelectValue />
-          </SelectTrigger>
-
-          <SelectContent>
-            {PERIODS.map((item) => (
-              <SelectItem key={item.value} value={item.value}>
-                {item.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
+      <h2 className="text-sm font-semibold tracking-tight text-primary sm:text-base mb-2">Batch Throughput</h2>
       <div ref={chartContainerRef} className="min-h-0 min-w-0 flex-1 overflow-x-auto overflow-y-hidden">
         {isLoading ? (
           <div className="flex h-full items-center justify-center text-xs text-muted-foreground">Loading...</div>

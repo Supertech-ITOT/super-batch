@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.supertech.superbatch.batch.batch.dto.BatchAbortResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchInfoResponse;
+import com.supertech.superbatch.batch.batch.dto.BatchNoResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchProgressResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchSOPResponse;
@@ -29,5 +30,7 @@ public interface BatchService {
     BatchProgressResponse getBatchProgressById(Long id);
 
     BatchSOPResponse getCurrentStepInfoById(Long id);
+
+    List<BatchNoResponse> getBatchNosByStatuses(List<BatchStatus> statuses);
 
 }

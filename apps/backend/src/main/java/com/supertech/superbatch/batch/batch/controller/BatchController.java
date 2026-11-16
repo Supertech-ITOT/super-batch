@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.supertech.superbatch.batch.batch.dto.BatchAbortResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchInfoResponse;
+import com.supertech.superbatch.batch.batch.dto.BatchNoResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchProgressResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchSOPResponse;
@@ -141,6 +142,13 @@ public class BatchController {
     public ResponseEntity<ApiResponse<BatchResponse>> getAllStepById(@PathVariable Long batchId) {
         BatchResponse res = batchService.getById(batchId);
         return ResponseEntity.ok(ApiResponse.success("Batch All SOP info fetched successfully", res));
+    }
+
+    @GetMapping("/batch-nos/by-statuses")
+    public ResponseEntity<ApiResponse<List<BatchNoResponse>>> getBatchNosByStatuses(
+            @RequestParam List<BatchStatus> statuses) {
+        List<BatchNoResponse> res = batchService.getBatchNosByStatuses(statuses);
+        return ResponseEntity.ok(ApiResponse.success("Batch numbers fetched successfully", res));
     }
 
 }

@@ -141,3 +141,8 @@ export type BatchSOPParameterResponse = {
 export type BatchResponse = {
     steps: BatchSOPResponse[];
 }
+
+export type BatchNoResponse = {
+    id: number;
+    batchNo: string;
+}

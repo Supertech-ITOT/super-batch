@@ -28,6 +28,8 @@ const titleMap: Record<string, string> = {
   profile: "Me",
   license: "License",
   application: "Application",
+  Report: "Production Report",
+  Detail: "Detail",
 };
 
 export function ModuleBreadcrumb() {
