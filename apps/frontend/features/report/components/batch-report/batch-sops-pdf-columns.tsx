@@ -20,7 +20,7 @@ const varianceStyle = (value: number) => ({
 export const batchSopsPdfColumns: PDFColumnDef<BatchSopResponse>[] = [
   {
     accessorKey: "stepNo",
-    header: "Step No.",
+    header: "Step",
     width: "4%",
     cell: ({ row }) => <Text style={cellStyle}>{row.original.stepNo}</Text>,
     meta: { align: "center" },

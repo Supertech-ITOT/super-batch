@@ -8,6 +8,9 @@ import { format } from "date-fns";
 import { BatchReportResponse } from "../../types/report.types";
 import { minutesToADuration } from "@/common/utils/duration.util";
 import batchSopsPdfColumns from "./batch-sops-pdf-columns";
+import { batchMaterialPdfColunns } from "./batch-material-pdf-columns";
+import { batchParameterPdfColunns } from "./batch-parameter-pdf-columns copy";
+import { batchQualityCheckPdfColunns } from "./batch-quality-check-pdf";
 
 const title = "Batch Report";
 const subtitle = "Track batch execution, production efficiency, processing time, quantity variances, and step-wise completion status.";
@@ -56,8 +59,15 @@ export default function BatchDetailPDF({ data: batch }: Props) {
         </PDFGrid>
         <Text style={styles.sectionTitle}>SOP Execution Details</Text>
         <PDFTable columns={batchSopsPdfColumns} data={batch.sops} />
+
         <Text style={styles.sectionTitle}>Batch Material Consumption</Text>
-        <PDFTable columns={batchSopsPdfColumns} data={batch.sops} />
+        <PDFTable columns={batchMaterialPdfColunns} data={batch.mat.tableData} />
+
+        <Text style={styles.sectionTitle}>Step Wise Parameter</Text>
+        <PDFTable columns={batchParameterPdfColunns} data={batch.par.data} />
+        
+        <Text style={styles.sectionTitle}>Batch Quality Check</Text>
+        <PDFTable columns={batchQualityCheckPdfColunns} data={batch.qc.list} />
         <PDFFooter />
       </PDFPage>
     </PDFDocument>
