@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+
+# Data processing
+pandas
+numpy
+
+# Machine learning
+scikit-learn
+joblib
+
+# Data validation
+pydantic
+
+# Testing
+pytest
+httpx
