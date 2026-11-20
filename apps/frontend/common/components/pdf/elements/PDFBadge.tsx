@@ -6,6 +6,7 @@ type PDFBadgeVariant = "default" | "secondary" | "destructive" | "outline" | "gh
 interface Props {
   children: React.ReactNode;
   variant?: PDFBadgeVariant;
+  backgroundColor?: string;
   color?: string;
 }
 
@@ -42,19 +43,18 @@ const badgeStyles: Record<PDFBadgeVariant, { backgroundColor: string; color: str
   },
 };
 
-export function PDFBadge({ children, variant = "default", color }: Props) {
+export function PDFBadge({ children, variant = "default", color, backgroundColor }: Props) {
   const styles = badgeStyles[variant];
   const badgeColor = color ?? styles.color;
   return (
     <View
       style={{
-        backgroundColor: color ? `${color}20` : styles.backgroundColor,
-        borderColor: color ?? styles.borderColor ?? "transparent",
+        backgroundColor: backgroundColor ?? styles.backgroundColor,
+        borderColor: PDFTheme.border ?? styles.borderColor,
         borderWidth: 0.5,
         borderRadius: 3,
         paddingHorizontal: 5,
         paddingVertical: 2,
-        alignSelf: "center",
       }}
     >
       <Text

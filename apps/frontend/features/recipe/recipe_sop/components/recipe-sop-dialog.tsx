@@ -133,6 +133,14 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
   }, [selectedTransition, parentEq, transferStep, setValue]);
 
   const onSubmit = async (formData: RecipeSOPSchema) => {
+    const parameterValues = parameters.map((p) => {
+      const existing = formData.parameters?.find((item) => item.parameterId === p.id);
+      return {
+        parameterId: p.id,
+        stdValue: existing?.stdValue ?? 0,
+      };
+    });
+
     let res;
     try {
       switch (action) {
@@ -141,9 +149,11 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
             ...formData,
             recipeId,
             stdTime: durationToMinutes(formData.stdTime),
+            parameters: parameterValues,
           });
           break;
         }
+
         case "insert-below": {
           if (!recipeSOPId) return;
           res = await insertBelow({
@@ -152,31 +162,36 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
               ...formData,
               recipeId,
               stdTime: durationToMinutes(formData.stdTime),
+              parameters: parameterValues,
             },
           });
           break;
         }
+
         case "insert-above": {
           if (!recipeSOPId) return;
+
           res = await insertAbove({
             id: recipeSOPId,
             data: {
               ...formData,
               recipeId,
               stdTime: durationToMinutes(formData.stdTime),
+              parameters: parameterValues,
             },
           });
           break;
         }
+
         case "edit": {
           if (!recipeSOPId) return;
           res = await update({
             ...formData,
-            recipeId: recipeId,
+            recipeId,
             id: recipeSOPId,
             stdTime: durationToMinutes(formData.stdTime),
             materials: formData.materials ?? [],
-            parameters: formData.parameters ?? [],
+            parameters: parameterValues,
           });
           break;
         }

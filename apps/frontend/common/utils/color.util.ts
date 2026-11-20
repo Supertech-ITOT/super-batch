@@ -26,30 +26,30 @@ export const COLOR_PALETTE = [
 ] as const;
 
 export const PDF_COLOR_PALETTE = [
-  "#334155",
-  "#3f3f46",
-  "#57534e",
+  { backgroundColor: "#f1f5f9", color: "#334155" }, // slate
+  { backgroundColor: "#f4f4f5", color: "#3f3f46" }, // zinc
+  { backgroundColor: "#f5f5f4", color: "#57534e" }, // stone
 
-  "#b91c1c",
-  "#be123c",
-  "#c2410c",
-  "#b45309",
-  "#a16207",
+  { backgroundColor: "#fee2e2", color: "#b91c1c" }, // red
+  { backgroundColor: "#ffe4e6", color: "#be123c" }, // rose
+  { backgroundColor: "#ffedd5", color: "#c2410c" }, // orange
+  { backgroundColor: "#fef3c7", color: "#b45309" }, // amber
+  { backgroundColor: "#fef9c3", color: "#a16207" }, // yellow
 
-  "#4d7c0f",
-  "#15803d",
-  "#047857",
-  "#0f766e",
+  { backgroundColor: "#ecfccb", color: "#4d7c0f" }, // lime
+  { backgroundColor: "#dcfce7", color: "#15803d" }, // green
+  { backgroundColor: "#d1fae5", color: "#047857" }, // emerald
+  { backgroundColor: "#ccfbf1", color: "#0f766e" }, // teal
 
-  "#0e7490",
-  "#0369a1",
-  "#1d4ed8",
-  "#4338ca",
+  { backgroundColor: "#cffafe", color: "#0e7490" }, // cyan
+  { backgroundColor: "#e0f2fe", color: "#0369a1" }, // sky
+  { backgroundColor: "#dbeafe", color: "#1d4ed8" }, // blue
+  { backgroundColor: "#e0e7ff", color: "#4338ca" }, // indigo
 
-  "#6d28d9",
-  "#7e22ce",
-  "#a21caf",
-  "#be185d",
+  { backgroundColor: "#ede9fe", color: "#6d28d9" }, // violet
+  { backgroundColor: "#f3e8ff", color: "#7e22ce" }, // purple
+  { backgroundColor: "#fae8ff", color: "#a21caf" }, // fuchsia
+  { backgroundColor: "#fce7f3", color: "#be185d" }, // pink
 ] as const;
 
 export const getColorByText = (text: string, colors: readonly string[] = COLOR_PALETTE) => {
@@ -66,6 +66,7 @@ export const getPDFColorByText = (text: string) => {
   if (!text) return PDF_COLOR_PALETTE[0];
 
   let hash = 0;
+
   for (let i = 0; i < text.length; i++) {
     hash = text.charCodeAt(i) + ((hash << 5) - hash);
   }

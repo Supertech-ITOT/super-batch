@@ -58,12 +58,30 @@ export const BatchSOPStatusBadgeStyles = {
 } as const;
 
 export const BatchSOPStatusPDFStyles = {
-    PENDING: "#334155",
-    IN_PROGRESS: "#166534",
-    PAUSED: "#854d0e",
-    COMPLETED: "#065f46",
-    SKIPPED: "#374151",
-    ABORTED: "#991b1b",
+    PENDING: {
+        backgroundColor: "#f1f5f9",
+        color: "#334155",
+    },
+    IN_PROGRESS: {
+        backgroundColor: "#dcfce7",
+        color: "#166534",
+    },
+    PAUSED: {
+        backgroundColor: "#fef9c3",
+        color: "#854d0e",
+    },
+    COMPLETED: {
+        backgroundColor: "#d1fae5",
+        color: "#065f46",
+    },
+    SKIPPED: {
+        backgroundColor: "#f3f4f6",
+        color: "#374151",
+    },
+    ABORTED: {
+        backgroundColor: "#fee2e2",
+        color: "#991b1b",
+    },
 } as const;
 
 export type BatchAbortResponse = {

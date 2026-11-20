@@ -144,7 +144,17 @@ export default function ControlRecipeSOPDialog({
   }, [selectedTransition, parentEq, transferStep, setValue]);
 
   const onSubmit = async (formData: ControlRecipeSOPSchema) => {
+    const parameterValues = parameters.map((p) => {
+      const existing = formData.parameters?.find((item) => item.parameterId === p.id);
+
+      return {
+        parameterId: p.id,
+        stdValue: existing?.stdValue ?? 0,
+      };
+    });
+
     let res;
+
     try {
       switch (action) {
         case "create": {
@@ -152,46 +162,56 @@ export default function ControlRecipeSOPDialog({
             ...formData,
             controlRecipeId,
             stdTime: durationToMinutes(formData.stdTime),
+            parameters: parameterValues,
           });
           break;
         }
+
         case "insert-below": {
           if (!controlRecipeSOPId) return;
+
           res = await insertBelow({
             id: controlRecipeSOPId,
             data: {
               ...formData,
               controlRecipeId,
               stdTime: durationToMinutes(formData.stdTime),
+              parameters: parameterValues,
             },
           });
           break;
         }
+
         case "insert-above": {
           if (!controlRecipeSOPId) return;
+
           res = await insertAbove({
             id: controlRecipeSOPId,
             data: {
               ...formData,
               controlRecipeId,
               stdTime: durationToMinutes(formData.stdTime),
+              parameters: parameterValues,
             },
           });
           break;
         }
+
         case "edit": {
           if (!controlRecipeSOPId) return;
+
           res = await update({
             ...formData,
-            controlRecipeId: controlRecipeId,
+            controlRecipeId,
             id: controlRecipeSOPId,
             stdTime: durationToMinutes(formData.stdTime),
             materials: formData.materials ?? [],
-            parameters: formData.parameters ?? [],
+            parameters: parameterValues,
           });
           break;
         }
       }
+
       toast.success(res?.message ?? "Step created.");
       handleClear();
     } catch (err) {

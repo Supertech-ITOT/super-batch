@@ -56,6 +56,8 @@ export default function BatchDetailPDF({ data: batch }: Props) {
         </PDFGrid>
         <Text style={styles.sectionTitle}>SOP Execution Details</Text>
         <PDFTable columns={batchSopsPdfColumns} data={batch.sops} />
+        <Text style={styles.sectionTitle}>Batch Material Consumption</Text>
+        <PDFTable columns={batchSopsPdfColumns} data={batch.sops} />
         <PDFFooter />
       </PDFPage>
     </PDFDocument>

@@ -21,13 +21,14 @@ export const batchSopsPdfColumns: PDFColumnDef<BatchSopResponse>[] = [
   {
     accessorKey: "stepNo",
     header: "Step No.",
+    width: "4%",
     cell: ({ row }) => <Text style={cellStyle}>{row.original.stepNo}</Text>,
     meta: { align: "center" },
   },
   {
     accessorKey: "message",
-    width: "16%",
     header: "Message",
+    width: "15%",
     cell: ({ row }) => {
       const { message, remark } = row.original;
 
@@ -43,74 +44,105 @@ export const batchSopsPdfColumns: PDFColumnDef<BatchSopResponse>[] = [
   {
     header: "Transition",
     width: "15%",
-    cell: ({ row }) => (
-      <PDFBadge variant="outline" color={getPDFColorByText(row.original.transition)}>
-        {row.original.transition || "-"}
-      </PDFBadge>
-    ),
-    meta: { align: "center" },
+    cell: ({ row }) => {
+      const colors = getPDFColorByText(row.original.transition);
+
+      return (
+        <PDFBadge backgroundColor={colors.backgroundColor} color={colors.color}>
+          {row.original.transition || "-"}
+        </PDFBadge>
+      );
+    },
+    meta: { align: "left" },
   },
   {
     header: "Action",
     width: "15%",
-    cell: ({ row }) => (
-      <PDFBadge variant="outline" color={getPDFColorByText(row.original.action)}>
-        {row.original.action}
-      </PDFBadge>
-    ),
-    meta: { align: "center" },
+    cell: ({ row }) => {
+      const colors = getPDFColorByText(row.original.action);
+
+      return (
+        <PDFBadge backgroundColor={colors.backgroundColor} color={colors.color}>
+          {row.original.action || "-"}
+        </PDFBadge>
+      );
+    },
+    meta: { align: "left" },
   },
   {
     accessorKey: "fromEquipment",
-    header: "From Equipment",
+    header: "From",
+    width: "7%",
     cell: ({ row }) => <Text style={cellStyle}>{row.original.fromEquipment ?? "-"}</Text>,
     meta: { align: "center" },
   },
   {
     accessorKey: "toEquipment",
-    header: "To Equipment",
+    header: "To",
+    width: "7%",
     cell: ({ row }) => <Text style={cellStyle}>{row.original.toEquipment ?? "-"}</Text>,
     meta: { align: "center" },
   },
   {
     accessorKey: "startDateTime",
     header: "Start",
+    width: "6%",
     cell: ({ row }) => {
       const value = row.original.startDateTime;
+
       if (!value || new Date(value).getTime() === 0) {
         return <Text style={cellStyle}>-</Text>;
       }
-      return <Text style={cellStyle}>{format(new Date(value), "dd MMM yyyy hh:mm a")}</Text>;
+
+      return (
+        <Text style={{ ...cellStyle, textAlign: "center" }}>
+          {format(new Date(value), "dd MMM yy")}
+          {"\n"}
+          {format(new Date(value), "hh:mm a")}
+        </Text>
+      );
     },
     meta: { align: "center" },
   },
   {
     accessorKey: "endDateTime",
     header: "End",
+    width: "6%",
     cell: ({ row }) => {
       const value = row.original.endDateTime;
+
       if (!value || new Date(value).getTime() === 0) {
         return <Text style={cellStyle}>-</Text>;
       }
-      return <Text style={cellStyle}>{format(new Date(value), "dd MMM yyyy hh:mm a")}</Text>;
+
+      return (
+        <Text style={{ ...cellStyle, textAlign: "center" }}>
+          {format(new Date(value), "dd MMM yy")}
+          {"\n"}
+          {format(new Date(value), "hh:mm a")}
+        </Text>
+      );
     },
     meta: { align: "center" },
   },
   {
     accessorKey: "standardTime",
     header: "Std Time",
+    width: "6%",
     cell: ({ row }) => <Text style={cellStyle}>{minutesToADuration(row.original.standardTime)}</Text>,
     meta: { align: "center" },
   },
   {
     accessorKey: "actualTime",
     header: "Act Time",
+    width: "5%",
     cell: ({ row }) => <Text style={cellStyle}>{minutesToADuration(row.original.actualTime)}</Text>,
     meta: { align: "center" },
   },
   {
     accessorKey: "varianceTime",
     header: "Var Time",
+    width: "5%",
     cell: ({ row }) => {
       const variance = row.original.varianceTime;
 
@@ -125,13 +157,13 @@ export const batchSopsPdfColumns: PDFColumnDef<BatchSopResponse>[] = [
   {
     accessorKey: "status",
     header: "Status",
-    width: "10%",
+    width: "9%",
     cell: ({ row }) => {
       const status = row.original.status;
-      const color = BatchSOPStatusPDFStyles[status as keyof typeof BatchSOPStatusPDFStyles];
+      const styles = BatchSOPStatusPDFStyles[status as keyof typeof BatchSOPStatusPDFStyles];
 
       return (
-        <PDFBadge variant="outline" color={color}>
+        <PDFBadge variant="outline" backgroundColor={styles?.backgroundColor} color={styles?.color}>
           {toDisplayText(status)}
         </PDFBadge>
       );

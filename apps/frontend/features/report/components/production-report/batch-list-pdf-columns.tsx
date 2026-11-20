@@ -6,7 +6,7 @@ import { BatchesResponse } from "../../types/report.types";
 import { PDFColumnDef } from "@/common/components/pdf/elements/PDFTable";
 import { PDFTheme } from "@/common/components/pdf";
 import { PDFBadge } from "@/common/components/pdf/elements/PDFBadge";
-import { BatchStatus } from "@/features/batch/types/batch.types";
+import { BatchSOPStatusPDFStyles, BatchStatus } from "@/features/batch/types/batch.types";
 
 const cellStyle = { fontSize: 6 };
 const varianceStyle = (value: number) => ({
@@ -46,7 +46,7 @@ export const batchListPdfColumns: PDFColumnDef<BatchesResponse>[] = [
 
       return (
         <Text style={{ ...cellStyle, textAlign: "center" }}>
-          {format(new Date(value), "dd MMM yyyy")}
+          {format(new Date(value), "dd MMM yy")}
           {"\n"}
           {format(new Date(value), "hh:mm a")}
         </Text>
@@ -66,7 +66,7 @@ export const batchListPdfColumns: PDFColumnDef<BatchesResponse>[] = [
 
       return (
         <Text style={{ ...cellStyle, textAlign: "center" }}>
-          {format(new Date(value), "dd MMM yyyy")}
+          {format(new Date(value), "dd MMM yy")}
           {"\n"}
           {format(new Date(value), "hh:mm a")}
         </Text>
@@ -143,8 +143,12 @@ export const batchListPdfColumns: PDFColumnDef<BatchesResponse>[] = [
     width: "10%",
     cell: ({ row }) => {
       const status = row.original.status;
-      const variant = status === BatchStatus.COMPLETED ? "default" : status === BatchStatus.ABORTED ? "destructive" : "secondary";
-      return <PDFBadge variant={variant}>{toDisplayText(status)}</PDFBadge>;
+      const styles = BatchSOPStatusPDFStyles[status as keyof typeof BatchSOPStatusPDFStyles];
+      return (
+        <PDFBadge variant="outline" backgroundColor={styles?.backgroundColor} color={styles?.color}>
+          {toDisplayText(status)}
+        </PDFBadge>
+      );
     },
     meta: { align: "center" },
   },
