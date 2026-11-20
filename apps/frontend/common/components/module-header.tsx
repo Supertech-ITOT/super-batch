@@ -13,6 +13,8 @@ import { useSidebar } from "./navigation/sidebar-provider";
 import { useIsMobile } from "../hooks/use-mobile";
 
 export default function ModuleHeader() {
+  const { open } = useSidebar();
+  const isMobile = useIsMobile();
   const router = useRouter();
   const isElectron = useIsElectron();
   const pathname = usePathname();
@@ -24,8 +26,6 @@ export default function ModuleHeader() {
   const Icon = current.icon;
   const normalize = (path: string) => path.replace(/\/+$/, "") || "/";
   const isRoot = normalize(pathname) === normalize(current.path);
-  const { open } = useSidebar();
-  const isMobile = useIsMobile();
   return (
     <header
       className={`fixed ${isElectron && !isMobile ? "top-8" : "top-2"} ${

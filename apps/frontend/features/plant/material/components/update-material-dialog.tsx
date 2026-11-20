@@ -9,7 +9,6 @@ import { materialDefaultValues, materialSchema, MaterialSchema, MaterialSchemaLi
 import { useEffect } from "react";
 import { useGetMaterialById, useUpdateMaterial } from "../hooks/use-materials";
 import FormDialog from "@/common/components/form/form-dialog";
-import FormLoadingButton from "@/common/components/form/form-loading-button";
 import { TextInput } from "@/common/components/form/text-input";
 import { TextAreaInput } from "@/common/components/form/text-area-input";
 import SearchableSelect from "@/common/components/form/searchable-select";

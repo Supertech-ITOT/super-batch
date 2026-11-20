@@ -1,4 +1,4 @@
-import { BookOpen, ClipboardList, Factory, Hash, LucideIcon, Package, UserRound } from "lucide-react";
+import { BookOpen, ClipboardList, Factory, Hash, Package, UserRound } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem } from "@/common/components/ui/carousel";
 import { useGetBatchInfo } from "../hook/use-batch";
 import { Skeleton } from "@/common/components/ui/skeleton";

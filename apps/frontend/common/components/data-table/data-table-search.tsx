@@ -20,14 +20,16 @@ export default function DataTableSearch<TData>({ table, column, placeholder = "S
 
   return (
     <div className={`relative w-full ${compact ? "max-w-xs" : "max-w-sm"}`}>
-      <Search className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground ${compact ? "size-3.5 sm:size-4" : "size-4"}`} />
+      <Search
+        className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground ${compact ? "size-3.5 sm:size-4" : "size-4"}`}
+      />
 
       <input
         type="text"
         value={value}
         onChange={handleChange}
         placeholder={placeholder}
-        className={`w-full rounded-lg border border-input bg-card pr-3 outline-none transition-colors placeholder:text-muted-foreground ${compact ? "h-7 pl-8 text-xs sm:h-8 sm:text-xs" : "h-8 pl-9 text-sm sm:h-10"}`}
+        className={`w-full rounded-lg border border-input bg-card pr-3 outline-none transition-colors placeholder:text-muted-foreground ${compact ? "pl-8 text-xs h-8 sm:text-xs" : "pl-9 text-sm h-10"}`}
       />
     </div>
   );

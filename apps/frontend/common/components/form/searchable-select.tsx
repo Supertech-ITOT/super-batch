@@ -1,8 +1,7 @@
 "use client";
 
 import { memo, useMemo, useState } from "react";
-import { Check, ChevronsUpDown, LucideIcon } from "lucide-react";
-
+import { ChevronsUpDown, LucideIcon } from "lucide-react";
 import { Button } from "@/common/components/ui/button";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/common/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/common/components/ui/popover";
@@ -108,8 +107,6 @@ function SearchableSelect<T extends SearchableSelectValue>({
 
                 return (
                   <CommandItem key={String(option.value)} value={option.label} data-checked={checked} onSelect={() => handleSelect(option.value)}>
-                    <Check className={cn("mr-2 h-4 w-4 shrink-0", checked ? "opacity-100" : "opacity-0")} />
-
                     <span className="truncate">{option.label}</span>
                   </CommandItem>
                 );

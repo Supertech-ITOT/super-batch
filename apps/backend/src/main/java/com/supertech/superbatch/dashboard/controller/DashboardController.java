@@ -23,8 +23,8 @@ public class DashboardController {
     private final DashboardService dashboardService;
 
     @GetMapping("/status")
-    public ResponseEntity<ApiResponse<BatchStatusDashboardResponse>> getBatchStatusDashboard() {
-        BatchStatusDashboardResponse res = dashboardService.getBatchStatus();
+    public ResponseEntity<ApiResponse<BatchStatusDashboardResponse>> getBatchStatusDashboard(@RequestParam(defaultValue = "SEVEN_DAYS") InsightPeriod period) {
+        BatchStatusDashboardResponse res = dashboardService.getBatchStatus(period);
         return ResponseEntity.ok(ApiResponse.success("Batch Status fetched successfully.", res));
     }
 

@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { invalidateQueries, queryDeps } from "@/features/common/hooks/query-deps";
-import { abortBatch, getAbortDetails, getAllStepsById, getBatchInfo, getBatchProgress, getCurrentStepInfo } from "../service/batch.service";
+import { abortBatch, getAbortDetails, getAllStepsById, getBatchInfo, getBatchNosByStatuses, getBatchProgress, getCurrentStepInfo } from "../service/batch.service";
 import { queryKeys } from "@/features/common/hooks/query-keys";
+import { BatchStatus } from "../types/batch.types";
 
 export const useAbortBatch = () => {
     const queryClient = useQueryClient();
@@ -79,3 +80,17 @@ export const useGetAllStepInfo = (batchId?: number) => {
         enabled: !!batchId,
     });
 }
+
+
+
+export const useGetBatchNosByStatuses = (statuses: BatchStatus[]) => {
+    return useQuery({
+        queryKey: queryKeys.batches.batchNosByStatuses(statuses),
+        queryFn: async () => {
+            const res = await getBatchNosByStatuses(statuses);
+            return res.data;
+        },
+        staleTime: 0,
+        enabled: statuses.length > 0,
+    });
+};

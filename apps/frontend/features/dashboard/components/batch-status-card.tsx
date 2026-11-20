@@ -1,7 +1,7 @@
 "use client";
 
 import { Carousel, CarouselContent, CarouselItem } from "@/common/components/ui/carousel";
-import { BatchStatusConfig, BatchStatusCardResponse } from "../type/dashboard.types";
+import { BatchStatusConfig, BatchStatusCardResponse, InsightPeriod } from "../type/dashboard.types";
 import { useGetBatchStatus } from "../hook/use-dashboard";
 import { Skeleton } from "@/common/components/ui/skeleton";
 import { Database } from "lucide-react";
@@ -29,9 +29,11 @@ function StatusCard({ data }: { data: BatchStatusCardResponse }) {
     </div>
   );
 }
-
-export default function BatchStatusCard() {
-  const { data, isLoading, isError } = useGetBatchStatus();
+type prop = {
+  period: InsightPeriod;
+};
+export default function BatchStatusCard({ period }: prop) {
+  const { data, isLoading, isError } = useGetBatchStatus(period);
 
   if (isLoading) {
     return (

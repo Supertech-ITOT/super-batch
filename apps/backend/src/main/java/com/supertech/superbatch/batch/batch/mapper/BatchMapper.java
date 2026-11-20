@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import com.supertech.superbatch.batch.batch.dto.BatchAbortResponse;
 import com.supertech.superbatch.batch.batch.dto.BatchAuditData;
 import com.supertech.superbatch.batch.batch.dto.BatchInfoResponse;
+import com.supertech.superbatch.batch.batch.dto.BatchNoResponse;
 import com.supertech.superbatch.batch.batch.dto.RecipeInfoResponse;
 import com.supertech.superbatch.batch.batch.entity.Batch;
 import com.supertech.superbatch.batch.batch.enums.BatchStatus;
@@ -139,6 +140,13 @@ public class BatchMapper {
                                                 .name(batch.getControlRecipe().getName())
                                                 .build())
                                 .batchStatus(batch.getStatus())
+                                .build();
+        }
+
+        public BatchNoResponse toBatchNoResponse(Object[] row) {
+                return BatchNoResponse.builder()
+                                .id((Long) row[0])
+                                .batchNo((String) row[1])
                                 .build();
         }
 }

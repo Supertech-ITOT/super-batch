@@ -7,7 +7,6 @@ export interface BatchAuditResponse {
   oldData: string;
   newData: string;
   entity: string;
-
 }
 
 export interface BatchAuditUserResponse {

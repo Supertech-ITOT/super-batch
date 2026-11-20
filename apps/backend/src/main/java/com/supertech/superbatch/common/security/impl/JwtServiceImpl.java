@@ -12,6 +12,7 @@ import com.supertech.superbatch.common.security.JwtService;
 import com.supertech.superbatch.manager.user.entity.User;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -54,23 +55,28 @@ public class JwtServiceImpl implements JwtService {
         return extractAllClaims(token).get("role", String.class);
     }
 
-    @Override
-    public boolean validateToken(String token) {
-        try {
-            Claims claims = extractAllClaims(token);
+   @Override
+public boolean validateToken(String token) {
+    try {
+        Claims claims = extractAllClaims(token);
 
-            if (claims.getExpiration().before(new Date())) {
-                throw new UnauthorizedException("TOKEN_EXPIRED");
-            }
-
-            return true;
-
-        } catch (UnauthorizedException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new UnauthorizedException("INVALID_TOKEN");
+        if (claims.getExpiration() == null ||
+                !claims.getExpiration().after(new Date())) {
+            throw new UnauthorizedException("TOKEN_EXPIRED");
         }
+
+        return true;
+
+    } catch (ExpiredJwtException e) {
+        throw new UnauthorizedException("TOKEN_EXPIRED");
+
+    } catch (UnauthorizedException e) {
+        throw e;
+
+    } catch (Exception e) {
+        throw new UnauthorizedException("INVALID_TOKEN");
     }
+}
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser()

@@ -1,5 +1,3 @@
-import { UomResponse } from "../../common/types/uom.types";
-
 export interface MaterialResponse {
     id: number;
     name: string;

@@ -1,7 +1,9 @@
 import { BatchAuditSearchRequest } from "@/features/audit/types/audit.types";
+import { BatchStatus } from "@/features/batch/types/batch.types";
 import { InsightPeriod } from "@/features/dashboard/type/dashboard.types";
 import { UserSearchRequest } from "@/features/manager/user/types/user.types";
 import { RecipeStatus } from "@/features/recipe/recipe/types/recipe.types";
+import { ReportFilterRequest } from "@/features/report/types/report.types";
 
 export const queryKeys = {
   plants: {
@@ -154,7 +156,7 @@ export const queryKeys = {
 
   dashboard: {
     all: ["dashboard"] as const,
-    status: () => ["dashboard", "status"] as const,
+    status: (period: InsightPeriod) => ["dashboard", "status", period] as const,
     activeBatch: () => ["dashboard", "active-batch"] as const,
     scheduledBatch: () => ["dashboard", "scheduled-batch"] as const,
     productionInsights: (period: InsightPeriod) => ["dashboard", "production-insights", period] as const,
@@ -168,10 +170,32 @@ export const queryKeys = {
     currentStep: (batchId: number) => ["batches", "info", batchId, "current-step"] as const,
     allStepInfo: (batchId: number) => ["batches", "all", "info", batchId] as const,
     progress: (batchId: number) => ["batches", "progress", batchId] as const,
+    batchNosByStatuses: (statuses: BatchStatus[]) => ["batches", "batch-nos", [...statuses].sort()] as const,
   },
 
   batchChecks: {
     all: ["batch-checks"] as const,
-    byBatchAndStep: (batchNo: string, stepNo: number) => ["batch-checks", batchNo, stepNo] as const,
+    byBatchId: (batchId: number) => ["batch-checks", batchId] as const,
+  },
+
+  materialCorrection: {
+    all: ["material-correction"] as const,
+    byBatchId: (batchId: number) => ["material-correction", batchId] as const,
+  },
+
+
+  reports: {
+    all: ["reports"] as const,
+    batches: {
+      all: ["reports", "batches"] as const,
+      lists: () => ["reports", "batches", "list"] as const,
+      list: (request: ReportFilterRequest) => ["reports", "batches", "list", request] as const,
+      details: () => ["reports", "batches", "detail"] as const,
+      detail: (id: number) => ["reports", "batches", "detail", id] as const,
+      sops: (id: number) => ["reports", "batches", id, "sops"] as const,
+      materialQuantity: (id: number) => ["reports", "batches", id, "material-quantity"] as const,
+      parameterValue: (id: number) => ["reports", "batches", id, "parameter-value"] as const,
+      qualityCheck: (id: number) => ["reports", "batches", id, "quality-check"] as const,
+    },
   },
 } as const;

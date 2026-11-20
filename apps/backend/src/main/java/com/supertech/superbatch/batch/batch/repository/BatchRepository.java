@@ -3,79 +3,88 @@ package com.supertech.superbatch.batch.batch.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import com.supertech.superbatch.batch.batch.entity.Batch;
 import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 
-public interface BatchRepository extends JpaRepository<Batch, Long> {
+public interface BatchRepository extends JpaRepository<Batch, Long>, JpaSpecificationExecutor<Batch> {
 
-        @EntityGraph(attributePaths = { "masterRecipe", "masterRecipe.material", "controlRecipe",
-                        "controlRecipe.shiftIncharge", "controlRecipe.unit", "sops",
-                        "sops.transition",
-                        "sops.action",
-                        "sops.fromEquipment",
-                        "sops.toEquipment",
-                        "sops.materials",
-                        "sops.materials.material",
-                        "sops.parameters",
-                        "sops.parameters.parameter" })
-        Optional<Batch> findByBatchNo(String batchNo);
+    @EntityGraph(attributePaths = { "masterRecipe", "masterRecipe.material", "controlRecipe",
+            "controlRecipe.shiftIncharge", "controlRecipe.unit", "sops",
+            "sops.transition",
+            "sops.action",
+            "sops.fromEquipment",
+            "sops.toEquipment",
+            "sops.materials",
+            "sops.materials.material",
+            "sops.parameters",
+            "sops.parameters.parameter" })
+    Optional<Batch> findByBatchNo(String batchNo);
 
-        @EntityGraph(attributePaths = { "masterRecipe", "masterRecipe.material", "controlRecipe",
-                        "controlRecipe.shiftIncharge", "controlRecipe.unit", "sops",
-                        "sops.transition",
-                        "sops.action",
-                        "sops.fromEquipment",
-                        "sops.toEquipment",
-                        "sops.materials",
-                        "sops.materials.material",
-                        "sops.parameters",
-                        "sops.parameters.parameter" })
-        @Query("SELECT b FROM Batch b WHERE b.id = :id")
-        Optional<Batch> findByIdWithRelation(@Param("id") Long id);
+    @EntityGraph(attributePaths = { "masterRecipe", "masterRecipe.material", "controlRecipe",
+            "controlRecipe.shiftIncharge", "controlRecipe.unit", "sops",
+            "sops.transition",
+            "sops.action",
+            "sops.fromEquipment",
+            "sops.toEquipment",
+            "sops.materials",
+            "sops.materials.material",
+            "sops.parameters",
+            "sops.parameters.parameter" })
+    @Query("SELECT b FROM Batch b WHERE b.id = :id")
+    Optional<Batch> findByIdWithRelation(@Param("id") Long id);
 
-        @EntityGraph(attributePaths = {
-                        "controlRecipe",
-                        "controlRecipe.recipe",
-                        "controlRecipe.recipe.material",
-                        "controlRecipe.unit",
-                        "controlRecipe.shiftIncharge",
-                        "controlRecipe.createdBy",
-        })
-        Optional<Batch> findWithRecipeInfoByBatchNo(String batchNo);
+    @EntityGraph(attributePaths = {
+            "controlRecipe",
+            "controlRecipe.recipe",
+            "controlRecipe.recipe.material",
+            "controlRecipe.unit",
+            "controlRecipe.shiftIncharge",
+            "controlRecipe.createdBy",
+    })
+    Optional<Batch> findWithRecipeInfoByBatchNo(String batchNo);
 
-        List<Batch> findByUnit_CodeAndStatusOrderByCreatedAtDesc(
-                        String unitCode,
-                        BatchStatus status);
+    List<Batch> findByUnit_CodeAndStatusOrderByCreatedAtDesc(
+            String unitCode,
+            BatchStatus status);
 
-        @Query("""
-                            SELECT b.status, COUNT(b)
-                            FROM Batch b
-                            GROUP BY b.status
-                        """)
-        List<Object[]> countByStatus();
+    @Query("""
+            SELECT b.status, COUNT(b)
+            FROM Batch b
+            WHERE b.startDateTime >= :startDate
+              AND b.startDateTime < :endDate
+            GROUP BY b.status
+            """)
+    List<Object[]> countByStatusBetween(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
 
-        @EntityGraph(attributePaths = {
-                        "masterRecipe.material", "unit", "sops"
-        })
-        List<Batch> findByStatusInOrderByStartDateTimeAsc(List<BatchStatus> statuses);
+    @EntityGraph(attributePaths = { "masterRecipe.material", "unit", "sops" })
+    List<Batch> findByStatusInOrderByStartDateTimeAsc(List<BatchStatus> statuses);
 
-        @EntityGraph(attributePaths = { "masterRecipe", "controlRecipe", "unit", "sops" })
-        @Query("""
-                        SELECT b
-                        FROM Batch b
-                        WHERE b.id = :batchId
-                        """)
-        Optional<Batch> findForAbortById(@Param("batchId") Long batchId);
+    @EntityGraph(attributePaths = { "masterRecipe", "controlRecipe", "unit", "sops" })
+    @Query("""
+            SELECT b
+            FROM Batch b
+            WHERE b.id = :batchId
+            """)
+    Optional<Batch> findForAbortById(@Param("batchId") Long batchId);
 
-        @EntityGraph(attributePaths = { "sops", "sops.materials" })
-        List<Batch> findByStartDateTimeGreaterThanEqualAndStartDateTimeLessThan(
-                        LocalDateTime startDateTime,
-                        LocalDateTime endDateTime);
+    @EntityGraph(attributePaths = { "sops", "sops.materials" })
+    List<Batch> findByStartDateTimeGreaterThanEqualAndStartDateTimeLessThan(
+            LocalDateTime startDateTime,
+            LocalDateTime endDateTime);
+
+    @Query("""
+            SELECT b.id, b.batchNo
+            FROM Batch b
+            WHERE b.status IN :statuses
+            ORDER BY b.startDateTime ASC
+            """)
+    List<Object[]> findBatchNumbersByStatusIn(@Param("statuses") List<BatchStatus> statuses);
 
 }

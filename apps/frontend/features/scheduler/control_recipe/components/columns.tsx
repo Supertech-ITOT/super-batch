@@ -1,32 +1,12 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/common/components/ui/button";
 import { DialogProp } from "./control-recipe-view";
-import {
-  BookCopy,
-  BookOpen,
-  BookOpenText,
-  Boxes,
-  CalendarDays,
-  Circle,
-  ClipboardList,
-  Clock3,
-  Eye,
-  Factory,
-  MoveRight,
-  Package,
-  PencilLine,
-  Scale,
-  Trash2,
-} from "lucide-react";
+import { BookCopy, BookOpenText, Boxes, CalendarDays, Circle, Eye, MoveRight, Package, PencilLine, Scale, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/common/components/ui/badge";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { getColorByText } from "@/common/utils/color.util";
-import {
-  ControlRecipeResponse,
-  ControlRecipeStatus,
-  ControlRecipeStatusBadgeStyles,
-} from "../types/control-recipe.types";
+import { ControlRecipeResponse, ControlRecipeStatus, ControlRecipeStatusBadgeStyles } from "../types/control-recipe.types";
 import { Separator } from "@/common/components/ui/separator";
 import UserAvatar from "@/common/components/user-avatar";
 
@@ -53,17 +33,9 @@ export const columns = (
           {/* Header */}
           <div className="flex items-center justify-between">
             <span className="font-bold text-primary text-lg"> #{batchNo}</span>
-            <Badge
-              className={
-                ControlRecipeStatusBadgeStyles[
-                  status as keyof typeof ControlRecipeStatusBadgeStyles
-                ]
-              }
-            >
+            <Badge className={ControlRecipeStatusBadgeStyles[status as keyof typeof ControlRecipeStatusBadgeStyles]}>
               <Circle className="size-2 fill-current" />
-              {status === ControlRecipeStatus.SCHEDULED
-                ? "Scheduled"
-                : "Transferred"}
+              {status === ControlRecipeStatus.SCHEDULED ? "Scheduled" : "Transferred"}
             </Badge>
           </div>
 
@@ -88,11 +60,7 @@ export const columns = (
               </div>
               <span className="text-muted-foreground">Schedule</span>
             </div>
-            <span className="font-medium">
-              {scheduledAt
-                ? format(new Date(scheduledAt), "dd MMM yyyy hh:mm a")
-                : "-"}
-            </span>
+            <span className="font-medium">{scheduledAt ? format(new Date(scheduledAt), "dd MMM yyyy hh:mm a") : "-"}</span>
           </div>
         </div>
       );
@@ -109,9 +77,7 @@ export const columns = (
           </div>
           <div className="min-w-0 text-left">
             <p className="text-muted-foreground">Control Recipe</p>
-            <p className="truncate font-medium leading-none">
-              {row.original.name}
-            </p>
+            <p className="truncate font-medium leading-none">{row.original.name}</p>
           </div>
         </div>
 
@@ -122,26 +88,18 @@ export const columns = (
           </div>
           <div className="min-w-0 text-left">
             <p className="text-muted-foreground">Master Recipe</p>
-            <p className="truncate font-medium leading-none">
-              {row.original.recipe.name}
-            </p>
+            <p className="truncate font-medium leading-none">{row.original.recipe.name}</p>
           </div>
         </div>
 
         {/* Metadata */}
         <div className="flex flex-wrap gap-1">
-          <Badge
-            variant="outline"
-            className={`h-6 gap-1 px-2 text-[11px] ${getColorByText(row.original.recipe.unit.name)}`}
-          >
+          <Badge variant="outline" className={`h-6 gap-1 px-2 text-[11px] ${getColorByText(row.original.recipe.unit.name)}`}>
             <Boxes />
             {row.original.unit.name}
           </Badge>
 
-          <Badge
-            variant="outline"
-            className={`h-6 gap-1 px-2 text-[11px] ${getColorByText(row.original.recipe.product)}`}
-          >
+          <Badge variant="outline" className={`h-6 gap-1 px-2 text-[11px] ${getColorByText(row.original.recipe.product)}`}>
             <Package />
             {row.original.recipe.product}
           </Badge>
@@ -168,50 +126,32 @@ export const columns = (
         <div className="space-y-2">
           {assignments.map(({ user, assignment }) =>
             user ? (
-              <div
-                key={assignment}
-                className="grid grid-cols-[100px_1fr_100px] items-center gap-3  border-l-2 border-l-primary bg-card px-3 py-2"
-              >
+              <div key={assignment} className="grid grid-cols-[100px_1fr_100px] items-center gap-3  border-l-2 border-l-primary bg-card px-3 py-2">
                 {/* Assignment */}
-                <p className="text-[10px] text-left font-semibold uppercase tracking-wider text-muted-foreground">
-                  {assignment}
-                </p>
+                <p className="text-[10px] text-left font-semibold uppercase tracking-wider text-muted-foreground">{assignment}</p>
 
                 {/* User */}
                 <div className="flex items-center gap-3 min-w-52 shrink-0">
                   <UserAvatar name={user.name} className="size-8 shrink-0" />
 
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium leading-none">
-                      {user.name}
-                    </p>
-                    <p className="mt-1 truncate text-xs text-muted-foreground">
-                      {user.email}
-                    </p>
+                    <p className="truncate text-sm font-medium leading-none">{user.name}</p>
+                    <p className="mt-1 truncate text-xs text-muted-foreground">{user.email}</p>
                   </div>
                 </div>
 
                 {/* Role */}
                 <div className="flex justify-end">
-                  <Badge className={getColorByText(user.role)}>
-                    {user.role}
-                  </Badge>
+                  <Badge className={getColorByText(user.role)}>{user.role}</Badge>
                 </div>
               </div>
             ) : (
-              <div
-                key={assignment}
-                className="grid grid-cols-[140px_1fr_110px] items-center gap-3 rounded-lg border border-dashed px-3 py-2"
-              >
+              <div key={assignment} className="grid grid-cols-[140px_1fr_110px] items-center gap-3 rounded-lg border border-dashed px-3 py-2">
                 <div className="border-l-2 border-muted pl-2">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                    {assignment}
-                  </p>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{assignment}</p>
                 </div>
 
-                <p className="text-xs text-muted-foreground">
-                  No user assigned
-                </p>
+                <p className="text-xs text-muted-foreground">No user assigned</p>
 
                 <div />
               </div>
@@ -246,13 +186,7 @@ export const columns = (
 
       return (
         <div className="flex items-center justify-center flex-col gap-0.5">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() =>
-              router.push(`/Scheduler/edit?id=${controlRecipe.id}`)
-            }
-          >
+          <Button variant="ghost" size="icon" onClick={() => router.push(`/Scheduler/edit?id=${controlRecipe.id}`)}>
             <Eye className="size-5!" />
           </Button>
           <Button
@@ -269,22 +203,10 @@ export const columns = (
           >
             <MoveRight className="size-5! text-primary" />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() =>
-              setDialog({ action: "edit", id: controlRecipe.id, open: true })
-            }
-          >
+          <Button variant="ghost" size="icon" onClick={() => setDialog({ action: "edit", id: controlRecipe.id, open: true })}>
             <PencilLine className="size-4! text-blue-800" />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() =>
-              setDialog({ action: "delete", id: controlRecipe.id, open: true })
-            }
-          >
+          <Button variant="ghost" size="icon" onClick={() => setDialog({ action: "delete", id: controlRecipe.id, open: true })}>
             <Trash2 className="size-4.5! text-destructive" />
           </Button>
         </div>

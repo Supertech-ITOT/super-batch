@@ -17,8 +17,8 @@ export default function LicenseSummary({ license }: LicenseSummaryProps) {
     ["Plan", license.planName],
     ["Status", license.status],
     ["Expiry", expiryDate ? format(expiryDate, "dd MMM yyyy") : "-"],
-    ["Units", license.unitCount ?? 0],
-    ["Max Units", license.planMaxUnits ?? 0],
+    ["Main Equipments", license.unitCount ?? 0],
+    ["Max Main Equipments", license.planMaxUnits ?? 0],
     ["Days Left", daysRemaining !== null ? `${Math.max(daysRemaining, 0)} Days` : "-"],
   ];
 

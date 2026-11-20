@@ -6,7 +6,7 @@ import com.supertech.superbatch.sample_check.material_correction.dto.MaterialCor
 import com.supertech.superbatch.sample_check.material_correction.dto.MaterialCorrectionResponse;
 
 public interface MaterialCorrectionService {
-    void create(MaterialCorrectionRequest request);
+    void create(MaterialCorrectionRequest request, Long id);
 
-    List<MaterialCorrectionResponse> getByBatchNoAndStepNo(String batchNo, Integer stepNo);
+    List<MaterialCorrectionResponse> getById(Long id);
 }

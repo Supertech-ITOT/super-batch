@@ -29,20 +29,20 @@ export const minutesToDuration = (minutes: number | string): string => {
  * 0.5  -> 1M
  * 0    -> 0M
  */
-export const minutesToADuration = (minutes: number | string): string => {
+export const minutesToADuration = (minutes: number | string | null | undefined): string => {
+    if (minutes == null || minutes === "") return "-";
     const totalMinutes = Math.round(Number(minutes));
-
-    const hours = Math.floor(totalMinutes / 60);
-    const mins = totalMinutes % 60;
-
+    if (!Number.isFinite(totalMinutes)) return "-";
+    const sign = totalMinutes < 0 ? "-" : "";
+    const absMinutes = Math.abs(totalMinutes);
+    const hours = Math.floor(absMinutes / 60);
+    const mins = absMinutes % 60;
     const parts: string[] = [];
-
     if (hours > 0) parts.push(`${hours}H`);
     if (mins > 0) parts.push(`${mins}M`);
 
-    return parts.length ? parts.join(" ") : "0M";
+    return `${sign}${parts.length ? parts.join(" ") : "0M"}`;
 };
-
 
 export const getActualMinutes = (startDateTime: string | null): number => {
     if (!startDateTime) return 0;

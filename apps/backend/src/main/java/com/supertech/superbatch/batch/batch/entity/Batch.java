@@ -9,6 +9,7 @@ import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 import com.supertech.superbatch.batch.batch_sop.entity.BatchSOP;
 import com.supertech.superbatch.plant.unit.entity.Unit;
 import com.supertech.superbatch.recipe.recipe.entity.Recipe;
+import com.supertech.superbatch.sample_check.batch_check.entity.BatchCheck;
 import com.supertech.superbatch.scheduler.control_recipe.entity.ControlRecipe;
 import jakarta.persistence.*;
 import lombok.*;
@@ -60,4 +61,9 @@ public class Batch {
     @OrderBy("stepNo ASC")
     @Builder.Default
     private Set<BatchSOP> sops = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "batch")
+    @OrderBy("sampleDateTime ASC")
+    @Builder.Default
+    private Set<BatchCheck> batchChecks = new LinkedHashSet<>();
 }

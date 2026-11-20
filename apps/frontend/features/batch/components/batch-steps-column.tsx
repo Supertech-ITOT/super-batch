@@ -3,7 +3,7 @@ import { minutesToADuration } from "@/common/utils/duration.util";
 import { Badge } from "@/common/components/ui/badge";
 import { getColorByText } from "@/common/utils/color.util";
 import { CollapsibleDataTable } from "@/common/components/data-table/collapsible-data-table";
-import { ArrowRightLeft, Circle, Play } from "lucide-react";
+import { ArrowRightLeft, Play } from "lucide-react";
 import { BatchSOPResponse, BatchSOPStatusBadgeStyles } from "../types/batch.types";
 import { toDisplayText } from "@/common/lib/format-enum";
 import { format } from "date-fns";

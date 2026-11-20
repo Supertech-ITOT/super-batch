@@ -26,7 +26,7 @@ begin
 
   StringChangeEx(
     Content,
-    'cors.allowed-origins=${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://127.0.0.1:3000}',
+    'cors.allowed-origins=${CORS_ALLOWED_ORIGINS:http://localhost:3030,http://127.0.0.1:3030}',
     'cors.allowed-origins=http://' +
       Trim(ServerIPEdit.Text) + ':' +
       Trim(FrontendPortEdit.Text),

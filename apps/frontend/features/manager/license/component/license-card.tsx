@@ -1,38 +1,31 @@
 "use client";
 
-import { toast } from "sonner";
 import { getLicenseInfo, LicenseResponse, LicenseStatusConfig } from "../types/license.types";
 import LicenseActions from "./license-actions";
 import LicenseSummary from "./license-summary";
-import { Copy } from "lucide-react";
 
 interface LicenseCardProps {
   license: LicenseResponse;
 }
 
 export default function LicenseCard({ license }: LicenseCardProps) {
-  const expiryDate = license.expiryDate ? new Date(license.expiryDate) : null;
-  const licenseInfo = getLicenseInfo(license, expiryDate);
+  const licenseInfo = getLicenseInfo(license);
   const statusConfig = LicenseStatusConfig[license.status];
 
   const StatusIcon = statusConfig.icon;
 
-  const handleCopy = async (value: string) => {
-    await navigator.clipboard.writeText(value);
-    toast.success("Copied to clipboard.");
-  };
-
   return (
-    <div className="space-y-2">
-      <div className="grid gap-4 xl:grid-cols-[1fr_0.95fr]">
+    <div className="w-full min-w-0 space-y-2">
+      <div className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)]">
         {/* License Overview */}
-        <div className="overflow-hidden rounded-2xl border bg-card">
+        <div className="min-w-0 overflow-hidden rounded-2xl border bg-card">
           <div className="border-b p-4">
             <h2 className="text-sm font-semibold">License Overview</h2>
           </div>
 
-          <div className="p-4">
-            <div className={`mb-3 flex items-center gap-3 rounded-lg border p-3 ${statusConfig.bgClass}`}>
+          <div className="min-w-0 p-4">
+            {/* Status */}
+            <div className={`mb-3 flex min-w-0 items-center gap-3 rounded-lg border p-3 ${statusConfig.bgClass}`}>
               <div className="flex size-8 shrink-0 items-center justify-center rounded-full">
                 <StatusIcon className={`size-5 ${statusConfig.iconClass}`} />
               </div>
@@ -43,35 +36,34 @@ export default function LicenseCard({ license }: LicenseCardProps) {
               </div>
             </div>
 
+            {/* License Details */}
             <div className="divide-y">
-              {licenseInfo.map(({ label, value, icon: Icon, mono, copy }) => (
-                <div key={label} className="flex min-w-0 items-center gap-2 px-3 py-2.5 justify-between">
-                  <div className="flex gap-2 items-end">
-                    <Icon className="size-4 shrink-0" />
-                    <p className="text-sm text-muted-foreground">{label}</p>
+              {licenseInfo.map(({ label, value, icon: Icon, mono }) => (
+                <div key={label} className="grid min-w-0 grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] items-start gap-3 px-3 py-3">
+                  {/* Label */}
+                  <div className="flex min-w-0 items-start gap-2">
+                    <Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+
+                    <p className="min-w-0 wrap-break-word text-sm text-muted-foreground">{label}</p>
                   </div>
-                  <div className="flex gap-2 items-end">
-                    <p className={`truncate text-xs font-medium ${mono ? "font-mono" : ""}`} title={String(value ?? "-")}>
+
+                  {/* Value */}
+                  <div className="min-w-0">
+                    <p
+                      className={`min-w-0 whitespace-normal wrap-break-word text-right text-xs font-medium ${mono ? "font-mono wrap-anywhere" : ""}`}
+                      title={String(value ?? "-")}
+                    >
                       {value || "-"}
                     </p>
-                    {copy && value && (
-                      <button
-                        type="button"
-                        onClick={() => handleCopy(String(value))}
-                        className="shrink-0 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                        title={`Copy ${label}`}
-                      >
-                        <Copy className="size-3.5" />
-                      </button>
-                    )}
                   </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
+
         {/* Right Side */}
-        <div className="space-y-2">
+        <div className="min-w-0 space-y-3">
           <LicenseActions />
           <LicenseSummary license={license} />
         </div>
