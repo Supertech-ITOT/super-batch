@@ -1,7 +1,7 @@
 #define AppId "05eeaebd-8d19-4b3c-ba43-f7bc3f3f7d24"
 #define CompanyName "Supertech"
 #define AppName "SuperBatch"
-#define AppVersion "1.1.0"
+#define AppVersion "1.1.1"
 #define AppPublisher "Supertech"
 #define AppDescription "SuperBatch is a batch management software for managing production batches, recipes, equipment, parameters, and related operations."
 
@@ -17,7 +17,7 @@ AppCopyright="Copyright © 2026 {#CompanyName}"
 AppComments={#AppDescription}
 DefaultDirName={autopf}\{#CompanyName}\{#AppName}
 OutputDir=out
-OutputBaseFilename=SuperBatchSetupV1.1.0
+OutputBaseFilename=SuperBatchSetupV{#AppVersion}
 Compression=lzma
 SolidCompression=yes
 ArchitecturesAllowed=x64compatible
