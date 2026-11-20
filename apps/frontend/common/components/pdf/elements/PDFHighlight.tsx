@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from "@react-pdf/renderer";
+import { View, Text } from "@react-pdf/renderer";
 import { PDFTheme } from "../core/PDFStyles";
 
 interface PDFHighlightProps {
@@ -10,7 +10,7 @@ interface PDFHighlightProps {
 const colors = {
   success: { bg: PDFTheme.success + "20", text: PDFTheme.success },
   warning: { bg: PDFTheme.warning + "20", text: PDFTheme.warning },
-  danger: { bg: PDFTheme.danger + "20", text: PDFTheme.danger },
+  danger: { bg: PDFTheme.destructive + "20", text: PDFTheme.destructive },
   info: { bg: "#DBEAFE", text: "#1D4ED8" },
 };
 
