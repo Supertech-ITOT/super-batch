@@ -198,4 +198,10 @@ export const queryKeys = {
       qualityCheck: (id: number) => ["reports", "batches", id, "quality-check"] as const,
     },
   },
+
+  reportsExport: {
+    all: ["reports-export"] as const,
+    productionReport: (request: ReportFilterRequest) => ["reports-export", "production-report", request] as const,
+    batchReport: (id: number) => ["reports-export", "batch-report", id] as const,
+  },
 } as const;

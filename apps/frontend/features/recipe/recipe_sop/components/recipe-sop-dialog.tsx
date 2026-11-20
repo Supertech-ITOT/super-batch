@@ -17,7 +17,13 @@ import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { recipeSopDefaultValues, recipeSOPSchema, RecipeSOPSchema, RecipeSOPSchemaLimit } from "../schemas/recipe-sop-schema";
 import { TransitionType } from "@/features/plant/transition/types/transition.types";
-import { useCreateRecipeSOP, useGetRecipeSOPById, useInsertAboveRecipeSOP, useInsertBelowRecipeSOP, useUpdateRecipeSOP } from "../hooks/use-recipe-sop";
+import {
+  useCreateRecipeSOP,
+  useGetRecipeSOPById,
+  useInsertAboveRecipeSOP,
+  useInsertBelowRecipeSOP,
+  useUpdateRecipeSOP,
+} from "../hooks/use-recipe-sop";
 import { durationToMinutes, minutesToDuration } from "@/common/utils/duration.util";
 import { useEffect } from "react";
 import { showApiError } from "@/common/lib/show-api-error";
@@ -91,10 +97,9 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
         parameters: recipeSOP.parameters ?? [],
         stdTime: minutesToDuration(recipeSOP.stdTime ?? 0),
         transitionId: recipeSOP.transitionId,
-        fromEquipmentId: recipeSOP.fromEquipment?.id ?? undefined,
+        fromEquipmentId: recipeSOP.fromEquipment?.id,
         toEquipmentId: recipeSOP.toEquipment?.id,
       });
-
       return;
     }
 
@@ -117,7 +122,7 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
   const transferStep = selectedTransition?.name === TransitionType.TRANSFER;
   const parentEq = equipments?.find((e) => e.creatorUnitId === unitId);
   useEffect(() => {
-    if (!selectedTransition || !parentEq) return;
+    if (isEdit || !selectedTransition || !parentEq) return;
     if (transferStep) {
       setValue("fromEquipmentId", parentEq.id);
       setValue("toEquipmentId", 0);
@@ -193,8 +198,8 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
 
   if (loading) {
     return (
-      <div className="h-full rounded-none flex  justify-center items-center min-h-0">
-        <Loader2 className="h-7 w-7 animate-spin text-primary" />
+      <div className="flex h-full w-full min-h-0 flex-1 items-center justify-center rounded-none">
+        <Loader2 className="size-7 animate-spin text-primary" />
       </div>
     );
   }
@@ -224,7 +229,11 @@ export default function RecipeSOPDialog({ recipeSOPId, recipeId, action = "creat
         <CardContent className="min-h-0 h-full flex-1 overflow-y-auto scrollbar-none p-4 space-y-2">
           <div className="grid grid-cols-2 gap-2">
             <TextInput label="Step No" icon={Hash} disabled readOnly value={stepNo ?? 0} />
-            <Controller control={control} name="stdTime" render={({ field }) => <DurationInput value={field.value} label="Standard Time" onChange={field.onChange} disabled={loading} />} />
+            <Controller
+              control={control}
+              name="stdTime"
+              render={({ field }) => <DurationInput value={field.value} label="Standard Time" onChange={field.onChange} disabled={loading} />}
+            />
           </div>
           <Controller
             control={control}

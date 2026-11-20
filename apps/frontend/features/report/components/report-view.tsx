@@ -13,7 +13,7 @@ import { useDebounce } from "@/features/audit/hook/use-debaounce-audit";
 import { Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-const PAGE_SIZE = 15;
+const PAGE_SIZE = 16;
 export default function ReportView() {
   const router = useRouter();
   const [filter, setFilter] = useState<ReportFilterRequest>(INITIAL_REPORT_FILTER);
@@ -43,7 +43,7 @@ export default function ReportView() {
   return (
     <div className="flex flex-col flex-1 gap-2 overflow-hidden h-full min-h-0 w-full">
       <ReportFilter filter={filter} onFilterChange={handleFilterChange} onReset={resetFilter} />
-      <div className="min-h-0 min-w-0">
+      <div className="min-h-0 min-w-0 flex-1 flex flex-col">
         <DataTable
           pageSize={PAGE_SIZE}
           columns={batchListColumns}
@@ -67,6 +67,7 @@ export default function ReportView() {
             ],
           }}
           rowClassName="h-11"
+          className="flex-1"
         />
       </div>
     </div>

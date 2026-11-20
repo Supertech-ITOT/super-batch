@@ -109,7 +109,7 @@ export default function ControlRecipeSOPDialog({
         parameters: controlRecipeSOP?.parameters,
         stdTime: minutesToDuration(controlRecipeSOP?.stdTime ?? 0),
         transitionId: controlRecipeSOP?.transitionId,
-        fromEquipmentId: controlRecipeSOP?.fromEquipment?.id ?? undefined,
+        fromEquipmentId: controlRecipeSOP?.fromEquipment?.id,
         toEquipmentId: controlRecipeSOP?.toEquipment.id,
       });
       return;
@@ -133,7 +133,7 @@ export default function ControlRecipeSOPDialog({
   const transferStep = selectedTransition?.name === TransitionType.TRANSFER;
   const parentEq = equipments?.find((e) => e.creatorUnitId === unitId);
   useEffect(() => {
-    if (!selectedTransition || !parentEq) return;
+    if (isEdit || !selectedTransition || !parentEq) return;
     if (transferStep) {
       setValue("fromEquipmentId", parentEq.id);
       setValue("toEquipmentId", 0);
@@ -209,8 +209,8 @@ export default function ControlRecipeSOPDialog({
 
   if (loading) {
     return (
-      <div className="h-full rounded-none flex  justify-center items-center min-h-0">
-        <Loader2 className="h-7 w-7 animate-spin text-primary" />
+      <div className="flex h-full w-full min-h-0 flex-1 items-center justify-center rounded-none">
+        <Loader2 className="size-7 animate-spin text-primary" />
       </div>
     );
   }

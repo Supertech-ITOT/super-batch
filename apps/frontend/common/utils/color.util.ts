@@ -25,6 +25,33 @@ export const COLOR_PALETTE = [
   "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-200",
 ] as const;
 
+export const PDF_COLOR_PALETTE = [
+  "#334155",
+  "#3f3f46",
+  "#57534e",
+
+  "#b91c1c",
+  "#be123c",
+  "#c2410c",
+  "#b45309",
+  "#a16207",
+
+  "#4d7c0f",
+  "#15803d",
+  "#047857",
+  "#0f766e",
+
+  "#0e7490",
+  "#0369a1",
+  "#1d4ed8",
+  "#4338ca",
+
+  "#6d28d9",
+  "#7e22ce",
+  "#a21caf",
+  "#be185d",
+] as const;
+
 export const getColorByText = (text: string, colors: readonly string[] = COLOR_PALETTE) => {
   if (!text) return colors[0];
   let hash = 0;
@@ -34,6 +61,17 @@ export const getColorByText = (text: string, colors: readonly string[] = COLOR_P
   return colors[Math.abs(hash) % colors.length];
 };
 
+
+export const getPDFColorByText = (text: string) => {
+  if (!text) return PDF_COLOR_PALETTE[0];
+
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) {
+    hash = text.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  return PDF_COLOR_PALETTE[Math.abs(hash) % PDF_COLOR_PALETTE.length];
+};
 
 
 export const CHART_COLORS = [

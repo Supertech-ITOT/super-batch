@@ -17,161 +17,156 @@ import { DataTable } from "@/common/components/data-table/data-table";
 import { RecipeStatus } from "../../recipe/types/recipe.types";
 
 export default function RecipeSOPView({ recipeId }: { recipeId: number }) {
-    const { data: recipe, isLoading: recipeIsLoading, isError: recipeIsError } = useGetRecipeById(recipeId);
-    const { data: recipeSOP, isLoading: recipeSOPIsLoading, isError: recipeSopIsError } = useGetRecipeSOPsByRecipeId(recipeId);
-    const error = recipeIsError || recipeSopIsError;
-    const loading = recipeIsLoading || recipeSOPIsLoading;
-    const hideDialog = recipe?.status === RecipeStatus.RELEASED;
-    const nextStepNo = (recipeSOP?.length ?? 0) + 1;
-    const [dialog, setDialog] = useState<RecipeSOPDialogType>({ recipeId: recipeId, action: "create", stepNo: nextStepNo });
+  const { data: recipe, isLoading: recipeIsLoading, isError: recipeIsError } = useGetRecipeById(recipeId);
+  const { data: recipeSOP, isLoading: recipeSOPIsLoading, isError: recipeSopIsError } = useGetRecipeSOPsByRecipeId(recipeId);
+  const error = recipeIsError || recipeSopIsError;
+  const loading = recipeIsLoading || recipeSOPIsLoading;
+  const hideDialog = recipe?.status === RecipeStatus.RELEASED;
+  const nextStepNo = (recipeSOP?.length ?? 0) + 1;
+  const [dialog, setDialog] = useState<RecipeSOPDialogType>({ recipeId: recipeId, action: "create", stepNo: nextStepNo });
 
-    const { mutateAsync: moveUp } = useMoveUpRecipeSOP();
-    const { mutateAsync: moveDown } = useMoveDownRecipeSOP();
+  const { mutateAsync: moveUp } = useMoveUpRecipeSOP();
+  const { mutateAsync: moveDown } = useMoveDownRecipeSOP();
 
-    const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
+  const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
 
-    useEffect(() => {
-        setDialog((prev) => ({ ...prev, recipeId: recipeId, stepNo: nextStepNo }));
-    }, [recipeId, nextStepNo, recipeSOP]);
-    const handleClose = () => {
-        setSelectedRowId(null);
-        setDialog({ recipeId: recipeId, action: "create" });
-    };
-    const handleAction = async (action: recipeSOPActionType, row: RecipeSOPResponse) => {
-        switch (action) {
-            case "move-up": {
-                try {
-                    const res = await moveUp({ id: row.id, recipeId: recipeId });
-                    toast.success(res.message ?? "Moved up successfully.");
-                } catch (err) {
-                    showApiError(err);
-                } finally {
-                    return;
-                }
-            }
-            case "move-down": {
-                try {
-                    const res = await moveDown({ id: row.id, recipeId: recipeId });
-                    toast.success(res.message ?? "Moved down successfully.");
-                } catch (err) {
-                    showApiError(err);
-                } finally {
-                    return;
-                }
-            }
-            case "create": {
-                setDialog({ action, stepNo: nextStepNo, recipeId: recipeId });
-                return;
-            }
-            case "insert-below": {
-                setDialog({ recipeId: recipeId, stepNo: row.stepNo + 1, action, recipeSOPId: row.id });
-                return;
-            }
-            default: {
-                setDialog({ recipeId: recipeId, recipeSOPId: row.id, stepNo: row.stepNo, action });
-                return;
-            }
+  useEffect(() => {
+    setDialog((prev) => ({ ...prev, recipeId: recipeId, stepNo: nextStepNo }));
+  }, [recipeId, nextStepNo, recipeSOP]);
+  const handleClose = () => {
+    setSelectedRowId(null);
+    setDialog({ recipeId: recipeId, action: "create" });
+  };
+  const handleAction = async (action: recipeSOPActionType, row: RecipeSOPResponse) => {
+    switch (action) {
+      case "move-up": {
+        try {
+          const res = await moveUp({ id: row.id, recipeId: recipeId });
+          toast.success(res.message ?? "Moved up successfully.");
+        } catch (err) {
+          showApiError(err);
+        } finally {
+          return;
         }
-    };
-    if (loading) {
-        return <RecipeSOPSkeleton />;
+      }
+      case "move-down": {
+        try {
+          const res = await moveDown({ id: row.id, recipeId: recipeId });
+          toast.success(res.message ?? "Moved down successfully.");
+        } catch (err) {
+          showApiError(err);
+        } finally {
+          return;
+        }
+      }
+      case "create": {
+        setDialog({ action, stepNo: nextStepNo, recipeId: recipeId });
+        return;
+      }
+      case "insert-below": {
+        setDialog({ recipeId: recipeId, stepNo: row.stepNo + 1, action, recipeSOPId: row.id });
+        return;
+      }
+      default: {
+        setDialog({ recipeId: recipeId, recipeSOPId: row.id, stepNo: row.stepNo, action });
+        return;
+      }
     }
-    if (error) {
-        return <FeedbackState variant="error" />;
-    }
-    if (!recipeSOP || !recipe) {
-        return <FeedbackState variant="empty" />;
-    }
-    return (
-        <div className="flex min-w-0 flex-col gap-2 rounded-2xl border bg-card p-2 shadow sm:gap-4 sm:p-4">
-            <RecipeInfo recipe={recipe} />
+  };
+  if (loading) {
+    return <RecipeSOPSkeleton />;
+  }
+  if (error) {
+    return <FeedbackState variant="error" />;
+  }
+  if (!recipeSOP || !recipe) {
+    return <FeedbackState variant="empty" />;
+  }
+  return (
+    <div className="flex min-w-0 flex-col gap-2 rounded-2xl border bg-card p-2 shadow sm:gap-4 sm:p-4">
+      <RecipeInfo recipe={recipe} />
 
-            {/* Main Content */}
-            <div className="flex min-h-0 min-w-0 flex-col gap-2 overflow-hidden sm:gap-4 lg:h-[calc(100dvh-300px)] lg:flex-row">
-                {/* Table */}
-                <div className="flex h-[60dvh] min-h-0 min-w-0 w-full flex-1 overflow-hidden lg:h-full">
-                    <DataTable
-                        columns={columns}
-                        data={recipeSOP}
-                        rowClassName="h-15"
-                        onRowClick={(r) => setSelectedRowId(r.id)}
-                        isRowSelected={(r) => r.id === selectedRowId}
-                        contextMenu={
-                            !hideDialog
-                                ? {
-                                    label: "Action",
-                                    items: [
-                                        {
-                                            label: "Add",
-                                            icon: Plus,
-                                            onClick: (row) => handleAction("create", row),
-                                        },
-                                        {
-                                            label: "Insert Above",
-                                            icon: CornerLeftUp,
-                                            onClick: (row) => handleAction("insert-above", row),
-                                        },
-                                        {
-                                            label: "Insert Below",
-                                            icon: CornerLeftDown,
-                                            onClick: (row) => handleAction("insert-below", row),
-                                        },
-                                        {
-                                            label: "Move Up",
-                                            icon: ChevronsUp,
-                                            onClick: (row) => handleAction("move-up", row),
-                                        },
-                                        {
-                                            label: "Move Down",
-                                            icon: ChevronsDown,
-                                            onClick: (row) => handleAction("move-down", row),
-                                        },
-                                        {
-                                            label: "Edit",
-                                            icon: SquarePen,
-                                            onClick: (row) => handleAction("edit", row),
-                                        },
-                                        {
-                                            label: "Delete",
-                                            icon: Trash,
-                                            variant: "destructive",
-                                            onClick: (row) => handleAction("delete", row),
-                                        },
-                                    ],
-                                }
-                                : undefined
-                        }
-                    />
-                </div>
-
-                {/* Dialog */}
-                {!hideDialog && (
-                    <div className="flex min-h-0 min-w-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border shadow lg:h-full lg:w-auto lg:max-w-md lg:flex-none">
-                        <RecipeSOPDialog
-                            action={dialog.action}
-                            recipeId={recipeId}
-                            stepNo={dialog.action === "create" ? nextStepNo : dialog.stepNo}
-                            recipeSOPId={dialog.recipeSOPId}
-                            unitId={recipe.unitRecipeResponse.id}
-                            recipeQuantityType={recipe.unitRecipeResponse.recipeQuantityType}
-                        />
-
-                        {dialog.action === "delete" && dialog.recipeSOPId && (
-                            <RecipeSOPDeleteDialog
-                                open
-                                id={dialog.recipeSOPId}
-                                recipeId={recipeId}
-                                onClose={handleClose}
-                            />
-                        )}
-                    </div>
-                )}
-            </div>
-
-            {/* Summary */}
-            <div className="min-h-0 shrink-0">
-                <RecipeSOPSummary recipeId={recipeId} />
-            </div>
+      {/* Main Content */}
+      <div className="flex min-h-0 min-w-0 flex-col gap-2 overflow-hidden sm:gap-4 lg:h-[calc(100dvh-300px)] lg:flex-row">
+        {/* Table */}
+        <div className="flex h-[60dvh] min-h-0 min-w-0 w-full flex-1 overflow-hidden lg:h-full">
+          <DataTable
+            columns={columns}
+            data={recipeSOP}
+            rowClassName="h-15"
+            onRowClick={(r) => setSelectedRowId(r.id)}
+            isRowSelected={(r) => r.id === selectedRowId}
+            contextMenu={
+              !hideDialog
+                ? {
+                    label: "Action",
+                    items: [
+                      {
+                        label: "Add",
+                        icon: Plus,
+                        onClick: (row) => handleAction("create", row),
+                      },
+                      {
+                        label: "Insert Above",
+                        icon: CornerLeftUp,
+                        onClick: (row) => handleAction("insert-above", row),
+                      },
+                      {
+                        label: "Insert Below",
+                        icon: CornerLeftDown,
+                        onClick: (row) => handleAction("insert-below", row),
+                      },
+                      {
+                        label: "Move Up",
+                        icon: ChevronsUp,
+                        onClick: (row) => handleAction("move-up", row),
+                      },
+                      {
+                        label: "Move Down",
+                        icon: ChevronsDown,
+                        onClick: (row) => handleAction("move-down", row),
+                      },
+                      {
+                        label: "Edit",
+                        icon: SquarePen,
+                        onClick: (row) => handleAction("edit", row),
+                      },
+                      {
+                        label: "Delete",
+                        icon: Trash,
+                        variant: "destructive",
+                        onClick: (row) => handleAction("delete", row),
+                      },
+                    ],
+                  }
+                : undefined
+            }
+          />
         </div>
-    );
+
+        {/* Dialog */}
+        {!hideDialog && (
+          <div className="flex min-w-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border shadow lg:h-full min-h-100 lg:w-105 lg:min-w-105 lg:max-w-105 lg:flex-none">
+            <RecipeSOPDialog
+              action={dialog.action}
+              recipeId={recipeId}
+              stepNo={dialog.action === "create" ? nextStepNo : dialog.stepNo}
+              recipeSOPId={dialog.recipeSOPId}
+              unitId={recipe.unitRecipeResponse.id}
+              recipeQuantityType={recipe.unitRecipeResponse.recipeQuantityType}
+            />
+
+            {dialog.action === "delete" && dialog.recipeSOPId && (
+              <RecipeSOPDeleteDialog open id={dialog.recipeSOPId} recipeId={recipeId} onClose={handleClose} />
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Summary */}
+      <div className="min-h-0 shrink-0">
+        <RecipeSOPSummary recipeId={recipeId} />
+      </div>
+    </div>
+  );
 }

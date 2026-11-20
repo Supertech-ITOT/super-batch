@@ -18,7 +18,9 @@ public enum UomType {
     VOLT("V"),
     AMPERE("A"),
 
-    KG_PER_CM2("kg/cm²");
+    KG_PER_CM2("kg/cm²"),
+
+    MILLIMETRES_OF_MERCURY("mmHg");
 
     private final String symbol;
 

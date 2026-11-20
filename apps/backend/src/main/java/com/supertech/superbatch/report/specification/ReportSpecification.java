@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
 import com.supertech.superbatch.batch.batch.entity.Batch;
+import com.supertech.superbatch.batch.batch.enums.BatchStatus;
 import com.supertech.superbatch.report.dto.ReportFilterRequest;
 import jakarta.persistence.criteria.Predicate;
 
@@ -13,6 +14,7 @@ public class ReportSpecification {
 
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
+            predicates.add(root.get("status").in(BatchStatus.COMPLETED, BatchStatus.ABORTED));
             if (request.search() != null && !request.search().isBlank()) {
                 String search = "%" + request.search().toLowerCase() + "%";
                 predicates.add(cb.or(

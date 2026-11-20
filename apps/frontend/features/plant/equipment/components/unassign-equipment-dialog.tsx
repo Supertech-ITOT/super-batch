@@ -66,7 +66,7 @@ export default function UnAssignEquipmentDialog({ open, onClose, unitId, equipme
       onClose={handleClose}
       title="UnAssign Equipment"
       description="UnAssign a equipment to unit."
-      submitDisabled={!unitId || !selectedEquipmentId || !isDirty}
+      submitDisabled={!unitId || !selectedEquipmentId}
       submitLabel="UnAssign"
       onSubmit={handleSubmit(onSubmit, onInvalid)}
       icon={Cpu}

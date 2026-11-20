@@ -105,7 +105,7 @@ export const batchListColumns: ColumnDef<BatchesResponse>[] = [
       return (
         <span
           className={
-            variance > 0 ? "text-primary font-semibold" : variance < 0 ? "text-destructive font-semibold" : "text-muted-foreground font-medium"
+            variance > 0 ? "text-destructive font-semibold" : variance < 0 ? "text-primary font-semibold" : "text-muted-foreground font-medium"
           }
         >
           {variance > 0 ? "+" : ""}

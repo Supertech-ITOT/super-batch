@@ -6,12 +6,21 @@ export type ReportFilterRequest = {
     search?: string;
     fromDate?: Date;
     toDate?: Date;
-    masterRecipeId?: number;
     batchStatus?: BatchStatus;
+    masterRecipeId?: number;
     unitId?: number;
     productId?: number;
     page: number;
     size: number;
+};
+
+export type ReportFilterDetails = {
+    fromDate?: Date;
+    toDate?: Date;
+    batchStatus?: string;
+    unitName?: string;
+    productName?: string;
+    masterRecipeName?: string;
 };
 
 export interface BatchesResponse {
@@ -170,4 +179,13 @@ export interface QualityCheckSampleResult {
     allowedOptions?: string[];
     notAllowedOptions?: string[];
     resultStatus: ResultStatus;
+}
+
+
+export interface BatchReportResponse {
+    info: BatchesResponse;
+    sops: BatchSopResponse[];
+    mat: MaterialQuantityResponse;
+    par: ParameterValueResponse;
+    qc: QualityCheckResponse;
 }

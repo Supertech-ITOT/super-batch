@@ -57,6 +57,15 @@ export const BatchSOPStatusBadgeStyles = {
         "bg-red-100 text-red-800 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800",
 } as const;
 
+export const BatchSOPStatusPDFStyles = {
+    PENDING: "#334155",
+    IN_PROGRESS: "#166534",
+    PAUSED: "#854d0e",
+    COMPLETED: "#065f46",
+    SKIPPED: "#374151",
+    ABORTED: "#991b1b",
+} as const;
+
 export type BatchAbortResponse = {
     batchId: number;
     batchNo: string;

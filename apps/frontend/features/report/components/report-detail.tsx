@@ -12,6 +12,11 @@ import BatchOverview from "./overview/batch-overview";
 import BatchMaterials from "./material-consumption/batch-materials";
 import BatchParameters from "./parameter/batch-parameters";
 import BatchQuality from "./quality/batch-quality";
+import { PDFDownloadButton } from "@/common/components/pdf/elements/PDFDownloadButton";
+import { showApiError } from "@/common/lib/show-api-error";
+import { BatchesResponse, BatchReportResponse } from "../types/report.types";
+import BatchDetailPDF from "./batch-report/batch-detail-pdf";
+import { useGenerateBatchReport } from "../hooks/use-report-export";
 
 type ReportTab = {
   value: string;
@@ -26,6 +31,15 @@ type ReportDetailProps = {
 export default function ReportDetail({ id }: ReportDetailProps) {
   const [activeTab, setActiveTab] = useState("overview");
   const { data: batchInfo, isLoading, isError } = useGetBatchInfo(id);
+  const { refetch: generateReport } = useGenerateBatchReport(id);
+  const prepareReport = async (): Promise<BatchReportResponse> => {
+    const result = await generateReport();
+    if (result.isError || !result.data) {
+      showApiError(result.error ?? new Error("Unable to generate batch report"));
+      throw result.error ?? new Error("Unable to generate batch report");
+    }
+    return result.data;
+  };
   const tabOptions = useMemo<ReportTab[]>(
     () => [
       { value: "overview", label: "Overview", component: <BatchOverview id={id} /> },
@@ -39,9 +53,9 @@ export default function ReportDetail({ id }: ReportDetailProps) {
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-1 flex-col  rounded-2xl border bg-card p-2 shadow sm:p-4">
       {/* Batch Header & Tab Navigation */}
-      <div className="flex flex-col gap-3 rounded-2xl border bg-card p-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-wrap gap-3 rounded-2xl border bg-card p-2  sm:items-center sm:justify-between">
         {/* Batch Information */}
-        <div className="flex min-w-0 items-center gap-3">
+        <div className="flex min-w-32 items-center gap-3">
           {isLoading ? (
             <Skeleton className="h-8 w-48" />
           ) : isError ? (
@@ -76,18 +90,28 @@ export default function ReportDetail({ id }: ReportDetailProps) {
           )}
         </div>
 
-        {/* Tab Navigation */}
-        <TabsList className="grid h-auto w-full grid-cols-4 bg-background! sm:flex sm:w-auto">
-          {tabOptions.map((tab) => (
-            <TabsTrigger
-              key={tab.value}
-              value={tab.value}
-              className=" px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
-            >
-              {tab.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        <div className="flex gap-2 flex-wrap">
+          {/* Tab Navigation */}
+          <TabsList className="grid h-auto w-full grid-cols-4 bg-background! sm:flex sm:w-auto">
+            {tabOptions.map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <PDFDownloadButton<BatchReportResponse>
+            title="Export"
+            fileName={`batch-[${batchInfo?.batchNo}]-report.pdf`}
+            onPrepare={prepareReport}
+            document={(data) => <BatchDetailPDF data={data} />}
+            variant="primary"
+            className="h-9 min-w-28"
+          />
+        </div>
       </div>
 
       {/* Tab Content */}
