@@ -41,3 +41,14 @@ export const CheckParameterTypeBadgeStyles = {
   QUALITATIVE:
     "bg-green-100 text-green-800 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-800",
 } as const;
+
+export const CheckParameterTypePDFBadgeStyles = {
+  QUANTITATIVE: {
+    backgroundColor: "#DBEAFE",
+    color: "#1E40AF",
+  },
+  QUALITATIVE: {
+    backgroundColor: "#DCFCE7",
+    color: "#166534",
+  },
+} as const;

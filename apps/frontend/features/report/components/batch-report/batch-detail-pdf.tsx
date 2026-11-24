@@ -9,8 +9,9 @@ import { BatchReportResponse } from "../../types/report.types";
 import { minutesToADuration } from "@/common/utils/duration.util";
 import batchSopsPdfColumns from "./batch-sops-pdf-columns";
 import { batchMaterialPdfColunns } from "./batch-material-pdf-columns";
-import { batchParameterPdfColunns } from "./batch-parameter-pdf-columns copy";
 import { batchQualityCheckPdfColunns } from "./batch-quality-check-pdf";
+import PDFStatsCard from "@/common/components/pdf/elements/PDFStatsCard";
+import { PDFBadge } from "@/common/components/pdf/elements/PDFBadge";
 
 const title = "Batch Report";
 const subtitle = "Track batch execution, production efficiency, processing time, quantity variances, and step-wise completion status.";
@@ -40,34 +41,102 @@ export default function BatchDetailPDF({ data: batch }: Props) {
   ];
   return (
     <PDFDocument title={title}>
-      <PDFPage>
-        <PDFHeader
-          title={title}
-          subtitle={subtitle}
-          companyName="SuperTech Automation"
-          generatedBy="John Doe"
-          generatedByEmail="john.doe@company.com"
-        />
+      <PDFPage wrap>
+        <View fixed>
+          <PDFHeader
+            title={title}
+            subtitle={subtitle}
+            companyName="SuperTech Automation"
+            generatedBy="John Doe"
+            generatedByEmail="john.doe@company.com"
+          />
+        </View>
+
         <Text style={styles.sectionTitle}>Batch Information</Text>
         <PDFGrid columns={5} gap={2}>
           {headerDetails.map((h) => (
             <View key={h.label}>
-              <Text style={{ fontWeight: "bold" }}>{h.label}</Text>
-              <Text style={{ color: PDFTheme.muted, fontSize: 7 }}>{h.value}</Text>
+              <Text style={{ color: PDFTheme.muted, fontSize: 6 }}>{h.label}</Text>
+              <Text style={{ fontWeight: "bold", fontSize: 6 }}>{h.value}</Text>
             </View>
           ))}
         </PDFGrid>
         <Text style={styles.sectionTitle}>SOP Execution Details</Text>
         <PDFTable columns={batchSopsPdfColumns} data={batch.sops} />
 
-        <Text style={styles.sectionTitle}>Batch Material Consumption</Text>
-        <PDFTable columns={batchMaterialPdfColunns} data={batch.mat.tableData} />
+        <View break>
+          <Text style={styles.sectionTitle}>Batch Material Consumption</Text>
+          <PDFStatsCard
+            columns={4}
+            data={batch.mat.statsData.map((s) => ({
+              label: s.label,
+              value: s.value,
+              unit: s.unit,
+              color: s.highlight ? (s.value < 0 ? PDFTheme.primary : s.value > 0 ? PDFTheme.destructive : undefined) : undefined,
+            }))}
+          />
+          <PDFTable columns={batchMaterialPdfColunns} data={batch.mat.tableData} />
+        </View>
 
-        <Text style={styles.sectionTitle}>Step Wise Parameter</Text>
-        <PDFTable columns={batchParameterPdfColunns} data={batch.par.data} />
-        
-        <Text style={styles.sectionTitle}>Batch Quality Check</Text>
-        <PDFTable columns={batchQualityCheckPdfColunns} data={batch.qc.list} />
+        <View break>
+          <Text style={styles.sectionTitle}>Batch Quality Check</Text>
+          <PDFStatsCard
+            columns={5}
+            data={batch.qc.statsData.map((s) => ({
+              label: s.label,
+              value: s.value,
+              color: s.isPassed === null ? PDFTheme.foreground : s.isPassed ? PDFTheme.primary : PDFTheme.destructive,
+              unit: s.label === "Pass Rate" ? "%" : "",
+            }))}
+          />
+          {batch.qc.list.map((q, idx) => (
+            <View
+              key={q.sampleNo ?? idx}
+              style={{
+                borderWidth: 1,
+                borderColor: PDFTheme.border,
+                padding: 4,
+                marginTop: 4,
+                borderRadius: 3,
+              }}
+            >
+              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                <Text style={{ color: PDFTheme.primary, fontWeight: "bold", fontSize: 7 }}>#{q.sampleNo}</Text>
+                <PDFBadge variant={q.failedParameters > 0 ? "destructive" : "default"}> {q.failedParameters > 0 ? "Failed" : "Passed"}</PDFBadge>
+              </View>
+              <Text style={{ color: PDFTheme.muted, fontSize: 6 }}>
+                {q.sampleDateTime ? format(new Date(q.sampleDateTime), "dd MMM yyyy, hh:mm a") : "-"}
+              </Text>
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  gap: 12,
+                  marginVertical: 3,
+                  paddingVertical: 2,
+                  justifyContent: "space-evenly",
+                  borderTopWidth: 1,
+                  borderBottomWidth: 1,
+                  borderColor: PDFTheme.border,
+                }}
+              >
+                <Text style={{ color: PDFTheme.muted, fontSize: 6 }}>
+                  Parameters: <Text style={{ fontWeight: "bold", color: PDFTheme.foreground }}>{q.totalParameters}</Text>
+                </Text>
+
+                <Text style={{ color: PDFTheme.muted, fontSize: 6 }}>
+                  Passed: <Text style={{ fontWeight: "bold", color: PDFTheme.primary }}>{q.passedParameters}</Text>
+                </Text>
+
+                <Text style={{ color: PDFTheme.muted, fontSize: 6 }}>
+                  Failed: <Text style={{ fontWeight: "bold", color: PDFTheme.destructive }}>{q.failedParameters}</Text>
+                </Text>
+              </View>
+
+              <PDFTable columns={batchQualityCheckPdfColunns} data={q.results} />
+            </View>
+          ))}
+        </View>
         <PDFFooter />
       </PDFPage>
     </PDFDocument>

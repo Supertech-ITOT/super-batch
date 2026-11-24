@@ -30,7 +30,7 @@ export const batchMaterialPdfColunns: PDFColumnDef<MaterialQuantityTableData>[] 
   {
     accessorKey: "materialName",
     header: "Name",
-    width: "15%",
+    width: "16%",
     cell: ({ row }) => <Text style={cellStyle}>{row.original.materialName ?? "-"}</Text>,
     meta: { align: "left" },
   },
@@ -44,7 +44,7 @@ export const batchMaterialPdfColunns: PDFColumnDef<MaterialQuantityTableData>[] 
   {
     accessorKey: "startDateTime",
     header: "Start",
-    width: "15%",
+    width: "12%",
     cell: ({ row }) => {
       const value = row.original.startDateTime;
 
@@ -59,7 +59,7 @@ export const batchMaterialPdfColunns: PDFColumnDef<MaterialQuantityTableData>[] 
   {
     accessorKey: "endDateTime",
     header: "End",
-    width: "15%",
+    width: "12%",
     cell: ({ row }) => {
       const value = row.original.endDateTime;
 
@@ -111,7 +111,7 @@ export const batchMaterialPdfColunns: PDFColumnDef<MaterialQuantityTableData>[] 
   {
     accessorKey: "varPct",
     header: "Var Pct",
-    width: "5%",
+    width: "10%",
     cell: ({ row }) => {
       const percentage = row.original.varPct;
 
