@@ -1,7 +1,7 @@
 import { queryKeys } from "@/features/common/hooks/query-keys";
 import { ReportFilterRequest } from "../types/report.types";
 import { useQuery } from "@tanstack/react-query";
-import { generateBatchReport, generateProductionReport } from "../service/report-export.service";
+import { generateBatchReport, generateProductionReport, getMetadata } from "../service/report-export.service";
 
 export const useGenerateProductionReport = (request: ReportFilterRequest) => {
     return useQuery({
@@ -23,6 +23,16 @@ export const useGenerateBatchReport = (id: number) => {
             return res.data;
         },
         enabled: false,
+        staleTime: 0,
+    });
+};
+export const useGetMetadata = () => {
+    return useQuery({
+        queryKey: queryKeys.reportsExport.metadata,
+        queryFn: async () => {
+            const res = await getMetadata();
+            return res.data;
+        },
         staleTime: 0,
     });
 };

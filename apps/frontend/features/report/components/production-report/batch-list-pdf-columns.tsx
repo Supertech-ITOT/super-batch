@@ -145,7 +145,7 @@ export const batchListPdfColumns: PDFColumnDef<BatchesResponse>[] = [
       const status = row.original.status;
       const styles = BatchSOPStatusPDFStyles[status as keyof typeof BatchSOPStatusPDFStyles];
       return (
-        <PDFBadge variant="outline" backgroundColor={styles?.backgroundColor} color={styles?.color}>
+        <PDFBadge compact variant="outline" backgroundColor={styles?.backgroundColor} color={styles?.color}>
           {toDisplayText(status)}
         </PDFBadge>
       );

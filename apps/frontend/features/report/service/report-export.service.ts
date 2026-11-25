@@ -1,5 +1,5 @@
 import { ApiResponse } from "@/common/types/api.types";
-import { BatchesResponse, BatchReportResponse, ReportFilterRequest } from "../types/report.types";
+import { BatchesResponse, BatchReportResponse, ReportFilterRequest, ReportMetadataResponse } from "../types/report.types";
 import api from "@/common/lib/axios";
 
 export const generateProductionReport = async (request: ReportFilterRequest) => {
@@ -8,5 +8,10 @@ export const generateProductionReport = async (request: ReportFilterRequest) => 
 };
 export const generateBatchReport = async (id: number) => {
     const res = await api.get<ApiResponse<BatchReportResponse>>(`/reports/export/batch-report/${id}`);
+    return res.data;
+};
+
+export const getMetadata = async () => {
+    const res = await api.get<ApiResponse<ReportMetadataResponse>>("/reports/export/metadata");
     return res.data;
 };

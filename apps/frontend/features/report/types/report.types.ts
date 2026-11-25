@@ -189,3 +189,11 @@ export interface BatchReportResponse {
     par: ParameterValueResponse;
     qc: QualityCheckResponse;
 }
+
+export type ReportMetadataResponse = {
+    generatedBy: string;
+    generatedByEmail: string;
+    generatedAt: string;
+    companyName: string;
+    companyLogo: string;
+};

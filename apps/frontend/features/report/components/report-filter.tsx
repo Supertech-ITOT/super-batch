@@ -1,4 +1,4 @@
-import { Activity, BookOpenText, Boxes, Hash, Package, RotateCcw, Search, Settings } from "lucide-react";
+import { Activity, BookOpenText, Boxes, Hash, Package, RotateCcw, Search, Settings, Settings2 } from "lucide-react";
 import { Button } from "@/common/components/ui/button";
 import { BatchesResponse, ReportFilterDetails, ReportFilterRequest } from "../types/report.types";
 import { DateRangeInput } from "@/common/components/form/date-range-input";
@@ -12,7 +12,9 @@ import { TextInput } from "@/common/components/form/text-input";
 import { PDFDownloadButton } from "@/common/components/pdf/elements/PDFDownloadButton";
 import BatchListPdf from "./production-report/batch-list-pdf";
 import { showApiError } from "@/common/lib/show-api-error";
-import { useGenerateProductionReport } from "../hooks/use-report-export";
+import { useGenerateProductionReport, useGetMetadata } from "../hooks/use-report-export";
+import { useState } from "react";
+import ReportSettingsDialog from "./report-configuration/report-settings-dialog";
 
 type prop = {
   filter: ReportFilterRequest;
@@ -20,9 +22,11 @@ type prop = {
   onReset: () => void;
 };
 export default function ReportFilter({ filter, onFilterChange, onReset }: prop) {
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const { data: units } = useGetUnits();
   const { data: products } = useGetMaterials();
   const { data: recipes } = useGetRecipes();
+  const { data: metadata } = useGetMetadata();
   const { refetch: generateReport } = useGenerateProductionReport(filter);
   const prepareReport = async (): Promise<BatchesResponse[]> => {
     const result = await generateReport();
@@ -117,20 +121,22 @@ export default function ReportFilter({ filter, onFilterChange, onReset }: prop) 
         }
       />
       <div className="flex w-full gap-2">
-        <Button variant="outline" className="h-9 w-9 shrink-0 px-0!">
+        <Button variant="outline" onClick={onReset} className="size-9 shrink-0 px-0!">
           <RotateCcw className="size-4" />
         </Button>
         <PDFDownloadButton<BatchesResponse[]>
           title="Export"
           fileName="production-report.pdf"
           onPrepare={prepareReport}
-          document={(batches) => <BatchListPdf detail={pdfFilterDetails} batches={batches} />}
+          document={(batches) => <BatchListPdf detail={pdfFilterDetails} batches={batches} metadata={metadata!} />}
           variant="primary"
           className="h-9 flex-2"
+          disabled={!metadata}
         />
-        <Button variant="outline" className="h-9 w-9 shrink-0 px-0!">
-          <Settings className="size-4" />
+        <Button variant="outline" className="size-9 shrink-0 px-0!" onClick={() => setSettingsOpen(true)}>
+          <Settings2 className="size-4" />
         </Button>
+        <ReportSettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
       </div>
     </div>
   );

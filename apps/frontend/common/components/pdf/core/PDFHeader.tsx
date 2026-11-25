@@ -21,7 +21,7 @@ export function PDFHeader({
   generatedByEmail,
   generatedAt = new Date(),
 }: Props) {
-  const date = format(new Date(generatedAt), "dd MMM yyyy, hh:mm a");
+  const date = format(new Date(generatedAt), "EEE, dd MMM yyyy, hh:mm a");
 
   return (
     <View style={{ marginBottom: 10 }}>
@@ -30,10 +30,30 @@ export function PDFHeader({
         style={{
           flexDirection: "row",
           justifyContent: "space-between",
+          alignItems: "flex-start",
         }}
       >
         {/* Company Details */}
-        {companyLogo && <Image src={companyLogo} style={{ width: 180, objectFit: "contain" }} />}
+        <View
+          style={{
+            width: 180,
+            height: 50,
+            flexShrink: 0,
+            alignSelf: "flex-start",
+            justifyContent: "flex-start",
+            alignItems: "flex-start",
+          }}
+        >
+          <Image
+            src={companyLogo || "/superbatch-light.png"}
+            style={{
+              width: 180,
+              height: 50,
+              objectFit: "contain",
+              objectPosition: "left",
+            }}
+          />
+        </View>
 
         {/* Generated Details */}
         <View style={{ alignItems: "flex-end" }}>

@@ -28,7 +28,7 @@ export const batchSopsPdfColumns: PDFColumnDef<BatchSopResponse>[] = [
   {
     accessorKey: "message",
     header: "Message",
-    width: "15%",
+    width: "16%",
     cell: ({ row }) => {
       const { message, remark } = row.original;
 
@@ -43,12 +43,12 @@ export const batchSopsPdfColumns: PDFColumnDef<BatchSopResponse>[] = [
   },
   {
     header: "Transition",
-    width: "15%",
+    width: "12.5%",
     cell: ({ row }) => {
       const colors = getPDFColorByText(row.original.transition);
 
       return (
-        <PDFBadge backgroundColor={colors.backgroundColor} color={colors.color}>
+        <PDFBadge compact backgroundColor={colors.backgroundColor} color={colors.color}>
           {row.original.transition || "-"}
         </PDFBadge>
       );
@@ -57,12 +57,12 @@ export const batchSopsPdfColumns: PDFColumnDef<BatchSopResponse>[] = [
   },
   {
     header: "Action",
-    width: "15%",
+    width: "12.5%",
     cell: ({ row }) => {
       const colors = getPDFColorByText(row.original.action);
 
       return (
-        <PDFBadge backgroundColor={colors.backgroundColor} color={colors.color}>
+        <PDFBadge compact backgroundColor={colors.backgroundColor} color={colors.color}>
           {row.original.action || "-"}
         </PDFBadge>
       );
@@ -86,7 +86,7 @@ export const batchSopsPdfColumns: PDFColumnDef<BatchSopResponse>[] = [
   {
     accessorKey: "startDateTime",
     header: "Start",
-    width: "6%",
+    width: "6.5%",
     cell: ({ row }) => {
       const value = row.original.startDateTime;
 
@@ -107,7 +107,7 @@ export const batchSopsPdfColumns: PDFColumnDef<BatchSopResponse>[] = [
   {
     accessorKey: "endDateTime",
     header: "End",
-    width: "6%",
+    width: "6.5%",
     cell: ({ row }) => {
       const value = row.original.endDateTime;
 
@@ -135,14 +135,14 @@ export const batchSopsPdfColumns: PDFColumnDef<BatchSopResponse>[] = [
   {
     accessorKey: "actualTime",
     header: "Act Time",
-    width: "5%",
+    width: "6%",
     cell: ({ row }) => <Text style={cellStyle}>{minutesToADuration(row.original.actualTime)}</Text>,
     meta: { align: "center" },
   },
   {
     accessorKey: "varianceTime",
     header: "Var Time",
-    width: "5%",
+    width: "6%",
     cell: ({ row }) => {
       const variance = row.original.varianceTime;
 
@@ -157,13 +157,13 @@ export const batchSopsPdfColumns: PDFColumnDef<BatchSopResponse>[] = [
   {
     accessorKey: "status",
     header: "Status",
-    width: "9%",
+    width: "8%",
     cell: ({ row }) => {
       const status = row.original.status;
       const styles = BatchSOPStatusPDFStyles[status as keyof typeof BatchSOPStatusPDFStyles];
 
       return (
-        <PDFBadge variant="outline" backgroundColor={styles?.backgroundColor} color={styles?.color}>
+        <PDFBadge compact variant="outline" backgroundColor={styles?.backgroundColor} color={styles?.color}>
           {toDisplayText(status)}
         </PDFBadge>
       );

@@ -4,7 +4,7 @@ import { PDFTable } from "@/common/components/pdf/elements/PDFTable";
 import { PDFTheme } from "@/common/components/pdf/core/PDFStyles";
 import { PDFDocument, PDFFooter, PDFPage } from "@/common/components/pdf";
 import { PDFGrid } from "@/common/components/pdf/elements/PDFGrid";
-import { ReportFilterDetails } from "../../types/report.types";
+import { ReportFilterDetails, ReportMetadataResponse } from "../../types/report.types";
 import { format } from "date-fns";
 import { BatchesResponse } from "../../types/report.types";
 import { batchListPdfColumns } from "./batch-list-pdf-columns";
@@ -16,9 +16,10 @@ const subtitle = "Track batch execution, production efficiency, processing time,
 type Props = {
   detail: ReportFilterDetails;
   batches: BatchesResponse[];
+  metadata: ReportMetadataResponse;
 };
 
-export default function BatchListPdf({ detail, batches }: Props) {
+export default function BatchListPdf({ detail, batches, metadata }: Props) {
   const formatDate = (date?: Date) => (date ? format(date, "dd MMM yyyy") : "N/A");
 
   const headerDetails = [
@@ -34,13 +35,15 @@ export default function BatchListPdf({ detail, batches }: Props) {
 
   return (
     <PDFDocument title={title}>
-      <PDFPage>
+      <PDFPage wrap>
         <PDFHeader
           title={title}
           subtitle={subtitle}
-          companyName="SuperTech Automation"
-          generatedBy="John Doe"
-          generatedByEmail="john.doe@company.com"
+          companyName={metadata.companyName}
+          generatedBy={metadata.generatedBy}
+          generatedByEmail={metadata.generatedByEmail}
+          generatedAt={metadata.generatedAt}
+          companyLogo={metadata.companyLogo}
         />
         <PDFGrid columns={5} gap={2} style={{ marginVertical: 16 }}>
           {headerDetails.map((h) => (

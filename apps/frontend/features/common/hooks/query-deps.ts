@@ -52,6 +52,8 @@ export const queryDeps = {
   audits: [queryKeys.audits.all],
 
   batches: [queryKeys.batches.all],
+
+  reportsConfiguration: [queryKeys.reportsConfiguration.logo(), queryKeys.reportsExport.metadata],
 } as const;
 
 import { QueryClient, QueryKey } from "@tanstack/react-query";

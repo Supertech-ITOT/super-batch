@@ -38,7 +38,7 @@ export const batchQualityCheckPdfColunns: PDFColumnDef<QualityCheckSampleResult>
       const type = row.original.type;
       const badgeStyle = CheckParameterTypePDFBadgeStyles[type as keyof typeof CheckParameterTypePDFBadgeStyles];
       return (
-        <PDFBadge backgroundColor={badgeStyle.backgroundColor} color={badgeStyle.color}>
+        <PDFBadge compact backgroundColor={badgeStyle.backgroundColor} color={badgeStyle.color}>
           {toDisplayText(type)}
         </PDFBadge>
       );
@@ -72,7 +72,11 @@ export const batchQualityCheckPdfColunns: PDFColumnDef<QualityCheckSampleResult>
     width: "10%",
     cell: ({ row }) => {
       const status = row.original.resultStatus;
-      return <PDFBadge variant={status !== ResultStatus.PASS ? "destructive" : "default"}>{status}</PDFBadge>;
+      return (
+        <PDFBadge compact variant={status !== ResultStatus.PASS ? "destructive" : "default"}>
+          {status}
+        </PDFBadge>
+      );
     },
     meta: { align: "center" },
   },

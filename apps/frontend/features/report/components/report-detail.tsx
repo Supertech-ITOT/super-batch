@@ -16,7 +16,7 @@ import { PDFDownloadButton } from "@/common/components/pdf/elements/PDFDownloadB
 import { showApiError } from "@/common/lib/show-api-error";
 import { BatchesResponse, BatchReportResponse } from "../types/report.types";
 import BatchDetailPDF from "./batch-report/batch-detail-pdf";
-import { useGenerateBatchReport } from "../hooks/use-report-export";
+import { useGenerateBatchReport, useGetMetadata } from "../hooks/use-report-export";
 
 type ReportTab = {
   value: string;
@@ -31,6 +31,7 @@ type ReportDetailProps = {
 export default function ReportDetail({ id }: ReportDetailProps) {
   const [activeTab, setActiveTab] = useState("overview");
   const { data: batchInfo, isLoading, isError } = useGetBatchInfo(id);
+  const { data: metadata } = useGetMetadata();
   const { refetch: generateReport } = useGenerateBatchReport(id);
   const prepareReport = async (): Promise<BatchReportResponse> => {
     const result = await generateReport();
@@ -107,9 +108,10 @@ export default function ReportDetail({ id }: ReportDetailProps) {
             title="Export"
             fileName={`batch-[${batchInfo?.batchNo}]-report.pdf`}
             onPrepare={prepareReport}
-            document={(data) => <BatchDetailPDF data={data} />}
+            document={(data) => <BatchDetailPDF data={data} metadata={metadata!} />}
             variant="primary"
             className="h-9 min-w-28"
+            disabled={!metadata}
           />
         </div>
       </div>

@@ -8,6 +8,7 @@ interface Props {
   variant?: PDFBadgeVariant;
   backgroundColor?: string;
   color?: string;
+  compact?: boolean;
 }
 
 const badgeStyles: Record<PDFBadgeVariant, { backgroundColor: string; color: string; borderColor?: string }> = {
@@ -43,23 +44,24 @@ const badgeStyles: Record<PDFBadgeVariant, { backgroundColor: string; color: str
   },
 };
 
-export function PDFBadge({ children, variant = "default", color, backgroundColor }: Props) {
+export function PDFBadge({ children, variant = "default", color, backgroundColor, compact = false }: Props) {
   const styles = badgeStyles[variant];
   const badgeColor = color ?? styles.color;
+
   return (
     <View
       style={{
         backgroundColor: backgroundColor ?? styles.backgroundColor,
         borderColor: PDFTheme.border ?? styles.borderColor,
-        borderWidth: 0.5,
-        borderRadius: 3,
-        paddingHorizontal: 5,
-        paddingVertical: 2,
+        borderWidth: compact ? 0.3 : 0.5,
+        borderRadius: compact ? 2 : 3,
+        paddingHorizontal: compact ? 3 : 5,
+        paddingVertical: compact ? 1 : 2,
       }}
     >
       <Text
         style={{
-          fontSize: 6,
+          fontSize: compact ? 5 : 6,
           fontWeight: "bold",
           color: badgeColor,
         }}

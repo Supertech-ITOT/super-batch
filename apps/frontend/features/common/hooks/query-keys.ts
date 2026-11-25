@@ -203,5 +203,10 @@ export const queryKeys = {
     all: ["reports-export"] as const,
     productionReport: (request: ReportFilterRequest) => ["reports-export", "production-report", request] as const,
     batchReport: (id: number) => ["reports-export", "batch-report", id] as const,
+    metadata: ["reports-export", "metadata"] as const,
+  },
+
+  reportsConfiguration: {
+    logo: () => ["reports", "configuration", "logo"],
   },
 } as const;
