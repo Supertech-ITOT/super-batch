@@ -8,7 +8,7 @@ export interface DataTableProps<TData, TValue> {
     toolbar?: (table: Table<TData>) => React.ReactNode;
     emptyMessage?: string;
     className?: string;
-    rowClassName?: string | ((row: TData) => string);
+    rowClassName?: string | ((row: TData | undefined) => string);
     tableClassName?: string;
     contextMenu?: {
         label?: string;

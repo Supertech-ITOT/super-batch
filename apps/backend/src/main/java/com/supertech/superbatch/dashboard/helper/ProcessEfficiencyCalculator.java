@@ -34,7 +34,6 @@ public class ProcessEfficiencyCalculator {
     }
 
     private double calculateProcessEfficiency(List<Batch> batches) {
-
         double standardTime = 0;
         double actualTime = 0;
         for (Batch batch : batches) {
@@ -45,10 +44,11 @@ public class ProcessEfficiencyCalculator {
                 }
             }
         }
-
-        return actualTime == 0
-                ? 0
-                : (standardTime / actualTime) * 100;
+        if (actualTime == 0 || standardTime == 0) {
+            return 0;
+        }
+        double efficiency = (standardTime / actualTime) * 100;
+        return Math.min(efficiency, 100);
     }
 
     private double[] calculateTrend(List<Batch> batches, LocalDate startDate, LocalDate endDate) {

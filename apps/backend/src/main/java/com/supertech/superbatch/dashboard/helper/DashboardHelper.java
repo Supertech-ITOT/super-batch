@@ -31,7 +31,8 @@ public class DashboardHelper {
         }
         LocalDateTime end = endDateTime != null ? endDateTime : LocalDateTime.now();
         long elapsedMinutes = Duration.between(startDateTime, end).toMinutes();
-        return (int) Math.round((elapsedMinutes * 100.0) / stdTime);
+        int progress = (int) Math.round((elapsedMinutes * 100.0) / stdTime);
+        return Math.min(Math.max(progress, 0), 100);
     }
 
     public double calculateChangePercent(double current, double previous) {
@@ -43,6 +44,14 @@ public class DashboardHelper {
 
     public double roundToTwoDecimals(double value) {
         return Math.round(value * 100.0) / 100.0;
+    }
+
+    public boolean isStepOverdue(LocalDateTime startDateTime, LocalDateTime endDateTime, Double stdTime) {
+        if (startDateTime == null || endDateTime != null || stdTime == null || stdTime <= 0) {
+            return false;
+        }
+        long elapsedMinutes = Duration.between(startDateTime, LocalDateTime.now()).toMinutes();
+        return elapsedMinutes > stdTime;
     }
 
 }

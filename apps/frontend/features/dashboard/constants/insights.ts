@@ -131,7 +131,7 @@ const INSIGHT_EXPLANATIONS: Record<string, InsightExplanation> = {
             "Σ Standard Time ÷ Σ Actual Time x 100",
 
         description:
-            "Compares recipe process time with actual execution time. Values above 100% indicate the process was completed faster than the standard time.",
+            "Compares recipe process time with actual execution time. Values 100% indicate the process was completed faster than the standard time.",
 
         improve: [
             "Follow the recipe's standard process time.",

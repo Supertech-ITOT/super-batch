@@ -58,10 +58,10 @@ public class DashboardServiceImpl implements DashboardService {
                 Map<BatchStatus, Long> counts = batchRepository
                                 .countByStatusBetween(startDateTime, endDateTime)
                                 .stream()
-                                .collect(Collectors.toMap(row -> (BatchStatus) row[0],row -> (Long) row[1]));
+                                .collect(Collectors.toMap(row -> (BatchStatus) row[0], row -> (Long) row[1]));
 
                 List<BatchStatusCardResponse> statuses = Arrays.stream(BatchStatus.values())
-                                .map(status -> dashboardMapper.toStatusCard( status, counts.getOrDefault(status, 0L)))
+                                .map(status -> dashboardMapper.toStatusCard(status, counts.getOrDefault(status, 0L)))
                                 .toList();
 
                 long total = statuses.stream()
@@ -82,6 +82,8 @@ public class DashboardServiceImpl implements DashboardService {
                                         LocalDateTime startedAt = batch.getStartDateTime();
                                         Double cycleTime = dashboardHelper.calculateCycleTime(startedAt);
                                         Double stdTime = dashboardHelper.calculateStandardTime(batch.getSops());
+                                        Boolean overdue = dashboardHelper.isStepOverdue(batch.getStartDateTime(),
+                                                        batch.getEndDateTime(), stdTime);
                                         Integer progress = dashboardHelper.calculateProgress(batch.getStartDateTime(),
                                                         batch.getEndDateTime(), stdTime);
                                         return dashboardMapper.toActiveBatchResponse(
@@ -93,7 +95,8 @@ public class DashboardServiceImpl implements DashboardService {
                                                         cycleTime,
                                                         stdTime,
                                                         batch.getStatus(),
-                                                        progress);
+                                                        progress,
+                                                        overdue);
                                 })
                                 .toList();
         }

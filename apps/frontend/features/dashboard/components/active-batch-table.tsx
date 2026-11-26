@@ -24,7 +24,11 @@ export default function ActiveBatchTable() {
           columns={activeBatchColumns}
           compact
           data={data ?? []}
-          rowClassName="h-10"
+          rowClassName={(row) =>
+            row?.isOverdue
+              ? "h-10 bg-linear-to-r from-destructive/10 via-destructive/5 to-transparent border-0 border-l-3! border-destructive hover:from-destructive/12 hover:via-destructive/6 hover:to-transparent"
+              : "h-10"
+          }
           pageSize={5}
           tableClassName="min-h-0"
           toolbar={(table) => (
@@ -50,7 +54,7 @@ export default function ActiveBatchTable() {
                 label: "Recovery",
                 icon: TriangleAlert,
                 variant: "destructive",
-                show: (row) => row.progress > 100,
+                show: (row) => row.isOverdue,
                 onClick: (row) => setRecoveryBatchId(row.batchId),
               },
             ],

@@ -38,7 +38,7 @@ public class DashboardMapper {
 
         public ActiveBatchesResponse toActiveBatchResponse(Long batchId, String batchNo, String product, String unit,
                         LocalDateTime startedAt, Double cycleTime, Double stdTime, BatchStatus status,
-                        Integer progress) {
+                        Integer progress, Boolean overdue) {
                 return ActiveBatchesResponse
                                 .builder()
                                 .batchId(batchId)
@@ -50,6 +50,7 @@ public class DashboardMapper {
                                 .stdTime(stdTime)
                                 .status(status)
                                 .progress(progress)
+                                .isOverdue(overdue)
                                 .build();
 
         }

@@ -3,6 +3,9 @@ package com.supertech.superbatch.manager.license.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.supertech.superbatch.manager.license.enums.LicenseStatus;
 
 import jakarta.persistence.*;
@@ -66,4 +69,12 @@ public class License {
 
     @Column(nullable = false)
     private Integer planMaxUnits;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 }

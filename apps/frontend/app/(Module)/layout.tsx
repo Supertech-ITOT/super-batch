@@ -8,7 +8,7 @@ export default function ModuleLayout({ children }: Readonly<{ children: React.Re
 
       <ModuleHeader />
 
-      <section className="relative flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden pt-22 pb-14 sm:pb-0">
+      <section className="relative flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden pt-22 pb-14 sm:pb-0  scrollbar-gutter-stable">
         <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
           {/* Top glow */}
           <div className="absolute left-1/2 top-0 h-80 w-150 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />

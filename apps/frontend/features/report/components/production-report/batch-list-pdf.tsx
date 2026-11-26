@@ -36,15 +36,17 @@ export default function BatchListPdf({ detail, batches, metadata }: Props) {
   return (
     <PDFDocument title={title}>
       <PDFPage wrap>
-        <PDFHeader
-          title={title}
-          subtitle={subtitle}
-          companyName={metadata.companyName}
-          generatedBy={metadata.generatedBy}
-          generatedByEmail={metadata.generatedByEmail}
-          generatedAt={metadata.generatedAt}
-          companyLogo={metadata.companyLogo}
-        />
+        <View fixed>
+          <PDFHeader
+            title={title}
+            subtitle={subtitle}
+            companyName={metadata.companyName}
+            generatedBy={metadata.generatedBy}
+            generatedByEmail={metadata.generatedByEmail}
+            generatedAt={metadata.generatedAt}
+            companyLogo={metadata.companyLogo}
+          />
+        </View>
         <PDFGrid columns={5} gap={2} style={{ marginVertical: 16 }}>
           {headerDetails.map((h) => (
             <View key={h.label}>

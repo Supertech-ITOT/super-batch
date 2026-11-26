@@ -21,6 +21,7 @@ export type ActiveBatchResponse = {
     cycleTime: number;
     stdTime: number;
     progress: number;
+    isOverdue: boolean;
 }
 export type ScheduledBatchResponse = {
     batchNo: string;

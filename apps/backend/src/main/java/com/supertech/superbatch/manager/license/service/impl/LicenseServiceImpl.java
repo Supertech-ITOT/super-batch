@@ -48,7 +48,7 @@ public class LicenseServiceImpl implements LicenseService {
 
     @Override
     public LicenseResponse get() {
-        License license = licenseRepository.findFirstByOrderByActivationDateDescIdDesc()
+        License license = licenseRepository.findFirstByOrderByCreatedAtDescIdDesc()
                 .orElseThrow(() -> new ResourceNotFoundException("License not found."));
 
         return licenseMapper.toResponse(license);

@@ -120,15 +120,24 @@ export function DataTable<TData, TValue>({
                     />
                   ))}
 
-                  {Array.from({ length: emptyRows }).map((_, index) => (
-                    <TableRow key={`empty-${index}`}>
-                      {columns.map((_, cellIndex) => (
-                        <TableCell key={cellIndex} className={`${rowClassName} border-r last:border-r-0`}>
-                          &nbsp;
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
+                  {Array.from({ length: emptyRows }).map((_, index) => {
+                    const emptyRowClass = typeof rowClassName === "function" ? rowClassName(undefined) : rowClassName;
+
+                    return (
+                      <TableRow key={`empty-${index}`} className={emptyRowClass}>
+                        {columns.map((_, cellIndex) => (
+                          <TableCell
+                            key={cellIndex}
+                            className={`border-r last:border-r-0 ${
+                              compact ? "px-1.5 py-1 text-[10px] sm:px-2 sm:py-1.5 sm:text-xs" : "px-2 py-2 text-xs sm:px-4 sm:py-2 sm:text-sm"
+                            }`}
+                          >
+                            &nbsp;
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    );
+                  })}
                 </>
               ) : (
                 <DataTableEmpty colSpan={columns.length} message={emptyMessage} compact={compact} />
